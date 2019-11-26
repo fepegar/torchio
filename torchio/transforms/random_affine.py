@@ -13,7 +13,7 @@ class Interpolation(enum.Enum):
 
 
 class RandomAffine:
-    def __init__(self, scales, angles, isotropic=False):
+    def __init__(self, scales, angles, isotropic=False, verbose=False):
         """
         Example:
         scales = (0.9, 1.2)
@@ -22,8 +22,12 @@ class RandomAffine:
         self.scales = scales
         self.angles = angles
         self.isotropic = isotropic
+        self.verbose = verbose
 
     def __call__(self, sample):
+        if self.verbose:
+            import time
+            start = time.time()
         scaling_params, rotation_params = self.get_params(
             self.scales, self.angles, self.isotropic)
         sample['random_scaling'] = scaling_params
@@ -44,6 +48,9 @@ class RandomAffine:
                 interpolation,
             )
             sample[key] = array
+        if self.verbose:
+            duration = time.time() - start
+            print(f'RandomAffine: {duration:.1f} seconds')
         return sample
 
     @staticmethod
