@@ -13,8 +13,8 @@ class RandomFlip:
     def get_params(axes, probability):
         axes_hot = [False, False, False]
         for axis in axes:
-            n = torch.rand(1)
-            flip_this = bool(probability > n)
+            random_number = torch.rand(1)
+            flip_this = bool(probability > random_number)
             axes_hot[axis] = flip_this
         return axes_hot
 
@@ -22,13 +22,16 @@ class RandomFlip:
         """
         https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
         """
-        axes_to_flip = self.get_params(self.axes, self.flip_probability)
-        sample['random_flip'] = axes_to_flip
+        axes_to_flip_hot = self.get_params(self.axes, self.flip_probability)
+        sample['random_flip'] = axes_to_flip_hot
         for key in 'image', 'label', 'sampler':
-            if key not in sample: continue
+            if key not in sample:
+                continue
             array = sample[key]
-            for axis, flip_this in enumerate(axes_to_flip):
-                if not flip_this: continue
-                array = np.flip(array, axis=axis).copy()
+            for axis, flip_this in enumerate(axes_to_flip_hot):
+                if not flip_this:
+                    continue
+                actual_axis = axis + 1  # images are 4D
+                array = np.flip(array, axis=actual_axis).copy()
                 sample[key] = array
         return sample
