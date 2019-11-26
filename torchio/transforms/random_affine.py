@@ -13,7 +13,7 @@ class Interpolation(enum.Enum):
 
 
 class RandomAffine:
-    def __init__(self, scales, angles):
+    def __init__(self, scales, angles, isotropic=False):
         """
         Example:
         scales = (0.9, 1.2)
@@ -21,10 +21,11 @@ class RandomAffine:
         """
         self.scales = scales
         self.angles = angles
+        self.isotropic = isotropic
 
     def __call__(self, sample):
         scaling_params, rotation_params = self.get_params(
-            self.scales, self.angles)
+            self.scales, self.angles, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
         for key in 'image', 'label', 'sampler':
@@ -46,8 +47,10 @@ class RandomAffine:
         return sample
 
     @staticmethod
-    def get_params(scales, angles):
+    def get_params(scales, angles, isotropic):
         scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
+        if isotropic:
+            scaling_params = 3 * scaling_params[0]
         rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
         return scaling_params, rotation_params
 
