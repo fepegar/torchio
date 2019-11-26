@@ -19,52 +19,46 @@ class ImagesDataset(Dataset):
         return len(self.paths_dict['image'])
 
     def __getitem__(self, index):
-        # Load image
-        image, affine, image_path = self.load_image('image', index)
-        sample = dict(
-            image=image,
-            path=image_path,
-            affine=affine,
-        )
-
-        # Load label
-        if 'label' in self.paths_dict:
-            label = self.load_data('label', index)
-            if self.add_bg_to_label:
-                label = self.add_background(label)
-            sample['label'] = label
-
-        # Load sampler
-        if 'sampler' in self.paths_dict:
-            sampler = self.load_data('sampler', index)
-            sample['sampler'] = sampler
+        sample = {}
+        for key in self.paths_dict:
+            if key == 'image':
+                image, affine, image_path = self.load_image(key, index)
+                image_dict = dict(
+                    image=image,
+                    path=image_path,
+                    affine=affine,
+                )
+                sample.update(image_dict)
+            elif key == 'label':
+                label = self.load_data('label', index)
+                if self.add_bg_to_label:
+                    label = self.add_background(label)
+                sample['label'] = label
+            else:
+                data = self.load_data(key, index)
+                sample[key] = data
 
         # Apply transform (bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
         return sample
 
-    @staticmethod
-    def transform_and_save(sample, output_paths_dict, extract_fg=False):
-        for key, output_path in output_paths_dict.items():
-            data = sample[key].squeeze()
-            if key == 'label' and extract_fg:
-                data = data[1]
-            affine = sample['affine']
-            nii = nib.Nifti1Image(data, affine)
-            nii.header['qform_code'] = 1
-            nii.header['sform_code'] = 0
-            nii.to_filename(str(output_path))
-
-    def load_image(self, key, index):
+    def load_image(self, key, index, add_channels_dim=True):
         """
         https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
         """
         path = self.paths_dict[key][index]
-        img = nib.load(path)
+        img = nib.load(str(path))
         data = np.array(img.dataobj)
-        data = data[np.newaxis, ...]  # add channels dimension
+        if add_channels_dim:
+            data = data[np.newaxis, ...]  # add channels dimension
         return data, img.affine, path
+
+    def load_data(self, key, index):
+        path = self.paths_dict[key][index]
+        img = nib.load(str(path))
+        data = np.array(img.dataobj)
+        return data
 
     @staticmethod
     def add_background(label):
@@ -76,9 +70,14 @@ class ImagesDataset(Dataset):
         label = np.concatenate((background, foreground))
         return label
 
-    def load_data(self, key, index):
-        path = self.paths_dict[key][index]
-        img = nib.load(path)
-        data = np.array(img.dataobj)
-        data = data[np.newaxis, ...]  # add channels dimension
-        return data
+    @staticmethod
+    def save_sample(sample, output_paths_dict, extract_fg=False):
+        for key, output_path in output_paths_dict.items():
+            data = sample[key].squeeze()
+            if key == 'label' and extract_fg:
+                data = data[1]
+            affine = sample['affine']
+            nii = nib.Nifti1Image(data, affine)
+            nii.header['qform_code'] = 1
+            nii.header['sform_code'] = 0
+            nii.to_filename(str(output_path))
