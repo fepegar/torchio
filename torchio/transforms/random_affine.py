@@ -22,6 +22,29 @@ class RandomAffine:
         self.scales = scales
         self.angles = angles
 
+    def __call__(self, sample):
+        scaling_params, rotation_params = self.get_params(
+            self.scales, self.angles)
+        sample['random_scaling'] = scaling_params
+        sample['random_rotation'] = rotation_params
+        for key in 'image', 'label', 'sampler':
+            if key == 'image':
+                interpolation = Interpolation.LINEAR
+            else:
+                interpolation = Interpolation.NEAREST
+            if key not in sample:
+                continue
+            array = sample[key]
+            array = self.apply_transform(
+                array,
+                sample['affine'],
+                scaling_params,
+                rotation_params,
+                interpolation,
+            )
+            sample[key] = array
+        return sample
+
     @staticmethod
     def get_params(scales, angles):
         scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
@@ -90,26 +113,3 @@ class RandomAffine:
             nib.Nifti1Image(array, affine).to_filename(f.name)
             image = sitk.ReadImage(f.name)
         return image
-
-    def __call__(self, sample):
-        scaling_params, rotation_params = self.get_params(
-            self.scales, self.angles)
-        sample['random_scaling'] = scaling_params
-        sample['random_rotation'] = rotation_params
-        for key in 'image', 'label', 'sampler':
-            if key == 'image':
-                interpolation = Interpolation.LINEAR
-            else:
-                interpolation = Interpolation.NEAREST
-            if key not in sample:
-                continue
-            array = sample[key]
-            array = self.apply_transform(
-                array,
-                sample['affine'],
-                scaling_params,
-                rotation_params,
-                interpolation,
-            )
-            sample[key] = array
-        return sample

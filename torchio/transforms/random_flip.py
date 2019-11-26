@@ -9,15 +9,6 @@ class RandomFlip:
         assert flip_probability <= 1
         self.flip_probability = flip_probability
 
-    @staticmethod
-    def get_params(axes, probability):
-        axes_hot = [False, False, False]
-        for axis in axes:
-            random_number = torch.rand(1)
-            flip_this = bool(probability > random_number)
-            axes_hot[axis] = flip_this
-        return axes_hot
-
     def __call__(self, sample):
         """
         https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
@@ -35,3 +26,12 @@ class RandomFlip:
                 array = np.flip(array, axis=actual_axis).copy()
                 sample[key] = array
         return sample
+
+    @staticmethod
+    def get_params(axes, probability):
+        axes_hot = [False, False, False]
+        for axis in axes:
+            random_number = torch.rand(1)
+            flip_this = bool(probability > random_number)
+            axes_hot[axis] = flip_this
+        return axes_hot

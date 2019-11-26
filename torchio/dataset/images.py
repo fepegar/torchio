@@ -3,7 +3,7 @@ import nibabel as nib
 from torch.utils.data import Dataset
 
 
-class ImageDataset(Dataset):
+class ImagesDataset(Dataset):
     def __init__(self, paths_dict, transform=None, add_bg_to_label=False):
         """
         paths_dict is expected to have keys: image, [,label[, sampler]]
