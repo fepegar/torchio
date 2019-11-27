@@ -1,0 +1,46 @@
+"""
+Adapted from NiftyNet
+"""
+
+import torch
+import numpy as np
+import numpy.ma as ma
+
+
+DEFAULT_CUTOFF = (0.01, 0.99)
+
+
+class ZNormalization:
+    def __init__(self, verbose=False):
+        """
+        Assume single channel
+        """
+        self.verbose = verbose
+
+    def __call__(self, sample):
+        """
+        https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
+        """
+        if self.verbose:
+            import time
+            start = time.time()
+        sample['image'] = znorm(sample['image'], self.landmarks)
+        if self.verbose:
+            duration = time.time() - start
+            print(f'ZNormalization: {duration:.1f} seconds')
+        return sample
+
+
+def znorm(data, masking_function=None):
+    if masking_function is None:
+        masking_function = mean_plus
+    mask_data = masking_function(data)
+    values = data[mask_data]
+    mean, std = values.mean(), values.std()
+    data -= mean
+    data /= std
+    return data
+
+
+def mean_plus(data):
+    return data > data.mean()
