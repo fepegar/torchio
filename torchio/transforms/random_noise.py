@@ -13,7 +13,7 @@ class RandomNoise:
             start = time.time()
         std = self.get_params(self.std_range)
         sample['random_noise'] = std
-        sample['image'] = add_noise(sample['image'], std)
+        add_noise(sample['image'], std)
         if self.verbose:
             duration = time.time() - start
             print(f'RandomNoise: {duration:.1f} seconds')
@@ -27,4 +27,4 @@ class RandomNoise:
 
 def add_noise(data, std):
     noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std)
-    return data + noise
+    data += noise

@@ -21,7 +21,7 @@ class ZNormalization:
         if self.verbose:
             import time
             start = time.time()
-        sample['image'] = znorm(sample['image'], self.landmarks)
+        znorm(sample['image'], self.landmarks)
         if self.verbose:
             duration = time.time() - start
             print(f'ZNormalization: {duration:.1f} seconds')
@@ -36,7 +36,6 @@ def znorm(data, masking_function=None):
     mean, std = values.mean(), values.std()
     data -= mean
     data /= std
-    return data
 
 
 def mean_plus(data):
