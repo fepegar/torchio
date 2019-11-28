@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 import nibabel as nib
 from torch.utils.data import Dataset
@@ -64,13 +65,20 @@ class ImagesDataset(Dataset):
     @staticmethod
     def parse_paths_dict(paths_dict):
         lens = [len(paths) for paths in paths_dict.values()]
-        if len(lens) != len(set(lens)):
+        if sum(lens) == 0:
+            raise ValueError('All paths lists are empty')
+        if len(set(lens)) > 1:
             message = (
                 'Paths lists have different lengths:'
             )
             for key, paths in paths_dict.items():
-                message += f'\n{key}: {len(value)}'
+                message += f'\n{key}: {len(paths)}'
             raise ValueError(message)
+        for paths_list in paths_dict.values():
+            for path in paths_list:
+                path = Path(path)
+                if not path.is_file():
+                    raise FileNotFoundError(f'{path} not found')
 
     @staticmethod
     def add_background(label):
