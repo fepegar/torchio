@@ -11,6 +11,7 @@ class ImagesDataset(Dataset):
         Caveat: all images must have the same shape so that they can be
         collated by a DataLoader. TODO: write custom collate_fn?
         """
+        self.parse_paths_dict(paths_dict)
         self.paths_dict = paths_dict
         self.transform = transform
         self.add_bg_to_label = add_bg_to_label
@@ -59,6 +60,17 @@ class ImagesDataset(Dataset):
         img = nib.load(str(path))
         data = np.array(img.dataobj)
         return data
+
+    @staticmethod
+    def parse_paths_dict(paths_dict):
+        lens = [len(paths) for paths in paths_dict.values()]
+        if len(lens) != len(set(lens)):
+            message = (
+                'Paths lists have different lengths:'
+            )
+            for key, paths in paths_dict.items():
+                message += f'\n{key}: {len(value)}'
+            raise ValueError(message)
 
     @staticmethod
     def add_background(label):
