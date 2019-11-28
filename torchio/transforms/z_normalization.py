@@ -21,7 +21,7 @@ class ZNormalization:
         if self.verbose:
             import time
             start = time.time()
-        znorm(sample['image'], self.landmarks)
+        znorm(sample['image'])
         if self.verbose:
             duration = time.time() - start
             print(f'ZNormalization: {duration:.1f} seconds')

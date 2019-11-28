@@ -20,11 +20,11 @@ class RandomNoise:
         return sample
 
     @staticmethod
-    def get_params(self, std_range):
-        std = torch.FloatTensor(1).uniform_(*std_range)
+    def get_params(std_range):
+        std = torch.FloatTensor(1).uniform_(*std_range).item()
         return std
 
 
 def add_noise(data, std):
-    noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std)
+    noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std).numpy()
     data += noise
