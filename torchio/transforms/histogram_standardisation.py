@@ -19,9 +19,6 @@ class HistogramStandardisation:
         self.verbose = verbose
 
     def __call__(self, sample):
-        """
-        https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-        """
         if self.verbose:
             import time
             start = time.time()
