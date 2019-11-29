@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 from resector import RandomResection
 from torchio import ImagesDataset
 from torchio.transforms import RandomFlip, RandomAffine
@@ -39,6 +40,7 @@ fns = """1395_gray_matter_left_label.nii.gz
 1395_unbiased.nii.gz""".splitlines()
 
 images_dir = Path('/tmp/transform')
+images_dir = Path('/home/fernando/Desktop/resector_test_image')
 
 paths_dict = dict(
     gray_matter_left=[images_dir / fns[0]],
@@ -58,8 +60,8 @@ axes = (0,)
 
 transforms = (
     RandomResection(volumes=volumes, verbose=True),
-    RandomAffine(scales=scales, angles=angles, isotropic=False, verbose=True),
-    RandomFlip(axes, verbose=True),
+    # RandomAffine(scales=scales, angles=angles, isotropic=False, verbose=True),
+    # RandomFlip(axes, verbose=True),
 )
 transform = Compose(transforms)
 dataset = ImagesDataset(paths_dict, transform=transform, add_bg_to_label=True)
@@ -89,14 +91,14 @@ torch.manual_seed(42)
 #     print(duration, 'seconds')
 #     print()
 
-N = 1
+N = 5
 for i in range(N):
     start = time.time()
     sample = dataset[0]
-    print(sample['random_scaling'])
-    print(sample['random_rotation'])
-    print(sample['random_resection'])
-    print(sample['random_flip'])
+    # print(sample['random_scaling'])
+    # print(sample['random_rotation'])
+    pprint(sample['random_resection'])
+    # print(sample['random_flip'])
     output_paths_dict = dict(
         image=f'/tmp/test_{i}.nii.gz',
         label=f'/tmp/test_label_{i}.nii.gz',

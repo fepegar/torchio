@@ -5,7 +5,7 @@ import vtk
 from vtk.numpy_interface import dataset_adapter as dsa
 
 tmp_path = '/tmp/tmp.nii.gz'
-nii = nib.load('/tmp/transform/1395_gray_matter_left_label.nii.gz')
+nii = nib.load('/home/fernando/Desktop/resector_test_image/1395_gray_matter_left_label.nii.gz')
 data = nii.get_data()
 data[:] = 1
 nii = nib.Nifti1Image(data, nii.affine)
@@ -32,12 +32,18 @@ pd_ras = pd_reader.GetOutput()
 transform_poly_data = vtk.vtkTransformPolyDataFilter()
 transform = vtk.vtkTransform()
 
-ras_to_ijk = vtk.vtkMatrix4x4()
-qform_inv = np.linalg.inv(nii.affine)
-for i in range(3):
-    for j in range(4):
-        ras_to_ijk.SetElement(i, j, qform_inv[i, j])
-transform.SetMatrix(ras_to_ijk)
+# ras_to_ijk = vtk.vtkMatrix4x4()
+# qform_inv = np.linalg.inv(nii.affine)
+# for i in range(3):
+#     for j in range(4):
+#         ras_to_ijk.SetElement(i, j, qform_inv[i, j])
+# transform.SetMatrix(ras_to_ijk)
+
+
+qform_vtk_inv = image_reader.GetQFormMatrix()
+qform_vtk_inv.Invert()
+
+transform.SetMatrix(qform_vtk_inv)
 transform_poly_data.SetTransform(transform)
 transform_poly_data.SetInputData(pd_ras)
 transform_poly_data.Update()
@@ -83,7 +89,7 @@ stencil.SetBackgroundValue(0)
 stencil.Update()
 image_output = stencil.GetOutput()
 
-result_path = '/tmp/transform/sphere_100.nii.gz'
+result_path = '/tmp/stenciled.nii.gz'
 
 ds = dsa.WrapDataObject(image_output)
 arr = ds.PointData['NIFTI'].reshape(data.shape, order='F')  # C didn't work
