@@ -27,7 +27,7 @@ class ImagesDataset(Dataset):
                 image, affine, image_path = self.load_image(key, index)
                 image_dict = dict(
                     image=image,
-                    path=image_path,
+                    path=str(image_path),
                     affine=affine,
                 )
                 sample.update(image_dict)
