@@ -13,7 +13,14 @@ class Interpolation(enum.Enum):
 
 
 class RandomAffine:
-    def __init__(self, scales, angles, isotropic=False, verbose=False):
+    def __init__(
+            self,
+            scales,
+            angles,
+            isotropic=False,
+            seed=None,
+            verbose=False,
+            ):
         """
         Example:
         scales = (0.9, 1.2)
@@ -22,9 +29,11 @@ class RandomAffine:
         self.scales = scales
         self.angles = angles
         self.isotropic = isotropic
+        self.seed = seed
         self.verbose = verbose
 
     def __call__(self, sample):
+        self.check_seed()
         if self.verbose:
             import time
             start = time.time()
@@ -60,6 +69,10 @@ class RandomAffine:
             scaling_params = 3 * scaling_params[0]
         rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
         return scaling_params, rotation_params
+
+    def check_seed(self):
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
 
     @staticmethod
     def get_scaling_transform(scaling_params):

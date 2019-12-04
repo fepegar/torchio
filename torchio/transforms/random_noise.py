@@ -3,11 +3,13 @@ import torch
 
 
 class RandomNoise:
-    def __init__(self, std_range=(0, 0.25), verbose=False):
+    def __init__(self, std_range=(0, 0.25), seed=None, verbose=False):
         self.std_range = std_range
+        self.seed = seed
         self.verbose = verbose
 
     def __call__(self, sample):
+        self.check_seed()
         if self.verbose:
             import time
             start = time.time()
@@ -23,6 +25,11 @@ class RandomNoise:
     def get_params(std_range):
         std = torch.FloatTensor(1).uniform_(*std_range).item()
         return std
+
+    def check_seed(self):
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
+
 
 
 def add_noise(data, std):

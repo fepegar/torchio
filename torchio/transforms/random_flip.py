@@ -3,17 +3,19 @@ import numpy as np
 
 
 class RandomFlip:
-    def __init__(self, axes, flip_probability=0.5, verbose=False):
+    def __init__(self, axes, flip_probability=0.5, seed=None, verbose=False):
         self.axes = axes
         assert flip_probability > 0
         assert flip_probability <= 1
         self.flip_probability = flip_probability
+        self.seed = seed
         self.verbose = verbose
 
     def __call__(self, sample):
         """
         https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
         """
+        self.check_seed()
         if self.verbose:
             import time
             start = time.time()
@@ -42,3 +44,7 @@ class RandomFlip:
             flip_this = bool(probability > random_number)
             axes_hot[axis] = flip_this
         return axes_hot
+
+    def check_seed(self):
+        if self.seed is not None:
+            torch.manual_seed(self.seed)
