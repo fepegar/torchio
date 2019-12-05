@@ -40,7 +40,7 @@ fns = """1395_gray_matter_left_label.nii.gz
 1395_unbiased.nii.gz""".splitlines()
 
 images_dir = Path('/tmp/transform')
-images_dir = Path('/home/fernando/Desktop/resector_test_image')
+# images_dir = Path('/home/fernando/Desktop/resector_test_image')
 
 paths_dict = dict(
     gray_matter_left=[images_dir / fns[0]],
@@ -53,18 +53,18 @@ paths_dict = dict(
 
 scales = (0.9, 1.1)
 angles = (-10, 10)
-# volumes_range = (840, 84000)  # percentiles 1 and 100 of episurg
-df = pd.read_csv('/tmp/volumes.csv')
-volumes = df.Volume.values
+volumes_range = (840, 84000)  # percentiles 1 and 100 of episurg
+# df = pd.read_csv('/tmp/volumes.csv')
+# volumes = df.Volume.values
 axes = (0,)
 
 transforms = (
-    RandomResection(volumes=volumes, verbose=True),
+    RandomResection(volumes_range=volumes_range, verbose=True),
     # RandomAffine(scales=scales, angles=angles, isotropic=False, verbose=True),
     # RandomFlip(axes, verbose=True),
 )
 transform = Compose(transforms)
-dataset = ImagesDataset(paths_dict, transform=transform, add_bg_to_label=True)
+dataset = ImagesDataset(paths_dict, transform=transform)
 
 # for i in range(len(dataset)):
 #     sample = dataset[i]
@@ -91,7 +91,7 @@ torch.manual_seed(42)
 #     print(duration, 'seconds')
 #     print()
 
-N = 5
+N = 1
 for i in range(N):
     start = time.time()
     sample = dataset[0]
