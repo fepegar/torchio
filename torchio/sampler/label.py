@@ -1,3 +1,8 @@
+"""
+This iterable dataset yields patches that contain at least one voxel without
+background. See main() for an example.
+"""
+
 import copy
 from itertools import cycle
 
