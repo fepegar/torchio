@@ -1,4 +1,5 @@
 import warnings
+from tqdm import trange
 from itertools import islice
 from torch.utils.data import Dataset, DataLoader
 
@@ -25,6 +26,7 @@ class Queue(Dataset):
         self.verbose = verbose
         self.subjects_iterable = self.get_subjects_iterable()
         self.patches_list = []
+        self.num_sampled_patches = 0
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -34,9 +36,12 @@ class Queue(Dataset):
         There are probably more elegant ways of doing this
         """
         if not self.patches_list:
+            self.print('Patches list is empty.')
             self.fill()
+        self.print('Patches:', [patch['path'].split('_')[-1]
+                                for patch in self.patches_list])
         sample_patch = self.patches_list.pop()
-        print(sample_patch['image'].shape)
+        self.num_sampled_patches += 1
         return sample_patch
 
     def __repr__(self):
@@ -44,10 +49,16 @@ class Queue(Dataset):
             f'max_length={self.max_length}',
             f'num_subjects={self.num_subjects}',
             f'num_patches={self.num_patches}',
+            f'samples_per_volume={self.samples_per_volume}',
+            f'num_sampled_patches={self.num_sampled_patches}',
             f'iterations_per_epoch={self.iterations_per_epoch}',
         ]
         attributes_string = ', '.join(attributes)
         return f'Queue({attributes_string})'
+
+    def print(self, *args):
+        if self.verbose:
+            print(*args)
 
     @property
     def num_subjects(self):
@@ -70,10 +81,17 @@ class Queue(Dataset):
                 f' not divisible by max length ({self.max_length})'
             )
             warnings.warn(message)
-        num_subjects_for_queue = self.max_length // self.samples_per_volume
-        if self.verbose:
-            print(f'Filling queue from {num_subjects_for_queue} subjects...')
-        for _ in range(num_subjects_for_queue):
+
+        # If there are e.g. 4 subjects and 1 sample per volume and max_length
+        # is 6, we just need to load 4 subjects, not 6
+        max_num_subjects_for_queue = self.max_length // self.samples_per_volume
+        num_subjects_for_queue = min(
+            self.num_subjects, max_num_subjects_for_queue)
+
+        self.print(f'Filling queue from {num_subjects_for_queue} subjects...')
+        progress = trange(num_subjects_for_queue, leave=False)
+        for _ in progress:
+            progress.set_description('Filling queue...')
             subject_sample = self.get_next_subject_sample()
             sampler = self.sampler_class(subject_sample, self.patch_size)
             samples = [s for s in islice(sampler, self.samples_per_volume)]
@@ -81,9 +99,13 @@ class Queue(Dataset):
             self.patches_list.extend(samples)
 
     def get_next_subject_sample(self):
+        """
+        A StopIteration exception is expected when the queue is empty
+        """
         try:
             subject_batch = next(self.subjects_iterable)
-        except StopIteration:
+        except StopIteration as exception:
+            self.print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
             subject_batch = next(self.subjects_iterable)
         subject_sample = self.squeeze_batch(subject_batch)
@@ -104,9 +126,7 @@ class Queue(Dataset):
         """
         I want a DataLoader to handle parallelism
         """
-        if self.verbose:
-            print(
-                'Creating subjects loader with num_workers', self.num_workers)
+        self.print('\nCreating subjects loader with', self.num_workers, 'workers')
         loader = DataLoader(
             self.subjects_dataset,
             shuffle=self.shuffle_dataset,

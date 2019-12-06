@@ -41,17 +41,14 @@ class ImagesDataset(Dataset):
         worker_id = worker.id if worker is not None else -1
 
         for key in self.paths_dict:
+            data, affine, image_path = self.load_image(key, index)
+            sample[key] = data
             if key == 'image':
-                image, affine, image_path = self.load_image(key, index)
                 image_dict = dict(
-                    image=image,
                     path=str(image_path),
                     affine=affine,
                 )
                 sample.update(image_dict)
-            else:
-                data = self.load_data(key, index)
-                sample[key] = data
 
         # Apply transform (bottleneck)
         if self.transform is not None:
@@ -64,35 +61,25 @@ class ImagesDataset(Dataset):
         return sample
 
     def load_image(self, key, index, add_channels_dim=True):
-        """
-        https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
-        """
         path = self.paths_dict[key][index]
         if self.verbose:
             print(f'Loading {path}...')
         img = nib.load(str(path))
+
+        # See https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
         data = np.array(img.dataobj).astype(np.float32)
+
         if self.verbose:
             print(f'Loaded array with shape {data.shape}')
-        if data.ndim != 3:
+        num_dimensions = data.ndim
+        if num_dimensions > 3:
             message = (
-                f'Image {path} has shape {data.shape}.'
-                ' Keeping only [..., 0]'
+                f'Processing of {num_dimensions}D volumes not supported.'
+                f' {path} has shape {data.shape}'
             )
-            warnings.warn(message)
-        if add_channels_dim:
-            data = data[np.newaxis, ...]  # add channels dimension
-        data = data[..., 0] if data.ndim == 5 else data
+            raise NotImplementedError(message)
+        data = data[np.newaxis, ...] if add_channels_dim else data
         return data, img.affine, path
-
-    def load_data(self, key, index, add_channels_dim=True):
-        path = self.paths_dict[key][index]
-        img = nib.load(str(path))
-        data = np.array(img.dataobj).astype(np.float32)
-        if add_channels_dim:
-            data = data[np.newaxis, ...]  # add channels dimension
-
-        return data
 
     @staticmethod
     def parse_paths_dict(paths_dict):
