@@ -10,7 +10,6 @@ class ImagesDataset(Dataset):
             self,
             paths_dict,
             transform=None,
-            add_bg_to_label=False,
             verbose=False,
             ):
         """
@@ -23,7 +22,6 @@ class ImagesDataset(Dataset):
         self.parse_paths_dict(paths_dict)
         self.paths_dict = paths_dict
         self.transform = transform
-        self.add_bg_to_label = add_bg_to_label
         self.verbose = verbose
 
     def __len__(self):
@@ -40,11 +38,6 @@ class ImagesDataset(Dataset):
                     affine=affine,
                 )
                 sample.update(image_dict)
-            elif key == 'label':
-                label = self.load_data('label', index)
-                if self.add_bg_to_label:
-                    label = self.add_background(label)
-                sample['label'] = label
             else:
                 data = self.load_data(key, index)
                 sample[key] = data
@@ -99,16 +92,6 @@ class ImagesDataset(Dataset):
                 path = Path(path)
                 if not path.is_file():
                     raise FileNotFoundError(f'{path} not found')
-
-    @staticmethod
-    def add_background(label):
-        """
-        Adds a background channel to label array
-        """
-        foreground = label
-        background = 1 - label
-        label = np.concatenate((background, foreground))
-        return label
 
     @staticmethod
     def save_sample(sample, output_paths_dict, extract_fg=False):
