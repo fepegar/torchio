@@ -14,6 +14,7 @@ requirements = [
     'SimpleITK',
     'torch',
     'torchvision',
+    'tqdm',
 ]
 
 setup_requirements = ['pytest-runner', ]
