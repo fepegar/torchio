@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 import numpy as np
 import nibabel as nib
@@ -9,11 +10,17 @@ from pathlib import Path
 
 
 class ImagesDataset(Dataset):
-    def __init__(self, paths_dict, transform=None, add_bg_to_label=False):
+    def __init__(
+            self,
+            paths_dict,
+            transform=None,
+            verbose=False,
+            ):
         """
-        paths_dict is expected to have keys: image, [,label[, sampler]]
+        paths_dict is expected to have keys: image, [,label[, sampler[, *]]]
         TODO: pixel size, orientation (for now assume RAS 1mm iso)
-        Caveat: all images must have the same shape so that they can be
+        Caveat: if using whole image for training,
+        all images must have the same shape so that they can be
         collated by a DataLoader. TODO: write custom collate_fn?
         """
         paths_dict = paths_dict.copy()
@@ -23,7 +30,7 @@ class ImagesDataset(Dataset):
         self.parse_paths_dict(paths_dict)
         self.paths_dict = paths_dict
         self.transform = transform
-        self.add_bg_to_label = add_bg_to_label
+        self.verbose = verbose
 
     def __len__(self):
         return len(self.paths_dict['image'])
@@ -42,11 +49,6 @@ class ImagesDataset(Dataset):
                     affine=affine,
                 )
                 sample.update(image_dict)
-            elif key == 'label':
-                label = self.load_data('label', index)
-                if self.add_bg_to_label:
-                    label = self.add_background(label)
-                sample['label'] = label
             else:
                 data = self.load_data(key, index)
                 sample[key] = data
@@ -66,16 +68,27 @@ class ImagesDataset(Dataset):
         https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
         """
         path = self.paths_dict[key][index]
+        if self.verbose:
+            print(f'Loading {path}...')
         img = nib.load(str(path))
-        data = np.array(img.dataobj)
+        data = np.array(img.dataobj).astype(np.float32)
+        if self.verbose:
+            print(f'Loaded array with shape {data.shape}')
+        if data.ndim != 3:
+            message = (
+                f'Image {path} has shape {data.shape}.'
+                ' Keeping only [..., 0]'
+            )
+            warnings.warn(message)
         if add_channels_dim:
             data = data[np.newaxis, ...]  # add channels dimension
+        data = data[..., 0] if data.ndim == 5 else data
         return data, img.affine, path
 
     def load_data(self, key, index, add_channels_dim=True):
         path = self.paths_dict[key][index]
         img = nib.load(str(path))
-        data = np.array(img.dataobj)
+        data = np.array(img.dataobj).astype(np.float32)
         if add_channels_dim:
             data = data[np.newaxis, ...]  # add channels dimension
 
@@ -98,16 +111,6 @@ class ImagesDataset(Dataset):
                 path = Path(path)
                 if not path.is_file():
                     raise FileNotFoundError(f'{path} not found')
-
-    @staticmethod
-    def add_background(label):
-        """
-        Adds a background channel to label array
-        """
-        foreground = label
-        background = 1 - label
-        label = np.concatenate((background, foreground))
-        return label
 
     @staticmethod
     def save_sample(sample, output_paths_dict, extract_fg=False):
