@@ -23,12 +23,13 @@ transforms = (
 )
 transforms = (RandomElasticDeformation(),)
 
-transform = Compose(transforms)
+transform = Compose(transforms) #should be done in ImagesDataset
 dataset = ImagesDataset(paths_dict, transform=transform)
 dataset_not = ImagesDataset(paths_dict, transform=None)
 dataload = torch.utils.data.DataLoader(dataset, num_workers=0, batch_size=2)
 dataloadnot = torch.utils.data.DataLoader(dataset_not, num_workers=0, batch_size=2)
 
+#too badd ...
 for dd in dataload:
     break
 
