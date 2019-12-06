@@ -1,6 +1,7 @@
-* torchio version:
-* Python version:
 * Operating System:
+* Python version:
+* PyTorch version:
+* `torchio` version:
 
 ### Description
 
