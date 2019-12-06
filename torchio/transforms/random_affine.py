@@ -8,18 +8,13 @@ from .random_transform import RandomTransform
 class RandomAffine(RandomTransform):
     def __init__(
             self,
-            scales,
-            angles,
+            scales=(0.9, 1.1),
+            angles=(-10, 10),  # in degrees
             isotropic=False,
             image_interpolation=Interpolation.LINEAR,
             seed=None,
             verbose=False,
             ):
-        """
-        Example:
-        scales = (0.9, 1.2)
-        angles = (-12, 12)  degrees
-        """
         super().__init__(seed=seed, verbose=verbose)
         self.scales = scales
         self.angles = angles
@@ -108,16 +103,3 @@ class RandomAffine(RandomTransform):
             channel_array = channel_array.transpose(2, 1, 0)  # ITK to NumPy
             array[i] = channel_array
         return array
-
-    @staticmethod
-    def nib_to_sitk(array, affine):
-        """
-        TODO: figure out how to get directions from affine
-        so that I don't need this
-        """
-        import nibabel as nib
-        from tempfile import NamedTemporaryFile
-        with NamedTemporaryFile(suffix='.nii') as f:
-            nib.Nifti1Image(array, affine).to_filename(f.name)
-            image = sitk.ReadImage(f.name)
-        return image
