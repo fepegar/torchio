@@ -4,27 +4,37 @@ import numpy as np
 import torch
 from torch.utils.data import IterableDataset
 
+from ..utils import to_tuple
 
 class ImageSampler(IterableDataset):
     def __init__(self, sample, patch_size):
+        """
+        sample['image'] expected to have no batch dimensions
+        """
         self.sample = sample
-        self.patch_size = np.array(patch_size, dtype=np.uint16)
+        self.patch_size = np.array(to_tuple(patch_size, n=3), dtype=np.uint16)
 
     def __iter__(self):
         return self.get_stream(self.sample, self.patch_size)
 
     def get_stream(self, sample, patch_size):
-        return cycle(self.extract_patch(sample, patch_size))
+        """
+        Is cycle neccesary?
+        """
+        return cycle(self.extract_patch_generator(sample, patch_size))
+
+    def extract_patch_generator(self, sample, patch_size):
+        while True:
+            yield self.extract_patch(sample, patch_size)
 
     def extract_patch(self, sample, patch_size):
-        while True:
-            index_ini, index_fin = self.get_random_indices(sample, patch_size)
-            cropped_sample = self.copy_and_crop(
-                sample,
-                index_ini,
-                index_fin,
-            )
-            yield cropped_sample
+        index_ini, index_fin = self.get_random_indices(sample, patch_size)
+        cropped_sample = self.copy_and_crop(
+            sample,
+            index_ini,
+            index_fin,
+        )
+        return cropped_sample
 
     def get_random_indices(self, sample, patch_size):
         shape = np.array(sample['image'].shape[1:], dtype=np.uint16)

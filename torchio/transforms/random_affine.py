@@ -103,6 +103,12 @@ class RandomAffine:
             rotation_params,
             interpolation: Interpolation,
             ):
+        if array.ndim != 4:
+            message = (
+                'Only 4D images (channels, i, j, k) are supported,'
+                f' not {array.shape}'
+            )
+            raise NotImplementedError(message)
         interpolation_dict = {
             Interpolation.NEAREST: sitk.sitkNearestNeighbor,
             Interpolation.LINEAR: sitk.sitkLinear,

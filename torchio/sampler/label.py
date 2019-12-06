@@ -21,21 +21,24 @@ class LabelSampler(ImageSampler):
     def __init__(self, sample, patch_size):
         super().__init__(sample, patch_size)
 
-    def extract_patch(self, sample, patch_size):
+    def extract_patch_generator(self, sample, patch_size):
         while True:
-            has_label = False
-            while not has_label:
-                index_ini, index_fin = self.get_random_indices(
-                    sample, patch_size)
-                patch_label = self.crop(sample['label'], index_ini, index_fin)
-                foreground = patch_label[1:]
-                has_label = foreground.sum() > 0
-            cropped_sample = self.copy_and_crop(
-                sample,
-                index_ini,
-                index_fin,
-            )
-            yield cropped_sample
+            yield self.extract_patch(sample, patch_size)
+
+    def extract_patch(self, sample, patch_size):
+        has_label = False
+        while not has_label:
+            index_ini, index_fin = self.get_random_indices(
+                sample, patch_size)
+            patch_label = self.crop(sample['label'], index_ini, index_fin)
+            foreground = patch_label[1:]
+            has_label = foreground.sum() > 0
+        cropped_sample = self.copy_and_crop(
+            sample,
+            index_ini,
+            index_fin,
+        )
+        return cropped_sample
 
     @staticmethod
     def get_data_bounds(label: torch.Tensor):
