@@ -1,3 +1,5 @@
+from pathlib import Path
+
 def to_tuple(value, n=1):
     """
     to_tuple(1, n=1) -> (1,)
@@ -14,3 +16,8 @@ def to_tuple(value, n=1):
     except TypeError:
         value = n * (value,)
     return value
+
+
+def get_stem(path):
+    path = Path(path)
+    return path.name.split('.')[0]
