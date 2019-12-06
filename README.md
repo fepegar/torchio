@@ -1,5 +1,15 @@
 # torchio
 
+## Installation
+
+I recommend cloning and doing an editable installation, as this is still very
+experimental and changes very often.
+
+```
+git clone https://github.com/fepegar/torchio.git
+pip install --editable torchio
+```
+
 ## Example
 
 ```python
