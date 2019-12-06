@@ -8,8 +8,8 @@ import numpy as np
 import nibabel as nib
 from tqdm import tqdm, trange
 
-from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
+from torch.utils.data import DataLoader
 
 from torchio import ImagesDataset, Queue
 from torchio.sampler import ImageSampler
