@@ -78,7 +78,6 @@ def main():
     subjects_dataset = ImagesDataset(
         paths_dict, transform=transform, verbose=verbose)
 
-    # Using all_workers-1 seems fastest
     for num_workers in range(mp.cpu_count() + 1):
         print('Number of workers:', num_workers)
         queue = Queue(
@@ -110,17 +109,17 @@ if __name__ == "__main__":
 Output:
 ```
 Number of workers: 0
-Time: 192 seconds
+Time: 185 seconds
 
 Number of workers: 1
-Time: 196 seconds
+Time: 192 seconds
 
 Number of workers: 2
-Time: 150 seconds
+Time: 147 seconds
 
 Number of workers: 3
-Time: 133 seconds
+Time: 153 seconds
 
 Number of workers: 4
-Time: 141 seconds
+Time: 130 seconds
 ```
