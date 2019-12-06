@@ -24,8 +24,8 @@ transforms = (
 transforms = (RandomElasticDeformation(),)
 
 transform = Compose(transforms)
-dataset = ImagesDataset(paths_dict, transform=transform, add_bg_to_label=True)
-dataset_not = ImagesDataset(paths_dict, transform=None, add_bg_to_label=True)
+dataset = ImagesDataset(paths_dict, transform=transform)
+dataset_not = ImagesDataset(paths_dict, transform=None)
 dataload = torch.utils.data.DataLoader(dataset, num_workers=0, batch_size=2)
 dataloadnot = torch.utils.data.DataLoader(dataset_not, num_workers=0, batch_size=2)
 
@@ -36,6 +36,8 @@ for ddno in dataloadnot:
     break
 
 from nibabel.viewers import OrthoSlicer3D as ov
+import numpy as np
+
 ii = np.squeeze( dd['image'][0,0,:],axis=1)
 iio = np.squeeze( ddno['image'][0,0,:],axis=1)
 
