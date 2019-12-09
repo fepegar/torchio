@@ -23,7 +23,6 @@ class ImagesDataset(Dataset):
         TODO: write custom collate_fn?
         TODO: handle pixel size, orientation (for now assume RAS 1mm iso)
         """
-
         self.parse_paths_dict(paths_dict)
         self.paths_dict = paths_dict
         self.transform = transform
@@ -34,7 +33,6 @@ class ImagesDataset(Dataset):
 
     def __getitem__(self, index):
         sample = {}
-
         for key in self.paths_dict:
             data, affine, image_path = self.load_image(key, index)
             sample[key] = data
@@ -48,7 +46,6 @@ class ImagesDataset(Dataset):
         # Apply transform (this is usually the major bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
-
         return sample
 
     def load_image(self, key, index, add_channels_dim=True):
@@ -99,4 +96,3 @@ class ImagesDataset(Dataset):
             nii.header['qform_code'] = 1
             nii.header['sform_code'] = 0
             nii.to_filename(str(output_path))
-
