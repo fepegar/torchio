@@ -1,35 +1,25 @@
 
 import torch
+from .random_transform import RandomTransform
 
 
-class RandomNoise:
+class RandomNoise(RandomTransform):
     def __init__(self, std_range=(0, 0.25), seed=None, verbose=False):
+        super().__init__(seed=seed, verbose=verbose)
         self.std_range = std_range
         self.seed = seed
         self.verbose = verbose
 
-    def __call__(self, sample):
-        self.check_seed()
-        if self.verbose:
-            import time
-            start = time.time()
+    def apply_transform(self, sample):
         std = self.get_params(self.std_range)
         sample['random_noise'] = std
         add_noise(sample['image'], std)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'RandomNoise: {duration:.1f} seconds')
         return sample
 
     @staticmethod
     def get_params(std_range):
         std = torch.FloatTensor(1).uniform_(*std_range).item()
         return std
-
-    def check_seed(self):
-        if self.seed is not None:
-            torch.manual_seed(self.seed)
-
 
 
 def add_noise(data, std):

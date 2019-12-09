@@ -1,4 +1,3 @@
-import warnings
 from pathlib import Path
 import numpy as np
 import nibabel as nib
@@ -6,8 +5,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from pathlib import Path
-
-
+from ..utils import get_stem
 
 class ImagesDataset(Dataset):
     def __init__(
@@ -18,10 +16,15 @@ class ImagesDataset(Dataset):
             ):
         """
         paths_dict is expected to have keys: image, [,label[, sampler[, *]]]
-        TODO: pixel size, orientation (for now assume RAS 1mm iso)
-        Caveat: if using whole image for training,
-        all images must have the same shape so that they can be
-        collated by a DataLoader. TODO: write custom collate_fn?
+        For example:
+        paths_dict = dict(
+            image=images_paths,
+            label=labels_paths,
+        )
+        If using whole image for training, all images must have the
+        same shape so that they can be collated by a DataLoader.
+        TODO: write custom collate_fn?
+        TODO: handle pixel size, orientation (for now assume RAS 1mm iso)
         """
         paths_dict = paths_dict.copy()
         self.sujid = paths_dict.pop('sujid', None) #this will remove field sujid if exist
@@ -47,10 +50,10 @@ class ImagesDataset(Dataset):
                 image_dict = dict(
                     path=str(image_path),
                     affine=affine,
+                    stem=get_stem(image_path),
                 )
                 sample.update(image_dict)
-
-        # Apply transform (bottleneck)
+        # Apply transform (this is usually the major bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
 
@@ -100,11 +103,9 @@ class ImagesDataset(Dataset):
                     raise FileNotFoundError(f'{path} not found')
 
     @staticmethod
-    def save_sample(sample, output_paths_dict, extract_fg=False):
+    def save_sample(sample, output_paths_dict):
         for key, output_path in output_paths_dict.items():
             data = sample[key].squeeze()
-            if key == 'label' and extract_fg:
-                data = data[1]
             affine = sample['affine']
             nii = nib.Nifti1Image(data, affine)
             nii.header['qform_code'] = 1

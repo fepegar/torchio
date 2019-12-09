@@ -1,55 +1,40 @@
-import enum
 import torch
 import numpy as np
 import SimpleITK as sitk
+from .interpolation import Interpolation
+from .random_transform import RandomTransform
 
 
-class Interpolation(enum.Enum):
-    """
-    TODO: add more
-    """
-    NEAREST = 0
-    LINEAR = 1
-
-
-class RandomAffine:
+class RandomAffine(RandomTransform):
     def __init__(
             self,
-            scales,
-            angles,
+            scales=(0.9, 1.1),
+            angles=(-10, 10),  # in degrees
             isotropic=False,
+            image_interpolation=Interpolation.LINEAR,
             seed=None,
             verbose=False,
             ):
-        """
-        Example:
-        scales = (0.9, 1.2)
-        angles = (-12, 12)  degrees
-        """
+        super().__init__(seed=seed, verbose=verbose)
         self.scales = scales
         self.angles = angles
         self.isotropic = isotropic
-        self.seed = seed
-        self.verbose = verbose
+        self.image_interpolation = image_interpolation
 
-    def __call__(self, sample):
-        self.check_seed()
-        if self.verbose:
-            import time
-            start = time.time()
+    def apply_transform(self, sample):
         scaling_params, rotation_params = self.get_params(
             self.scales, self.angles, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
         for key in 'image', 'label', 'sampler':
             if key == 'image':
-                interpolation = Interpolation.LINEAR
+                interpolation = self.image_interpolation
             else:
                 interpolation = Interpolation.NEAREST
             if key not in sample:
                 continue
             array = sample[key]
-            array = self.apply_transform(
+            array = self.apply_affine_transform(
                 array,
                 sample['affine'],
                 scaling_params,
@@ -57,9 +42,6 @@ class RandomAffine:
                 interpolation,
             )
             sample[key] = array
-        if self.verbose:
-            duration = time.time() - start
-            print(f'RandomAffine: {duration:.1f} seconds')
         return sample
 
     @staticmethod
@@ -69,10 +51,6 @@ class RandomAffine:
             scaling_params = 3 * scaling_params[0]
         rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
         return scaling_params, rotation_params
-
-    def check_seed(self):
-        if self.seed is not None:
-            torch.manual_seed(self.seed)
 
     @staticmethod
     def get_scaling_transform(scaling_params):
@@ -95,9 +73,9 @@ class RandomAffine:
         transform.SetRotation(*rotation_params)
         return transform
 
-    def apply_transform(
+    def apply_affine_transform(
             self,
-            array,  # assume 4D
+            array,
             affine,
             scaling_params,
             rotation_params,
@@ -109,10 +87,6 @@ class RandomAffine:
                 f' not {array.shape}'
             )
             raise NotImplementedError(message)
-        interpolation_dict = {
-            Interpolation.NEAREST: sitk.sitkNearestNeighbor,
-            Interpolation.LINEAR: sitk.sitkLinear,
-        }
         for i, channel_array in enumerate(array):  # use sitk.VectorImage?
             image = self.nib_to_sitk(channel_array, affine)
             scaling_transform = self.get_scaling_transform(scaling_params)
@@ -123,22 +97,9 @@ class RandomAffine:
             resampled = sitk.Resample(
                 image,
                 transform,
-                interpolation_dict[interpolation],
+                interpolation.value,
             )
             channel_array = sitk.GetArrayFromImage(resampled)
             channel_array = channel_array.transpose(2, 1, 0)  # ITK to NumPy
             array[i] = channel_array
         return array
-
-    @staticmethod
-    def nib_to_sitk(array, affine):
-        """
-        TODO: figure out how to get directions from affine
-        so that I don't need this
-        """
-        import nibabel as nib
-        from tempfile import NamedTemporaryFile
-        with NamedTemporaryFile(suffix='.nii') as f:
-            nib.Nifti1Image(array, affine).to_filename(f.name)
-            image = sitk.ReadImage(f.name)
-        return image

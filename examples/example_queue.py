@@ -1,18 +1,3 @@
-# torchio
-
-## Installation
-
-I recommend cloning and doing an editable installation, as this is still very
-experimental and changes very often.
-
-```
-git clone https://github.com/fepegar/torchio.git
-pip install --editable torchio
-```
-
-## Example
-
-```python
 import time
 import shutil
 import tempfile
@@ -23,8 +8,8 @@ import numpy as np
 import nibabel as nib
 from tqdm import tqdm, trange
 
-from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
+from torch.utils.data import DataLoader
 
 from torchio import ImagesDataset, Queue
 from torchio.sampler import ImageSampler
@@ -88,7 +73,8 @@ def main():
     subjects_dataset = ImagesDataset(
         paths_dict, transform=transform, verbose=verbose)
 
-    for num_workers in range(mp.cpu_count() + 1):
+    workers = range(mp.cpu_count() + 1)
+    for num_workers in workers:
         print('Number of workers:', num_workers)
         queue = Queue(
             subjects_dataset,
@@ -113,23 +99,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-
-
-Output:
-```
-Number of workers: 0
-Time: 185 seconds
-
-Number of workers: 1
-Time: 192 seconds
-
-Number of workers: 2
-Time: 147 seconds
-
-Number of workers: 3
-Time: 153 seconds
-
-Number of workers: 4
-Time: 130 seconds
-```
