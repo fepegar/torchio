@@ -91,17 +91,17 @@ for num_workers in workers:
 Output:
 ```
 Number of workers: 0
-Time: 185 seconds
+Time: 394 seconds
 
 Number of workers: 1
-Time: 192 seconds
+Time: 372 seconds
 
 Number of workers: 2
-Time: 147 seconds
+Time: 278 seconds
 
 Number of workers: 3
-Time: 153 seconds
+Time: 259 seconds
 
 Number of workers: 4
-Time: 130 seconds
+Time: 242 seconds
 ```
