@@ -37,7 +37,7 @@ queue_length = 100
 samples_per_volume = 10
 batch_size = 4
 
-def model(batch, sleep_time=0.25):
+def model(batch, sleep_time=0.1):
     """Dummy function to simulate a forward pass through the network"""
     time.sleep(sleep_time)
     return
