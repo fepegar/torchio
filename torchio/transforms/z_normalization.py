@@ -4,10 +4,6 @@ Adapted from NiftyNet
 
 import torch
 import numpy as np
-import numpy.ma as ma
-
-
-DEFAULT_CUTOFF = (0.01, 0.99)
 
 
 class ZNormalization:
