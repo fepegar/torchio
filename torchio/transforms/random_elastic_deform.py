@@ -54,7 +54,7 @@ class RandomElasticDeformation:
 
             array = sample[key]
             for i, channel_array in enumerate(array):
-                array[i]  = self._apply_bspline_transformation(channel_array )
+                array[i] = self._apply_bspline_transformation(channel_array )
             sample[key] = array
 
 
@@ -122,34 +122,3 @@ class RandomElasticDeformation:
         out_img = sitk.GetArrayFromImage(out_img_sitk)
         return out_img.reshape(image.shape)
 
-
-    def layer_op(self, inputs, interp_orders, *args, **kwargs):
-        if inputs is None:
-            return inputs
-
-        # only do augmentation with a probability `proportion_to_augment`
-        do_augmentation = np.random.rand() < self.proportion_to_augment
-        if not do_augmentation:
-            return inputs
-
-        if isinstance(inputs, dict) and isinstance(interp_orders, dict):
-            for (field, image) in inputs.items():
-                assert image.shape[-1] == len(interp_orders[field]), \
-                    "interpolation orders should be" \
-                    "specified for each inputs modality"
-                for mod_i, interp_order in enumerate(interp_orders[field]):
-                    if image.ndim in (3, 4):  # for 2/3d images
-                        inputs[field][..., mod_i] = \
-                            self._apply_bspline_transformation(
-                                image[..., mod_i], interp_order)
-                    elif image.ndim == 5:
-                        for t in range(image.shape[-2]):
-                            inputs[field][..., t, mod_i] = \
-                                self._apply_bspline_transformation(
-                                    image[..., t, mod_i], interp_order)
-                    else:
-                        raise NotImplementedError("unknown input format")
-
-        else:
-            raise NotImplementedError("unknown input format")
-        return inputs
