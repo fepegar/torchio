@@ -40,8 +40,8 @@ class ImagesDataset(Dataset):
 
     def __getitem__(self, index):
         sample = {}
-        worker = torch.utils.data.get_worker_info()
-        worker_id = worker.id if worker is not None else -1
+        #worker = torch.utils.data.get_worker_info()
+        #worker_id = worker.id if worker is not None else -1
 
         for key in self.paths_dict:
             data, affine, image_path = self.load_image(key, index)
@@ -57,9 +57,9 @@ class ImagesDataset(Dataset):
         if self.transform is not None:
             sample = self.transform(sample)
 
-        if self.sujid is not None:
-            print('Woker {} get index {} sujid {}'.format(worker_id,index, self.sujid[index]))
-        else : print('Woker {} get index {} '.format(worker_id,index))
+        #if self.sujid is not None:
+        #    print('Woker {} get index {} sujid {}'.format(worker_id,index, self.sujid[index]))
+        #else : print('Woker {} get index {} '.format(worker_id,index))
 
         return sample
 
