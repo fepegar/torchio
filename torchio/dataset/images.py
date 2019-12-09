@@ -1,10 +1,7 @@
 from pathlib import Path
 import numpy as np
 import nibabel as nib
-import pandas as pd
-import torch
 from torch.utils.data import Dataset
-from pathlib import Path
 from ..utils import get_stem
 
 class ImagesDataset(Dataset):
@@ -26,9 +23,6 @@ class ImagesDataset(Dataset):
         TODO: write custom collate_fn?
         TODO: handle pixel size, orientation (for now assume RAS 1mm iso)
         """
-        paths_dict = paths_dict.copy()
-        self.sujid = paths_dict.pop('sujid', None) #this will remove field sujid if exist
-        print(paths_dict.keys())
 
         self.parse_paths_dict(paths_dict)
         self.paths_dict = paths_dict
@@ -40,8 +34,6 @@ class ImagesDataset(Dataset):
 
     def __getitem__(self, index):
         sample = {}
-        worker = torch.utils.data.get_worker_info()
-        worker_id = worker.id if worker is not None else -1
 
         for key in self.paths_dict:
             data, affine, image_path = self.load_image(key, index)
@@ -56,10 +48,6 @@ class ImagesDataset(Dataset):
         # Apply transform (this is usually the major bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
-
-        if self.sujid is not None:
-            print('Woker {} get index {} sujid {}'.format(worker_id,index, self.sujid[index]))
-        else : print('Woker {} get index {} '.format(worker_id,index))
 
         return sample
 
@@ -112,32 +100,3 @@ class ImagesDataset(Dataset):
             nii.header['sform_code'] = 0
             nii.to_filename(str(output_path))
 
-
-def get_paths_dict_from_data_prameters(data_param):
-    """
-    :param data_param: same structure as for niftynet set script test/test_dataset.py
-    :return:
-    """
-    paths_dict = dict()
-    for key, vals in data_param.items():
-        if 'csv_file' in vals:
-            csvfile = pd.read_csv(vals['csv_file'], header=None)
-
-            print('Reading {} line in {}'.format(len(csvfile), vals['csv_file']))
-            allfile = [Path(ff) for ff in  csvfile.loc[:, 1].str.strip()]
-
-            sujid   = csvfile.loc[:, 0].values
-            paths_dict[key] = allfile
-
-            if 'sujid' in paths_dict :
-                #test if same subject id
-                if np.array_equal(sujid,paths_dict['sujid'] ) is False:
-                    message =("First column subject ID differs")
-                    raise ValueError(message)
-            else :
-                paths_dict['sujid'] = sujid
-
-        else :
-            print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
-
-    return paths_dict
