@@ -16,6 +16,9 @@ class Queue(Dataset):
             shuffle_dataset=True,
             verbose=False,
             ):
+        """
+        The queue is shuffled by the DataLoader to which it is passed
+        """
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
         self.shuffle_dataset = shuffle_dataset
@@ -103,12 +106,11 @@ class Queue(Dataset):
         A StopIteration exception is expected when the queue is empty
         """
         try:
-            subject_batch = next(self.subjects_iterable)
+            subject_sample = next(self.subjects_iterable)
         except StopIteration as exception:
             self.print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
-            subject_batch = next(self.subjects_iterable)
-        subject_sample = self.squeeze_batch(subject_batch)
+            subject_sample = next(self.subjects_iterable)
         message = (
             "subject_sample['image'] should have 4 dimensions,"
             f" but has shape {subject_sample['image'].shape}"
@@ -116,20 +118,16 @@ class Queue(Dataset):
         assert subject_sample['image'].ndim == 4, message
         return subject_sample
 
-    @staticmethod
-    def squeeze_batch(batch, idx=0):
-        for key, value in batch.items():
-            batch[key] = value[idx]
-        return batch
-
     def get_subjects_iterable(self):
         """
-        I want a DataLoader to handle parallelism
+        I need a DataLoader to handle parallelism
+        But this loader is always expected to yield single subject samples
         """
         self.print('\nCreating subjects loader with', self.num_workers, 'workers')
-        loader = DataLoader(
+        subjects_loader = DataLoader(
             self.subjects_dataset,
-            shuffle=self.shuffle_dataset,
             num_workers=self.num_workers,
+            collate_fn=lambda x: x[0],
+            shuffle=self.shuffle_dataset,
         )
-        return iter(loader)
+        return iter(subjects_loader)
