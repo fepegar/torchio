@@ -2,9 +2,11 @@
 Adapted from NiftyNet
 """
 
+from pathlib import Path
 import torch
 import numpy as np
 import numpy.ma as ma
+import nibabel as nib
 
 
 DEFAULT_CUTOFF = (0.01, 0.99)
@@ -142,3 +144,47 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     new_img = new_img.reshape(image_shape)
 
     return new_img
+
+
+def train(
+        images_paths,
+        cutoff=None,
+        mask_path=None,
+        masking_function=None,
+        output_path=None,
+        ):
+    """
+    Output path extension should be .txt or .npy
+    """
+    cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+    percentiles_database = []
+    for index, image_file_path in enumerate(images_paths):
+        # NiftyNet implementation says image should be float
+        data = nib.load(image_file_path).get_fdata(dtype=np.float32)
+
+        if masking_function is not None:
+            mask = masking_function(data)
+        else:
+            if mask_path is not None:
+                mask = nib.load(mask_path[index]).get_fdata()
+                mask = mask > 0
+            else:
+                mask = np.ones_like(data, dtype=np.bool)
+        percentiles = __compute_percentiles(data, mask, cutoff)
+        percentiles_database.append(percentiles)
+    percentiles_database = np.vstack(percentiles_database)
+    s1, s2 = create_standard_range()
+    mapping = __averaged_mapping(percentiles_database, s1, s2)
+
+    if output_name is not None:
+        modality = 'image'
+        text = f'{modality} {" ".join(map(str, mapping))}'
+
+        output_path = Path(output_path).expanduser()
+        extension = output_path.suffix
+        if extension == '.txt':
+            landmarks_path.write_text(text)
+        elif extension == '.npy':
+            np.save(landmarks_path, mapping)
+
+    return mapping
