@@ -17,6 +17,17 @@ class HistogramStandardisation:
         """
         Assume single channel
         """
+        if isinstance(landmarks, np.ndarray):
+            pass
+        elif isinstance(landmarks, (str, Path)):
+            mapping_path = Path(landmarks)
+            if mapping_path.suffix == '.npy':
+                landmarks = np.load(mapping_path)
+            elif mapping_path.suffix == '.txt':
+                text = mapping_path.read_text()
+                numbers = text.split()[1:]
+                landmarks = np.array(numbers)
+
         self.landmarks = landmarks
         self.verbose = verbose
 
