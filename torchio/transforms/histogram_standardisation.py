@@ -26,7 +26,7 @@ class HistogramStandardisation:
             elif mapping_path.suffix == '.txt':
                 text = mapping_path.read_text()
                 numbers = text.split()[1:]
-                landmarks = np.array(numbers)
+                landmarks = np.array(numbers).astype(np.float32)
 
         self.landmarks = landmarks
         self.verbose = verbose
