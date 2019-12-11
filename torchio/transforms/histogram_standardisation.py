@@ -142,3 +142,44 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     new_img = new_img.reshape(image_shape)
 
     return new_img
+
+
+def train(images_paths, cutoff=[0.01, 0.99], mask_path=None, masking_function=None, output_name=None):
+
+    import nibabel as nib
+    from pathlib import Path
+
+    percentiles_database = []
+    #progress = tqdm(images_paths)
+    for ii, image_file_path in enumerate(images_paths):
+        #image_path = Path(image_file_path)
+        #progress.set_description(Path(image_path).name)
+        # NiftyNet implementation says image should be float
+        data = nib.load(image_file_path).get_fdata(dtype=np.float32)
+
+        if masking_function is not None:
+            mask = masking_function(data)
+        else:
+            if mask_path is not None:
+                mask = nib.load(mask_path[ii]).get_fdata()
+                mask = mask>0;
+            else:
+                mask = np.ones_like(data, dtype=np.bool)
+
+        percentiles = __compute_percentiles(data, mask, cutoff)
+        percentiles_database.append(percentiles)
+    percentiles_database = np.vstack(percentiles_database)
+    s1, s2 = create_standard_range()
+    mapping = __averaged_mapping(percentiles_database, s1, s2)
+
+    if output_name is not None:
+        modality = 'image'
+        text = f'{modality} {" ".join(map(str, mapping))}'
+
+        landmarks_path = Path(output_name + '.txt').expanduser()
+        landmarks_path.write_text(text)
+
+        landmarks_path = Path(output_name + '.npy').expanduser()
+        np.save(landmarks_path, mapping)
+
+    return mapping
