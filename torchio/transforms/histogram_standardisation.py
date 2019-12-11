@@ -176,15 +176,15 @@ def train(
     s1, s2 = create_standard_range()
     mapping = __averaged_mapping(percentiles_database, s1, s2)
 
-    if output_name is not None:
+    if output_path is not None:
         modality = 'image'
         text = f'{modality} {" ".join(map(str, mapping))}'
 
         output_path = Path(output_path).expanduser()
         extension = output_path.suffix
         if extension == '.txt':
-            landmarks_path.write_text(text)
+            output_path.write_text(text)
         elif extension == '.npy':
-            np.save(landmarks_path, mapping)
+            np.save(output_path, mapping)
 
     return mapping
