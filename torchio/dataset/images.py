@@ -51,8 +51,17 @@ class ImagesDataset(Dataset):
                     path=str(image_path),
                     affine=affine,
                     stem=get_stem(image_path),
+                    sujid=self.sujid[index] if self.sujid is not None else 'TODO',
                 )
                 sample.update(image_dict)
+
+        label_name = [kk for kk in sample if ('label' in kk) ]
+        if len(label_name) > 1:
+            list_label = [sample[kkk].squeeze() for kkk in label_name]
+            for kkk in label_name :
+                del sample[kkk]  #remove label_1 label_2 ... entery
+            sample['label'] = np.stack(list_label)
+
         # Apply transform (this is usually the major bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
