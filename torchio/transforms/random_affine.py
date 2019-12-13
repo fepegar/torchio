@@ -47,6 +47,11 @@ class RandomAffine(RandomTransform):
     @staticmethod
     def get_params(scales, angles, isotropic):
         scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
+
+        # worker = torch.utils.data.get_worker_info()
+        # worker_id = worker.id if worker is not None else -1
+        # print("Worker {} TAKING SCALING {}".format(worker_id,scaling_params))
+
         if isotropic:
             scaling_params = 3 * scaling_params[0]
         rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
