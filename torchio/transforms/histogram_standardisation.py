@@ -13,7 +13,7 @@ DEFAULT_CUTOFF = (0.01, 0.99)
 
 
 class HistogramStandardisation:
-    def __init__(self, landmarks, verbose=False):
+    def __init__(self, landmarks, verbose=False, mask_field_name=None):
         """
         Assume single channel
         """
@@ -27,7 +27,7 @@ class HistogramStandardisation:
                 text = mapping_path.read_text()
                 numbers = text.split()[1:]
                 landmarks = np.array(numbers).astype(np.float32)
-
+        self.mask_field_name = mask_field_name
         self.landmarks = landmarks
         self.verbose = verbose
 
@@ -35,7 +35,12 @@ class HistogramStandardisation:
         if self.verbose:
             import time
             start = time.time()
-        sample['image'] = normalize(sample['image'], self.landmarks)
+        if self.mask_field_name is not None:
+            mask_data = sample[self.mask_field_name]
+        else:
+            mask_data = None
+
+        sample['image'] = normalize(sample['image'], self.landmarks, mask_data=mask_data)
         if self.verbose:
             duration = time.time() - start
             print(f'HistogramStandardisation: {duration:.1f} seconds')
@@ -58,6 +63,8 @@ def __compute_percentiles(img, mask, cutoff):
     perc = [cutoff[0],
             0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,
             cutoff[1]]
+    perc = np.linspace(cutoff[0], cutoff[1], 100)
+
     masked_img = ma.masked_array(img, np.logical_not(mask)).compressed()
     perc_results = np.percentile(masked_img, 100 * np.array(perc))
     return perc_results
@@ -113,7 +120,7 @@ def __averaged_mapping(perc_database, s1, s2):
     return final_map
 
 
-def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
+def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mask_data=None):
     mapping = landmarks
 
     img = data
@@ -123,7 +130,10 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     if masking_function is not None:
         mask = masking_function(img)
     else:
-        mask = np.ones_like(img, dtype=np.bool)
+        if mask_data is not None:
+            mask = mask_data
+        else:
+            mask = np.ones_like(img, dtype=np.bool)
     mask = mask.reshape(-1)
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
@@ -196,6 +206,7 @@ def train(
         if extension == '.txt':
             output_path.write_text(text)
         elif extension == '.npy':
+            #np.save(output_path, percentiles_database) #to understand what is going on
             np.save(output_path, mapping)
 
     return mapping
