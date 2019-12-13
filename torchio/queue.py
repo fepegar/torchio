@@ -2,6 +2,7 @@ import warnings
 from tqdm import trange
 from itertools import islice
 from torch.utils.data import Dataset, DataLoader
+from random import shuffle
 
 
 class Queue(Dataset):
@@ -30,6 +31,7 @@ class Queue(Dataset):
         self.subjects_iterable = self.get_subjects_iterable()
         self.patches_list = []
         self.num_sampled_patches = 0
+        self.print('init queue with {}'.format(self.__repr__()))
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -41,8 +43,8 @@ class Queue(Dataset):
         if not self.patches_list:
             self.print('Patches list is empty.')
             self.fill()
-        self.print('Patches:', [patch['path'].split('_')[-1]
-                                for patch in self.patches_list])
+            self.print('Patches:', [patch['path'].split('_')[-1] for patch in self.patches_list])
+            #self.print('Patches:', [patch['sujid'] for patch in self.patches_list])
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
         return sample_patch
@@ -83,6 +85,7 @@ class Queue(Dataset):
                 f'Samples per volume ({self.samples_per_volume})'
                 f' not divisible by max length ({self.max_length})'
             )
+            print(message)
             warnings.warn(message)
 
         # If there are e.g. 4 subjects and 1 sample per volume and max_length
@@ -100,6 +103,9 @@ class Queue(Dataset):
             samples = [s for s in islice(sampler, self.samples_per_volume)]
             assert isinstance(samples, list)
             self.patches_list.extend(samples)
+
+        if self.shuffle_dataset:
+            shuffle(self.patches_list)
 
     def get_next_subject_sample(self):
         """
