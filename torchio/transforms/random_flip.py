@@ -14,7 +14,7 @@ class RandomFlip(RandomTransform):
     def apply_transform(self, sample):
         axes_to_flip_hot = self.get_params(self.axes, self.flip_probability)
         sample['random_flip'] = axes_to_flip_hot
-        for key in 'image', 'label', 'sampler':
+        for key in 'label', 'sampler':
             if key not in sample:
                 continue
             array = sample[key]
@@ -25,6 +25,15 @@ class RandomFlip(RandomTransform):
                 # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
                 array = np.flip(array, axis=actual_axis).copy()
                 sample[key] = array
+
+        for key, array in sample['image'].items():
+            for axis, flip_this in enumerate(axes_to_flip_hot):
+                if not flip_this:
+                    continue
+                actual_axis = axis + 1  # images are 4D
+                # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
+                array = np.flip(array, axis=actual_axis).copy()
+                sample['image'][key] = array            
         return sample
 
     @staticmethod

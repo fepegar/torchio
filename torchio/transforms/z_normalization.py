@@ -17,7 +17,8 @@ class ZNormalization:
         if self.verbose:
             import time
             start = time.time()
-        znorm(sample['image'])
+        for modality_array in sample['image'].values():
+            znorm(modality_array)
         if self.verbose:
             duration = time.time() - start
             print(f'ZNormalization: {duration:.1f} seconds')

@@ -29,27 +29,31 @@ class ImagesDataset(Dataset):
         self.verbose = verbose
 
     def __len__(self):
-        return len(self.paths_dict['image'])
+        return len(self.paths_dict)
 
     def __getitem__(self, index):
         sample = {}
-        for key in self.paths_dict:
-            data, affine, image_path = self.load_image(key, index)
-            sample[key] = data
+        for key,value in self.paths_dict[index].items():
             if key == 'image':
-                image_dict = dict(
-                    path=str(image_path),
-                    affine=affine,
-                    stem=get_stem(image_path),
-                )
-                sample.update(image_dict)
+                sample['image'] = {}
+                for mod, mod_path in value.items():
+                    data, affine = self.load_image(mod_path)
+                    sample['image'][mod] = data
+                    image_dict = dict(
+                        path=str(mod_path),
+                        affine=affine,
+                        stem=get_stem(mod_path),
+                    )
+                    sample.update(image_dict)
+            else:
+                data, affine = self.load_image(value)
+                sample[key] = data
         # Apply transform (this is usually the major bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
         return sample
 
-    def load_image(self, key, index, add_channels_dim=True):
-        path = self.paths_dict[key][index]
+    def load_image(self, path, add_channels_dim=True):
         if self.verbose:
             print(f'Loading {path}...')
         img = nib.load(str(path))
@@ -67,25 +71,24 @@ class ImagesDataset(Dataset):
             )
             raise NotImplementedError(message)
         data = data[np.newaxis, ...] if add_channels_dim else data
-        return data, img.affine, path
+        return data, img.affine
 
     @staticmethod
-    def parse_paths_dict(paths_dict):
-        lens = [len(paths) for paths in paths_dict.values()]
-        if sum(lens) == 0:
+    def parse_paths_dict(paths_list):
+        if len(paths_list) == 0:
             raise ValueError('All paths lists are empty')
-        if len(set(lens)) > 1:
-            message = (
-                'Paths lists have different lengths:'
-            )
-            for key, paths in paths_dict.items():
-                message += f'\n{key}: {len(paths)}'
-            raise ValueError(message)
-        for paths_list in paths_dict.values():
-            for path in paths_list:
-                path = Path(path)
-                if not path.is_file():
-                    raise FileNotFoundError(f'{path} not found')
+        for path_dict in paths_list:
+            for key,value in path_dict.items():
+                
+                if isinstance(value, dict): # if 'image' is the key
+                    for nested_path in value.values():
+                        nested_path = Path(nested_path)
+                        if not nested_path.is_file():
+                            raise FileNotFoundError(f'{nested_path} not found')
+                else:
+                    value = Path(value)
+                    if not value.is_file():
+                        raise FileNotFoundError(f'{value} not found')
 
     @staticmethod
     def save_sample(sample, output_paths_dict):

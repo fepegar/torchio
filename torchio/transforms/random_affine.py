@@ -26,11 +26,9 @@ class RandomAffine(RandomTransform):
             self.scales, self.angles, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
-        for key in 'image', 'label', 'sampler':
-            if key == 'image':
-                interpolation = self.image_interpolation
-            else:
-                interpolation = Interpolation.NEAREST
+        
+        for key in  'label', 'sampler':
+            interpolation = Interpolation.NEAREST
             if key not in sample:
                 continue
             array = sample[key]
@@ -42,6 +40,18 @@ class RandomAffine(RandomTransform):
                 interpolation,
             )
             sample[key] = array
+
+        for modality_name, modality_array in sample['image'].items():
+            interpolation = self.image_interpolation
+            modality_array = self.apply_affine_transform(
+                modality_array,
+                sample['affine'],
+                scaling_params,
+                rotation_params,
+                interpolation,
+            )
+            sample['image'][modality_name] = modality_array
+
         return sample
 
     @staticmethod

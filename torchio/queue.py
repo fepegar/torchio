@@ -111,11 +111,13 @@ class Queue(Dataset):
             self.print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
             subject_sample = next(self.subjects_iterable)
-        message = (
-            "subject_sample['image'] should have 4 dimensions,"
-            f" but has shape {subject_sample['image'].shape}"
-        )
-        assert subject_sample['image'].ndim == 4, message
+        
+        for key,value in subject_sample['image'].items():
+            message = (
+                "subject_sample['image']["f"] should have 4 dimensions,"
+                f" but has shape {key,value.shape}"
+            )
+            assert value.ndim == 4, message
         return subject_sample
 
     def get_subjects_iterable(self):

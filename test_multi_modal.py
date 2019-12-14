@@ -1,0 +1,77 @@
+import time
+import multiprocessing as mp
+
+from torch.utils.data import DataLoader
+from torchvision.transforms import Compose
+
+from torchio import ImagesDataset, Queue
+from torchio.sampler import ImageSampler
+from torchio.utils import create_dummy_dataset
+from torchio.transforms import (
+    ZNormalization,
+    RandomNoise,
+    RandomFlip,
+    RandomAffine,
+)
+
+
+# Define training and patches sampling parameters
+num_epochs = 4
+patch_size = 128
+queue_length = 100
+samples_per_volume = 1
+batch_size = 2
+
+def model(batch, sleep_time=0.1):
+    """Dummy function to simulate a forward pass through the network"""
+    time.sleep(sleep_time)
+    return
+
+# Create a dummy dataset in the temporary directory, for this example
+force_create_dataset = False
+
+
+# paths_dict looks like this:
+# paths_dict = {'image': images_paths_list, 'label': labels_paths_list}
+
+# Define transforms for data normalization and augmentation
+transforms = (
+    ZNormalization(),
+    RandomAffine(scales=(0.9, 1.1), angles=(-10, 10)),
+    RandomNoise(std_range=(0, 0.25)),
+    RandomFlip(axes=(0,)),
+)
+transform = Compose(transforms)
+
+paths_dict  = [{'image':{'T1':'../BRATS2018_crop_renamed/LGG75_T1.nii.gz', 
+                'T2':'../BRATS2018_crop_renamed/LGG75_T2.nii.gz'},
+                'label':'../BRATS2018_crop_renamed/LGG75_Label.nii.gz'},
+                {'image':{'T1':'../BRATS2018_crop_renamed/LGG74_T1.nii.gz'},
+                'label':'../BRATS2018_crop_renamed/LGG74_Label.nii.gz'}]
+subjects_dataset = ImagesDataset(paths_dict, transform=transform)
+
+# Run a benchmark for different numbers of workers
+workers = range(mp.cpu_count() + 1)
+for num_workers in workers:
+    print('Number of workers:', num_workers)
+
+    # Define the dataset as a queue of patches
+    queue_dataset = Queue(
+        subjects_dataset,
+        queue_length,
+        samples_per_volume,
+        patch_size,
+        ImageSampler,
+        num_workers=num_workers,
+        shuffle_dataset=False,
+    )
+    batch_loader = DataLoader(queue_dataset, batch_size=batch_size, collate_fn=lambda x:x)
+
+    start = time.time()
+    for epoch_index in range(num_epochs):
+        for batch in batch_loader:
+            logits = model(batch)
+            print([batch[k]['image'].keys() for k in range(batch_size)])
+            #print(batch['stem'])
+    print('Time:', int(time.time() - start), 'seconds')
+    print()

@@ -37,7 +37,9 @@ class ImageSampler(IterableDataset):
         return cropped_sample
 
     def get_random_indices(self, sample, patch_size):
-        shape = np.array(sample['image'].shape[1:], dtype=np.uint16)
+        modality_name = list(sample['image'].keys())[0]
+        modality_array = sample['image'][modality_name]
+        shape = np.array(modality_array.shape[1:], dtype=np.uint16)
         max_index = shape - patch_size
         index = [
             torch.randint(i, size=(1,)).item() for i in max_index.tolist()
@@ -55,9 +57,14 @@ class ImageSampler(IterableDataset):
     def copy_and_crop(self, sample, index_ini, index_fin):
         cropped_sample = {}
         for key, value in sample.items():
-            if key in ('image', 'label'):
+            if key == 'image':
+                cropped_sample['image'] = {}
+                for modality_name, modality_array in value.items():
+                    cropped_sample['image'][modality_name] = self.crop(
+                        modality_array, index_ini, index_fin)
+            elif key == 'label':
                 cropped_sample[key] = self.crop(
-                    value, index_ini, index_fin)
+                        value, index_ini, index_fin)
             else:
                 cropped_sample[key] = value
         # torch doesn't like uint16

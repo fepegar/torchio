@@ -13,7 +13,8 @@ class RandomNoise(RandomTransform):
     def apply_transform(self, sample):
         std = self.get_params(self.std_range)
         sample['random_noise'] = std
-        add_noise(sample['image'], std)
+        for value in sample['image'].values():
+            add_noise(value, std)
         return sample
 
     @staticmethod
