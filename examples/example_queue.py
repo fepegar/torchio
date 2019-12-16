@@ -62,11 +62,13 @@ def main():
             ImageSampler,
             num_workers=num_workers,
             shuffle_dataset=False,
+            verbose=True
         )
-        batch_loader = DataLoader(queue_dataset, batch_size=batch_size)
+        batch_loader = DataLoader(queue_dataset, batch_size=batch_size, shuffle=True)
 
         start = time.time()
         for epoch_index in range(num_epochs):
+            print('Epoch {}'.format(epoch_index))
             for batch in batch_loader:
                 logits = model(batch)
         print('Time:', int(time.time() - start), 'seconds')
