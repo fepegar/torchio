@@ -122,6 +122,38 @@ class ImagesDataset(Dataset):
             nii.to_filename(str(output_path))
 
 
+class ImagesClassifDataset(ImagesDataset):
+    def __init__(
+            self,
+            paths_dict,
+            transform=None,
+            verbose=False,
+            infos=None,
+            ):
+        """
+        same as ImagesDataset but with a label for classification
+        infos is a panda DataFrame
+        """
+        super().__init__(paths_dict, transform, verbose=verbose)
+
+        lens = [len(paths) for paths in paths_dict.values()]
+        if lens[0] != infos.shape[0]:
+            message =('Suplementary collumns in csv file, should have the same number of lines as paths_dict')
+            raise ValueError(message)
+
+        self.infos = infos
+
+    def __getitem__(self, index):
+        sample = super().__getitem__(index)
+
+        one_info = self.infos.iloc[index, :].to_dict()
+
+        sample.update(one_info)
+        #sample['infos'] = one_info
+
+        return sample
+
+
 def get_paths_dict_from_data_prameters(data_param):
     """
     :param data_param: same structure as for niftynet set script test/test_dataset.py
@@ -133,7 +165,7 @@ def get_paths_dict_from_data_prameters(data_param):
             csvfile = pd.read_csv(vals['csv_file'], header=None)
 
             print('Reading {} line in {}'.format(len(csvfile), vals['csv_file']))
-            allfile = [Path(ff) for ff in  csvfile.loc[:, 1].str.strip()]
+            allfile = [Path(ff) for ff in csvfile.loc[:, 1].str.strip()]
 
             sujid   = csvfile.loc[:, 0].values
             paths_dict[key] = allfile
@@ -150,3 +182,71 @@ def get_paths_dict_from_data_prameters(data_param):
             print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
     return paths_dict
+
+def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=None):
+    """
+    Conditions of the form ((intermediate_op,) var, op, values).
+    Takes one or several conditions (each condition must be in a 3-tuple or a 4-tuple, each block of conditions in a list)
+    and a dataframe, and returns the part of the dataframe respecting the conditions.
+    """
+    import operator
+    operator_dict = {
+        '==': operator.eq,
+        '>': operator.gt,
+        '<': operator.lt,
+        "|": operator.or_,
+        "&": operator.and_
+    }
+
+    if max_index is not None or min_index is not None:
+        if max_index is None:
+            dataset = dataset.iloc[min_index:]
+        elif min_index is None:
+            dataset = dataset.iloc[:max_index]
+        else:
+            dataset = dataset.iloc[min_index:max_index]
+    for p_c in conditions:
+        if type(p_c) == list:
+            if len(p_c[0]) == 3:
+                snap = apply_conditions_on_dataset(dataset, p_c)
+            else:
+                temp_var = p_c[0][0]
+                p_c[0] = p_c[0][1:]
+                temp_snap = apply_conditions_on_dataset(dataset, p_c)
+                snap = operator_dict[temp_var](snap.copy(), temp_snap)
+        elif len(p_c) == 3:
+            snap = operator_dict[p_c[1]](dataset.copy()[p_c[0]], p_c[2])
+        elif len(p_c) == 4:
+            snap = operator_dict[p_c[0]]((snap.copy()), (operator_dict[p_c[2]](dataset.copy()[p_c[1]], p_c[3])))
+    return snap
+
+
+def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file",
+                                          conditions=None,):
+    """
+    :param data_param: same structure as for niftynet set script test/test_dataset.py
+    :param fpath_idx: name of the collumn containing file path
+    :return: a paths_dict to be passed inot ImagesDataset and a panda dataframe containing all collumn to be passed
+            as info in ImagesClassifDataset
+    """
+    paths_dict = dict()
+    for key, vals in data_param.items():
+        if 'csv_file' in vals:
+            res = pd.read_csv(vals['csv_file'])
+
+            print('Reading {} line in {}'.format(len(res), vals['csv_file']))
+            print(' {} columns {}'.format(len(res.keys()), res.keys() ))
+
+            if conditions is not None:
+                res = res[apply_conditions_on_dataset(res, conditions)]
+                nb_1, nb_0 = np.sum(res.noise == 1), np.sum(res.noise == 0)
+                print('after condition noise/ok = %d / %d  = %f' % (nb_1, nb_0, nb_0 / nb_1))
+
+            allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
+
+            paths_dict[key] = allfile
+
+        else :
+            print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
+
+    return paths_dict, res
