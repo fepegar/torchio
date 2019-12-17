@@ -45,7 +45,6 @@ def model(batch, sleep_time=0.1):
     return
 
 # Create a dummy dataset in the temporary directory, for this example
-force_create_dataset = False
 paths_dict = create_dummy_dataset(
     num_images=100,
     size_range=(193, 229),
