@@ -1,28 +1,19 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 import torch
 import SimpleITK as sitk
 
+from .transform import Transform
 
-class RandomTransform(ABC):
+
+class RandomTransform(Transform):
     def __init__(self, seed=None, verbose=False):
+        super().__init__(verbose=verbose)
         self.seed = seed
-        self.verbose = verbose
 
     def __call__(self, sample):
         self.check_seed()
-        if self.verbose:
-            import time
-            start = time.time()
-        sample = self.apply_transform(sample)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'{self.__class__.__name__}: {duration:.1f} seconds')
-        return sample
-
-    @abstractmethod
-    def apply_transform(self, sample):
-        pass
+        super().__call__(sample)
 
     @staticmethod
     @abstractmethod
