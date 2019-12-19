@@ -1,3 +1,4 @@
+import random
 import warnings
 from tqdm import trange
 from itertools import islice
@@ -13,7 +14,8 @@ class Queue(Dataset):
             patch_size,
             sampler_class,
             num_workers=0,
-            shuffle_dataset=True,
+            shuffle_subjects=True,
+            shuffle_patches=True,
             verbose=False,
             ):
         """
@@ -21,7 +23,8 @@ class Queue(Dataset):
         """
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
-        self.shuffle_dataset = shuffle_dataset
+        self.shuffle_subjects = shuffle_subjects
+        self.shuffle_patches = shuffle_patches
         self.samples_per_volume = samples_per_volume
         self.sampler_class = sampler_class
         self.patch_size = patch_size
@@ -100,6 +103,8 @@ class Queue(Dataset):
             samples = [s for s in islice(sampler, self.samples_per_volume)]
             assert isinstance(samples, list)
             self.patches_list.extend(samples)
+        if self.shuffle_patches:
+            random.shuffle(self.patches_list)
 
     def get_next_subject_sample(self):
         """
@@ -128,6 +133,6 @@ class Queue(Dataset):
             self.subjects_dataset,
             num_workers=self.num_workers,
             collate_fn=lambda x: x[0],
-            shuffle=self.shuffle_dataset,
+            shuffle=self.shuffle_subjects,
         )
         return iter(subjects_loader)

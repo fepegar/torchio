@@ -60,7 +60,6 @@ def main():
             patch_size,
             ImageSampler,
             num_workers=num_workers,
-            shuffle_dataset=False,
         )
         batch_loader = DataLoader(queue_dataset, batch_size=batch_size)
 
