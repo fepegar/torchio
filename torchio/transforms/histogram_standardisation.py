@@ -3,15 +3,15 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
-import torch
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
-
+from .transform import Transform
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
+<<<<<<< HEAD
 class HistogramStandardisation:
     def __init__(self, landmarks, verbose=False, mask_field_name=None):
         """
@@ -28,9 +28,14 @@ class HistogramStandardisation:
                 numbers = text.split()[1:]
                 landmarks = np.array(numbers).astype(np.float32)
         self.mask_field_name = mask_field_name
+=======
+class HistogramStandardisation(Transform):
+    def __init__(self, landmarks, verbose=False):
+        super().__init__(verbose=verbose)
+>>>>>>> 73afa0cbb406a325fe9ff8e3a1916f07212e6a72
         self.landmarks = landmarks
-        self.verbose = verbose
 
+<<<<<<< HEAD
     def __call__(self, sample):
         if self.verbose:
             import time
@@ -44,6 +49,10 @@ class HistogramStandardisation:
         if self.verbose:
             duration = time.time() - start
             print(f'HistogramStandardisation: {duration:.1f} seconds')
+=======
+    def apply_transform(self, sample):
+        sample['image'] = normalize(sample['image'], self.landmarks)
+>>>>>>> 73afa0cbb406a325fe9ff8e3a1916f07212e6a72
         return sample
 
 
@@ -198,15 +207,13 @@ def train(
     mapping = __averaged_mapping(percentiles_database, s1, s2)
 
     if output_path is not None:
-        modality = 'image'
-        text = f'{modality} {" ".join(map(str, mapping))}'
-
         output_path = Path(output_path).expanduser()
         extension = output_path.suffix
         if extension == '.txt':
+            modality = 'image'
+            text = f'{modality} {" ".join(map(str, mapping))}'
             output_path.write_text(text)
         elif extension == '.npy':
-            #np.save(output_path, percentiles_database) #to understand what is going on
             np.save(output_path, mapping)
 
     return mapping
