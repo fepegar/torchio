@@ -6,18 +6,25 @@ from pathlib import Path
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
+from ..torchio import INTENSITY
 from .transform import Transform
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
 class HistogramStandardisation(Transform):
-    def __init__(self, landmarks, verbose=False):
+    def __init__(self, landmarks_dict, verbose=False):
         super().__init__(verbose=verbose)
-        self.landmarks = landmarks
+        self.landmarks_dict = landmarks_dict
 
     def apply_transform(self, sample):
-        sample['image'] = normalize(sample['image'], self.landmarks)
+        for image_name, image_dict in sample.items():
+            if not isinstance(image_dict, dict) or 'type' not in image_dict:
+                # Not an image
+                continue
+            if image_dict['type'] == INTENSITY:
+                landmarks = self.landmarks_dict[image_name]  # TODO: assert this
+                image_dict['data'] = normalize(image_dict['data'], landmarks)
         return sample
 
 
@@ -142,7 +149,7 @@ def train(
         mask_path=None,
         masking_function=None,
         output_path=None,
-        ):
+):
     """
     Output path extension should be .txt or .npy
     """

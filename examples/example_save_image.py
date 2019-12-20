@@ -26,12 +26,11 @@ if __name__ == "__main__":
     torch.manual_seed(42)
 
     # Config
-    force = False
-
-    paths_dict = dict(
-        image=['/tmp/mni/t1_on_mni.nii.gz'],
-        label=['/tmp/mni/t1_259_resection_seg.nii.gz'],
-    )
+    subject_dict = {
+        'T1': dict(path='/tmp/mni/t1_on_mni.nii.gz', type=torchio.INTENSITY),
+        'label': dict(path='/tmp/mni/t1_259_resection_seg.nii.gz', type=torchio.LABEL),
+    }
+    subjects_paths = [subject_dict]  # just one
 
     verbose = True
 
@@ -46,6 +45,6 @@ if __name__ == "__main__":
     )
     transform = Compose(transforms)
     subjects_dataset = ImagesDataset(
-        paths_dict, transform=transform, verbose=verbose)
+        subjects_paths, transform=transform, verbose=verbose)
     sample = subjects_dataset[0]
     save_sample(sample, '/tmp/sample')

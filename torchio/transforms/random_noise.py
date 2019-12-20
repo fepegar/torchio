@@ -1,5 +1,7 @@
 
 import torch
+from ..torchio import INTENSITY
+from ..utils import is_image_dict
 from .random_transform import RandomTransform
 
 
@@ -13,7 +15,12 @@ class RandomNoise(RandomTransform):
     def apply_transform(self, sample):
         std = self.get_params(self.std_range)
         sample['random_noise'] = std
-        add_noise(sample['image'], std)
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
+                continue
+            if image_dict['type'] != INTENSITY:
+                continue
+            add_noise(image_dict['data'], std)
         return sample
 
     @staticmethod

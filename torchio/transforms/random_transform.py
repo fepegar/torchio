@@ -13,7 +13,7 @@ class RandomTransform(Transform):
 
     def __call__(self, sample):
         self.check_seed()
-        super().__call__(sample)
+        return super().__call__(sample)
 
     @staticmethod
     @abstractmethod

@@ -1,5 +1,6 @@
 import numpy as np
-
+from ..torchio import INTENSITY
+from ..utils import is_image_dict
 from .transform import Transform
 
 
@@ -17,14 +18,20 @@ class Rescale(Transform):
     def apply_transform(self, sample):
         """
         This could probably be written in two or three lines
+        Note all operations are inplace
         """
-        array = sample['image']
-        pa, pb = self.percentiles
-        cutoff = np.percentile(array, (pa, pb))
-        np.clip(array, *cutoff, out=array)
-        array -= array.min()  # [0, max]
-        array /= array.max()  # [0, 1]
-        out_range = self.out_max - self.out_min
-        array *= out_range  # [0, out_range]
-        array -= self.out_min  # [out_min, out_max]
-        return sample
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
+                continue
+            if image_dict['type'] != INTENSITY:
+                continue
+            array = image_dict['data']
+            pa, pb = self.percentiles
+            cutoff = np.percentile(array, (pa, pb))
+            np.clip(array, *cutoff, out=array)
+            array -= array.min()  # [0, max]
+            array /= array.max()  # [0, 1]
+            out_range = self.out_max - self.out_min
+            array *= out_range  # [0, out_range]
+            array -= self.out_min  # [out_min, out_max]
+            return sample

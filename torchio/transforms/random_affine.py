@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 import SimpleITK as sitk
+from ..torchio import LABEL
+from ..utils import is_image_dict
 from .interpolation import Interpolation
 from .random_transform import RandomTransform
 
@@ -26,22 +28,20 @@ class RandomAffine(RandomTransform):
             self.scales, self.angles, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
-        for key in 'image', 'label', 'sampler':
-            if key == 'image':
-                interpolation = self.image_interpolation
-            else:
-                interpolation = Interpolation.NEAREST
-            if key not in sample:
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
                 continue
-            array = sample[key]
-            array = self.apply_affine_transform(
-                array,
-                sample['affine'],
+            if image_dict['type'] == LABEL:
+                interpolation = Interpolation.NEAREST
+            else:
+                interpolation = self.image_interpolation
+            image_dict['data'] = self.apply_affine_transform(
+                image_dict['data'],
+                image_dict['affine'],
                 scaling_params,
                 rotation_params,
                 interpolation,
             )
-            sample[key] = array
         return sample
 
     @staticmethod
