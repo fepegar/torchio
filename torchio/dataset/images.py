@@ -1,12 +1,9 @@
 from pathlib import Path
 import numpy as np
 import nibabel as nib
-import pandas as pd
-import torch
 from torch.utils.data import Dataset
 from pathlib import Path
 from ..utils import get_stem
-import random
 
 class ImagesDataset(Dataset):
     def __init__(
