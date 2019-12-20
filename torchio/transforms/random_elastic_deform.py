@@ -2,9 +2,10 @@ import enum
 import torch
 import numpy as np
 import SimpleITK as sitk
+from .transform import Transform
 
 
-class RandomElasticDeformation:
+class RandomElasticDeformation(Transform):
     """
     generate randomised elastic deformations
     along each dim for data augmentation
@@ -23,6 +24,7 @@ class RandomElasticDeformation:
         :param name: name for tensorflow graph
         (may be computationally expensive).
         """
+        super().__init__(verbose=verbose)
 
         self._bspline_transformation = None
         self.num_controlpoints = max(num_controlpoints, 2)
@@ -34,7 +36,7 @@ class RandomElasticDeformation:
         self.seed = seed
         self.verbose = verbose
 
-    def __call__(self, sample, interp_orders=0):
+    def apply_transform(self, sample, interp_orders=0):
         self.check_seed()
 
         self._randomise_bspline_transformation(sample['image'].shape)
@@ -43,10 +45,6 @@ class RandomElasticDeformation:
         # do_augmentation = np.random.rand() < self.proportion_to_augment
         # if not do_augmentation:
         #     return inputs
-
-        if self.verbose:
-            import time
-            start = time.time()
 
         for key in 'image', 'label', 'sampler':
             if key not in sample:
@@ -57,12 +55,7 @@ class RandomElasticDeformation:
                 array[i] = self._apply_bspline_transformation(channel_array )
             sample[key] = array
 
-
-        if self.verbose:
-            duration = time.time() - start
-            print(f'RandomAffine: {duration:.1f} seconds')
         return sample
-
 
     def check_seed(self):
         if self.seed is not None:
@@ -89,7 +82,6 @@ class RandomElasticDeformation:
 
         params = tuple(params_numpy)
         self._bspline_transformation.SetParameters(params)
-
 
     def _apply_bspline_transformation(self, image, interp_order=3):
         """
