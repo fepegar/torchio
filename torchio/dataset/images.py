@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import Dataset
 from pathlib import Path
 from ..utils import get_stem
+import random
 
 class ImagesDataset(Dataset):
     def __init__(
@@ -129,10 +130,14 @@ class ImagesClassifDataset(ImagesDataset):
             transform=None,
             verbose=False,
             infos=None,
+            class_idx='noise',
+            length=None,
+            equal=None,
             ):
         """
         same as ImagesDataset but with a label for classification
         infos is a panda DataFrame
+        length = to specify a reduce length if not all csv images
         """
         super().__init__(paths_dict, transform, verbose=verbose)
 
@@ -142,8 +147,54 @@ class ImagesClassifDataset(ImagesDataset):
             raise ValueError(message)
 
         self.infos = infos
+        self.classes = infos[class_idx].values
 
-    def __getitem__(self, index):
+        if length:
+            self.length = length
+        else:
+            self.length = len(self.paths_dict['image'])
+
+        if equal:
+            self.gen = self.get_data_equal
+            print('sampling equal number in each classes')
+        else:
+            self.gen = self.get_data
+
+    def __len__(self):
+        return self.length
+
+
+    def __getitem__(self, idx):
+        return next(self.gen(idx))  # quadriview(self.fnames[idx], None, slices_array=None)[np.newaxis,...], self.classes[idx]
+
+    def get_data_equal(self, idx):
+
+        # np.random.seed( np.abs( int((time.time()-np.round(time.time()))*10000000) )) #if not numworker, gives the same data !
+        # location = '/network/lustre/iss01/cenir/analyse/irm/users/romain.valabregue/QCcnn/cache'
+        # memory = Memory(location, verbose=0)
+        # fonc_joblib = memory.cache(quadriview_adapt)
+
+        indok = np.where(self.classes == 1)[0]
+        indbad = np.where(self.classes == 0)[0]
+
+        #while True:
+        randtype = random.uniform(0, 1)  # np.random.rand()
+        if randtype < 0.5:
+            rand_idx = indbad[random.randint(0, len(indbad) - 1)]
+        else:
+            rand_idx = indok[random.randint(0, len(indok) - 1)]
+
+        # worker = torch.utils.data.get_worker_info()
+        # worker_id = worker.id if worker is not None else -1
+        # print('Woker {} index is {} '.format(worker_id, rand_idx), flush=True)
+
+        sample = super().__getitem__(rand_idx)
+        one_info = self.infos.iloc[rand_idx, :].to_dict()
+        sample.update(one_info)
+
+        yield sample
+
+    def get_data(self, index):
         sample = super().__getitem__(index)
 
         one_info = self.infos.iloc[index, :].to_dict()
@@ -151,7 +202,7 @@ class ImagesClassifDataset(ImagesDataset):
         sample.update(one_info)
         #sample['infos'] = one_info
 
-        return sample
+        yield sample
 
 
 def get_paths_dict_from_data_prameters(data_param):
@@ -221,11 +272,15 @@ def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=N
     return snap
 
 
-def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file",
-                                          conditions=None,):
+def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", class_idx="noise",
+                                          conditions=None, duplicate_class1=None, shuffle_order = True):
     """
     :param data_param: same structure as for niftynet set script test/test_dataset.py
     :param fpath_idx: name of the collumn containing file path
+    :param conditions : conditions to select lines. for instance column name corr conditions = [("corr", "<", 0.98),
+            will select only values below 0.98
+    :param duplicate_class1: number of time line from class_idx label 1 are duplicate. in this case it well randomly
+            select same number of line from class 0 (to have equal class)
     :return: a paths_dict to be passed inot ImagesDataset and a panda dataframe containing all collumn to be passed
             as info in ImagesClassifDataset
     """
@@ -239,8 +294,32 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file",
 
             if conditions is not None:
                 res = res[apply_conditions_on_dataset(res, conditions)]
-                nb_1, nb_0 = np.sum(res.noise == 1), np.sum(res.noise == 0)
-                print('after condition noise/ok = %d / %d  = %f' % (nb_1, nb_0, nb_0 / nb_1))
+                nb_1, nb_0 = np.sum(res.loc[:, class_idx] == 1), np.sum(res.loc[:,class_idx] == 0)
+                print('after condition %s / ok = %d / %d  = %f' % (class_idx, nb_1, nb_0, nb_0 / nb_1))
+
+            if duplicate_class1 is not None:
+                ii = np.argwhere(res.loc[:, class_idx] == 1)
+                nbclass1 = len(ii)
+                print('found {} of classe 1'.format(nbclass1))
+                for kkk in range(0, duplicate_class1):
+                    res = res.append(res.iloc[ii[:,0],:])
+                nbclass1 = nbclass1 + nbclass1 * duplicate_class1
+                print('after {} duplication found {} of classe 1'.format(duplicate_class1,nbclass1))
+
+                ii1 =  np.argwhere(res.loc[:, class_idx] == 1)
+
+                ii0 = np.argwhere(res.loc[:, class_idx] == 0)
+                nbclass0 = len(ii0)
+                select_class0 = np.random.randint(0, high=nbclass0, size=nbclass1)
+
+                select_ind = np.vstack((ii1, ii0[select_class0])) #concatenate both class
+                res = res.iloc[select_ind[:, 0], :]
+                print('selecting same number of class 0 so we get a final size of  {}'.format(res.shape))
+
+            if shuffle_order:
+                from sklearn.utils import shuffle
+                res = shuffle(res)
+
 
             allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
 
