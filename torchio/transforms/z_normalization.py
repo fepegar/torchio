@@ -1,26 +1,9 @@
-"""
-Adapted from NiftyNet
-"""
-
-import torch
-import numpy as np
+from .transform import Transform
 
 
-class ZNormalization:
-    def __init__(self, verbose=False):
-        """
-        Assume single channel
-        """
-        self.verbose = verbose
-
-    def __call__(self, sample):
-        if self.verbose:
-            import time
-            start = time.time()
+class ZNormalization(Transform):
+    def apply_transform(self, sample):
         znorm(sample['image'])
-        if self.verbose:
-            duration = time.time() - start
-            print(f'ZNormalization: {duration:.1f} seconds')
         return sample
 
 

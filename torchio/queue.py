@@ -1,3 +1,4 @@
+import random
 import warnings
 from tqdm import trange
 from itertools import islice
@@ -13,12 +14,17 @@ class Queue(Dataset):
             patch_size,
             sampler_class,
             num_workers=0,
-            shuffle_dataset=True,
+            shuffle_subjects=True,
+            shuffle_patches=True,
             verbose=False,
             ):
+        """
+        The queue is shuffled by the DataLoader to which it is passed
+        """
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
-        self.shuffle_dataset = shuffle_dataset
+        self.shuffle_subjects = shuffle_subjects
+        self.shuffle_patches = shuffle_patches
         self.samples_per_volume = samples_per_volume
         self.sampler_class = sampler_class
         self.patch_size = patch_size
@@ -97,18 +103,19 @@ class Queue(Dataset):
             samples = [s for s in islice(sampler, self.samples_per_volume)]
             assert isinstance(samples, list)
             self.patches_list.extend(samples)
+        if self.shuffle_patches:
+            random.shuffle(self.patches_list)
 
     def get_next_subject_sample(self):
         """
         A StopIteration exception is expected when the queue is empty
         """
         try:
-            subject_batch = next(self.subjects_iterable)
+            subject_sample = next(self.subjects_iterable)
         except StopIteration as exception:
             self.print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
-            subject_batch = next(self.subjects_iterable)
-        subject_sample = self.squeeze_batch(subject_batch)
+            subject_sample = next(self.subjects_iterable)
         message = (
             "subject_sample['image'] should have 4 dimensions,"
             f" but has shape {subject_sample['image'].shape}"
@@ -116,20 +123,16 @@ class Queue(Dataset):
         assert subject_sample['image'].ndim == 4, message
         return subject_sample
 
-    @staticmethod
-    def squeeze_batch(batch, idx=0):
-        for key, value in batch.items():
-            batch[key] = value[idx]
-        return batch
-
     def get_subjects_iterable(self):
         """
-        I want a DataLoader to handle parallelism
+        I need a DataLoader to handle parallelism
+        But this loader is always expected to yield single subject samples
         """
         self.print('\nCreating subjects loader with', self.num_workers, 'workers')
-        loader = DataLoader(
+        subjects_loader = DataLoader(
             self.subjects_dataset,
-            shuffle=self.shuffle_dataset,
             num_workers=self.num_workers,
+            collate_fn=lambda x: x[0],
+            shuffle=self.shuffle_subjects,
         )
-        return iter(loader)
+        return iter(subjects_loader)

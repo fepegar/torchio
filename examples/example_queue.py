@@ -29,7 +29,6 @@ def main():
         return
 
     # Create a dummy dataset in the temporary directory, for this example
-    force_create_dataset = False
     paths_dict = create_dummy_dataset(
         num_images=100,
         size_range=(193, 229),
@@ -61,7 +60,6 @@ def main():
             patch_size,
             ImageSampler,
             num_workers=num_workers,
-            shuffle_dataset=False,
         )
         batch_loader = DataLoader(queue_dataset, batch_size=batch_size)
 

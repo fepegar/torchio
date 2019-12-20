@@ -2,30 +2,22 @@
 Adapted from NiftyNet
 """
 
-import torch
+from pathlib import Path
 import numpy as np
 import numpy.ma as ma
-
+import nibabel as nib
+from .transform import Transform
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
-class HistogramStandardisation:
+class HistogramStandardisation(Transform):
     def __init__(self, landmarks, verbose=False):
-        """
-        Assume single channel
-        """
+        super().__init__(verbose=verbose)
         self.landmarks = landmarks
-        self.verbose = verbose
 
-    def __call__(self, sample):
-        if self.verbose:
-            import time
-            start = time.time()
+    def apply_transform(self, sample):
         sample['image'] = normalize(sample['image'], self.landmarks)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'HistogramStandardisation: {duration:.1f} seconds')
         return sample
 
 
@@ -142,3 +134,46 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     new_img = new_img.reshape(image_shape)
 
     return new_img
+
+
+def train(
+        images_paths,
+        cutoff=None,
+        mask_path=None,
+        masking_function=None,
+        output_path=None,
+        ):
+    """
+    Output path extension should be .txt or .npy
+    """
+    cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+    percentiles_database = []
+    for index, image_file_path in enumerate(images_paths):
+        # NiftyNet implementation says image should be float
+        data = nib.load(image_file_path).get_fdata(dtype=np.float32)
+
+        if masking_function is not None:
+            mask = masking_function(data)
+        else:
+            if mask_path is not None:
+                mask = nib.load(mask_path[index]).get_fdata()
+                mask = mask > 0
+            else:
+                mask = np.ones_like(data, dtype=np.bool)
+        percentiles = __compute_percentiles(data, mask, cutoff)
+        percentiles_database.append(percentiles)
+    percentiles_database = np.vstack(percentiles_database)
+    s1, s2 = create_standard_range()
+    mapping = __averaged_mapping(percentiles_database, s1, s2)
+
+    if output_path is not None:
+        output_path = Path(output_path).expanduser()
+        extension = output_path.suffix
+        if extension == '.txt':
+            modality = 'image'
+            text = f'{modality} {" ".join(map(str, mapping))}'
+            output_path.write_text(text)
+        elif extension == '.npy':
+            np.save(output_path, mapping)
+
+    return mapping
