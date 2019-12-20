@@ -1,3 +1,9 @@
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import random
+from .images import ImagesDataset
+
 
 class ImagesClassifDataset(ImagesDataset):
     def __init__(
@@ -39,7 +45,6 @@ class ImagesClassifDataset(ImagesDataset):
     def __len__(self):
         return self.length
 
-
     def __getitem__(self, idx):
         return next(self.gen(idx))  # quadriview(self.fnames[idx], None, slices_array=None)[np.newaxis,...], self.classes[idx]
 
@@ -53,7 +58,7 @@ class ImagesClassifDataset(ImagesDataset):
         indok = np.where(self.classes == 1)[0]
         indbad = np.where(self.classes == 0)[0]
 
-        #while True:
+        #w hile True:
         randtype = random.uniform(0, 1)  # np.random.rand()
         if randtype < 0.5:
             rand_idx = indbad[random.randint(0, len(indbad) - 1)]
@@ -76,7 +81,7 @@ class ImagesClassifDataset(ImagesDataset):
         one_info = self.infos.iloc[index, :].to_dict()
 
         sample.update(one_info)
-        #sample['infos'] = one_info
+        # sample['infos'] = one_info
 
         yield sample
 
@@ -98,7 +103,7 @@ def get_paths_dict_from_data_prameters(data_param):
             paths_dict[key] = allfile
 
             if 'sujid' in paths_dict :
-                #test if same subject id
+                # test if same subject id
                 if np.array_equal(sujid,paths_dict['sujid'] ) is False:
                     message =("First column subject ID differs")
                     raise ValueError(message)
@@ -109,6 +114,7 @@ def get_paths_dict_from_data_prameters(data_param):
             print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
     return paths_dict
+
 
 def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=None):
     """
@@ -195,7 +201,6 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
             if shuffle_order:
                 from sklearn.utils import shuffle
                 res = shuffle(res)
-
 
             allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
 
