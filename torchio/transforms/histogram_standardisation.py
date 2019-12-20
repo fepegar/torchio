@@ -11,12 +11,10 @@ from .transform import Transform
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
-<<<<<<< HEAD
 class HistogramStandardisation:
     def __init__(self, landmarks, verbose=False, mask_field_name=None):
-        """
-        Assume single channel
-        """
+        super().__init__(verbose=verbose)
+
         if isinstance(landmarks, np.ndarray):
             pass
         elif isinstance(landmarks, (str, Path)):
@@ -28,31 +26,17 @@ class HistogramStandardisation:
                 numbers = text.split()[1:]
                 landmarks = np.array(numbers).astype(np.float32)
         self.mask_field_name = mask_field_name
-=======
-class HistogramStandardisation(Transform):
-    def __init__(self, landmarks, verbose=False):
-        super().__init__(verbose=verbose)
->>>>>>> 73afa0cbb406a325fe9ff8e3a1916f07212e6a72
         self.landmarks = landmarks
 
-<<<<<<< HEAD
-    def __call__(self, sample):
-        if self.verbose:
-            import time
-            start = time.time()
+
+    def apply_transform(self, sample):
         if self.mask_field_name is not None:
             mask_data = sample[self.mask_field_name]
         else:
             mask_data = None
 
         sample['image'] = normalize(sample['image'], self.landmarks, mask_data=mask_data)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'HistogramStandardisation: {duration:.1f} seconds')
-=======
-    def apply_transform(self, sample):
-        sample['image'] = normalize(sample['image'], self.landmarks)
->>>>>>> 73afa0cbb406a325fe9ff8e3a1916f07212e6a72
+
         return sample
 
 
