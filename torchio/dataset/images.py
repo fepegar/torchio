@@ -2,7 +2,6 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 from torch.utils.data import Dataset
-from pathlib import Path
 from ..utils import get_stem
 
 class ImagesDataset(Dataset):
