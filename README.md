@@ -5,10 +5,17 @@
 I recommend cloning and doing an editable installation, as this is still very
 experimental and changes very often.
 
-```
+```shell
 git clone https://github.com/fepegar/torchio.git
 pip install --editable torchio
 ```
+
+If you want to quickly try the latest released version, just run
+
+```shell
+pip install torchio
+```
+
 
 ## Examples
 
@@ -96,7 +103,7 @@ for num_workers in workers:
 
 
 Output:
-```
+```python
 Number of workers: 0
 Time: 394 seconds
 
