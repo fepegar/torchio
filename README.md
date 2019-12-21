@@ -21,9 +21,9 @@ import multiprocessing as mp
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
-from torchio import ImagesDataset, Queue
 from torchio.sampler import ImageSampler
 from torchio.utils import create_dummy_dataset
+from torchio import ImagesDataset, Queue
 from torchio.transforms import (
     ZNormalization,
     RandomNoise,
@@ -42,16 +42,21 @@ batch_size = 4
 def model(batch, sleep_time=0.1):
     """Dummy function to simulate a forward pass through the network"""
     time.sleep(sleep_time)
-    return
+    return batch
 
 # Create a dummy dataset in the temporary directory, for this example
-paths_dict = create_dummy_dataset(
+subjects_paths = create_dummy_dataset(
     num_images=100,
     size_range=(193, 229),
     force=False,
 )
-# paths_dict looks like this:
-# paths_dict = {'image': images_paths_list, 'label': labels_paths_list}
+
+# Each element of subjects_paths is a dictionary:
+# subject = {
+#     'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
+#     'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
+#     'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
+# )
 
 # Define transforms for data normalization and augmentation
 transforms = (
@@ -61,7 +66,9 @@ transforms = (
     RandomFlip(axes=(0,)),
 )
 transform = Compose(transforms)
-subjects_dataset = ImagesDataset(paths_dict, transform=transform)
+subjects_dataset = ImagesDataset(subjects_paths, transform)
+
+sample = subjects_dataset[0]
 
 # Run a benchmark for different numbers of workers
 workers = range(mp.cpu_count() + 1)
