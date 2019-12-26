@@ -1,3 +1,4 @@
+import numbers
 import torch
 import numpy as np
 import SimpleITK as sitk
@@ -11,7 +12,7 @@ class RandomAffine(RandomTransform):
     def __init__(
             self,
             scales=(0.9, 1.1),
-            angles=(-10, 10),  # in degrees
+            degrees=10,
             isotropic=False,
             image_interpolation=Interpolation.LINEAR,
             seed=None,
@@ -19,13 +20,34 @@ class RandomAffine(RandomTransform):
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.scales = scales
-        self.angles = angles
+        self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic
         self.image_interpolation = image_interpolation
 
+    @staticmethod
+    def parse_degrees(degrees):
+        """Adapted from torchvision.RandomRotation"""
+        if isinstance(degrees, numbers.Number):
+            if degrees < 0:
+                raise ValueError(
+                    'If degrees is a single number,'
+                    f' it must be positive, not {degrees}')
+            return (-degrees, degrees)
+        else:
+            if len(degrees) != 2:
+                raise ValueError(
+                    'If degrees is a sequence,'
+                    f' it must be of len 2, not {degrees}')
+            min_degree, max_degree = degrees
+            if min_degree > max_degree:
+                raise ValueError(
+                    'If degrees is a sequence, the second value must be'
+                    f' equal or greater than the first, not {degrees}')
+            return degrees
+
     def apply_transform(self, sample):
         scaling_params, rotation_params = self.get_params(
-            self.scales, self.angles, self.isotropic)
+            self.scales, self.degrees, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
         for image_dict in sample.values():
@@ -45,11 +67,11 @@ class RandomAffine(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(scales, angles, isotropic):
+    def get_params(scales, degrees, isotropic):
         scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
         if isotropic:
             scaling_params = 3 * scaling_params[0]
-        rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
+        rotation_params = torch.FloatTensor(3).uniform_(*degrees).tolist()
         return scaling_params, rotation_params
 
     @staticmethod

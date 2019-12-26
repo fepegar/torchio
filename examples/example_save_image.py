@@ -35,11 +35,11 @@ if __name__ == "__main__":
     verbose = True
 
     scales = (0.75, 0.75)
-    angles = (-5, -5)
+    degrees = (-5, -5)
     axes = (0,)
 
     transforms = (
-        RandomAffine(scales=scales, angles=angles,
+        RandomAffine(scales=scales, degrees=degrees,
                      isotropic=False, verbose=verbose),
         RandomFlip(axes, verbose=verbose),
     )

@@ -28,7 +28,7 @@ batch_size = 2
 # Define transforms for data normalization and augmentation
 transforms = (
     ZNormalization(),
-    RandomAffine(scales=(0.9, 1.1), angles=(-10, 10)),
+    RandomAffine(scales=(0.9, 1.1), degrees=10),
     RandomNoise(std_range=(0, 0.25)),
     RandomFlip(axes=(0,)),
 )

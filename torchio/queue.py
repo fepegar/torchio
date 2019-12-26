@@ -17,7 +17,7 @@ class Queue(Dataset):
             shuffle_subjects=True,
             shuffle_patches=True,
             verbose=False,
-        ):
+            ):
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
         self.shuffle_subjects = shuffle_subjects

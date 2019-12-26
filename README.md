@@ -69,7 +69,7 @@ subjects_paths = create_dummy_dataset(
 transforms = (
     ZNormalization(),
     RandomNoise(std_range=(0, 0.25)),
-    RandomAffine(scales=(0.9, 1.1), angles=(-10, 10)),
+    RandomAffine(scales=(0.9, 1.1), degrees=10),
     RandomFlip(axes=(0,)),
 )
 transform = Compose(transforms)

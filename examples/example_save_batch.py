@@ -41,11 +41,11 @@ if __name__ == "__main__":
     batch_size = 4
 
     scales = (0.75, 0.75)
-    angles = (-5, -5)
+    degrees = (-5, -5)
     axes = (0,)
 
     transforms = (
-        RandomAffine(scales=scales, angles=angles, image_interpolation=Interpolation.BSPLINE,
+        RandomAffine(scales=scales, degrees=degrees, image_interpolation=Interpolation.BSPLINE,
                      isotropic=False, verbose=verbose),
         RandomFlip(axes, verbose=verbose),
     )
