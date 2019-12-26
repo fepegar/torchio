@@ -40,7 +40,7 @@ if __name__ == "__main__":
     #     'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
     #     'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
     #     'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
-    # )
+    # }
 
     # Define transforms for data normalization and augmentation
     transforms = (
