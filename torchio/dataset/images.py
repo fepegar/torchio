@@ -13,10 +13,12 @@ class ImagesDataset(Dataset):
             verbose=False,
             ):
         """
-        Each element in subjects_list is a dictionary with one mandatory key
-        'image' and one optional key 'label'. The value for 'label' is the path
-        to the label image. The value for 'image' is itself another dictionary
-        whose keys are free to choose and whose values are paths to images.
+        Each element of subjects_list is a dictionary:
+        subject = {
+            'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
+            'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
+            'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
+        }
         See examples/example_multimodal.py for -obviously- an example.
         """
         self.parse_subjects_list(subjects_list)
