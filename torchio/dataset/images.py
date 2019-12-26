@@ -52,6 +52,7 @@ class ImagesDataset(Dataset):
     def load_image(self, path, add_channels_dim=True):
         if self.verbose:
             print(f'Loading {path}...')
+        path = Path(path).expanduser()
         img = nib.load(str(path))
 
         # See https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
@@ -72,7 +73,7 @@ class ImagesDataset(Dataset):
     @staticmethod
     def parse_subjects_list(subjects_list):
         def parse_path(path):
-            path = Path(path)
+            path = Path(path).expanduser()
             if not path.is_file():
                 raise FileNotFoundError(f'{path} not found')
         if not subjects_list:
