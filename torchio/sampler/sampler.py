@@ -7,6 +7,7 @@ from torch.utils.data import IterableDataset
 
 from ..utils import to_tuple, is_image_dict
 
+
 class ImageSampler(IterableDataset):
     def __init__(self, sample, patch_size):
         """

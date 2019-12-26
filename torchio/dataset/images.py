@@ -4,6 +4,7 @@ import nibabel as nib
 from torch.utils.data import Dataset
 from ..utils import get_stem
 
+
 class ImagesDataset(Dataset):
     def __init__(
             self,

@@ -23,7 +23,8 @@ class HistogramStandardisation(Transform):
                 # Not an image
                 continue
             if image_dict['type'] == INTENSITY:
-                landmarks = self.landmarks_dict[image_name]  # TODO: assert this
+                # TODO: assert that image_name is in dict
+                landmarks = self.landmarks_dict[image_name]
                 image_dict['data'] = normalize(image_dict['data'], landmarks)
         return sample
 
