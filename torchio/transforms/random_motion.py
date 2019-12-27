@@ -75,8 +75,7 @@ class RandomMotion(RandomTransform):
     def get_rigid_transforms(self, degrees_params, translation_params, image):
         center_ijk = np.array(image.GetSize()) / 2
         center_lps = image.TransformContinuousIndexToPhysicalPoint(center_ijk)
-        identity = np.eye(4)
-        matrices = [identity]
+        matrices = []
         for degrees, translation in zip(degrees_params, translation_params):
             radians = np.radians(degrees).tolist()
             delta = sitk.Euler3DTransform()
@@ -84,10 +83,7 @@ class RandomMotion(RandomTransform):
             delta.SetRotation(*radians)
             delta.SetTranslation(translation.tolist())
             delta_matrix = self.transform_to_matrix(delta)
-            previous_matrix = matrices[-1]
-            # http://insightsoftwareconsortium.github.io/SimpleITK-Notebooks/Python_html/22_Transforms.html
-            new_matrix = delta_matrix @ previous_matrix
-            matrices.append(new_matrix)
+            matrices.append(delta_matrix)
         transforms = [self.matrix_to_transform(m) for m in matrices]
         return transforms
 
@@ -116,23 +112,31 @@ class RandomMotion(RandomTransform):
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
+    @staticmethod
+    def resample_images(image, transforms, interpolation):
+        images = [image]
+        floating = reference = image
+        interpolator = interpolation.value
+        composite_transform = sitk.Transform()  # identity
+        for transform in transforms:
+            composite_transform.AddTransform(transform)
+            resampled = sitk.Resample(
+                floating,
+                reference,
+                composite_transform,
+                interpolator,
+            )
+            images.append(resampled)
+        return images
+
     def add_artifact(
             self,
             image,
             transforms,
             interpolation: Interpolation,
             ):
-        floating = reference = image
-        interpolator = interpolation.value
-        images = [
-            sitk.Resample(
-                floating,
-                reference,
-                transform,
-                interpolator,
-            )
-            for transform in transforms
-        ]
+        # TODO: sample t from a uniform distribution
+        images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
         arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
         spectra = [self.fourier_transform(array) for array in arrays]
@@ -189,8 +193,6 @@ class RandomMotion(RandomTransform):
             D += (-1) ** k * c * X
         X = np.linalg.inv(D) @ N
         X = np.linalg.matrix_power(X, 2 * j)
-        # for k in range(1, j + 1):
-        #     X = X @ X
         return X
 
     def matrix_log(self, A, epsilon=1e-9):
@@ -221,6 +223,8 @@ class RandomMotion(RandomTransform):
         logs_sum = logs.sum(axis=0)
         return self.matrix_exp(logs_sum)
 
+
 def get_params_array(nums_range, num_transforms):
+    # TODO: sample from Poisson distribution?
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
     return tensor.numpy()
