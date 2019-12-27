@@ -24,27 +24,6 @@ class RandomAffine(RandomTransform):
         self.isotropic = isotropic
         self.image_interpolation = image_interpolation
 
-    @staticmethod
-    def parse_degrees(degrees):
-        """Adapted from torchvision.RandomRotation"""
-        if isinstance(degrees, numbers.Number):
-            if degrees < 0:
-                raise ValueError(
-                    'If degrees is a single number,'
-                    f' it must be positive, not {degrees}')
-            return (-degrees, degrees)
-        else:
-            if len(degrees) != 2:
-                raise ValueError(
-                    'If degrees is a sequence,'
-                    f' it must be of len 2, not {degrees}')
-            min_degree, max_degree = degrees
-            if min_degree > max_degree:
-                raise ValueError(
-                    'If degrees is a sequence, the second value must be'
-                    f' equal or greater than the first, not {degrees}')
-            return degrees
-
     def apply_transform(self, sample):
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
