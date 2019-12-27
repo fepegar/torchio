@@ -29,14 +29,16 @@ class RandomMotion(RandomTransform):
         self.image_interpolation = image_interpolation
 
     def apply_transform(self, sample):
+        sample['random_movement_times'] = {}
         sample['random_movement_degrees'] = {}
         sample['random_movement_translation'] = {}
         for image_name, image_dict in sample.items():
-            degrees_params, translation_params = self.get_params(
+            times_params, degrees_params, translation_params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
             )
+            sample['random_movement_times'][image_name] = times_params
             sample['random_movement_degrees'][image_name] = degrees_params
             sample['random_movement_translation'][image_name] = translation_params
             if not is_image_dict(image_dict):
@@ -58,6 +60,7 @@ class RandomMotion(RandomTransform):
             image_dict['data'] = self.add_artifact(
                 image,
                 transforms,
+                times_params,
                 interpolation,
             )
             # Add channels dimension
@@ -70,7 +73,8 @@ class RandomMotion(RandomTransform):
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
-        return degrees_params, translation_params
+        times_params = np.array(sorted(torch.rand(num_transforms).tolist()))
+        return times_params, degrees_params, translation_params
 
     def get_rigid_transforms(self, degrees_params, translation_params, image):
         center_ijk = np.array(image.GetSize()) / 2
@@ -133,20 +137,22 @@ class RandomMotion(RandomTransform):
             self,
             image,
             transforms,
+            times,
             interpolation: Interpolation,
             ):
-        # TODO: sample t from a uniform distribution
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
         arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
         spectra = [self.fourier_transform(array) for array in arrays]
         result = np.empty_like(spectra[0])
-        chunk_size = result.shape[2] // len(images)
-        for i, spectrum in enumerate(spectra):
-            idx_ini = i * chunk_size
-            idx_fin = (i + 1) * chunk_size
+        last_index = result.shape[2]
+        indices = (last_index * times).astype(int).tolist()
+        indices.append(last_index)
+        idx_ini = 0
+        for spectrum, idx_fin in zip(spectra, indices):
             result[..., idx_ini:idx_fin] = spectrum[..., idx_ini:idx_fin]
-        reconstructed = self.inv_fourier_transform(result)
+            idx_ini = idx_fin
+        reconstructed = self.inv_fourier_transform(result).astype(np.float32)
         return reconstructed
 
     @staticmethod
