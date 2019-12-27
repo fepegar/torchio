@@ -1,4 +1,6 @@
 from pathlib import Path
+from collections.abc import Sequence
+
 import numpy as np
 import nibabel as nib
 from torch.utils.data import Dataset
@@ -76,10 +78,21 @@ class ImagesDataset(Dataset):
             path = Path(path).expanduser()
             if not path.is_file():
                 raise FileNotFoundError(f'{path} not found')
+        if not isinstance(subjects_list, Sequence):
+            raise ValueError(
+                f'Subject list must be a sequence, not {type(subjects_list)}')
         if not subjects_list:
             raise ValueError('Subjects list is empty')
-        for subject_dict in subjects_list:
+        for element in subjects_list:
+            if not isinstance(element, dict):
+                raise ValueError(
+                    f'All elements must be dictionaries, not {type(element)}')
+            subject_dict = element
             for image_dict in subject_dict.values():
+                for key in ('path', 'type'):
+                    if not key in image_dict:
+                        raise ValueError(
+                            f'"{key}" not found in image dict {image_dict}')
                 parse_path(image_dict['path'])
 
     @staticmethod
