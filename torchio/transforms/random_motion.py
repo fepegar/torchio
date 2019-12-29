@@ -1,6 +1,14 @@
 """
-Simplified implementation of Shaw et al., 2019
-Matrix algebra functions from Alexa, 2002
+Simplified implementation of
+
+    Shaw et al., 2019
+    MRI k-Space Motion Artefact Augmentation:
+    Model Robustness and Task-Specific Uncertainty
+
+Matrix algebra functions from
+
+    Alexa, 2002
+    Linear combination of transformations
 """
 
 import torch
@@ -16,9 +24,9 @@ from .random_transform import RandomTransform
 class RandomMotion(RandomTransform):
     def __init__(
             self,
-            degrees=10,
-            translation=5,  # in mm
-            num_transforms=4,
+            degrees=30,
+            translation=10,  # in mm
+            num_transforms=2,
             image_interpolation=Interpolation.LINEAR,
             seed=None,
             verbose=False,
@@ -127,7 +135,7 @@ class RandomMotion(RandomTransform):
         transforms = transforms[1:]  # first is identity
         images = [image]  # first is identity
         trsfs = tqdm(transforms, leave=False) if self.verbose else transforms
-        for transform in trsfs:  # first is identity
+        for transform in trsfs:
             resampled = sitk.Resample(
                 floating,
                 reference,
@@ -136,6 +144,18 @@ class RandomMotion(RandomTransform):
             )
             images.append(resampled)
         return images
+
+    @staticmethod
+    def sort_spectra(spectra, times):
+        """
+        Use original spectrum to fill the center of K-space
+        """
+        num_spectra = len(spectra)
+        if np.any(times > 0.5):
+            index = np.where(times > 0.5)[0].min()
+        else:
+            index = num_spectra - 1
+        spectra[0], spectra[index] = spectra[index], spectra[0]
 
     def add_artifact(
             self,
@@ -149,6 +169,7 @@ class RandomMotion(RandomTransform):
         arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
         arrays = tqdm(arrays, leave=False) if self.verbose else arrays
         spectra = [self.fourier_transform(array) for array in arrays]
+        self.sort_spectra(spectra, times)
         result_spectrum = np.empty_like(spectra[0])
         last_index = result_spectrum.shape[2]
         indices = (last_index * times).astype(int).tolist()
@@ -236,6 +257,6 @@ class RandomMotion(RandomTransform):
 
 
 def get_params_array(nums_range, num_transforms):
-    # TODO: sample from Poisson distribution?
+    # TODO: sample from Poisson distribution? Gaussian?
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
     return tensor.numpy()
