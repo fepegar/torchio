@@ -1,3 +1,4 @@
+from pprint import pprint
 import nibabel as nib
 from torchio import ImagesDataset, transforms, INTENSITY
 
@@ -10,11 +11,14 @@ dataset = ImagesDataset(paths)
 sample = dataset[0]
 transform = transforms.RandomMotion(
     seed=42,
-    degrees=10,
-    translation=10,
-    num_transforms=2,
+    degrees=20,
+    translation=15,
+    num_transforms=3,
+    verbose=True,
 )
 transformed = transform(sample)
+
+pprint(transformed['t1']['random_motion_times'])
 
 nib.Nifti1Image(
     transformed['t1']['data'].squeeze(),
