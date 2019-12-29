@@ -4,9 +4,9 @@ import multiprocessing as mp
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
+from torchio import ImagesDataset, Queue
 from torchio.sampler import ImageSampler
 from torchio.utils import create_dummy_dataset
-from torchio import ImagesDataset, Queue
 from torchio.transforms import (
     ZNormalization,
     RandomNoise,
