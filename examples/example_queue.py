@@ -15,7 +15,7 @@ from torchio.transforms import (
 )
 
 
-def main():
+if __name__ == "__main__":
     # Define training and patches sampling parameters
     num_epochs = 4
     patch_size = 128
@@ -26,26 +26,33 @@ def main():
     def model(batch, sleep_time=0.1):
         """Dummy function to simulate a forward pass through the network"""
         time.sleep(sleep_time)
-        return
+        return batch
 
     # Create a dummy dataset in the temporary directory, for this example
-    paths_dict = create_dummy_dataset(
+    subjects_paths = create_dummy_dataset(
         num_images=100,
         size_range=(193, 229),
         force=False,
     )
-    # paths_dict looks like this:
-    # paths_dict = {'image': images_paths_list, 'label': labels_paths_list}
+
+    # Each element of subjects_paths is a dictionary:
+    # subject = {
+    #     'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
+    #     'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
+    #     'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
+    # }
 
     # Define transforms for data normalization and augmentation
     transforms = (
         ZNormalization(),
         RandomNoise(std_range=(0, 0.25)),
-        RandomAffine(scales=(0.9, 1.1), angles=(-10, 10)),
+        RandomAffine(scales=(0.9, 1.1), degrees=10),
         RandomFlip(axes=(0,)),
     )
     transform = Compose(transforms)
-    subjects_dataset = ImagesDataset(paths_dict, transform=transform)
+    subjects_dataset = ImagesDataset(subjects_paths, transform)
+
+    sample = subjects_dataset[0]
 
     # Run a benchmark for different numbers of workers
     workers = range(mp.cpu_count() + 1)
@@ -69,7 +76,3 @@ def main():
                 logits = model(batch)
         print('Time:', int(time.time() - start), 'seconds')
         print()
-
-
-if __name__ == "__main__":
-    main()

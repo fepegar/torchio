@@ -1,5 +1,4 @@
 import numpy as np
-
 from torch.utils.data import Dataset
 
 
@@ -7,12 +6,12 @@ class GridSampler(Dataset):
     """
     Adapted from NiftyNet
     """
-    def __init__(self, data, patch_size, border):
+    def __init__(self, data, patch_size, patch_overlap):
         self.array = data
         self.locations = self.grid_spatial_coordinates(
             self.array,
             patch_size,
-            border,
+            patch_overlap,
         )
 
     def __len__(self):

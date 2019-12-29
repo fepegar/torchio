@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from ..utils import is_image_dict
 from .random_transform import RandomTransform
 
 
@@ -14,17 +15,18 @@ class RandomFlip(RandomTransform):
     def apply_transform(self, sample):
         axes_to_flip_hot = self.get_params(self.axes, self.flip_probability)
         sample['random_flip'] = axes_to_flip_hot
-        for key in 'image', 'label', 'sampler':
-            if key not in sample:
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
                 continue
-            array = sample[key]
+            array = image_dict['data']
             for axis, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:
                     continue
                 actual_axis = axis + 1  # images are 4D
-                # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-                array = np.flip(array, axis=actual_axis).copy()
-                sample[key] = array
+                array = np.flip(array, axis=actual_axis)
+            # Why copy? See the following issue:
+            # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
+            image_dict['data'] = array.copy()
         return sample
 
     @staticmethod

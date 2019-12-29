@@ -3,11 +3,11 @@ from .sampler import ImageSampler
 
 class LabelSampler(ImageSampler):
     """
-    This iterable dataset yields patches that contain at least one voxel without
-    background. See main() for an example.
+    This iterable dataset yields patches that contain at least one voxel
+    without background. See main() for an example.
 
-    For now, this implementation is not efficient because it uses brute force to
-    look for foreground voxels.
+    For now, this implementation is not efficient because it uses brute force
+    to look for foreground voxels.
     """
     # pylint: disable=abstract-method
     def extract_patch_generator(self, sample, patch_size):
