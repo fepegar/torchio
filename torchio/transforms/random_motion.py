@@ -5,6 +5,7 @@ Matrix algebra functions from Alexa, 2002
 
 import torch
 import numpy as np
+from tqdm import tqdm
 import SimpleITK as sitk
 from ..torchio import LABEL
 from ..utils import is_image_dict
@@ -29,18 +30,15 @@ class RandomMotion(RandomTransform):
         self.image_interpolation = image_interpolation
 
     def apply_transform(self, sample):
-        sample['random_movement_times'] = {}
-        sample['random_movement_degrees'] = {}
-        sample['random_movement_translation'] = {}
         for image_name, image_dict in sample.items():
             times_params, degrees_params, translation_params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
             )
-            sample['random_movement_times'][image_name] = times_params
-            sample['random_movement_degrees'][image_name] = degrees_params
-            sample['random_movement_translation'][image_name] = translation_params
+            sample[image_name]['random_motion_times'] = times_params
+            sample[image_name]['random_motion_degrees'] = degrees_params
+            sample[image_name]['random_motion_translation'] = translation_params
             if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] == LABEL:
@@ -56,7 +54,10 @@ class RandomMotion(RandomTransform):
                 translation_params,
                 image,
             )
-            transforms = self.demean_transforms(transforms)
+            transforms = self.demean_transforms(
+                transforms,
+                times_params,
+            )
             image_dict['data'] = self.add_artifact(
                 image,
                 transforms,
@@ -79,21 +80,25 @@ class RandomMotion(RandomTransform):
     def get_rigid_transforms(self, degrees_params, translation_params, image):
         center_ijk = np.array(image.GetSize()) / 2
         center_lps = image.TransformContinuousIndexToPhysicalPoint(center_ijk)
-        matrices = []
+        identity = np.eye(4)
+        matrices = [identity]
         for degrees, translation in zip(degrees_params, translation_params):
             radians = np.radians(degrees).tolist()
-            delta = sitk.Euler3DTransform()
-            delta.SetCenter(center_lps)
-            delta.SetRotation(*radians)
-            delta.SetTranslation(translation.tolist())
-            delta_matrix = self.transform_to_matrix(delta)
-            matrices.append(delta_matrix)
+            motion = sitk.Euler3DTransform()
+            motion.SetCenter(center_lps)
+            motion.SetRotation(*radians)
+            motion.SetTranslation(translation.tolist())
+            motion_matrix = self.transform_to_matrix(motion)
+            matrices.append(motion_matrix)
         transforms = [self.matrix_to_transform(m) for m in matrices]
         return transforms
 
-    def demean_transforms(self, transforms):
+    def demean_transforms(self, transforms, times):
         matrices = [self.transform_to_matrix(t) for t in transforms]
-        mean = self.matrix_average(matrices)
+        times = np.insert(times, 0, 0)
+        times = np.append(times, 1)
+        weights = np.diff(times)
+        mean = self.matrix_average(matrices, weights=weights)
         inverse_mean = np.linalg.inv(mean)
         demeaned_matrices = [inverse_mean @ matrix for matrix in matrices]
         demeaned_transforms = [
@@ -116,18 +121,17 @@ class RandomMotion(RandomTransform):
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
-    @staticmethod
-    def resample_images(image, transforms, interpolation):
-        images = [image]
+    def resample_images(self, image, transforms, interpolation):
         floating = reference = image
         interpolator = interpolation.value
-        composite_transform = sitk.Transform()  # identity
-        for transform in transforms:
-            composite_transform.AddTransform(transform)
+        transforms = transforms[1:]  # first is identity
+        images = [image]  # first is identity
+        trsfs = tqdm(transforms, leave=False) if self.verbose else transforms
+        for transform in trsfs:  # first is identity
             resampled = sitk.Resample(
                 floating,
                 reference,
-                composite_transform,
+                transform,
                 interpolator,
             )
             images.append(resampled)
@@ -143,17 +147,18 @@ class RandomMotion(RandomTransform):
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
         arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
+        arrays = tqdm(arrays, leave=False) if self.verbose else arrays
         spectra = [self.fourier_transform(array) for array in arrays]
-        result = np.empty_like(spectra[0])
-        last_index = result.shape[2]
+        result_spectrum = np.empty_like(spectra[0])
+        last_index = result_spectrum.shape[2]
         indices = (last_index * times).astype(int).tolist()
         indices.append(last_index)
-        idx_ini = 0
-        for spectrum, idx_fin in zip(spectra, indices):
-            result[..., idx_ini:idx_fin] = spectrum[..., idx_ini:idx_fin]
-            idx_ini = idx_fin
-        reconstructed = self.inv_fourier_transform(result).astype(np.float32)
-        return reconstructed
+        ini = 0
+        for spectrum, fin in zip(spectra, indices):
+            result_spectrum[..., ini:fin] = spectrum[..., ini:fin]
+            ini = fin
+        result_image = self.inv_fourier_transform(result_spectrum)
+        return result_image.astype(np.float32)
 
     @staticmethod
     def fourier_transform(array):
