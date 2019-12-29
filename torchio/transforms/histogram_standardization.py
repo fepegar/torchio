@@ -12,7 +12,7 @@ from .transform import Transform
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
-class HistogramStandardisation(Transform):
+class HistogramStandardization(Transform):
     def __init__(self, landmarks_dict, verbose=False):
         super().__init__(verbose=verbose)
         self.landmarks_dict = landmarks_dict
@@ -50,9 +50,9 @@ def __compute_percentiles(img, mask, cutoff):
     return perc_results
 
 
-def __standardise_cutoff(cutoff, type_hist='percentile'):
+def __standardize_cutoff(cutoff, type_hist='percentile'):
     """
-    Standardises the cutoff values given in the configuration
+    Standardizes the cutoff values given in the configuration
 
     :param cutoff:
     :param type_hist: Type of landmark normalisation chosen (median,
@@ -115,10 +115,10 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
 
-    cutoff = __standardise_cutoff(cutoff)
+    cutoff = __standardize_cutoff(cutoff)
     perc = __compute_percentiles(img, mask, cutoff)
 
-    # Apply linear histogram standardisation
+    # Apply linear histogram standardization
     range_mapping = mapping[range_to_use]
     range_perc = perc[range_to_use]
     diff_mapping = range_mapping[1:] - range_mapping[:-1]

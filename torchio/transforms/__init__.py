@@ -8,4 +8,4 @@ from .interpolation import Interpolation
 # Intensity transforms
 from .rescale import Rescale
 from .z_normalization import ZNormalization
-from .histogram_standardisation import HistogramStandardisation
+from .histogram_standardization import HistogramStandardization
