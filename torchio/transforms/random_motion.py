@@ -44,9 +44,14 @@ class RandomMotion(RandomTransform):
                 self.translation_range,
                 self.num_transforms,
             )
-            sample[image_name]['random_motion_times'] = times_params
-            sample[image_name]['random_motion_degrees'] = degrees_params
-            sample[image_name]['random_motion_translation'] = translation_params
+            keys = (
+                'random_motion_times',
+                'random_motion_degrees',
+                'random_motion_translation',
+            )
+            all_params = times_params, degrees_params, translation_params
+            for key, params in zip(keys, all_params):
+                sample[image_name][key] = params
             if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] == LABEL:
@@ -202,21 +207,21 @@ class RandomMotion(RandomTransform):
         while diff > epsilon:
             iX = np.linalg.inv(X)
             iY = np.linalg.inv(Y)
-            X = 1/2 * (X + iY)
-            Y = 1/2 * (Y + iX)
+            X = 1 / 2 * (X + iY)
+            Y = 1 / 2 * (Y + iX)
             diff = np.linalg.norm(X @ X - A)
         return X
 
     @staticmethod
     def matrix_exp(A, q=6):
-        I = np.eye(4, dtype=float)
+        identity = np.eye(4, dtype=float)
         norm_a = np.linalg.norm(A)
         log = np.log2(norm_a)
         j = int(max(0, 1 + np.floor(log))) if norm_a > 0 else 0
         A = 2 ** (-j) * A
-        D = I.copy()
-        N = I.copy()
-        X = I.copy()
+        D = identity.copy()
+        N = identity.copy()
+        X = identity.copy()
         c = 1
         for k in range(1, q + 1):
             c = c * (q - k + 1) / (k * (2 * q - k + 1))
@@ -228,14 +233,14 @@ class RandomMotion(RandomTransform):
         return X
 
     def matrix_log(self, A, epsilon=1e-9):
-        I = np.eye(4)
+        identity = np.eye(4)
         k = 0
         diff = np.inf
         while diff > 0.5:
             A = self.matrix_sqrt(A)
             k += 1
-            diff = np.linalg.norm(A - I)
-        A = I - A
+            diff = np.linalg.norm(A - identity)
+        A = identity - A
         Z = A.copy()
         X = A.copy()
         i = 1

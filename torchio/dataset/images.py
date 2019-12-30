@@ -17,9 +17,18 @@ class ImagesDataset(Dataset):
         """
         Each element of subjects_list is a dictionary:
         subject = {
-            'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
-            'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
-            'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
+            'one_image': dict(
+                path=path_to_one_image,
+                type=torchio.INTENSITY,
+            ),
+            'another_image': dict(
+                path=path_to_another_image,
+                type=torchio.INTENSITY,
+            ),
+            'a_label': dict(
+                path=path_to_a_label,
+                type=torchio.LABEL,
+            ),
         }
         See examples/example_multimodal.py for -obviously- an example.
         """
@@ -90,7 +99,7 @@ class ImagesDataset(Dataset):
             subject_dict = element
             for image_dict in subject_dict.values():
                 for key in ('path', 'type'):
-                    if not key in image_dict:
+                    if key not in image_dict:
                         raise ValueError(
                             f'"{key}" not found in image dict {image_dict}')
                 parse_path(image_dict['path'])
