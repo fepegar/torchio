@@ -6,3 +6,22 @@ History
 ------------------
 
 * First release on PyPI.
+
+
+0.3.0 (21-12-2019)
+------------------
+
+* Add Rescale transform
+* Add support for multimodal data and missing modalities
+
+
+0.4.0 (29-12-2019)
+------------------
+
+* Add MRI k-space motion artefact augmentation
+
+
+0.5.0 (01-01-2020)
+------------------
+
+* Add bias field transform
