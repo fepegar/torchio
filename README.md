@@ -8,8 +8,7 @@ for data augmentation. Transforms include typical computer vision operations
 such as random affine transformations and also domain specific ones such as
 simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
-(work in progress) or
-[k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
+or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
@@ -151,9 +150,6 @@ simulate motion artifacts for data augmentation.
 
 
 ##### MRI magnetic field inhomogeneity
-
-WIP.
-
 
 ##### Normalization
 

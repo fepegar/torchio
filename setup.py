@@ -38,7 +38,10 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="Utils for loading, augmenting and writing 3D medical images on PyTorch.",
+    description=(
+        "Tools for loading, augmenting and writing 3D medical images"
+        " on PyTorch."
+    ),
     entry_points={
         'console_scripts': [
             'torchio=torchio.cli:main',
