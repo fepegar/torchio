@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
+from tqdm import tqdm
 from ..torchio import INTENSITY
 from .transform import Transform
 
@@ -150,15 +151,15 @@ def train(
         mask_path=None,
         masking_function=None,
         output_path=None,
-):
+        ):
     """
     Output path extension should be .txt or .npy
     """
     cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
     percentiles_database = []
-    for index, image_file_path in enumerate(images_paths):
+    for index, image_file_path in enumerate(tqdm(images_paths)):
         # NiftyNet implementation says image should be float
-        data = nib.load(image_file_path).get_fdata(dtype=np.float32)
+        data = nib.load(str(image_file_path)).get_fdata(dtype=np.float32)
 
         if masking_function is not None:
             mask = masking_function(data)
