@@ -151,6 +151,13 @@ simulate motion artifacts for data augmentation.
 
 ##### MRI magnetic field inhomogeneity
 
+MRI magnetic field inhomogeneity creates slow frequency intensity variations.
+This transform is very similar to the one in
+[NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
+
+![MRI bias field artifacts](images/random_bias_field.gif)
+
+
 ##### Normalization
 
 ###### Histogram standardization
