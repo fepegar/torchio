@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 import SimpleITK as sitk
 from ..torchio import LABEL
 from ..utils import is_image_dict
