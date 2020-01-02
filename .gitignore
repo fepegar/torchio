@@ -107,3 +107,6 @@ ENV/
 
 # Custom
 test_scripts/
+
+*DS_Store
+
