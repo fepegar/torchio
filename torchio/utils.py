@@ -31,7 +31,13 @@ def get_stem(path):
 
 
 def is_image_dict(variable):
-    return isinstance(variable, dict) and 'type' in variable
+    is_dict = isinstance(variable, dict)
+    has_right_keys = (
+        'type' in variable
+        and 'data' in variable
+        and 'affine' in variable
+    )
+    return is_dict and has_right_keys
 
 
 def create_dummy_dataset(num_images, size_range, force=False):

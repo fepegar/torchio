@@ -1,4 +1,3 @@
-import warnings
 import torch
 import SimpleITK as sitk
 from ..torchio import LABEL
@@ -35,7 +34,6 @@ class RandomElasticDeformation(RandomTransform):
             return sample
 
         bspline_params = None
-        nothing_resampled = True
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -57,12 +55,6 @@ class RandomElasticDeformation(RandomTransform):
                 image_dict['affine'],
                 bspline_params,
                 interpolation,
-            )
-            nothing_resampled = False
-        if nothing_resampled:
-            warnings.warn(
-                'No images were resampled.'
-                f' Sample keys: {sample.keys()}'
             )
         sample['random_elastic_deformation'] = bspline_params
         return sample
