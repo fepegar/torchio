@@ -56,6 +56,7 @@ class RandomElasticDeformation(RandomTransform):
                 bspline_params,
                 interpolation,
             )
+        sample['random_elastic_deformation'] = bspline_params
         return sample
 
     @staticmethod
