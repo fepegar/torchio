@@ -15,6 +15,7 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
 ## Index
 
+- [Installation](#installation)
 - [Features](#features)
   * [Dataset](#dataset)
   * [Samplers](#samplers)
@@ -32,8 +33,14 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
       * [Flip](#flip)
       * [Affine transform](#affine-transform)
       * [B-spline dense deformation](#b-spline-dense-deformation)
-- [Installation](#installation)
 - [Example](#example)
+
+
+## Installation
+
+```shell
+$ pip install torchio
+```
 
 
 ## Features
@@ -185,6 +192,8 @@ this transform has zero-mean.
 
 ##### Flip
 
+Reverse the order of elements in an image along the given axes.
+
 
 ##### Affine transform
 
@@ -192,23 +201,6 @@ this transform has zero-mean.
 ##### B-spline dense elastic deformation
 
 ![Random elastic deformation](images/random_elastic_deformation.gif)
-
-
-## Installation
-
-I recommend cloning and doing an editable installation, as this is still very
-experimental and changes very often.
-
-```shell
-git clone https://github.com/fepegar/torchio.git
-pip install --editable torchio
-```
-
-If you want to quickly try the latest released version, just run
-
-```shell
-pip install torchio
-```
 
 
 ## Example
