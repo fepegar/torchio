@@ -25,3 +25,9 @@ History
 ------------------
 
 * Add bias field transform
+
+
+0.6.0 (02-01-2020)
+------------------
+
+* Add support for NRRD
