@@ -173,6 +173,13 @@ This transform is very similar to the one in
 
 ##### Noise
 
+Adds noise sampled from a normal distribution with mean 0 and standard
+deviation sampled from a uniform distribution in the range `std_range`.
+It is often used after [`ZNormalization`](#z-normalization), as the output of
+this transform has zero-mean.
+
+![Random Gaussian noise](images/random_noise.gif)
+
 
 #### Spatial
 
