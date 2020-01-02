@@ -24,7 +24,7 @@ from .random_transform import RandomTransform
 class RandomMotion(RandomTransform):
     def __init__(
             self,
-            degrees=30,
+            degrees=10,
             translation=10,  # in mm
             num_transforms=2,
             image_interpolation=Interpolation.LINEAR,
@@ -130,7 +130,11 @@ class RandomMotion(RandomTransform):
     def matrix_to_transform(matrix):
         transform = sitk.Euler3DTransform()
         rotation = matrix[:3, :3].flatten().tolist()
-        transform.SetMatrix(rotation)
+        try:
+            transform.SetMatrix(rotation)
+        except RuntimeError:
+            print('Matrix:')
+            print(matrix)
         transform.SetTranslation(matrix[:3, 3])
         return transform
 

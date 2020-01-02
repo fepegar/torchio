@@ -104,5 +104,5 @@ class RandomElasticDeformation(RandomTransform):
 
             channel_array = sitk.GetArrayFromImage(resampled)
             channel_array = channel_array.transpose()  # ITK to NumPy
-            array[i] = channel_array
+            array[i] = torch.from_numpy(channel_array)
         return array

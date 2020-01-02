@@ -29,6 +29,8 @@ class RandomTransform(Transform):
         """
         import nibabel as nib
         from tempfile import NamedTemporaryFile
+        if isinstance(array, torch.Tensor):
+            array = array.numpy()
         with NamedTemporaryFile(suffix='.nii') as f:
             nib.Nifti1Image(array, affine).to_filename(f.name)
             image = sitk.ReadImage(f.name)

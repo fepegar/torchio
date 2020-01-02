@@ -5,7 +5,13 @@ from .random_transform import RandomTransform
 
 
 class RandomFlip(RandomTransform):
-    def __init__(self, axes, flip_probability=0.5, seed=None, verbose=False):
+    def __init__(
+            self,
+            axes=(0,),
+            flip_probability=0.5,
+            seed=None,
+            verbose=False,
+            ):
         super().__init__(seed=seed, verbose=verbose)
         self.axes = axes
         assert flip_probability > 0
@@ -18,15 +24,13 @@ class RandomFlip(RandomTransform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            array = image_dict['data']
+            tensor = image_dict['data']
             for axis, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:
                     continue
                 actual_axis = axis + 1  # images are 4D
-                array = np.flip(array, axis=actual_axis)
-            # Why copy? See the following issue:
-            # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            image_dict['data'] = array.copy()
+                tensor = torch.flip(tensor, dims=actual_axis)
+            image_dict['data'] = tensor
         return sample
 
     @staticmethod

@@ -3,6 +3,7 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
+import torch
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
@@ -102,6 +103,7 @@ def __averaged_mapping(perc_database, s1, s2):
 
 
 def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
+    data = data.numpy()
     mapping = landmarks
 
     img = data
@@ -141,7 +143,7 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     aff_img = affine_map[1, bin_id]
     new_img = lin_img * img + aff_img
     new_img = new_img.reshape(image_shape)
-
+    new_img = torch.from_numpy(new_img)
     return new_img
 
 
