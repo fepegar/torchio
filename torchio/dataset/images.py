@@ -1,6 +1,7 @@
 from pathlib import Path
 from collections.abc import Sequence
 
+import nrrd
 import numpy as np
 import nibabel as nib
 from torch.utils.data import Dataset
@@ -64,10 +65,20 @@ class ImagesDataset(Dataset):
         if self.verbose:
             print(f'Loading {path}...')
         path = Path(path).expanduser()
-        img = nib.load(str(path))
 
-        # See https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
-        data = np.array(img.dataobj).astype(np.float32)
+        if '.nii' in path.suffixes:
+            nii = nib.load(str(path))
+            # See https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
+            data = np.array(nii.dataobj).astype(np.float32)
+            affine = nii.affine
+        elif '.nrrd' in path.suffixes:
+            data, header = nrrd.read(path)
+            data = data.astype(np.float32)
+            affine = np.eye(4)
+            affine[:3, :3] = header['space directions'].T
+            affine[:3, 3] = header['space origin']
+            lps_to_ras = np.diag((-1, -1, 1, 1))
+            affine = np.dot(lps_to_ras, affine)
 
         if self.verbose:
             print(f'Loaded array with shape {data.shape}')
@@ -79,7 +90,7 @@ class ImagesDataset(Dataset):
             )
             raise NotImplementedError(message)
         data = data[np.newaxis, ...] if add_channels_dim else data
-        return data, img.affine
+        return data, affine
 
     @staticmethod
     def parse_subjects_list(subjects_list):

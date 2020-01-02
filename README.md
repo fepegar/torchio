@@ -46,6 +46,8 @@ It can be used with a
 [`torch.utils.DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
 for efficient reading and data augmentation.
 
+The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
+
 ```python
 import torchio
 
