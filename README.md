@@ -180,7 +180,9 @@ This transform is very similar to the one in
 ##### Affine transform
 
 
-##### B-spline dense deformation
+##### B-spline dense elastic deformation
+
+![Random elastic deformation](images/random_elastic_deformation.gif)
 
 
 ## Installation
