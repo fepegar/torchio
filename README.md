@@ -45,7 +45,9 @@ $ pip install torchio
 
 ## Features
 
-### Dataset
+### Data handling
+
+#### Dataset
 
 `ImagesDataset` is a reader of medical images that directly inherits from
 [`torch.utils.Dataset`](https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset).
@@ -72,7 +74,7 @@ subject_sample = subjects_dataset[0]
 ```
 
 
-### Samplers
+#### Samplers
 
 `torchio` includes grid, uniform and label patch samplers. There is also an
 aggregator used for dense predictions. The code for these is almost
@@ -111,7 +113,7 @@ output_array = aggregator.output_array
 ```
 
 
-### Queue
+#### Queue
 
 A patches `Queue` (or buffer) can be used for randomized patch-based sampling
 during training.
@@ -169,18 +171,7 @@ This transform is very similar to the one in
 ![MRI bias field artifacts](images/random_bias_field.gif)
 
 
-##### Normalization
-
-###### Histogram standardization
-
-
-###### Z-normalization
-
-
-###### Rescale
-
-
-##### Noise
+##### Gaussian noise
 
 Adds noise sampled from a normal distribution with mean 0 and standard
 deviation sampled from a uniform distribution in the range `std_range`.
@@ -188,6 +179,23 @@ It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
 ![Random Gaussian noise](images/random_noise.gif)
+
+
+##### Normalization
+
+###### Histogram standardization
+
+Implementation of
+[*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
+adapted from NiftyNet.
+
+![Histogram standardization](images/histogram_standardization.png)
+
+
+###### Z-normalization
+
+
+###### Rescale
 
 
 #### Spatial
