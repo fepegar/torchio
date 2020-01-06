@@ -1,5 +1,7 @@
 # TorchIO
 
+[![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
+
 `torchio` is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
