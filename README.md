@@ -8,7 +8,7 @@
 read, sample and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
 including intensity and spatial transforms
-for data augmentation. Transforms include typical computer vision operations
+for data augmentation and preprocessing. Transforms include typical computer vision operations
 such as random affine transformations and also domain specific ones such as
 simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
