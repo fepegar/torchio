@@ -1,7 +1,7 @@
 import random
 import warnings
-from tqdm import trange
 from itertools import islice
+from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
 
