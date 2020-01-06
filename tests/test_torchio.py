@@ -2,11 +2,9 @@
 
 """Tests for `torchio` package."""
 
-
 import unittest
 from click.testing import CliRunner
 
-from torchio import torchio
 from torchio import cli
 
 

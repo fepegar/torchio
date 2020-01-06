@@ -1,10 +1,12 @@
+import copy
 from itertools import cycle
 
 import numpy as np
 import torch
 from torch.utils.data import IterableDataset
 
-from ..utils import to_tuple
+from ..utils import to_tuple, is_image_dict
+
 
 class ImageSampler(IterableDataset):
     def __init__(self, sample, patch_size):
@@ -37,7 +39,14 @@ class ImageSampler(IterableDataset):
         return cropped_sample
 
     def get_random_indices(self, sample, patch_size):
-        shape = np.array(sample['image'].shape[1:], dtype=np.uint16)
+        """
+        TODO? Assert that shape is consistent across modalities (and label)
+        TODO: check that array shape is >= patch size
+        """
+        first_image_name = list(sample.keys())[0]
+        first_image_array = sample[first_image_name]['data']
+        # first_image_array should have shape (1, H, W, D)
+        shape = np.array(first_image_array.shape[1:], dtype=np.uint16)
         max_index = shape - patch_size
         index = [
             torch.randint(i, size=(1,)).item() for i in max_index.tolist()
@@ -55,12 +64,16 @@ class ImageSampler(IterableDataset):
     def copy_and_crop(self, sample, index_ini, index_fin):
         cropped_sample = {}
         for key, value in sample.items():
+
             #if key in ('image', 'label'): change so that label_1 should be considerd
-            if ('image' in key) or ('label' in key):
-                    cropped_sample[key] = self.crop(
-                    value, index_ini, index_fin)
-            else:
-                cropped_sample[key] = value
+            #if ('image' in key) or ('label' in key):
+
+            cropped_sample[key] = copy.copy(value)
+            if is_image_dict(value):
+                sample_image_dict = value
+                cropped_image_dict = cropped_sample[key]
+                cropped_image_dict['data'] = self.crop(
+                    sample_image_dict['data'], index_ini, index_fin)
         # torch doesn't like uint16
         cropped_sample['index_ini'] = index_ini.astype(int)
         return cropped_sample

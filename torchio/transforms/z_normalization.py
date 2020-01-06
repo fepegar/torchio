@@ -1,9 +1,13 @@
+from ..utils import is_image_dict
 from .transform import Transform
 
 
 class ZNormalization(Transform):
     def apply_transform(self, sample):
-        znorm(sample['image'])
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
+                continue
+            znorm(image_dict['data'])
         return sample
 
 

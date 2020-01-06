@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
+import torchio
 from torchio import ImagesDataset
 from torchio.sampler import LabelSampler
 from torchio.transforms import RandomFlip, RandomAffine, Interpolation
@@ -28,12 +29,11 @@ if __name__ == "__main__":
     torch.manual_seed(42)
 
     # Config
-    force = False
-
-    paths_dict = dict(
-        image=['/tmp/mni/t1_on_mni.nii.gz'],
-        label=['/tmp/mni/t1_259_resection_seg.nii.gz'],
-    )
+    subject_dict = {
+        'T1': dict(path='/tmp/mni/t1_on_mni.nii.gz', type=torchio.INTENSITY),
+        'label': dict(path='/tmp/mni/t1_259_resection_seg.nii.gz', type=torchio.LABEL),
+    }
+    subjects_paths = [subject_dict]  # just one
 
     verbose = True
     patch_size = 128
@@ -41,21 +41,22 @@ if __name__ == "__main__":
     batch_size = 4
 
     scales = (0.75, 0.75)
-    angles = (-5, -5)
+    degrees = (-5, -5)
     axes = (0,)
 
     transforms = (
-        RandomAffine(scales=scales, angles=angles, image_interpolation=Interpolation.BSPLINE,
+        RandomAffine(scales=scales, degrees=degrees, image_interpolation=Interpolation.BSPLINE,
                      isotropic=False, verbose=verbose),
         RandomFlip(axes, verbose=verbose),
     )
     transform = Compose(transforms)
     subjects_dataset = ImagesDataset(
-        paths_dict, transform=transform, verbose=verbose)
+        subjects_paths, transform=transform, verbose=verbose)
     sample = subjects_dataset[0]
 
     sampler = LabelSampler(sample, patch_size)
     loader = DataLoader(sampler, batch_size=batch_size)
 
+    # TODO: check that this works as expected, use dummy data
     for batch in islice(loader, 1):
         save_batch(batch, '/tmp/batch')

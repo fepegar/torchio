@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 import SimpleITK as sitk
+from ..torchio import LABEL
+from ..utils import is_image_dict
 from .interpolation import Interpolation
 from .random_transform import RandomTransform
 
@@ -9,7 +11,7 @@ class RandomAffine(RandomTransform):
     def __init__(
             self,
             scales=(0.9, 1.1),
-            angles=(-10, 10),  # in degrees
+            degrees=10,
             isotropic=False,
             image_interpolation=Interpolation.LINEAR,
             seed=None,
@@ -17,35 +19,33 @@ class RandomAffine(RandomTransform):
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.scales = scales
-        self.angles = angles
+        self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic
         self.image_interpolation = image_interpolation
 
     def apply_transform(self, sample):
         scaling_params, rotation_params = self.get_params(
-            self.scales, self.angles, self.isotropic)
+            self.scales, self.degrees, self.isotropic)
         sample['random_scaling'] = scaling_params
         sample['random_rotation'] = rotation_params
-        for key in 'image', 'label', 'sampler':
-            if key == 'image':
-                interpolation = self.image_interpolation
-            else:
-                interpolation = Interpolation.NEAREST
-            if key not in sample:
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
                 continue
-            array = sample[key]
-            array = self.apply_affine_transform(
-                array,
-                sample['affine'],
+            if image_dict['type'] == LABEL:
+                interpolation = Interpolation.NEAREST
+            else:
+                interpolation = self.image_interpolation
+            image_dict['data'] = self.apply_affine_transform(
+                image_dict['data'],
+                image_dict['affine'],
                 scaling_params,
                 rotation_params,
                 interpolation,
             )
-            sample[key] = array
         return sample
 
     @staticmethod
-    def get_params(scales, angles, isotropic):
+    def get_params(scales, degrees, isotropic):
         scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
 
         # worker = torch.utils.data.get_worker_info()
@@ -54,7 +54,7 @@ class RandomAffine(RandomTransform):
 
         if isotropic:
             scaling_params = 3 * scaling_params[0]
-        rotation_params = torch.FloatTensor(3).uniform_(*angles).tolist()
+        rotation_params = torch.FloatTensor(3).uniform_(*degrees).tolist()
         return scaling_params, rotation_params
 
     @staticmethod

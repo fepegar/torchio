@@ -6,11 +6,14 @@ from pathlib import Path
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
+from tqdm import tqdm
+from ..torchio import INTENSITY
 from .transform import Transform
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
+<<<<<<< HEAD:torchio/transforms/histogram_standardisation.py
 class HistogramStandardisation:
     def __init__(self, landmarks, verbose=False, mask_field_name=None):
         super().__init__(verbose=verbose)
@@ -27,9 +30,16 @@ class HistogramStandardisation:
                 landmarks = np.array(numbers).astype(np.float32)
         self.mask_field_name = mask_field_name
         self.landmarks = landmarks
+=======
+class HistogramStandardization(Transform):
+    def __init__(self, landmarks_dict, verbose=False):
+        super().__init__(verbose=verbose)
+        self.landmarks_dict = landmarks_dict
+>>>>>>> b2f62043cbc6f310d9f1af95d53bfd7d94f720e3:torchio/transforms/histogram_standardization.py
 
 
     def apply_transform(self, sample):
+<<<<<<< HEAD:torchio/transforms/histogram_standardisation.py
         if self.mask_field_name is not None:
             mask_data = sample[self.mask_field_name]
         else:
@@ -37,6 +47,16 @@ class HistogramStandardisation:
 
         sample['image'] = normalize(sample['image'], self.landmarks, mask_data=mask_data)
 
+=======
+        for image_name, image_dict in sample.items():
+            if not isinstance(image_dict, dict) or 'type' not in image_dict:
+                # Not an image
+                continue
+            if image_dict['type'] == INTENSITY:
+                # TODO: assert that image_name is in dict
+                landmarks = self.landmarks_dict[image_name]
+                image_dict['data'] = normalize(image_dict['data'], landmarks)
+>>>>>>> b2f62043cbc6f310d9f1af95d53bfd7d94f720e3:torchio/transforms/histogram_standardization.py
         return sample
 
 
@@ -63,9 +83,9 @@ def __compute_percentiles(img, mask, cutoff):
     return perc_results
 
 
-def __standardise_cutoff(cutoff, type_hist='percentile'):
+def __standardize_cutoff(cutoff, type_hist='percentile'):
     """
-    Standardises the cutoff values given in the configuration
+    Standardizes the cutoff values given in the configuration
 
     :param cutoff:
     :param type_hist: Type of landmark normalisation chosen (median,
@@ -131,10 +151,10 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mas
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
 
-    cutoff = __standardise_cutoff(cutoff)
+    cutoff = __standardize_cutoff(cutoff)
     perc = __compute_percentiles(img, mask, cutoff)
 
-    # Apply linear histogram standardisation
+    # Apply linear histogram standardization
     range_mapping = mapping[range_to_use]
     range_perc = perc[range_to_use]
     diff_mapping = range_mapping[1:] - range_mapping[:-1]
@@ -172,9 +192,9 @@ def train(
     """
     cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
     percentiles_database = []
-    for index, image_file_path in enumerate(images_paths):
+    for index, image_file_path in enumerate(tqdm(images_paths)):
         # NiftyNet implementation says image should be float
-        data = nib.load(image_file_path).get_fdata(dtype=np.float32)
+        data = nib.load(str(image_file_path)).get_fdata(dtype=np.float32)
 
         if masking_function is not None:
             mask = masking_function(data)

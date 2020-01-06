@@ -18,9 +18,6 @@ class Queue(Dataset):
             shuffle_patches=True,
             verbose=False,
             ):
-        """
-        The queue is shuffled by the DataLoader to which it is passed
-        """
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
         self.shuffle_subjects = shuffle_subjects
@@ -39,14 +36,13 @@ class Queue(Dataset):
         return self.iterations_per_epoch
 
     def __getitem__(self, _):
-        """
-        There are probably more elegant ways of doing this
-        """
+        """There are probably more elegant ways of doing this"""
         if not self.patches_list:
             self.print('Patches list is empty.')
             self.fill()
             self.print('Patches:', [patch['path'].split('_')[-1] for patch in self.patches_list])
             #self.print('Patches:', [patch['sujid'] for patch in self.patches_list])
+
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
         return sample_patch
@@ -110,20 +106,13 @@ class Queue(Dataset):
 
 
     def get_next_subject_sample(self):
-        """
-        A StopIteration exception is expected when the queue is empty
-        """
+        """A StopIteration exception is expected when the queue is empty"""
         try:
             subject_sample = next(self.subjects_iterable)
         except StopIteration as exception:
             self.print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
             subject_sample = next(self.subjects_iterable)
-        message = (
-            "subject_sample['image'] should have 4 dimensions,"
-            f" but has shape {subject_sample['image'].shape}"
-        )
-        assert subject_sample['image'].ndim == 4, message
         return subject_sample
 
     def get_subjects_iterable(self):
@@ -131,7 +120,8 @@ class Queue(Dataset):
         I need a DataLoader to handle parallelism
         But this loader is always expected to yield single subject samples
         """
-        self.print('\nCreating subjects loader with', self.num_workers, 'workers')
+        self.print(
+            '\nCreating subjects loader with', self.num_workers, 'workers')
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,
