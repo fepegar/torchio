@@ -100,7 +100,7 @@ aggregator = torchio.inference.GridAggregator(
 
 with torch.no_grad():
     for patches_batch in patch_loader:
-        input_tensor = patches_batch['one_modality']
+        input_tensor = patches_batch['image']
         locations = patches_batch['location']
         logits = model(input_tensor)  # some torch.nn.Module
         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
@@ -122,20 +122,22 @@ can be used to understand how the queue works.
 import torch
 import torchio
 
-queue_dataset = torchio.Queue(
+patches_queue = torchio.Queue(
     subjects_dataset=subjects_dataset,
     queue_length=300,
     samples_per_volume=10,
     patch_size=96,
     sampler_class=torchio.sampler.ImageSampler,
     num_workers=4,
+    shuffle_subjects=True,
+    shuffle_patches=True,
 )
-batch_loader = DataLoader(queue_dataset, batch_size=4)
+patches_loader = DataLoader(patches_queue, batch_size=4)
 
 num_epochs = 20
 for epoch_index in range(num_epochs):
-    for batch in batch_loader:
-        logits = model(batch)  # model is some torch.nn.Module
+    for patches_batch in patches_loader:
+        logits = model(patches_batch)  # model is some torch.nn.Module
 ```
 
 
@@ -204,6 +206,9 @@ Reverse the order of elements in an image along the given axes.
 
 
 ## Example
+
+This example shows the improvement in performance when multiple workers are
+used to load and preprocess the volumes using multiple workers.
 
 ```python
 import time
