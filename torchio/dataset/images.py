@@ -73,20 +73,28 @@ class ImagesDataset(Dataset):
             if not path.is_file():
                 raise FileNotFoundError(f'{path} not found')
         if not isinstance(subjects_list, Sequence):
-            raise ValueError(
+            raise TypeError(
                 f'Subject list must be a sequence, not {type(subjects_list)}')
         if not subjects_list:
             raise ValueError('Subjects list is empty')
         for element in subjects_list:
             if not isinstance(element, dict):
-                raise ValueError(
+                raise TypeError(
                     f'All elements must be dictionaries, not {type(element)}')
+            if not element:
+                raise ValueError(f'Element seems empty: {element}')
             subject_dict = element
-            for image_dict in subject_dict.values():
+            for image_name, image_dict in subject_dict.items():
+                if not isinstance(image_dict, dict):
+                    raise TypeError(
+                        f'Type {type(image_dict)} found for {image_name},'
+                        ' instead of type dict'
+                    )
                 for key in ('path', 'type'):
                     if key not in image_dict:
-                        raise ValueError(
-                            f'"{key}" not found in image dict {image_dict}')
+                        raise KeyError(
+                            f'"{key}" key not found'
+                            f' in image dict {image_dict}')
                 parse_path(image_dict['path'])
 
     @staticmethod

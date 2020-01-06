@@ -66,7 +66,7 @@ class TestTransforms(unittest.TestCase):
             ZNormalization,
             HistogramStandardization,
         )
-        default_kwargs = dict(seed=42, verbose=True)
+        default_kwargs = dict(seed=42)
 
         for transform in random_transforms:
             sample = self.get_sample()
@@ -78,7 +78,7 @@ class TestTransforms(unittest.TestCase):
 
         for transform in intensity_transforms:
             sample = self.get_sample()
-            kwargs = dict(verbose=True)
+            kwargs = {}
             if transform == HistogramStandardization:
                 kwargs['landmarks_dict'] = dict(
                     t1=np.linspace(0, 100, 13),
