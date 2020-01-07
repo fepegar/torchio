@@ -1,14 +1,16 @@
 """
-Simplified implementation of
+Custom implementation of
 
     Shaw et al., 2019
     MRI k-Space Motion Artefact Augmentation:
     Model Robustness and Task-Specific Uncertainty
 
+
 Matrix algebra functions from
 
     Alexa, 2002
     Linear combination of transformations
+
 """
 
 import torch
@@ -264,6 +266,5 @@ class RandomMotion(RandomTransform):
 
 
 def get_params_array(nums_range, num_transforms):
-    # TODO: sample from Poisson distribution? Gaussian?
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
     return tensor.numpy()
