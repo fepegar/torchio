@@ -152,12 +152,7 @@ class RandomMotion(RandomTransform):
     def matrix_to_transform(matrix):
         transform = sitk.Euler3DTransform()
         rotation = matrix[:3, :3].flatten().tolist()
-        try:
-            transform.SetMatrix(rotation)
-        except RuntimeError as e:
-            print(e)
-            print('Matrix:')
-            print(matrix)
+        transform.SetMatrix(rotation)
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
@@ -227,7 +222,7 @@ class RandomMotion(RandomTransform):
 
     # The following methods are from (Alexa, 2002)
     @staticmethod
-    def matrix_sqrt(A, epsilon=1e-9):
+    def matrix_sqrt(A, epsilon=1e-10):
         X = A.copy()
         Y = np.eye(4)
         diff = np.inf
