@@ -96,7 +96,10 @@ class ImagesDataset(Dataset):
                             f' in image dict {image_dict}')
                 path = image_dict['path']
                 if not parse_path(path):
-                    message = f'{path} not found for image {image_name}'
+                    message = (
+                        f'File for image "{image_name}"'
+                        f' not found: "{path}"'
+                    )
                     raise FileNotFoundError(message)
 
     @staticmethod
