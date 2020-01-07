@@ -95,12 +95,21 @@ class RandomMotion(RandomTransform):
             translation_range,
             num_transforms,
             probability,
+            perturbation=0.3,
             ):
+        """
+        If perturbation is 0, the intervals between movements are constants
+        """
         degrees_params = get_params_array(
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
-        times_params = np.array(sorted(torch.rand(num_transforms).tolist()))
+        step = 1 / (num_transforms + 1)
+        times = torch.arange(0, 1, step)[1:]
+        noise = torch.FloatTensor(num_transforms)
+        noise.uniform_(-step * perturbation, step * perturbation)
+        times += noise
+        times_params = times.numpy()
         do_it = torch.rand(1) < probability
         return times_params, degrees_params, translation_params, do_it
 
