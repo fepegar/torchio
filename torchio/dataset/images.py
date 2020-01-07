@@ -100,6 +100,6 @@ class ImagesDataset(Dataset):
     @staticmethod
     def save_sample(sample, output_paths_dict):
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key]['data'][0, ...]  # remove channels dim
+            tensor = sample[key]['data'][0]  # remove channels dim
             affine = sample[key]['affine']
             write_image(tensor, affine, output_path)
