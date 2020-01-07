@@ -106,5 +106,5 @@ class RandomAffine(RandomTransform):
             )
             channel_array = sitk.GetArrayFromImage(resampled)
             channel_array = channel_array.transpose(2, 1, 0)  # ITK to NumPy
-            array[i] = channel_array
+            array[i] = torch.from_numpy(channel_array)
         return array

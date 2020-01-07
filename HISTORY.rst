@@ -31,3 +31,9 @@ History
 ------------------
 
 * Add support for NRRD
+
+
+0.7.0 (02-01-2020)
+------------------
+
+* Make transforms use PyTorch tensors consistently

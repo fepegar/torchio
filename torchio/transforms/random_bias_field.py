@@ -31,8 +31,9 @@ class RandomBiasField(RandomTransform):
                 continue
             coefficients = self.get_params(self.order, self.coefficients_range)
             sample[image_name]['random_bias_field'] = coefficients
-            image_dict['data'] *= self.generate_bias_field_map(
+            bias_field = self.generate_bias_field_map(
                 image_dict['data'], self.order, coefficients)
+            image_dict['data'] *= torch.from_numpy(bias_field)
         return sample
 
     @staticmethod
@@ -45,8 +46,8 @@ class RandomBiasField(RandomTransform):
         for x_order in range(0, order + 1):
             for y_order in range(0, order + 1 - x_order):
                 for z_order in range(0, order + 1 - (x_order + y_order)):
-                    n = torch.FloatTensor(1).uniform_(*coefficients_range)
-                    random_coefficients.append(n.item())
+                    number = torch.FloatTensor(1).uniform_(*coefficients_range)
+                    random_coefficients.append(number.item())
         return np.array(random_coefficients)
 
     @staticmethod

@@ -26,12 +26,23 @@ def to_tuple(value, n=1):
 
 
 def get_stem(path):
+    """
+    '/home/user/image.nii.gz' -> 'image'
+    """
     path = Path(path)
     return path.name.split('.')[0]
 
 
 def is_image_dict(variable):
-    return isinstance(variable, dict) and 'type' in variable
+    is_dict = isinstance(variable, dict)
+    if not is_dict:
+        return False
+    has_right_keys = (
+        'type' in variable
+        and 'data' in variable
+        and 'affine' in variable
+    )
+    return has_right_keys
 
 
 def create_dummy_dataset(num_images, size_range, force=False):

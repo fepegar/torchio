@@ -1,11 +1,8 @@
 from pathlib import Path
 from collections.abc import Sequence
-
-import nrrd
-import numpy as np
-import nibabel as nib
 from torch.utils.data import Dataset
 from ..utils import get_stem
+from ..io import read_image, write_image
 
 
 class ImagesDataset(Dataset):
@@ -71,9 +68,9 @@ class ImagesDataset(Dataset):
 
         for image_name, image_dict in subject_dict.items():
             image_path = image_dict['path']
-            data, affine = self.load_image(image_path)
+            tensor, affine = self.load_image(image_path)
             image_sample_dict = dict(
-                data=data,
+                data=tensor,
                 path=str(image_path),
                 affine=affine,
                 stem=get_stem(image_path),
@@ -81,42 +78,19 @@ class ImagesDataset(Dataset):
             )
             sample[image_name] = image_sample_dict
 
-        # Apply transform (this is usually the major bottleneck)
+        # Apply transform (this is usually the bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
 
         return sample
 
-    def load_image(self, path, add_channels_dim=True):
+    def load_image(self, path):
         if self.verbose:
             print(f'Loading {path}...')
-        path = Path(path).expanduser()
-
-        if '.nii' in path.suffixes:
-            nii = nib.load(str(path))
-            # See https://github.com/nipy/dmriprep/issues/55#issuecomment-448322366
-            data = np.array(nii.dataobj).astype(np.float32)
-            affine = nii.affine
-        elif '.nrrd' in path.suffixes:
-            data, header = nrrd.read(path)
-            data = data.astype(np.float32)
-            affine = np.eye(4)
-            affine[:3, :3] = header['space directions'].T
-            affine[:3, 3] = header['space origin']
-            lps_to_ras = np.diag((-1, -1, 1, 1))
-            affine = np.dot(lps_to_ras, affine)
-
+        tensor, affine = read_image(path)
         if self.verbose:
-            print(f'Loaded array with shape {data.shape}')
-        num_dimensions = data.ndim
-        if num_dimensions > 3:
-            message = (
-                f'Processing of {num_dimensions}D volumes not supported.'
-                f' {path} has shape {data.shape}'
-            )
-            raise NotImplementedError(message)
-        data = data[np.newaxis, ...] if add_channels_dim else data
-        return data, affine
+            print(f'Loaded array with shape {tensor.shape}')
+        return tensor, affine
 
     @staticmethod
     def parse_subjects_list(subjects_list):
@@ -125,30 +99,33 @@ class ImagesDataset(Dataset):
             if not path.is_file():
                 raise FileNotFoundError(f'{path} not found')
         if not isinstance(subjects_list, Sequence):
-            raise ValueError(
+            raise TypeError(
                 f'Subject list must be a sequence, not {type(subjects_list)}')
         if not subjects_list:
             raise ValueError('Subjects list is empty')
         for element in subjects_list:
             if not isinstance(element, dict):
-                raise ValueError(
+                raise TypeError(
                     f'All elements must be dictionaries, not {type(element)}')
+            if not element:
+                raise ValueError(f'Element seems empty: {element}')
             subject_dict = element
-            for image_dict in subject_dict.values():
+            for image_name, image_dict in subject_dict.items():
+                if not isinstance(image_dict, dict):
+                    raise TypeError(
+                        f'Type {type(image_dict)} found for {image_name},'
+                        ' instead of type dict'
+                    )
                 for key in ('path', 'type'):
                     if key not in image_dict:
-                        raise ValueError(
-                            f'"{key}" not found in image dict {image_dict}')
+                        raise KeyError(
+                            f'"{key}" key not found'
+                            f' in image dict {image_dict}')
                 parse_path(image_dict['path'])
 
     @staticmethod
     def save_sample(sample, output_paths_dict):
-        # TODO: adapt to new subjects_list structure
         for key, output_path in output_paths_dict.items():
-            data = sample[key].squeeze()
-            affine = sample['affine']
-            nii = nib.Nifti1Image(data, affine)
-            nii.header['qform_code'] = 1
-            nii.header['sform_code'] = 0
-            nii.to_filename(str(output_path))
-
+            tensor = sample[key]['data']
+            affine = sample[key]['affine']
+            write_image(tensor, affine, output_path)

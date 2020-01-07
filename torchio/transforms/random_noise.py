@@ -28,5 +28,5 @@ class RandomNoise(RandomTransform):
 
 
 def add_noise(data, std):
-    noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std).numpy()
+    noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std)
     data += noise
