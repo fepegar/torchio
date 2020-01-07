@@ -1,21 +1,23 @@
 """
-Simplified implementation of
+Custom implementation of
 
     Shaw et al., 2019
     MRI k-Space Motion Artefact Augmentation:
     Model Robustness and Task-Specific Uncertainty
 
+
 Matrix algebra functions from
 
     Alexa, 2002
     Linear combination of transformations
+
 """
 
 import torch
 import numpy as np
 from tqdm import tqdm
 import SimpleITK as sitk
-from ..torchio import LABEL
+from ..torchio import INTENSITY
 from ..utils import is_image_dict
 from .interpolation import Interpolation
 from .random_transform import RandomTransform
@@ -54,10 +56,8 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = params
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] == LABEL:
-                interpolation = Interpolation.NEAREST
-            else:
-                interpolation = self.image_interpolation
+            if image_dict['type'] != INTENSITY:
+                continue
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
@@ -75,7 +75,7 @@ class RandomMotion(RandomTransform):
                 image,
                 transforms,
                 times_params,
-                interpolation,
+                self.image_interpolation,
             )
             # Add channels dimension
             image_dict['data'] = image_dict['data'][np.newaxis, ...]
@@ -266,6 +266,5 @@ class RandomMotion(RandomTransform):
 
 
 def get_params_array(nums_range, num_transforms):
-    # TODO: sample from Poisson distribution? Gaussian?
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
     return tensor.numpy()
