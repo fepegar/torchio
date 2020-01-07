@@ -87,36 +87,6 @@ class ImagesClassifDataset(ImagesDataset):
         yield sample
 
 
-def get_paths_dict_from_data_prameters(data_param):
-    """
-    :param data_param: same structure as for niftynet set script test/test_dataset.py
-    :return:
-    """
-    paths_dict = dict()
-    for key, vals in data_param.items():
-        if 'csv_file' in vals:
-            csvfile = pd.read_csv(vals['csv_file'], header=None)
-
-            print('Reading {} line in {}'.format(len(csvfile), vals['csv_file']))
-            allfile = [Path(ff) for ff in csvfile.loc[:, 1].str.strip()]
-
-            sujid   = csvfile.loc[:, 0].values
-            paths_dict[key] = allfile
-
-            if 'sujid' in paths_dict :
-                # test if same subject id
-                if np.array_equal(sujid,paths_dict['sujid'] ) is False:
-                    message =("First column subject ID differs")
-                    raise ValueError(message)
-            else :
-                paths_dict['sujid'] = sujid
-
-        else :
-            print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
-
-    return paths_dict
-
-
 def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=None):
     """
     Conditions of the form ((intermediate_op,) var, op, values).
@@ -162,7 +132,7 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
     :param fpath_idx: name of the collumn containing file path
     :param conditions : conditions to select lines. for instance column name corr conditions = [("corr", "<", 0.98),
             will select only values below 0.98
-    :param duplicate_class1: number of time line from class_idx label 1 are duplicate. in this case it well randomly
+    :param duplicate_class1: number of time line from class_idx label 1 are duplicate. in this case it also randomly
             select same number of line from class 0 (to have equal class)
     :return: a paths_dict to be passed inot ImagesDataset and a panda dataframe containing all collumn to be passed
             as info in ImagesClassifDataset
@@ -178,6 +148,7 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
             if conditions is not None:
                 res = res[apply_conditions_on_dataset(res, conditions)]
                 nb_1, nb_0 = np.sum(res.loc[:, class_idx] == 1), np.sum(res.loc[:,class_idx] == 0)
+                res.index = range(0, len(res))
                 print('after condition %s / ok = %d / %d  = %f' % (class_idx, nb_1, nb_0, nb_0 / nb_1))
 
             if duplicate_class1 is not None:
@@ -208,7 +179,7 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
                     dd = dict(path=ff, type=torchio.INTENSITY)
                     paths_dict[key] = dd.copy()
                     new_subjects_path.append(paths_dict.copy())
-                subjects_paths = new_subjects_path
+                subjects_paths = new_subjects_path.copy()
             else:
                 subjects_paths=[]
                 for ff in res.loc[:, fpath_idx].str.strip():
@@ -221,7 +192,7 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
 
     if shuffle_order:
         from sklearn.utils import shuffle
-        index = range(0,len(subjects_paths))
+        index = range(0, len(subjects_paths))
         index_shuffle = shuffle(index)
         res = res.reindex(index_shuffle)
         new_subjects_path = [subjects_paths[index_shuffle[ii]] for ii in index]

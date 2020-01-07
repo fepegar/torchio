@@ -1,2 +1,2 @@
 from .images import ImagesDataset
-from .images_classif import get_paths_dict_from_data_prameters, get_paths_and_res_from_data_prameters, ImagesClassifDataset
+from .images_classif import get_paths_and_res_from_data_prameters, ImagesClassifDataset
