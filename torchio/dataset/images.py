@@ -126,6 +126,6 @@ class ImagesDataset(Dataset):
     @staticmethod
     def save_sample(sample, output_paths_dict):
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key]['data']
+            tensor = sample[key]['data'].squeeze()
             affine = sample[key]['affine']
             write_image(tensor, affine, output_path)
