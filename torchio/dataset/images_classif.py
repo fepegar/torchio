@@ -171,19 +171,24 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
                 res.index = range(0, len(res))
                 print('selecting same number of class 0 so we get a final size of  {}'.format(res.shape))
 
+            if 'type' in vals :
+                image_type = vals['type']
+            else:
+                image_type = torchio.INTENSITY
+
             # allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
             if 'subjects_paths' in locals():
                 new_subjects_path=[]
                 for index, ff in enumerate(res.loc[:, fpath_idx].str.strip()):
                     paths_dict = subjects_paths[index]
-                    dd = dict(path=ff, type=torchio.INTENSITY)
+                    dd = dict(path=ff, type=image_type)
                     paths_dict[key] = dd.copy()
                     new_subjects_path.append(paths_dict.copy())
                 subjects_paths = new_subjects_path.copy()
             else:
                 subjects_paths=[]
                 for ff in res.loc[:, fpath_idx].str.strip():
-                    dd = dict(path=ff, type=torchio.INTENSITY)
+                    dd = dict(path=ff, type=image_type)
                     paths_dict[key] = dd.copy()
                     subjects_paths.append(paths_dict.copy())
 
