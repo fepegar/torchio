@@ -27,6 +27,8 @@ class RandomElasticDeformation(RandomTransform):
 
     def apply_transform(self, sample):
         bspline_params = None
+        sample['random_elastic_deformation'] = {}
+        params_dict = sample['random_elastic_deformation']
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -46,8 +48,8 @@ class RandomElasticDeformation(RandomTransform):
                     self.deformation_std,
                     self.proportion_to_augment,
                 )
-                sample['random_elastic_deformation'] = bspline_params
-                sample['random_elastic_deformation_do'] = int(do_augmentation)
+                params_dict['bspline_params'] = bspline_params
+                params_dict['do_augmentation'] = int(do_augmentation)
                 if not do_augmentation:
                     return sample
             image_dict['data'] = self.apply_bspline_transform(
