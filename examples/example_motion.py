@@ -7,6 +7,11 @@ paths = [{
     'colin': dict(path='/tmp/colin27_t1_tal_lin.nii.gz', type=INTENSITY),
 }]
 
+paths = [{
+    't1': dict(path='/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', type=INTENSITY),
+    'colin': dict(path='/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', type=INTENSITY),
+}]
+
 dataset = ImagesDataset(paths)
 sample = dataset[0]
 transform = transforms.RandomMotion(
