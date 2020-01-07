@@ -60,9 +60,8 @@ class RandomMotion(RandomTransform):
                 'random_motion_translation',
                 'random_motion_do',
             )
-            all_params = times_params, degrees_params, translation_params
-            for key, params in zip(keys, all_params):
-                sample[image_name][key] = params
+            for key, p in zip(keys, params):
+                sample[image_name][key] = p
             if not do_it:
                 return sample
             image = self.nib_to_sitk(
