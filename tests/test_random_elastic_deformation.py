@@ -47,14 +47,7 @@ class TestRandomElasticDeformation(unittest.TestCase):
             seed=42,
         )
         keys = ('t1', 't2', 'label')
-        fixtures = 788.684351305757, 782.1046020679798, 851
+        fixtures = 764.2148522171124, 734.5418868396644, 752
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
-            # # https://stackoverflow.com/a/38507093/3956024
-            # assert_raises(
-            #     AssertionError,
-            #     assert_array_equal,
-            #     self.sample[key]['data'],
-            #     transformed[key]['data'],
-            # )
             assert transformed[key]['data'].sum() == fixture
