@@ -5,18 +5,13 @@ Custom implementation of
     MRI k-Space Motion Artefact Augmentation:
     Model Robustness and Task-Specific Uncertainty
 
-
-Matrix algebra functions from
-
-    Alexa, 2002
-    Linear combination of transformations
-
 """
 
 import torch
 import numpy as np
 from tqdm import tqdm
 import SimpleITK as sitk
+from scipy.linalg import logm, expm
 from ..torchio import INTENSITY
 from ..utils import is_image_dict
 from .interpolation import Interpolation
@@ -220,67 +215,14 @@ class RandomMotion(RandomTransform):
         img_back = np.fft.ifft2(f_ishift)
         return np.abs(img_back)
 
-    # The following methods are from (Alexa, 2002)
-    @staticmethod
-    def matrix_sqrt(A, epsilon=1e-10):
-        X = A.copy()
-        Y = np.eye(4)
-        diff = np.inf
-        while diff > epsilon:
-            iX = np.linalg.inv(X)
-            iY = np.linalg.inv(Y)
-            X = 1 / 2 * (X + iY)
-            Y = 1 / 2 * (Y + iX)
-            diff = np.linalg.norm(X @ X - A)
-        return X
-
-    @staticmethod
-    def matrix_exp(A, q=6):
-        identity = np.eye(4, dtype=float)
-        norm_a = np.linalg.norm(A)
-        log = np.log2(norm_a)
-        j = int(max(0, 1 + np.floor(log))) if norm_a > 0 else 0
-        A = 2 ** (-j) * A
-        D = identity.copy()
-        N = identity.copy()
-        X = identity.copy()
-        c = 1
-        for k in range(1, q + 1):
-            c = c * (q - k + 1) / (k * (2 * q - k + 1))
-            X = A @ X
-            N += c * X
-            D += (-1) ** k * c * X
-        X = np.linalg.inv(D) @ N
-        X = np.linalg.matrix_power(X, 2 * j)
-        return X
-
-    def matrix_log(self, A, epsilon=1e-9):
-        identity = np.eye(4)
-        k = 0
-        diff = np.inf
-        while diff > 0.5:
-            A = self.matrix_sqrt(A)
-            k += 1
-            diff = np.linalg.norm(A - identity)
-        A = identity - A
-        Z = A.copy()
-        X = A.copy()
-        i = 1
-        while np.linalg.norm(Z) > epsilon:
-            Z = Z @ A
-            i += 1
-            X += Z / i
-        X = 2 ** k * X
-        return X
-
     def matrix_average(self, matrices, weights=None):
         if weights is None:
             num_matrices = len(matrices)
             weights = num_matrices * (1 / num_matrices,)
-        logs = [w * self.matrix_log(A) for (w, A) in zip(weights, matrices)]
+        logs = [w * logm(A) for (w, A) in zip(weights, matrices)]
         logs = np.array(logs)
         logs_sum = logs.sum(axis=0)
-        return self.matrix_exp(logs_sum)
+        return expm(logs_sum)
 
 
 def get_params_array(nums_range, num_transforms):
