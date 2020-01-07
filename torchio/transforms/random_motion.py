@@ -48,6 +48,10 @@ class RandomMotion(RandomTransform):
             return sample
 
         for image_name, image_dict in sample.items():
+            if not is_image_dict(image_dict):
+                continue
+            if image_dict['type'] != INTENSITY:
+                continue
             times_params, degrees_params, translation_params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
@@ -61,10 +65,6 @@ class RandomMotion(RandomTransform):
             all_params = times_params, degrees_params, translation_params
             for key, params in zip(keys, all_params):
                 sample[image_name][key] = params
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict['type'] != INTENSITY:
-                continue
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
