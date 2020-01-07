@@ -53,35 +53,27 @@ class TestTransforms(unittest.TestCase):
         return torch.rand(*shape)
 
     def test_transforms(self):
+        landmarks_dict = dict(
+            t1=np.linspace(0, 100, 13),
+            t2=np.linspace(0, 100, 13),
+        )
         random_transforms = (
-            RandomFlip,
-            RandomNoise,
-            RandomBiasField,
-            RandomElasticDeformation,
-            RandomAffine,
-            RandomMotion,
+            RandomFlip(axes=(0, 1, 2), flip_probability=1),
+            RandomNoise(),
+            RandomBiasField(),
+            RandomElasticDeformation(proportion_to_augment=1),
+            RandomAffine(),
+            RandomMotion(proportion_to_augment=1),
         )
         intensity_transforms = (
-            Rescale,
-            ZNormalization,
-            HistogramStandardization,
+            Rescale(),
+            ZNormalization(),
+            HistogramStandardization(landmarks_dict=landmarks_dict),
         )
-        default_kwargs = dict(seed=42)
-
         for transform in random_transforms:
             sample = self.get_sample()
-            kwargs = {}
-            kwargs.update(default_kwargs)
-            if transform == RandomElasticDeformation:
-                kwargs['proportion_to_augment'] = 1
-            transformed = transform(**kwargs)(sample)
+            transformed = transform(sample)
 
         for transform in intensity_transforms:
             sample = self.get_sample()
-            kwargs = {}
-            if transform == HistogramStandardization:
-                kwargs['landmarks_dict'] = dict(
-                    t1=np.linspace(0, 100, 13),
-                    t2=np.linspace(0, 100, 13),
-                )
-            transformed = transform(**kwargs)(sample)
+            transformed = transform(sample)
