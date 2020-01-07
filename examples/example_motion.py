@@ -1,5 +1,4 @@
 from pprint import pprint
-import nibabel as nib
 from torchio import ImagesDataset, transforms, INTENSITY
 
 paths = [{
@@ -20,12 +19,5 @@ transformed = transform(sample)
 
 pprint(transformed['t1']['random_motion_times'])
 
-nib.Nifti1Image(
-    transformed['t1']['data'].squeeze(),
-    transformed['t1']['affine'],
-).to_filename('/tmp/t1_motion.nii.gz')
-
-nib.Nifti1Image(
-    transformed['colin']['data'].squeeze(),
-    transformed['colin']['affine'],
-).to_filename('/tmp/colin_motion.nii.gz')
+dataset.save_sample(transformed, dict(t1='/tmp/t1_motion.nii.gz'))
+dataset.save_sample(transformed, dict(colin='/tmp/colin_motion.nii.gz'))
