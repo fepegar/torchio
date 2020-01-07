@@ -15,7 +15,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 import SimpleITK as sitk
-from ..torchio import LABEL
+from ..torchio import INTENSITY
 from ..utils import is_image_dict
 from .interpolation import Interpolation
 from .random_transform import RandomTransform
@@ -54,10 +54,8 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = params
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] == LABEL:
-                interpolation = Interpolation.NEAREST
-            else:
-                interpolation = self.image_interpolation
+            if image_dict['type'] != INTENSITY:
+                continue
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
@@ -75,7 +73,7 @@ class RandomMotion(RandomTransform):
                 image,
                 transforms,
                 times_params,
-                interpolation,
+                self.image_interpolation,
             )
             # Add channels dimension
             image_dict['data'] = image_dict['data'][np.newaxis, ...]
