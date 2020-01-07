@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import random
 from .images import ImagesDataset
+import torchio
 
 
 class ImagesClassifDataset(ImagesDataset):
@@ -196,17 +197,34 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
 
                 select_ind = np.vstack((ii1, ii0[select_class0])) #concatenate both class
                 res = res.iloc[select_ind[:, 0], :]
+                res.index = range(0, len(res))
                 print('selecting same number of class 0 so we get a final size of  {}'.format(res.shape))
 
-            if shuffle_order:
-                from sklearn.utils import shuffle
-                res = shuffle(res)
-
-            allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
-
-            paths_dict[key] = allfile
+            # allfile = [Path(ff) for ff in res.loc[:, fpath_idx].str.strip()]
+            if 'subjects_paths' in locals():
+                new_subjects_path=[]
+                for index, ff in enumerate(res.loc[:, fpath_idx].str.strip()):
+                    paths_dict = subjects_paths[index]
+                    dd = dict(path=ff, type=torchio.INTENSITY)
+                    paths_dict[key] = dd.copy()
+                    new_subjects_path.append(paths_dict.copy())
+                subjects_paths = new_subjects_path
+            else:
+                subjects_paths=[]
+                for ff in res.loc[:, fpath_idx].str.strip():
+                    dd = dict(path=ff, type=torchio.INTENSITY)
+                    paths_dict[key] = dd.copy()
+                    subjects_paths.append(paths_dict.copy())
 
         else :
             print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
-    return paths_dict, res
+    if shuffle_order:
+        from sklearn.utils import shuffle
+        index = range(0,len(subjects_paths))
+        index_shuffle = shuffle(index)
+        res = res.reindex(index_shuffle)
+        new_subjects_path = [subjects_paths[index_shuffle[ii]] for ii in index]
+        subjects_paths = new_subjects_path
+
+    return subjects_paths, res
