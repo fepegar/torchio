@@ -26,11 +26,6 @@ class RandomElasticDeformation(RandomTransform):
         self.image_interpolation = image_interpolation
 
     def apply_transform(self, sample):
-        # Only do augmentation with a probability `proportion_to_augment`
-        do_augmentation = torch.rand(1) < self.proportion_to_augment
-        if not do_augmentation:
-            return sample
-
         bspline_params = None
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
@@ -45,27 +40,33 @@ class RandomElasticDeformation(RandomTransform):
                     image_dict['data'][0],
                     image_dict['affine'],
                 )
-                bspline_params = self.get_params(
+                do_augmentation, bspline_params = self.get_params(
                     image,
                     self.num_control_points,
                     self.deformation_std,
+                    self.proportion_to_augment,
                 )
+                sample['random_elastic_deformation'] = bspline_params
+                sample['random_elastic_deformation_do'] = int(do_augmentation)
+                if not do_augmentation:
+                    return sample
             image_dict['data'] = self.apply_bspline_transform(
                 image_dict['data'],
                 image_dict['affine'],
                 bspline_params,
                 interpolation,
             )
-        sample['random_elastic_deformation'] = bspline_params
+
         return sample
 
     @staticmethod
-    def get_params(image, num_control_points, deformation_std):
+    def get_params(image, num_control_points, deformation_std, probability):
         mesh_shape = 3 * (num_control_points,)
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
         default_params = bspline_transform.GetParameters()
         bspline_params = torch.rand(len(default_params)) * deformation_std
-        return bspline_params.numpy()
+        do_augmentation = torch.rand(1) < probability
+        return do_augmentation, bspline_params.numpy()
 
     @staticmethod
     def get_bspline_transform(image, num_control_points, bspline_params):

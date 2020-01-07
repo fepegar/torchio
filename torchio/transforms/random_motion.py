@@ -52,19 +52,24 @@ class RandomMotion(RandomTransform):
                 continue
             if image_dict['type'] != INTENSITY:
                 continue
-            times_params, degrees_params, translation_params = self.get_params(
+            params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
+                self.proportion_to_augment
             )
+            times_params, degrees_params, translation_params, do_it = params
             keys = (
                 'random_motion_times',
                 'random_motion_degrees',
                 'random_motion_translation',
+                'random_motion_do',
             )
             all_params = times_params, degrees_params, translation_params
             for key, params in zip(keys, all_params):
                 sample[image_name][key] = params
+            if not do_it:
+                return sample
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
@@ -90,13 +95,19 @@ class RandomMotion(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(degrees_range, translation_range, num_transforms):
+    def get_params(
+            degrees_range,
+            translation_range,
+            num_transforms,
+            probability,
+            ):
         degrees_params = get_params_array(
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
         times_params = np.array(sorted(torch.rand(num_transforms).tolist()))
-        return times_params, degrees_params, translation_params
+        do_it = torch.rand(1) < probability
+        return times_params, degrees_params, translation_params, do_it
 
     def get_rigid_transforms(self, degrees_params, translation_params, image):
         center_ijk = np.array(image.GetSize()) / 2
@@ -140,7 +151,8 @@ class RandomMotion(RandomTransform):
         rotation = matrix[:3, :3].flatten().tolist()
         try:
             transform.SetMatrix(rotation)
-        except RuntimeError:
+        except RuntimeError as e:
+            print(e)
             print('Matrix:')
             print(matrix)
         transform.SetTranslation(matrix[:3, 3])
