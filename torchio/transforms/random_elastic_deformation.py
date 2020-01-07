@@ -24,8 +24,6 @@ class RandomElasticDeformation(RandomTransform):
         self.proportion_to_augment = proportion_to_augment
         self.spatial_rank = spatial_rank
         self.image_interpolation = image_interpolation
-        self.seed = seed
-        self.verbose = verbose
 
     def apply_transform(self, sample):
         # Only do augmentation with a probability `proportion_to_augment`

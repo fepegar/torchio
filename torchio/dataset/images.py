@@ -96,8 +96,7 @@ class ImagesDataset(Dataset):
     def parse_subjects_list(subjects_list):
         def parse_path(path):
             path = Path(path).expanduser()
-            if not path.is_file():
-                raise FileNotFoundError(f'{path} not found')
+            return path.is_file()
         if not isinstance(subjects_list, Sequence):
             raise TypeError(
                 f'Subject list must be a sequence, not {type(subjects_list)}')
@@ -121,7 +120,10 @@ class ImagesDataset(Dataset):
                         raise KeyError(
                             f'"{key}" key not found'
                             f' in image dict {image_dict}')
-                parse_path(image_dict['path'])
+                path = image_dict['path']
+                if not parse_path(path):
+                    message = f'{path} not found for image {image_name}'
+                    raise FileNotFoundError(message)
 
     @staticmethod
     def save_sample(sample, output_paths_dict):
