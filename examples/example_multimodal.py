@@ -38,12 +38,12 @@ transform = Compose(transforms)
 one_subject_dict = {
     'T1': dict(path='../BRATS2018_crop_renamed/LGG75_T1.nii.gz', type=torchio.INTENSITY),
     'T2': dict(path='../BRATS2018_crop_renamed/LGG75_T2.nii.gz', type=torchio.INTENSITY),
-    'label': dict(path='../BRATS2018_crop_renamed/LGG75_Label.nii.gz', type=torchio.INTENSITY),
+    'label': dict(path='../BRATS2018_crop_renamed/LGG75_Label.nii.gz', type=torchio.LABEL),
 }
 
 another_subject_dict = {
     'T1': dict(path='../BRATS2018_crop_renamed/LGG74_T1.nii.gz', type=torchio.INTENSITY),
-    'label': dict(path='../BRATS2018_crop_renamed/LGG74_Label.nii.gz', type=torchio.INTENSITY),
+    'label': dict(path='../BRATS2018_crop_renamed/LGG74_Label.nii.gz', type=torchio.LABEL),
 }
 
 subjects_paths = [

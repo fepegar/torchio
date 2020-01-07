@@ -4,7 +4,8 @@ from torch.utils.data import Dataset
 
 class GridSampler(Dataset):
     """
-    Adapted from NiftyNet
+    Adapted from NiftyNet.
+    See https://niftynet.readthedocs.io/en/dev/window_sizes.html
     """
     def __init__(self, data, patch_size, patch_overlap):
         self.array = data

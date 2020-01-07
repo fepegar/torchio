@@ -44,7 +44,9 @@ class RandomElasticDeformation(RandomTransform):
             # TODO: assert that all images have the same shape
             if bspline_params is None:
                 image = self.nib_to_sitk(
-                    image_dict['data'].squeeze(), image_dict['affine'])
+                    image_dict['data'][0],
+                    image_dict['affine'],
+                )
                 bspline_params = self.get_params(
                     image,
                     self.num_control_points,

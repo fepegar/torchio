@@ -59,7 +59,7 @@ class RandomMotion(RandomTransform):
             else:
                 interpolation = self.image_interpolation
             image = self.nib_to_sitk(
-                image_dict['data'].squeeze(),
+                image_dict['data'][0],
                 image_dict['affine'],
             )
             transforms = self.get_rigid_transforms(

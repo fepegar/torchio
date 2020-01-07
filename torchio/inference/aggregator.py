@@ -3,7 +3,8 @@ import numpy as np
 
 class GridAggregator:
     """
-    Adapted from NiftyNet
+    Adapted from NiftyNet.
+    See https://niftynet.readthedocs.io/en/dev/window_sizes.html
     """
     def __init__(self, data, window_border):
         self.window_border = window_border
@@ -58,6 +59,6 @@ class GridAggregator:
             self.window_border,
         )
         for window, location in zip(windows, locations):
-            window = window.squeeze()
+            window = window.squeeze()  # TODO: replace squeeze by slicing
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
             self.output_array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = window

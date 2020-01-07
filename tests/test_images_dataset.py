@@ -17,7 +17,8 @@ class TestRandomElasticDeformation(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.mkdtemp())
+        self.dir = Path(tempfile.gettempdir()) / '.torchio_tests'
+        self.dir.mkdir(exist_ok=True)
         random.seed(42)
         np.random.seed(42)
 
@@ -93,12 +94,17 @@ class TestRandomElasticDeformation(unittest.TestCase):
     def test_others(self):
         dataset = torchio.ImagesDataset(
             self.paths_list, verbose=True, transform=lambda x: x)
-        length = len(dataset)
+        _ = len(dataset)  # for coverage
         sample = dataset[0]
-        paths_dict = {'t1': self.dir / 'test.nii.gz'}
+        output_path = self.dir / 'test.nii.gz'
+        paths_dict = {'t1': output_path}
         dataset.save_sample(sample, paths_dict)
+        nii = nib.load(str(output_path))
+        ndims_output = len(nii.shape)
+        ndims_sample = len(sample['t1']['data'].shape)
+        assert ndims_sample == ndims_output + 1
 
     def iterate_dataset(self, paths_list):
         dataset = torchio.ImagesDataset(paths_list)
-        for sample in dataset:
+        for _ in dataset:
             pass
