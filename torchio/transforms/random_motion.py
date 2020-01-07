@@ -86,6 +86,7 @@ class RandomMotion(RandomTransform):
             )
             # Add channels dimension
             image_dict['data'] = image_dict['data'][np.newaxis, ...]
+            image_dict['data'] = torch.from_numpy(image_dict['data'])
         return sample
 
     @staticmethod
