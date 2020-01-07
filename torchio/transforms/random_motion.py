@@ -42,11 +42,6 @@ class RandomMotion(RandomTransform):
         self.proportion_to_augment = proportion_to_augment
 
     def apply_transform(self, sample):
-        # Only do augmentation with a probability `proportion_to_augment`
-        do_augmentation = torch.rand(1) < self.proportion_to_augment
-        if not do_augmentation:
-            return sample
-
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
