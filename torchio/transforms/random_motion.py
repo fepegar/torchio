@@ -30,6 +30,7 @@ class RandomMotion(RandomTransform):
             translation=10,  # in mm
             num_transforms=2,
             image_interpolation=Interpolation.LINEAR,
+            proportion_to_augment=0.5,
             seed=None,
             verbose=False,
             ):
@@ -38,8 +39,14 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
+        self.proportion_to_augment = proportion_to_augment
 
     def apply_transform(self, sample):
+        # Only do augmentation with a probability `proportion_to_augment`
+        do_augmentation = torch.rand(1) < self.proportion_to_augment
+        if not do_augmentation:
+            return sample
+
         for image_name, image_dict in sample.items():
             times_params, degrees_params, translation_params = self.get_params(
                 self.degrees_range,
