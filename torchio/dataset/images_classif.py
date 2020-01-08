@@ -24,9 +24,9 @@ class ImagesClassifDataset(ImagesDataset):
         """
         super().__init__(paths_dict, transform, verbose=verbose)
 
-        lens = [len(paths) for paths in paths_dict.values()]
-        if lens[0] != infos.shape[0]:
-            message =('Suplementary collumns in csv file, should have the same number of lines as paths_dict')
+        lens = len(paths_dict)  #[len(paths) for paths in paths_dict.values()]
+        if lens != infos.shape[0]:
+            message = ('Suplementary collumns in csv file, should have the same number of lines as paths_dict')
             raise ValueError(message)
 
         self.infos = infos
@@ -35,7 +35,7 @@ class ImagesClassifDataset(ImagesDataset):
         if length:
             self.length = length
         else:
-            self.length = len(self.paths_dict['image'])
+            self.length = len(self.subjects_list)
 
         if equal:
             self.gen = self.get_data_equal
