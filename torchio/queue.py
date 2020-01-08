@@ -40,8 +40,10 @@ class Queue(Dataset):
         if not self.patches_list:
             self.print('Patches list is empty.')
             self.fill()
-            self.print('Patches:', [patch['path'].split('_')[-1] for patch in self.patches_list])
-            #self.print('Patches:', [patch['sujid'] for patch in self.patches_list])
+            one_element = self.patches_list[0]
+            first_key = next(iter(one_element))
+            #self.print('Patches:', [patch[first_key]['path'].split('_')[-1] for patch in self.patches_list])
+            self.print('Patches:', [patch[first_key]['path'] for patch in self.patches_list])
 
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
