@@ -18,7 +18,7 @@ class RandomNoise(RandomTransform):
                 continue
             if image_dict['type'] != INTENSITY:
                 continue
-            add_noise(image_dict['data'], std)
+            image_dict['data'] = add_noise(image_dict['data'], std)
         return sample
 
     @staticmethod
@@ -29,4 +29,5 @@ class RandomNoise(RandomTransform):
 
 def add_noise(data, std):
     noise = torch.FloatTensor(*data.shape).normal_(mean=0, std=std)
-    data += noise
+    data = data + noise
+    return data

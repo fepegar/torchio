@@ -48,6 +48,7 @@ def _read_nrrd(path):
 
 
 def write_image(tensor, affine, path):
+    path = Path(path)
     suffixes = path.suffixes
     if '.nii' in suffixes:
         write = _write_nifti

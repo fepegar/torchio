@@ -95,7 +95,11 @@ class ImagesDataset(Dataset):
     @staticmethod
     def parse_subjects_list(subjects_list):
         def parse_path(path):
-            path = Path(path).expanduser()
+            try:
+                path = Path(path).expanduser()
+            except TypeError:
+                print(f'Conversion to path not possible for variable: {path}')
+                raise
             return path.is_file()
         if not isinstance(subjects_list, Sequence):
             raise TypeError(
@@ -122,7 +126,10 @@ class ImagesDataset(Dataset):
                             f' in image dict {image_dict}')
                 path = image_dict['path']
                 if not parse_path(path):
-                    message = f'{path} not found for image {image_name}'
+                    message = (
+                        f'File for image "{image_name}"'
+                        f' not found: "{path}"'
+                    )
                     raise FileNotFoundError(message)
 
     @staticmethod

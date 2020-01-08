@@ -75,21 +75,21 @@ class TestRandomElasticDeformation(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.iterate_dataset([{}, {}])
         with self.assertRaises(FileNotFoundError):
-            self.iterate_dataset(
-                [{'t1': dict(path='notpath', type=INTENSITY)}, ])
+            self.iterate_dataset([{'t1':dict(path='nopath', type=INTENSITY)}])
+        with self.assertRaises(TypeError):
+            self.iterate_dataset([{'t1': dict(path=5, type=INTENSITY)}])
         with self.assertRaises(ValueError):
             path = self.dir / 'test.txt'
             path.touch()
-            self.iterate_dataset([{'t1': dict(path=path, type=INTENSITY)}, ])
+            self.iterate_dataset([{'t1': dict(path=path, type=INTENSITY)}])
         with self.assertRaises(KeyError):
-            self.iterate_dataset([{'t1': dict(path='notpath')}, ])
+            self.iterate_dataset([{'t1': dict(path='nopath')}])
         with self.assertRaises(KeyError):
-            self.iterate_dataset([{'t1': dict(type=INTENSITY)}, ])
+            self.iterate_dataset([{'t1': dict(type=INTENSITY)}])
         with self.assertRaises(KeyError):
-            self.iterate_dataset(
-                [{'t1': dict(test='notpath', type=INTENSITY)}, ])
+            self.iterate_dataset([{'t1': dict(test='', type=INTENSITY)}])
         with self.assertRaises(TypeError):
-            self.iterate_dataset([{'t1': 6}, ])
+            self.iterate_dataset([{'t1': 6}])
 
     def test_others(self):
         dataset = torchio.ImagesDataset(

@@ -5,18 +5,13 @@ Custom implementation of
     MRI k-Space Motion Artefact Augmentation:
     Model Robustness and Task-Specific Uncertainty
 
-
-Matrix algebra functions from
-
-    Alexa, 2002
-    Linear combination of transformations
-
 """
 
 import torch
 import numpy as np
 from tqdm import tqdm
 import SimpleITK as sitk
+from scipy.linalg import logm, expm
 from ..torchio import INTENSITY
 from ..utils import is_image_dict
 from .interpolation import Interpolation
@@ -42,29 +37,28 @@ class RandomMotion(RandomTransform):
         self.proportion_to_augment = proportion_to_augment
 
     def apply_transform(self, sample):
-        # Only do augmentation with a probability `proportion_to_augment`
-        do_augmentation = torch.rand(1) < self.proportion_to_augment
-        if not do_augmentation:
-            return sample
-
         for image_name, image_dict in sample.items():
-            times_params, degrees_params, translation_params = self.get_params(
-                self.degrees_range,
-                self.translation_range,
-                self.num_transforms,
-            )
-            keys = (
-                'random_motion_times',
-                'random_motion_degrees',
-                'random_motion_translation',
-            )
-            all_params = times_params, degrees_params, translation_params
-            for key, params in zip(keys, all_params):
-                sample[image_name][key] = params
             if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] != INTENSITY:
                 continue
+            params = self.get_params(
+                self.degrees_range,
+                self.translation_range,
+                self.num_transforms,
+                self.proportion_to_augment
+            )
+            times_params, degrees_params, translation_params, do_it = params
+            keys = (
+                'random_motion_times',
+                'random_motion_degrees',
+                'random_motion_translation',
+                'random_motion_do',
+            )
+            for key, p in zip(keys, params):
+                sample[image_name][key] = p
+            if not do_it:
+                return sample
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
@@ -86,16 +80,32 @@ class RandomMotion(RandomTransform):
             )
             # Add channels dimension
             image_dict['data'] = image_dict['data'][np.newaxis, ...]
+            image_dict['data'] = torch.from_numpy(image_dict['data'])
         return sample
 
     @staticmethod
-    def get_params(degrees_range, translation_range, num_transforms):
+    def get_params(
+            degrees_range,
+            translation_range,
+            num_transforms,
+            probability,
+            perturbation=0.3,
+            ):
+        """
+        If perturbation is 0, the intervals between movements are constants
+        """
         degrees_params = get_params_array(
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
-        times_params = np.array(sorted(torch.rand(num_transforms).tolist()))
-        return times_params, degrees_params, translation_params
+        step = 1 / (num_transforms + 1)
+        times = torch.arange(0, 1, step)[1:]
+        noise = torch.FloatTensor(num_transforms)
+        noise.uniform_(-step * perturbation, step * perturbation)
+        times += noise
+        times_params = times.numpy()
+        do_it = torch.rand(1) < probability
+        return times_params, degrees_params, translation_params, do_it
 
     def get_rigid_transforms(self, degrees_params, translation_params, image):
         center_ijk = np.array(image.GetSize()) / 2
@@ -137,11 +147,7 @@ class RandomMotion(RandomTransform):
     def matrix_to_transform(matrix):
         transform = sitk.Euler3DTransform()
         rotation = matrix[:3, :3].flatten().tolist()
-        try:
-            transform.SetMatrix(rotation)
-        except RuntimeError:
-            print('Matrix:')
-            print(matrix)
+        transform.SetMatrix(rotation)
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
@@ -209,67 +215,14 @@ class RandomMotion(RandomTransform):
         img_back = np.fft.ifft2(f_ishift)
         return np.abs(img_back)
 
-    # The following methods are from (Alexa, 2002)
-    @staticmethod
-    def matrix_sqrt(A, epsilon=1e-9):
-        X = A.copy()
-        Y = np.eye(4)
-        diff = np.inf
-        while diff > epsilon:
-            iX = np.linalg.inv(X)
-            iY = np.linalg.inv(Y)
-            X = 1 / 2 * (X + iY)
-            Y = 1 / 2 * (Y + iX)
-            diff = np.linalg.norm(X @ X - A)
-        return X
-
-    @staticmethod
-    def matrix_exp(A, q=6):
-        identity = np.eye(4, dtype=float)
-        norm_a = np.linalg.norm(A)
-        log = np.log2(norm_a)
-        j = int(max(0, 1 + np.floor(log))) if norm_a > 0 else 0
-        A = 2 ** (-j) * A
-        D = identity.copy()
-        N = identity.copy()
-        X = identity.copy()
-        c = 1
-        for k in range(1, q + 1):
-            c = c * (q - k + 1) / (k * (2 * q - k + 1))
-            X = A @ X
-            N += c * X
-            D += (-1) ** k * c * X
-        X = np.linalg.inv(D) @ N
-        X = np.linalg.matrix_power(X, 2 * j)
-        return X
-
-    def matrix_log(self, A, epsilon=1e-9):
-        identity = np.eye(4)
-        k = 0
-        diff = np.inf
-        while diff > 0.5:
-            A = self.matrix_sqrt(A)
-            k += 1
-            diff = np.linalg.norm(A - identity)
-        A = identity - A
-        Z = A.copy()
-        X = A.copy()
-        i = 1
-        while np.linalg.norm(Z) > epsilon:
-            Z = Z @ A
-            i += 1
-            X += Z / i
-        X = 2 ** k * X
-        return X
-
     def matrix_average(self, matrices, weights=None):
         if weights is None:
             num_matrices = len(matrices)
             weights = num_matrices * (1 / num_matrices,)
-        logs = [w * self.matrix_log(A) for (w, A) in zip(weights, matrices)]
+        logs = [w * logm(A) for (w, A) in zip(weights, matrices)]
         logs = np.array(logs)
         logs_sum = logs.sum(axis=0)
-        return self.matrix_exp(logs_sum)
+        return expm(logs_sum)
 
 
 def get_params_array(nums_range, num_transforms):

@@ -25,11 +25,13 @@ class RandomFlip(RandomTransform):
             if not is_image_dict(image_dict):
                 continue
             tensor = image_dict['data']
-            for axis, flip_this in enumerate(axes_to_flip_hot):
+            dims = []
+            for dim, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:
                     continue
-                actual_axis = axis + 1  # images are 4D
-                tensor = torch.flip(tensor, dims=actual_axis)
+                actual_dim = dim + 1  # images are 4D
+                dims.append(actual_dim)
+            tensor = torch.flip(tensor, dims=dims)
             image_dict['data'] = tensor
         return sample
 
