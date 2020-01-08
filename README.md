@@ -164,7 +164,7 @@ during image acquisition. This transform follows
 [Shaw et al., 2019](http://proceedings.mlr.press/v102/shaw19a.html) to
 simulate motion artifacts for data augmentation.
 
-![MRI k-space motion artifacts](images/random_motion.gif)
+![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
 
 
 ##### [MRI magnetic field inhomogeneity](torchio/transforms/random_bias_field.py)
@@ -173,7 +173,7 @@ MRI magnetic field inhomogeneity creates slow frequency intensity variations.
 This transform is very similar to the one in
 [NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
 
-![MRI bias field artifacts](images/random_bias_field.gif)
+![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
 
 
 ##### [Gaussian noise](torchio/transforms/random_noise.py)
@@ -183,7 +183,7 @@ deviation sampled from a uniform distribution in the range `std_range`.
 It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
-![Random Gaussian noise](images/random_noise.gif)
+![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
 
 
 ##### Normalization
@@ -194,7 +194,7 @@ Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
 adapted from NiftyNet.
 
-![Histogram standardization](images/histogram_standardization.png)
+![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
 
 
 ###### [Z-normalization](torchio/transforms/z_normalization.py)
@@ -215,7 +215,7 @@ Reverse the order of elements in an image along the given axes.
 
 ##### [B-spline dense elastic deformation](torchio/transforms/random_elastic_deformation.py)
 
-![Random elastic deformation](images/random_elastic_deformation.gif)
+![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
 
 
 ## [Example](examples/example_times.py)
