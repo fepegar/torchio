@@ -1,0 +1,25 @@
+{
+  "creators": [
+    {
+      "affiliation": "University College London, United Kingdom",
+      "name": "P\u00e9rez-Garc\u00eda, Fernando",
+      "orcid": "0000-0001-9090-3024"
+    },
+    {
+      "affiliation": "Center for NeuroImaging Research, Brain & Spine Institute, Paris, France",
+      "name": "Valabregue, Romain"
+    },
+    {
+        "affiliation": "King's College London, United Kingdom",
+        "name": "Dorent, Reuben"
+    }
+  ],
+  "keywords": [
+    "pytorch",
+    "medical-image-computing",
+    "deep-learning",
+    "convolutional-neural-networks"
+  ],
+  "license": "mit-license",
+  "upload_type": "software"
+}
