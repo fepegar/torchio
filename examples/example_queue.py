@@ -1,6 +1,9 @@
 import time
 import multiprocessing as mp
 
+from tqdm import trange
+
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
@@ -19,14 +22,22 @@ if __name__ == "__main__":
     # Define training and patches sampling parameters
     num_epochs = 4
     patch_size = 128
-    queue_length = 100
+    queue_length = 400
     samples_per_volume = 10
     batch_size = 4
 
-    def model(batch, sleep_time=0.1):
-        """Dummy function to simulate a forward pass through the network"""
-        time.sleep(sleep_time)
-        return batch
+    class Network(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.conv = nn.Conv3d(
+                in_channels=1,
+                out_channels=3,
+                kernel_size=3,
+            )
+        def forward(self, x):
+            return self.conv(x)
+
+    model = Network()
 
     # Create a dummy dataset in the temporary directory, for this example
     subjects_paths = create_dummy_dataset(
@@ -71,8 +82,11 @@ if __name__ == "__main__":
         batch_loader = DataLoader(queue_dataset, batch_size=batch_size)
 
         start = time.time()
-        for epoch_index in range(num_epochs):
+        for epoch_index in trange(num_epochs, leave=False):
             for batch in batch_loader:
-                logits = model(batch)
+                # The keys of batch have been defined in create_dummy_dataset()
+                inputs = batch['one_modality']['data']
+                targets = batch['segmentation']['data']
+                logits = model(inputs)
         print('Time:', int(time.time() - start), 'seconds')
         print()
