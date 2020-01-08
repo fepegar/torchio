@@ -1,3 +1,4 @@
+import torch
 from ..torchio import INTENSITY
 from ..utils import is_image_dict
 from .transform import Transform
@@ -7,8 +8,8 @@ class ZNormalization(Transform):
     """
     Subtract mean and divide by standard deviation
     """
-    def __init__(self, use_mean_threshold=True, seed=None, verbose=False):
-        super().__init__(seed=seed, verbose=verbose)
+    def __init__(self, use_mean_threshold=True, verbose=False):
+        super().__init__(verbose=verbose)
         self.use_mean_threshold = use_mean_threshold
 
     def apply_transform(self, sample):
