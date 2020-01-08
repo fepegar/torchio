@@ -33,7 +33,8 @@ class RandomBiasField(RandomTransform):
             sample[image_name]['random_bias_field'] = coefficients
             bias_field = self.generate_bias_field_map(
                 image_dict['data'], self.order, coefficients)
-            image_dict['data'] *= torch.from_numpy(bias_field)
+            image_with_bias = image_dict['data'] * torch.from_numpy(bias_field)
+            image_dict['data'] = image_with_bias
         return sample
 
     @staticmethod
