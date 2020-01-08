@@ -1,5 +1,7 @@
+import warnings
 from pathlib import Path
 from collections.abc import Sequence
+import torch
 from torch.utils.data import Dataset
 from ..utils import get_stem
 from ..io import read_image, write_image
@@ -10,6 +12,7 @@ class ImagesDataset(Dataset):
             self,
             subjects_list,
             transform=None,
+            check_nans=True,
             verbose=False,
             ):
         """
@@ -33,6 +36,7 @@ class ImagesDataset(Dataset):
         self.parse_subjects_list(subjects_list)
         self.subjects_list = subjects_list
         self.transform = transform
+        self.check_nans = check_nans
         self.verbose = verbose
 
     def __len__(self):
@@ -62,8 +66,10 @@ class ImagesDataset(Dataset):
         if self.verbose:
             print(f'Loading {path}...')
         tensor, affine = read_image(path)
+        if self.check_nans and torch.isnan(tensor).any():
+            warnings.warn(f'NaNs found in file "{path}"')
         if self.verbose:
-            print(f'Loaded array with shape {tensor.shape}')
+            print(f'Loaded image with shape {tensor.shape}')
         return tensor, affine
 
     @staticmethod
