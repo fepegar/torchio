@@ -14,7 +14,7 @@ from .transform import Transform
 DEFAULT_CUTOFF = (0.01, 0.99)
 
 
-class HistogramStandardization:
+class HistogramStandardization(Transform):
     def __init__(self, landmarks_dict, verbose=False, mask_field_name=None):
         super().__init__(verbose=verbose)
 
