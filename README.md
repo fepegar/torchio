@@ -199,8 +199,8 @@ adapted from NiftyNet.
 
 ###### [Z-normalization](torchio/transforms/z_normalization.py)
 
-This transform first extract the values of the image larger than the mean,
-which is an approximation of th foreground voxels.
+This transform first extracts the values with intensity greater than the mean,
+which is an approximation of the foreground voxels.
 Then the foreground mean is subtracted from the image and it is divided by the
 foreground standard deviation.
 
