@@ -30,11 +30,6 @@ class ImagesDataset(Dataset):
         }
         See examples/example_multimodal.py for -obviously- an example.
         """
-        #paths_dict = paths_dict.copy()
-        #self.sujid = paths_dict.pop('sujid', None) #this will remove field sujid if exist
-        #self.parse_paths_dict(paths_dict)
-        #self.paths_dict = paths_dict
-
         self.parse_subjects_list(subjects_list)
         self.subjects_list = subjects_list
         self.transform = transform
@@ -46,26 +41,6 @@ class ImagesDataset(Dataset):
     def __getitem__(self, index):
         subject_dict = self.subjects_list[index]
         sample = {}
-
-        # for key in self.paths_dict:
-        #     data, affine, image_path = self.load_image(key, index)
-        #     sample[key] = data
-        #     if key == 'image':
-        #         image_dict = dict(
-        #             path=str(image_path),
-        #             affine=affine,
-        #             stem=get_stem(image_path),
-        #             sujid=self.sujid[index] if self.sujid is not None else 'TODO',
-        #         )
-        #         sample.update(image_dict)
-        #
-        # label_name = [kk for kk in sample if ('label' in kk) ]
-        # if len(label_name) > 1:
-        #     list_label = [sample[kkk].squeeze() for kkk in label_name]
-        #     for kkk in label_name :
-        #         del sample[kkk]  #remove label_1 label_2 ... entery
-        #     sample['label'] = np.stack(list_label)
-
         for image_name, image_dict in subject_dict.items():
             image_path = image_dict['path']
             tensor, affine = self.load_image(image_path)
@@ -81,7 +56,6 @@ class ImagesDataset(Dataset):
         # Apply transform (this is usually the bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
-
         return sample
 
     def load_image(self, path):

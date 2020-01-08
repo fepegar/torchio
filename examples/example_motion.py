@@ -8,7 +8,7 @@ paths = [{
 
 paths = [{
     't1': dict(path='/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', type=INTENSITY),
-    'colin': dict(path='/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', type=INTENSITY),
+    'label': dict(path='/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', type=LABEL),
 }]
 
 dataset = ImagesDataset(paths)

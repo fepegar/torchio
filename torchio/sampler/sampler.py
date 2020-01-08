@@ -64,10 +64,6 @@ class ImageSampler(IterableDataset):
     def copy_and_crop(self, sample, index_ini, index_fin):
         cropped_sample = {}
         for key, value in sample.items():
-
-            #if key in ('image', 'label'): change so that label_1 should be considerd
-            #if ('image' in key) or ('label' in key):
-
             cropped_sample[key] = copy.copy(value)
             if is_image_dict(value):
                 sample_image_dict = value
