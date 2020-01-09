@@ -82,7 +82,6 @@ class ImagesDataset(Dataset):
             write_image(tensor, affine, output_path)
 
 
-
 class Image:
     def __init__(self, name, path, type_):
         self.name = name
