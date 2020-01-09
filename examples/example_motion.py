@@ -1,10 +1,10 @@
 from pprint import pprint
 from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
 
-subject_images = [
-    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
-    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
-]
+# subject_images = [
+#     Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
+#     Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
+# ]
 
 subject_images = [
     Image('t1', '/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', INTENSITY),
