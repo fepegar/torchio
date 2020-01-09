@@ -11,4 +11,4 @@ from . import inference
 from .torchio import *
 from .queue import Queue
 from .transforms import *
-from .dataset import ImagesDataset
+from .dataset import ImagesDataset, Image

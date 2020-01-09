@@ -40,18 +40,18 @@ if __name__ == "__main__":
     model = Network()
 
     # Create a dummy dataset in the temporary directory, for this example
-    subjects_paths = create_dummy_dataset(
+    subjects_list = create_dummy_dataset(
         num_images=100,
         size_range=(193, 229),
         force=False,
     )
 
-    # Each element of subjects_paths is a dictionary:
-    # subject = {
-    #     'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
-    #     'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
-    #     'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
-    # }
+    # Each element of subjects_list is a dictionary:
+    # subject_images = [
+    #     torchio.Image('one_image', path_to_one_image, torchio.INTENSITY),
+    #     torchio.Image('another_image', path_to_another_image, torchio.INTENSITY),
+    #     torchio.Image('a_label', path_to_a_label, torchio.LABEL),
+    # ]
 
     # Define transforms for data normalization and augmentation
     transforms = (
@@ -61,9 +61,8 @@ if __name__ == "__main__":
         RandomFlip(axes=(0,)),
     )
     transform = Compose(transforms)
-    subjects_dataset = ImagesDataset(subjects_paths, transform)
+    subjects_dataset = ImagesDataset(subjects_list, transform)
 
-    sample = subjects_dataset[0]
 
     # Run a benchmark for different numbers of workers
     workers = range(mp.cpu_count() + 1)

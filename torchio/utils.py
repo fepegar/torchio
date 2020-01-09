@@ -46,6 +46,7 @@ def is_image_dict(variable):
 
 
 def create_dummy_dataset(num_images, size_range, force=False):
+    from .dataset import Image
     tempdir = Path(tempfile.gettempdir())
     images_dir = tempdir / 'dummy_images'
     labels_dir = tempdir / 'dummy_labels'
@@ -54,16 +55,16 @@ def create_dummy_dataset(num_images, size_range, force=False):
         shutil.rmtree(images_dir)
         shutil.rmtree(labels_dir)
 
-    subjects_paths = []
+    subjects = []
     if images_dir.is_dir():
         for i in trange(num_images):
             image_path = images_dir / f'image_{i}.nii.gz'
             label_path = labels_dir / f'label_{i}.nii.gz'
-            paths_dict = dict(
-                one_modality=dict(type=INTENSITY, path=image_path),
-                segmentation=dict(type=LABEL, path=image_path),
-            )
-            subjects_paths.append(paths_dict)
+            subject_images = [
+                Image('one_modality', image_path, INTENSITY),
+                Image('segmentation', label_path, LABEL),
+            ]
+            subjects.append(subject_images)
     else:
         images_dir.mkdir(exist_ok=True)
         labels_dir.mkdir(exist_ok=True)
@@ -85,9 +86,9 @@ def create_dummy_dataset(num_images, size_range, force=False):
             nii = nib.Nifti1Image(label.astype(np.uint8), affine)
             nii.to_filename(str(label_path))
 
-            paths_dict = dict(
-                one_modality=dict(type=INTENSITY, path=image_path),
-                segmentation=dict(type=LABEL, path=image_path),
-            )
-            subjects_paths.append(paths_dict)
-    return subjects_paths
+            subject_images = [
+                Image('one_modality', image_path, INTENSITY),
+                Image('segmentation', label_path, LABEL),
+            ]
+            subjects.append(subject_images)
+    return subjects
