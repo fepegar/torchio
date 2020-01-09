@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 from tqdm import trange
-from .torchio import INTENSITY, LABEL
+from .torchio import Image, INTENSITY, LABEL
 
 
 def to_tuple(value, n=1):
@@ -54,16 +54,16 @@ def create_dummy_dataset(num_images, size_range, force=False):
         shutil.rmtree(images_dir)
         shutil.rmtree(labels_dir)
 
-    subjects_paths = []
+    subjects = []
     if images_dir.is_dir():
         for i in trange(num_images):
             image_path = images_dir / f'image_{i}.nii.gz'
             label_path = labels_dir / f'label_{i}.nii.gz'
-            paths_dict = dict(
-                one_modality=dict(type=INTENSITY, path=image_path),
-                segmentation=dict(type=LABEL, path=image_path),
-            )
-            subjects_paths.append(paths_dict)
+            subject_images = [
+                Image('one_modality', path=image_path, type=INTENSITY),
+                Image('segmentation', path=label_path, type=LABEL),
+            ]
+            subjects.append(subject_images)
     else:
         images_dir.mkdir(exist_ok=True)
         labels_dir.mkdir(exist_ok=True)
@@ -85,9 +85,9 @@ def create_dummy_dataset(num_images, size_range, force=False):
             nii = nib.Nifti1Image(label.astype(np.uint8), affine)
             nii.to_filename(str(label_path))
 
-            paths_dict = dict(
-                one_modality=dict(type=INTENSITY, path=image_path),
-                segmentation=dict(type=LABEL, path=image_path),
-            )
-            subjects_paths.append(paths_dict)
-    return subjects_paths
+            subject_images = [
+                Image('one_modality', path=image_path, type=INTENSITY),
+                Image('segmentation', path=label_path, type=LABEL),
+            ]
+            subjects.append(subject_images)
+    return subjects

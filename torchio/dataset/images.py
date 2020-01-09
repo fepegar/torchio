@@ -17,19 +17,10 @@ class ImagesDataset(Dataset):
             ):
         """
         Each element of subjects_list is a dictionary:
-        subject = {
-            'one_image': dict(
-                path=path_to_one_image,
-                type=torchio.INTENSITY,
-            ),
-            'another_image': dict(
-                path=path_to_another_image,
-                type=torchio.INTENSITY,
-            ),
-            'a_label': dict(
-                path=path_to_a_label,
-                type=torchio.LABEL,
-            ),
+        subject_list = [
+            Image('one_image', path_to_one_image, torchio.INTENSITY),
+            Image('another_image', path_to_another_image, torchio.INTENSITY),
+            Image('a_label', path_to_a_label, torchio.LABEL),
         }
         See examples/example_multimodal.py for -obviously- an example.
         """
@@ -43,74 +34,45 @@ class ImagesDataset(Dataset):
         return len(self.subjects_list)
 
     def __getitem__(self, index):
-        subject_dict = self.subjects_list[index]
+        subject_images = self.subjects_list[index]
         sample = {}
-        for image_name, image_dict in subject_dict.items():
-            image_path = image_dict['path']
-            tensor, affine = self.load_image(image_path)
-            image_sample_dict = dict(
+        for image in subject_images:
+            tensor, affine = image.load(check_nans=self.check_nans)
+            image_dict = dict(
                 data=tensor,
-                path=str(image_path),
+                path=str(image.path),
                 affine=affine,
-                stem=get_stem(image_path),
-                type=image_dict['type'],
+                stem=get_stem(image.path),
+                type=image.type,
             )
-            sample[image_name] = image_sample_dict
+            sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
         if self.transform is not None:
             sample = self.transform(sample)
         return sample
 
-    def load_image(self, path):
-        if self.verbose:
-            print(f'Loading {path}...')
-        tensor, affine = read_image(path)
-        if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in file "{path}"')
-        if self.verbose:
-            print(f'Loaded image with shape {tensor.shape}')
-        return tensor, affine
-
     @staticmethod
     def parse_subjects_list(subjects_list):
-        def parse_path(path):
-            try:
-                path = Path(path).expanduser()
-            except TypeError:
-                print(f'Conversion to path not possible for variable: {path}')
-                raise
-            return path.is_file()
         if not isinstance(subjects_list, Sequence):
             raise TypeError(
                 f'Subject list must be a sequence, not {type(subjects_list)}')
         if not subjects_list:
             raise ValueError('Subjects list is empty')
-        for element in subjects_list:
-            if not isinstance(element, dict):
-                raise TypeError(
-                    f'All elements must be dictionaries, not {type(element)}')
-            if not element:
-                raise ValueError(f'Element seems empty: {element}')
-            subject_dict = element
-            for image_name, image_dict in subject_dict.items():
-                if not isinstance(image_dict, dict):
-                    raise TypeError(
-                        f'Type {type(image_dict)} found for {image_name},'
-                        ' instead of type dict'
-                    )
-                for key in ('path', 'type'):
-                    if key not in image_dict:
-                        raise KeyError(
-                            f'"{key}" key not found'
-                            f' in image dict {image_dict}')
-                path = image_dict['path']
-                if not parse_path(path):
+        for subject_images in subjects_list:
+            if not isinstance(subject_images, Sequence):
+                message = (
+                    'Subject images list must be a sequence'
+                    f', not {type(subject_images)}'
+                )
+                raise TypeError(message)
+            for image in subject_images:
+                if not isinstance(image, Image):
                     message = (
-                        f'File for image "{image_name}"'
-                        f' not found: "{path}"'
+                        'Subject list elements must be instances of'
+                        f' torchio.Image, not {type(image)}'
                     )
-                    raise FileNotFoundError(message)
+                    raise TypeError(message)
 
     @staticmethod
     def save_sample(sample, output_paths_dict):
@@ -118,3 +80,31 @@ class ImagesDataset(Dataset):
             tensor = sample[key]['data'][0]  # remove channels dim
             affine = sample[key]['affine']
             write_image(tensor, affine, output_path)
+
+
+
+class Image:
+    def __init__(self, name, path, type_):
+        self.name = name
+        self.path = self.parse_path(path)
+        self.type = type_
+
+    def parse_path(self, path):
+        try:
+            path = Path(path).expanduser()
+        except TypeError:
+            print(f'Conversion to path not possible for variable: {path}')
+            raise
+        if not path.is_file():
+            message = (
+                f'File for image "{self.name}"'
+                f' not found: "{path}"'
+                )
+            raise FileNotFoundError(message)
+        return path
+
+    def load(self, check_nans=True):
+        tensor, affine = read_image(self.path)
+        if check_nans and torch.isnan(tensor).any():
+            warnings.warn(f'NaNs found in file "{self.path}"')
+        return tensor, affine

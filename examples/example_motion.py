@@ -1,12 +1,13 @@
 from pprint import pprint
-from torchio import ImagesDataset, transforms, INTENSITY, LABEL
+from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
 
-paths = [{
-    'label': dict(path='~/Dropbox/MRI/t1_brain_seg.nii.gz', type=LABEL),
-    't1': dict(path='~/Dropbox/MRI/t1.nii.gz', type=INTENSITY),
-}]
+subject_images = [
+    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
+    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
+]
+subjects_list = [subject_images]
 
-dataset = ImagesDataset(paths)
+dataset = ImagesDataset(subjects_list)
 sample = dataset[0]
 transform = transforms.RandomMotion(
     seed=42,
