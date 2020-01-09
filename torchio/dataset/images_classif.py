@@ -125,7 +125,7 @@ def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=N
     return snap
 
 
-def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", class_idx="noise",
+def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img_file", class_idx="noise",
                                           conditions=None, duplicate_class1=None, shuffle_order = True):
     """
     :param data_param: same structure as for niftynet set script test/test_dataset.py
@@ -133,7 +133,8 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
     :param conditions : conditions to select lines. for instance column name corr conditions = [("corr", "<", 0.98),
             will select only values below 0.98
     :param duplicate_class1: number of time line from class_idx label 1 are duplicate. in this case it also randomly
-            select same number of line from class 0 (to have equal class)
+            select same number of line from class 0 (to have equal class). No more usefull since you can get the exact
+            list as it is in the csv file, and use equal=True in ImageClassifDataset
     :return: a paths_dict to be passed inot ImagesDataset and a panda dataframe containing all collumn to be passed
             as info in ImagesClassifDataset
     """
@@ -195,6 +196,7 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
         else :
             print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
+    #shuffle the same way both subject_list and res
     if shuffle_order:
         from sklearn.utils import shuffle
         index = range(0, len(subjects_paths))
