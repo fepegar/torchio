@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import random
-from .images import ImagesDataset
+from .images import ImagesDataset, Image
 import torchio
 
 
@@ -203,4 +203,12 @@ def get_paths_and_res_from_data_prameters(data_param, fpath_idx="img_file", clas
         new_subjects_path = [subjects_paths[index_shuffle[ii]] for ii in index]
         subjects_paths = new_subjects_path
 
-    return subjects_paths, res
+    #now convert the dictionary list into a list of Image
+    subjects_list = []
+    for subjects in subjects_paths:
+        one_suj = []
+        for key, val in subjects.items():
+            one_suj.append(Image(key, val['path'], val['type']))
+        subjects_list.append(one_suj.copy())
+
+    return subjects_list, res
