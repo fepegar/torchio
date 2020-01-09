@@ -196,7 +196,7 @@ def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img
         else :
             print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
-    #shuffle the same way both subject_list and res
+    #shuffle the same way both subject_path_list and res
     if shuffle_order:
         from sklearn.utils import shuffle
         index = range(0, len(subjects_paths))
