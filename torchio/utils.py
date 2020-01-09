@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 from tqdm import trange
-from .torchio import Image, INTENSITY, LABEL
+from .torchio import INTENSITY, LABEL
 
 
 def to_tuple(value, n=1):
@@ -46,6 +46,7 @@ def is_image_dict(variable):
 
 
 def create_dummy_dataset(num_images, size_range, force=False):
+    from .dataset import Image
     tempdir = Path(tempfile.gettempdir())
     images_dir = tempdir / 'dummy_images'
     labels_dir = tempdir / 'dummy_labels'
@@ -60,8 +61,8 @@ def create_dummy_dataset(num_images, size_range, force=False):
             image_path = images_dir / f'image_{i}.nii.gz'
             label_path = labels_dir / f'label_{i}.nii.gz'
             subject_images = [
-                Image('one_modality', path=image_path, type=INTENSITY),
-                Image('segmentation', path=label_path, type=LABEL),
+                Image('one_modality', image_path, INTENSITY),
+                Image('segmentation', label_path, LABEL),
             ]
             subjects.append(subject_images)
     else:
@@ -86,8 +87,8 @@ def create_dummy_dataset(num_images, size_range, force=False):
             nii.to_filename(str(label_path))
 
             subject_images = [
-                Image('one_modality', path=image_path, type=INTENSITY),
-                Image('segmentation', path=label_path, type=LABEL),
+                Image('one_modality', image_path, INTENSITY),
+                Image('segmentation', label_path, LABEL),
             ]
             subjects.append(subject_images)
     return subjects
