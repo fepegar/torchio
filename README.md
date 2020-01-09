@@ -61,7 +61,7 @@ It can be used with a
 for efficient reading and data augmentation.
 
 It receives a list of subjects, where each subject is composed of a list of
-`torchio.Image` instances.
+[`torchio.Image`](torchio/dataset/images.py) instances.
 The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 
 ```python
