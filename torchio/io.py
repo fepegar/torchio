@@ -29,7 +29,7 @@ def _read_nifti(path):
     nii = nib.load(str(path))
     ndims = len(nii.shape)
     assert ndims == 3
-    data = nii.get_fdata(dtype=np.float32)[np.newaxis, ...]
+    data = nii.get_fdata(dtype=np.float32)
     tensor = torch.from_numpy(data)
     affine = nii.affine
     return tensor, affine

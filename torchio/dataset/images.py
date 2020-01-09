@@ -104,6 +104,7 @@ class Image:
 
     def load(self, check_nans=True):
         tensor, affine = read_image(self.path)
+        tensor = tensor.unsqueeze(0)  # add channels dimension
         if check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{self.path}"')
         return tensor, affine
