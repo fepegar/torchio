@@ -60,7 +60,7 @@ def write_image(tensor, affine, path):
 def _write_nifti(tensor, affine, path):
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
-    nii.header['sform_code'] = 0
+    nii.header['sform_code'] = 1
     nii.to_filename(str(path))
 
 
