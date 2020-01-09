@@ -38,10 +38,10 @@ class HistogramStandardization(Transform):
                 continue
             if image_dict['type'] == INTENSITY:
                 # TODO: assert that image_name is in dict
-                landmarks = self.landmarks_dict[image_name]
+                landmarks = self.landmarks_dict#[image_name]
 
                 if self.mask_field_name is not None:
-                    mask_data = sample[self.mask_field_name]
+                    mask_data = sample[self.mask_field_name]['data']
                 else:
                     mask_data = None
 
@@ -139,7 +139,8 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mas
             mask = np.ones_like(img, dtype=np.bool)
     mask = mask.reshape(-1)
 
-    range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
+    #range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
+    range_to_use = range(0,len(mapping))  # use all points
 
     cutoff = __standardize_cutoff(cutoff)
     perc = __compute_percentiles(img, mask, cutoff)
