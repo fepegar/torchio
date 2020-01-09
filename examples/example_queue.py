@@ -1,6 +1,9 @@
 import time
 import multiprocessing as mp
 
+from tqdm import trange
+
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
@@ -19,28 +22,36 @@ if __name__ == "__main__":
     # Define training and patches sampling parameters
     num_epochs = 4
     patch_size = 128
-    queue_length = 100
+    queue_length = 400
     samples_per_volume = 10
     batch_size = 4
 
-    def model(batch, sleep_time=0.1):
-        """Dummy function to simulate a forward pass through the network"""
-        time.sleep(sleep_time)
-        return batch
+    class Network(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.conv = nn.Conv3d(
+                in_channels=1,
+                out_channels=3,
+                kernel_size=3,
+            )
+        def forward(self, x):
+            return self.conv(x)
+
+    model = Network()
 
     # Create a dummy dataset in the temporary directory, for this example
-    subjects_paths = create_dummy_dataset(
+    subjects_list = create_dummy_dataset(
         num_images=100,
         size_range=(193, 229),
         force=False,
     )
 
-    # Each element of subjects_paths is a dictionary:
-    # subject = {
-    #     'one_image': dict(path=path_to_one_image, type=torchio.INTENSITY),
-    #     'another_image': dict(path=path_to_another_image, type=torchio.INTENSITY),
-    #     'a_label': dict(path=path_to_a_label, type=torchio.LABEL),
-    # }
+    # Each element of subjects_list is a dictionary:
+    # subject_images = [
+    #     torchio.Image('one_image', path_to_one_image, torchio.INTENSITY),
+    #     torchio.Image('another_image', path_to_another_image, torchio.INTENSITY),
+    #     torchio.Image('a_label', path_to_a_label, torchio.LABEL),
+    # ]
 
     # Define transforms for data normalization and augmentation
     transforms = (
@@ -50,9 +61,8 @@ if __name__ == "__main__":
         RandomFlip(axes=(0,)),
     )
     transform = Compose(transforms)
-    subjects_dataset = ImagesDataset(subjects_paths, transform)
+    subjects_dataset = ImagesDataset(subjects_list, transform)
 
-    sample = subjects_dataset[0]
 
     # Run a benchmark for different numbers of workers
     workers = range(mp.cpu_count() + 1)
@@ -74,9 +84,12 @@ if __name__ == "__main__":
         batch_loader = DataLoader(queue_dataset, batch_size=batch_size, shuffle=True)
 
         start = time.time()
-        for epoch_index in range(num_epochs):
+        for epoch_index in trange(num_epochs, leave=False):
             print('Epoch {}'.format(epoch_index))
             for batch in batch_loader:
-                logits = model(batch)
+                # The keys of batch have been defined in create_dummy_dataset()
+                inputs = batch['one_modality']['data']
+                targets = batch['segmentation']['data']
+                logits = model(inputs)
         print('Time:', int(time.time() - start), 'seconds')
         print()
