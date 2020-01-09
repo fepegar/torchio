@@ -7,8 +7,8 @@ subject_images = [
 ]
 
 subject_images = [
-    Image('t1','/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', INTENSITY),
-    Image('label','/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', LABEL),
+    Image('t1', '/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', INTENSITY),
+    Image('label', '/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', LABEL),
 ]
 
 subjects_list = [subject_images]
