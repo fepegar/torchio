@@ -31,7 +31,7 @@ class RandomBiasField(RandomTransform):
                 continue
             coefficients = self.get_params(self.order, self.coefficients_range)
             sample[image_name]['random_bias_field'] = coefficients
-            bias_field = self.generate_bias_field_map(
+            bias_field = self.generate_bias_field(
                 image_dict['data'], self.order, coefficients)
             image_with_bias = image_dict['data'] * torch.from_numpy(bias_field)
             image_dict['data'] = image_with_bias
@@ -52,7 +52,7 @@ class RandomBiasField(RandomTransform):
         return np.array(random_coefficients)
 
     @staticmethod
-    def generate_bias_field_map(data, order, coefficients):
+    def generate_bias_field(data, order, coefficients):
         """
         Create the bias field map using a linear combination of polynomial
         functions and the coefficients previously sampled
@@ -62,7 +62,7 @@ class RandomBiasField(RandomTransform):
 
         ranges = [np.arange(-n, n) for n in half_shape]
 
-        bf_map = np.zeros(shape)
+        bias_field = np.zeros(shape)
         x_mesh, y_mesh, z_mesh = np.asarray(np.meshgrid(*ranges))
 
         x_mesh /= x_mesh.max()
@@ -80,6 +80,7 @@ class RandomBiasField(RandomTransform):
                         * y_mesh ** y_order
                         * z_mesh ** z_order
                     )
-                    bf_map += np.transpose(new_map, (1, 0, 2))  # why?
+                    bias_field += np.transpose(new_map, (1, 0, 2))  # why?
                     i += 1
-        return np.exp(bf_map)
+        bias_field = np.exp(bias_field).astype(np.float32)
+        return bias_field
