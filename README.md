@@ -84,9 +84,7 @@ subject_sample = subjects_dataset[0]
 #### [Samplers](torchio/sampler/sampler.py)
 
 `torchio` includes grid, uniform and label patch samplers. There is also an
-aggregator used for dense predictions. The code for these is almost
-[copy-pasted from NiftyNet](https://github.com/NifTK/NiftyNet/tree/dev/niftynet/engine).
-
+aggregator used for dense predictions.
 For more information about patch-based training, see
 [NiftyNet docs](https://niftynet.readthedocs.io/en/dev/window_sizes.html).
 
