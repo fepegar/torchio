@@ -1,7 +1,9 @@
 # TorchIO
 
-[![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
+[![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
+[![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
+[![Coverage Status](https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master)](https://coveralls.io/github/fepegar/torchio?branch=master)
 
 
 `torchio` is a Python package containing a set of tools to efficiently
@@ -39,6 +41,8 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
       * [Affine transform](#affine-transform)
       * [B-spline dense deformation](#b-spline-dense-deformation)
 - [Example](#example)
+- [Related projects](#related-projects)
+- [Credits](#credits)
 
 
 ## Installation
@@ -350,3 +354,24 @@ Time: 242 seconds
 * [kornia](https://kornia.github.io/)
 * [DALI](https://developer.nvidia.com/DALI)
 * [`rising`](https://github.com/PhoenixDL/rising)
+
+
+## Credits
+
+If you used this code for your research, please cite this repository using the
+information available on its
+[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
+
+```bibtex
+@software{perez_garcia_fernando_2020_3598622,
+  author       = {Pérez-García, Fernando},
+  title        = {{fepegar/torchio: TorchIO: Tools for loading,
+                   augmenting and writing 3D medical images on
+                   PyTorch}},
+  month        = jan,
+  year         = 2020,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3598622},
+  url          = {https://doi.org/10.5281/zenodo.3598622}
+}
+```
