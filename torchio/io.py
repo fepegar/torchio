@@ -22,6 +22,9 @@ def read_image(path):
         read = _read_nifti
     elif '.nrrd' in suffixes:
         read = _read_nrrd
+    else:
+        raise NotImplementedError(
+            f'Reading not implemented for this format: "{path}"')
     return read(path)
 
 
@@ -54,6 +57,9 @@ def write_image(tensor, affine, path):
         write = _write_nifti
     elif '.nrrd' in suffixes:
         write = _write_nrrd
+    else:
+        raise NotImplementedError(
+            f'Writing not implemented for this format: "{path}"')
     write(tensor, affine, path)
 
 
