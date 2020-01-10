@@ -102,7 +102,13 @@ def __averaged_mapping(perc_database, s1, s2):
     return final_map
 
 
-def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
+def normalize(
+        data,
+        landmarks,
+        cutoff=DEFAULT_CUTOFF,
+        masking_function=None,
+        epsilon=1e-5,
+        ):
     data = data.numpy()
     mapping = landmarks
 
@@ -130,7 +136,7 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None):
     # handling the case where two landmarks are the same
     # for a given input image. This usually happens when
     # image background is not removed from the image.
-    diff_perc[diff_perc == 0] = np.inf
+    diff_perc[diff_perc < epsilon] = np.inf
 
     affine_map = np.zeros([2, len(range_to_use) - 1])
     # compute slopes of the linear models
