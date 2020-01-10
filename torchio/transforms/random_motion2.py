@@ -86,6 +86,57 @@ class MotionSimTransform(RandomTransform):
         if (not finufft) and nufft:
             raise ImportError('finufftpy cannot be imported')
 
+    def apply_transform(self, sample):
+        self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
+        ###############################
+        ########## T E S T ############
+        ###############################
+
+        for image_name, image_dict in sample.items():
+            if not isinstance(image_dict, dict) or 'type' not in image_dict:
+                # Not an image
+                continue
+            if image_dict['type'] != INTENSITY:
+                continue
+            image_data = np.squeeze(image_dict['data'])[..., np.newaxis, np.newaxis]
+            original_image = np.squeeze(image_data[:, :, :, 0, 0])
+            self._calc_dimensions(original_image.shape)
+            self._simulate_random_trajectory()
+
+            # fft
+            im_freq_domain = self._fft_im(original_image)
+            translated_im_freq_domain = self._translate_freq_domain(freq_domain=im_freq_domain)
+
+            # iNufft for rotations
+            if self.nufft:
+                corrupted_im = self._nufft(translated_im_freq_domain)
+                corrupted_im = corrupted_im / corrupted_im.size  # normalize
+
+            else:
+                corrupted_im = self._ifft_im(translated_im_freq_domain)
+
+            # magnitude
+            corrupted_im = abs(corrupted_im)
+            image_dict["data"] = corrupted_im[np.newaxis, ...]
+            """
+            if self.apply_mask:
+                # todo: use input arg mask
+                mask_im = input_data['mask'][:, :, :, 0, 0] > 0
+                corrupted_im = np.multiply(corrupted_im, mask_im)
+                masked_original = np.multiply(original_image, mask_im)
+                image_data[:, :, :, 0, 0] = masked_original
+
+            #image_data[:, :, :, 0, 1] = corrupted_im
+
+        #output_data = input_data
+        #output_data[self.image_name] = image_data
+        """
+        return sample
+
+    @staticmethod
+    def get_params():
+        pass
+
     def _calc_dimensions(self, im_shape):
         """
         calculate dimensions based on im_shape
@@ -451,52 +502,6 @@ class MotionSimTransform(RandomTransform):
 
         return im_out
 
-    def apply_transform(self, sample):
-        self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
-        ###############################
-        ########## T E S T ############
-        ###############################
-
-        for image_name, image_dict in sample.items():
-            if not isinstance(image_dict, dict) or 'type' not in image_dict:
-                # Not an image
-                continue
-            if image_dict['type'] != INTENSITY:
-                continue
-            image_data = np.squeeze(image_dict['data'])[..., np.newaxis, np.newaxis]
-            original_image = np.squeeze(image_data[:, :, :, 0, 0])
-            self._calc_dimensions(original_image.shape)
-            self._simulate_random_trajectory()
-
-            # fft
-            im_freq_domain = self._fft_im(original_image)
-            translated_im_freq_domain = self._translate_freq_domain(freq_domain=im_freq_domain)
-
-            # iNufft for rotations
-            if self.nufft:
-                corrupted_im = self._nufft(translated_im_freq_domain)
-                corrupted_im = corrupted_im / corrupted_im.size  # normalize
-
-            else:
-                corrupted_im = self._ifft_im(translated_im_freq_domain)
-
-            # magnitude
-            corrupted_im = abs(corrupted_im)
-            image_dict["data"] = corrupted_im[np.newaxis, ...]
-            """
-            if self.apply_mask:
-                # todo: use input arg mask
-                mask_im = input_data['mask'][:, :, :, 0, 0] > 0
-                corrupted_im = np.multiply(corrupted_im, mask_im)
-                masked_original = np.multiply(original_image, mask_im)
-                image_data[:, :, :, 0, 0] = masked_original
-
-            #image_data[:, :, :, 0, 1] = corrupted_im
-
-        #output_data = input_data
-        #output_data[self.image_name] = image_data
-        """
-        return sample
 
 """
 ################################################################## T E S T #############################################
