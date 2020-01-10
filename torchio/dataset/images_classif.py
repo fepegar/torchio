@@ -47,7 +47,7 @@ class ImagesClassifDataset(ImagesDataset):
         return self.length
 
     def __getitem__(self, idx):
-        return next(self.gen(idx))  # quadriview(self.fnames[idx], None, slices_array=None)[np.newaxis,...], self.classes[idx]
+        return next(self.gen(idx))
 
     def get_data_equal(self, idx):
 
@@ -65,10 +65,6 @@ class ImagesClassifDataset(ImagesDataset):
             rand_idx = indbad[random.randint(0, len(indbad) - 1)]
         else:
             rand_idx = indok[random.randint(0, len(indok) - 1)]
-
-        # worker = torch.utils.data.get_worker_info()
-        # worker_id = worker.id if worker is not None else -1
-        # print('Woker {} index is {} '.format(worker_id, rand_idx), flush=True)
 
         sample = super().__getitem__(rand_idx)
         one_info = self.infos.iloc[rand_idx, :].to_dict()
