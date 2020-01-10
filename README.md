@@ -341,3 +341,12 @@ Time: 259 seconds
 Number of workers: 4
 Time: 242 seconds
 ```
+
+
+## Related projects
+
+* [Albumentations](https://github.com/albumentations-team/albumentations)
+* [`batchgenerators`](https://github.com/MIC-DKFZ/batchgenerators)
+* [kornia](https://kornia.github.io/)
+* [DALI](https://developer.nvidia.com/DALI)
+* [`rising`](https://github.com/PhoenixDL/rising)
