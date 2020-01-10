@@ -54,18 +54,28 @@ class ImagesDataset(Dataset):
 
     @staticmethod
     def parse_subjects_list(subjects_list):
+        # Check that it's list or tuple
         if not isinstance(subjects_list, Sequence):
             raise TypeError(
                 f'Subject list must be a sequence, not {type(subjects_list)}')
+
+        # Check that it's not empty
         if not subjects_list:
             raise ValueError('Subjects list is empty')
+
+        # Check each element
         for subject_images in subjects_list:
+            # Check that each element is a list
             if not isinstance(subject_images, Sequence):
                 message = (
                     'Subject images list must be a sequence'
                     f', not {type(subject_images)}'
                 )
                 raise TypeError(message)
+
+            # Check that there are only instances of Image
+            # and all images have different names
+            names = []
             for image in subject_images:
                 if not isinstance(image, Image):
                     message = (
@@ -73,6 +83,12 @@ class ImagesDataset(Dataset):
                         f' torchio.Image, not {type(image)}'
                     )
                     raise TypeError(message)
+                if image.name in names:
+                    message = (
+                        f'Two images with name "{image.name}" found in list'
+                    )
+                    raise KeyError(message)
+                names.append(image.name)
 
     @staticmethod
     def save_sample(sample, output_paths_dict):

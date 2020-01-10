@@ -8,8 +8,9 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from ..torchio import INTENSITY
 from .transform import Transform
+from ..utils import is_image_dict
+from ..torchio import INTENSITY
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
@@ -33,8 +34,7 @@ class HistogramStandardization(Transform):
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
-            if not isinstance(image_dict, dict) or 'type' not in image_dict:
-                # Not an image
+            if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] == INTENSITY:
                 # TODO: assert that image_name is in dict

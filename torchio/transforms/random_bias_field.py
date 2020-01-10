@@ -14,23 +14,30 @@ class RandomBiasField(RandomTransform):
             self,
             coefficients_range=(-0.5, 0.5),
             order=3,
+            proportion_to_augment=0.5,
             seed=None,
             verbose=False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.coefficients_range = coefficients_range
         self.order = order
+        self.proportion_to_augment = proportion_to_augment
 
     def apply_transform(self, sample):
-        coefficients = self.get_params(self.order, self.coefficients_range)
-        sample['random_bias_field'] = coefficients
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] != INTENSITY:
                 continue
-            coefficients = self.get_params(self.order, self.coefficients_range)
-            sample[image_name]['random_bias_field'] = coefficients
+            do_augmentation, coefficients = self.get_params(
+                self.order,
+                self.coefficients_range,
+                self.proportion_to_augment,
+            )
+            sample[image_name]['random_bias_coefficients'] = coefficients
+            sample[image_name]['random_bias_do_augmentation'] = do_augmentation
+            if not do_augmentation:
+                continue
             bias_field = self.generate_bias_field(
                 image_dict['data'], self.order, coefficients)
             image_with_bias = image_dict['data'] * torch.from_numpy(bias_field)
@@ -38,7 +45,7 @@ class RandomBiasField(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(order, coefficients_range):
+    def get_params(order, coefficients_range, probability):
         """
         Sampling of the appropriate number of coefficients for the creation
         of the bias field map
@@ -49,7 +56,8 @@ class RandomBiasField(RandomTransform):
                 for z_order in range(0, order + 1 - (x_order + y_order)):
                     number = torch.FloatTensor(1).uniform_(*coefficients_range)
                     random_coefficients.append(number.item())
-        return np.array(random_coefficients)
+        do_augmentation = torch.rand(1) < probability
+        return do_augmentation, np.array(random_coefficients)
 
     @staticmethod
     def generate_bias_field(data, order, coefficients):

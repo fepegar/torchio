@@ -76,6 +76,13 @@ class TestRandomElasticDeformation(unittest.TestCase):
             self.iterate_dataset([[Image('t1', 'nopath', INTENSITY)]])
         with self.assertRaises(TypeError):
             self.iterate_dataset([[Image('t1', 5, INTENSITY)]])
+        with self.assertRaises(KeyError):
+            with tempfile.NamedTemporaryFile() as f:
+                images = [
+                    Image('t1', f.name, INTENSITY),
+                    Image('t1', f.name, INTENSITY),
+                ]
+            self.iterate_dataset([images])
         with self.assertRaises(ValueError):
             path = self.dir / 'test.txt'
             path.touch()
