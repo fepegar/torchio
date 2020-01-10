@@ -12,7 +12,6 @@ class RandomElasticDeformation(RandomTransform):
             num_control_points=4,
             deformation_std=15,
             proportion_to_augment=0.5,
-            spatial_rank=3,
             image_interpolation=Interpolation.LINEAR,
             seed=None,
             verbose=False,
@@ -22,7 +21,6 @@ class RandomElasticDeformation(RandomTransform):
         self.num_control_points = max(num_control_points, 2)
         self.deformation_std = max(deformation_std, 1)
         self.proportion_to_augment = proportion_to_augment
-        self.spatial_rank = spatial_rank
         self.image_interpolation = image_interpolation
 
     def apply_transform(self, sample):

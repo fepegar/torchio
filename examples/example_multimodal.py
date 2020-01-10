@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 import torchio
-from torchio import ImagesDataset, Queue
+from torchio import Image, ImagesDataset, Queue
 from torchio.sampler import ImageSampler
 from torchio.transforms import (
     ZNormalization,
@@ -34,24 +34,24 @@ transforms = (
 )
 transform = Compose(transforms)
 
-# Populate a list with dictionaries of paths
-one_subject_dict = {
-    'T1': dict(path='../BRATS2018_crop_renamed/LGG75_T1.nii.gz', type=torchio.INTENSITY),
-    'T2': dict(path='../BRATS2018_crop_renamed/LGG75_T2.nii.gz', type=torchio.INTENSITY),
-    'label': dict(path='../BRATS2018_crop_renamed/LGG75_Label.nii.gz', type=torchio.LABEL),
-}
-
-another_subject_dict = {
-    'T1': dict(path='../BRATS2018_crop_renamed/LGG74_T1.nii.gz', type=torchio.INTENSITY),
-    'label': dict(path='../BRATS2018_crop_renamed/LGG74_Label.nii.gz', type=torchio.LABEL),
-}
-
-subjects_paths = [
-    one_subject_dict,
-    another_subject_dict,
+# Populate a list with images
+one_subject_images = [
+    Image('T1', '../BRATS2018_crop_renamed/LGG75_T1.nii.gz', torchio.INTENSITY),
+    Image('T2', '../BRATS2018_crop_renamed/LGG75_T2.nii.gz', torchio.INTENSITY),
+    Image('label', '../BRATS2018_crop_renamed/LGG75_Label.nii.gz', torchio.LABEL),
 ]
 
-subjects_dataset = ImagesDataset(subjects_paths, transform=transform)
+another_subject_images = [
+    Image('T1', '../BRATS2018_crop_renamed/LGG74_T1.nii.gz', torchio.INTENSITY),
+    Image('label', '../BRATS2018_crop_renamed/LGG74_Label.nii.gz', torchio.LABEL),
+]
+
+subjects = [
+    one_subject_images,
+    another_subject_images,
+]
+
+subjects_dataset = ImagesDataset(subjects, transform=transform)
 
 # Run a benchmark for different numbers of workers
 workers = range(mp.cpu_count() + 1)

@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 import torchio
-from torchio import INTENSITY, LABEL
+from torchio import INTENSITY, LABEL, Image
 
 
 class TestRandomElasticDeformation(unittest.TestCase):
@@ -22,22 +22,22 @@ class TestRandomElasticDeformation(unittest.TestCase):
         random.seed(42)
         np.random.seed(42)
 
-        subject_a = {
-            't1': dict(path=self.get_image_path('t1_a'), type=INTENSITY),
-        }
-        subject_b = {
-            't1': dict(path=self.get_image_path('t1_b'), type=INTENSITY),
-            'label': dict(path=self.get_image_path('label_b'), type=LABEL),
-        }
-        subject_c = {
-            'label': dict(path=self.get_image_path('label_c'), type=LABEL),
-        }
-        subject_d = {
-            't1': dict(path=self.get_image_path('t1_d'), type=INTENSITY),
-            't2': dict(path=self.get_image_path('t2_d'), type=INTENSITY),
-            'label': dict(path=self.get_image_path('label_d'), type=LABEL),
-        }
-        self.paths_list = [
+        subject_a = [
+            Image('t1', self.get_image_path('t1_a'), INTENSITY),
+        ]
+        subject_b = [
+            Image('t1', self.get_image_path('t1_b'), INTENSITY),
+            Image('label', self.get_image_path('label_b'), LABEL),
+        ]
+        subject_c = [
+            Image('label', self.get_image_path('label_c'), LABEL),
+        ]
+        subject_d = [
+            Image('t1', self.get_image_path('t1_d'), INTENSITY),
+            Image('t2', self.get_image_path('t2_d'), INTENSITY),
+            Image('label', self.get_image_path('label_d'), LABEL),
+        ]
+        self.subjects_list = [
             subject_a,
             subject_b,
             subject_c,
@@ -59,9 +59,9 @@ class TestRandomElasticDeformation(unittest.TestCase):
         return path
 
     def test_images(self):
-        self.iterate_dataset(self.paths_list)
+        self.iterate_dataset(self.subjects_list)
 
-    def test_wrong_paths_list(self):
+    def test_wrong_subjects_list(self):
         with self.assertRaises(ValueError):
             self.iterate_dataset([])
         with self.assertRaises(ValueError):
@@ -70,30 +70,27 @@ class TestRandomElasticDeformation(unittest.TestCase):
             self.iterate_dataset(0)
         with self.assertRaises(TypeError):
             self.iterate_dataset([0])
-        with self.assertRaises(ValueError):
-            self.iterate_dataset([{}])
-        with self.assertRaises(ValueError):
-            self.iterate_dataset([{}, {}])
-        with self.assertRaises(FileNotFoundError):
-            self.iterate_dataset([{'t1':dict(path='nopath', type=INTENSITY)}])
         with self.assertRaises(TypeError):
-            self.iterate_dataset([{'t1': dict(path=5, type=INTENSITY)}])
+            self.iterate_dataset([{}])
+        with self.assertRaises(FileNotFoundError):
+            self.iterate_dataset([[Image('t1', 'nopath', INTENSITY)]])
+        with self.assertRaises(TypeError):
+            self.iterate_dataset([[Image('t1', 5, INTENSITY)]])
+        with self.assertRaises(KeyError):
+            with tempfile.NamedTemporaryFile() as f:
+                images = [
+                    Image('t1', f.name, INTENSITY),
+                    Image('t1', f.name, INTENSITY),
+                ]
+            self.iterate_dataset([images])
         with self.assertRaises(ValueError):
             path = self.dir / 'test.txt'
             path.touch()
-            self.iterate_dataset([{'t1': dict(path=path, type=INTENSITY)}])
-        with self.assertRaises(KeyError):
-            self.iterate_dataset([{'t1': dict(path='nopath')}])
-        with self.assertRaises(KeyError):
-            self.iterate_dataset([{'t1': dict(type=INTENSITY)}])
-        with self.assertRaises(KeyError):
-            self.iterate_dataset([{'t1': dict(test='', type=INTENSITY)}])
-        with self.assertRaises(TypeError):
-            self.iterate_dataset([{'t1': 6}])
+            self.iterate_dataset([[Image('t1', path, INTENSITY)]])
 
     def test_others(self):
         dataset = torchio.ImagesDataset(
-            self.paths_list, verbose=True, transform=lambda x: x)
+            self.subjects_list, verbose=True, transform=lambda x: x)
         _ = len(dataset)  # for coverage
         sample = dataset[0]
         output_path = self.dir / 'test.nii.gz'
@@ -104,7 +101,7 @@ class TestRandomElasticDeformation(unittest.TestCase):
         ndims_sample = len(sample['t1']['data'].shape)
         assert ndims_sample == ndims_output + 1
 
-    def iterate_dataset(self, paths_list):
-        dataset = torchio.ImagesDataset(paths_list)
+    def iterate_dataset(self, subjects_list):
+        dataset = torchio.ImagesDataset(subjects_list)
         for _ in dataset:
             pass
