@@ -2,8 +2,12 @@ language: python
 python:
 - 3.7
 - 3.6
-install: pip install -U tox-travis
+install:
+  - pip install -U tox-travis
+  - pip install coveralls
 script: tox
+after_success:
+  - coveralls
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
