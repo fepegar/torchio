@@ -167,6 +167,7 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mas
     aff_img = affine_map[1, bin_id]
     new_img = lin_img * img + aff_img
     new_img = new_img.reshape(image_shape)
+    new_img = new_img.astype(np.float32)
     new_img = torch.from_numpy(new_img)
     return new_img
 
