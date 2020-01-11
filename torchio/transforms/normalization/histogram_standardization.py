@@ -8,29 +8,26 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from .. import Transform
-from ...utils import is_image_dict
-from ...torchio import INTENSITY
+from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
 
 
-class HistogramStandardization(Transform):
-    def __init__(self, landmarks_dict, verbose=False):
-        super().__init__(verbose=verbose)
+class HistogramStandardization(NormalizationTransform):
+    def __init__(self, landmarks_dict, masking_method=None, verbose=False):
+        super().__init__(masking_method=masking_method, verbose=verbose)
         self.landmarks_dict = landmarks_dict
 
-    def apply_transform(self, sample):
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict['type'] == INTENSITY:
-                # TODO: assert that image_name is in dict
-                landmarks = self.landmarks_dict[image_name]
-                image_dict['data'] = normalize(image_dict['data'], landmarks)
-        return sample
-
+    def apply_normalization(self, sample, image_name, mask):
+        # TODO: assert that image_name is in landmarks dict
+        image_dict = sample[image_name]
+        landmarks = self.landmarks_dict[image_name]
+        image_dict['data'] = normalize(
+            image_dict['data'],
+            landmarks,
+            mask=mask,
+        )
 
 def __compute_percentiles(img, mask, cutoff):
     """
@@ -102,8 +99,8 @@ def __averaged_mapping(perc_database, s1, s2):
 def normalize(
         data,
         landmarks,
+        mask=None,
         cutoff=DEFAULT_CUTOFF,
-        masking_function=None,
         epsilon=1e-5,
         ):
     data = data.numpy()
@@ -113,10 +110,8 @@ def normalize(
     image_shape = img.shape
     img = img.reshape(-1).astype(np.float32)
 
-    if masking_function is not None:
-        mask = masking_function(img)
-    else:
-        mask = np.ones_like(img, dtype=np.bool)
+    if mask is None:
+        mask = np.ones_like(img, np.bool)
     mask = mask.reshape(-1)
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
