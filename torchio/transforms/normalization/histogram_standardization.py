@@ -12,7 +12,8 @@ from .. import Transform
 from ...utils import is_image_dict
 from ...torchio import INTENSITY
 
-DEFAULT_CUTOFF = (0.01, 0.99)
+DEFAULT_CUTOFF = 0.01, 0.99
+STANDARD_RANGE = 0, 100
 
 
 class HistogramStandardization(Transform):
@@ -79,10 +80,6 @@ def __standardize_cutoff(cutoff, type_hist='percentile'):
         cutoff[0] = np.min([cutoff[0], 0.09])
         cutoff[1] = np.max([cutoff[1], 0.91])
     return cutoff
-
-
-def create_standard_range():
-    return 0., 100.
 
 
 def __averaged_mapping(perc_database, s1, s2):
@@ -181,7 +178,7 @@ def train(
         percentiles = __compute_percentiles(data, mask, cutoff)
         percentiles_database.append(percentiles)
     percentiles_database = np.vstack(percentiles_database)
-    s1, s2 = create_standard_range()
+    s1, s2 = STANDARD_RANGE
     mapping = __averaged_mapping(percentiles_database, s1, s2)
 
     if output_path is not None:
