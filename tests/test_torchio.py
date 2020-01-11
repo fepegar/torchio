@@ -17,9 +17,6 @@ class TestTorchio(unittest.TestCase):
     def tearDown(self):
         """Tear down test fixtures, if any."""
 
-    def test_000_something(self):
-        """Test something."""
-
     def test_command_line_interface(self):
         """Test the CLI."""
         runner = CliRunner()

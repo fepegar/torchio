@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-"""Tests for `torchio` package."""
-
-
 import unittest
 import numpy as np
-from numpy.testing import assert_raises, assert_array_equal
 import torchio
 from torchio import INTENSITY, LABEL
 
