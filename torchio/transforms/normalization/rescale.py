@@ -1,8 +1,5 @@
 import torch
 import numpy as np
-from ...torchio import INTENSITY
-from ...utils import is_image_dict
-from .. import Transform
 from .normalization_transform import NormalizationTransform
 
 

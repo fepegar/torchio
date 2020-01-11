@@ -1,4 +1,5 @@
 from .transform import Transform
+from .normalization import NormalizationTransform
 
 # Augmentation
 from .augmentation.spatial import RandomFlip
