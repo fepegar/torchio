@@ -7,6 +7,7 @@ Custom implementation of
 
 """
 
+import warnings
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -59,6 +60,14 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = p
             if not do_it:
                 return sample
+            if (image_dict['data'][0] < 0).any():
+                message = (
+                    f'Image "{image_name}" has negative values.'
+                    ' Results can be unexpected because the transformed sample'
+                    ' is computed as the absolute values'
+                    ' of an inverse Fourier transform'
+                )
+                warnings.warn(message)
             image = self.nib_to_sitk(
                 image_dict['data'][0],
                 image_dict['affine'],
