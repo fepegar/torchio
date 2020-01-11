@@ -4,7 +4,7 @@ from abc import abstractmethod
 import torch
 import SimpleITK as sitk
 
-from .transform import Transform
+from .. import Transform
 
 
 class RandomTransform(Transform):

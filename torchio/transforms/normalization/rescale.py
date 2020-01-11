@@ -1,8 +1,8 @@
 import torch
 import numpy as np
-from ..torchio import INTENSITY
-from ..utils import is_image_dict
-from .transform import Transform
+from ...torchio import INTENSITY
+from ...utils import is_image_dict
+from .. import Transform
 
 
 class Rescale(Transform):

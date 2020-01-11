@@ -8,9 +8,9 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from .transform import Transform
-from ..utils import is_image_dict
-from ..torchio import INTENSITY
+from .. import Transform
+from ...utils import is_image_dict
+from ...torchio import INTENSITY
 
 DEFAULT_CUTOFF = (0.01, 0.99)
 
