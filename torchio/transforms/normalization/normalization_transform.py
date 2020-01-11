@@ -6,14 +6,21 @@ from ...utils import is_image_dict
 
 class NormalizationTransform(Transform):
     def __init__(self, masking_method=None, verbose=False):
+        """
+        masking_method is used to choose the values used for normalization.
+        It can be:
+         - A string: the mask will be retrieved from the sample
+         - A function: the mask will be computed using the function
+         - None: all values are used
+        """
         super().__init__(verbose=verbose)
-        self.masking_method = masking_method
-        if self.masking_method is None:
+        self.mask_name = None
+        if masking_method is None:
             self.masking_method = self.ones
-        if isinstance(self.masking_method, str):
+        elif callable(masking_method):
+            self.masking_method = masking_method
+        elif isinstance(self.masking_method, str):
             self.mask_name = self.masking_method
-        else:
-            self.mask_name = None
 
     def get_mask(self, sample, data):
         if self.mask_name is None:
