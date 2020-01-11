@@ -46,7 +46,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'torchio=torchio.cli:main',
+            'torchio-transform=torchio.cli:apply_transform',
         ],
     },
     install_requires=requirements,
