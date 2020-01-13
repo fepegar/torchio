@@ -9,7 +9,7 @@ except ImportError:
     finufft = False
 
 from torchio import  INTENSITY
-from .random_transform import RandomTransform
+from .. import RandomTransform
 
 
 def create_rotation_matrix_3d(angles):
