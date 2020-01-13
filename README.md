@@ -162,7 +162,8 @@ A transform can be quickly applied to an image file using the command-line
 tool `torchio-transform`:
 
 ```shell
-$ torchio-transform input.nii.gz RandomMotion output.nii.gz
+$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs
+"proportion_to_augment=1,num_transforms=4"
 ```
 
 #### Intensity
