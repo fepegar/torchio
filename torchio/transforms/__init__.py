@@ -1,15 +1,19 @@
-# Spatial transforms
-from .random_flip import RandomFlip
-from .random_noise import RandomNoise
-from .random_affine import RandomAffine
-from .random_motion import RandomMotion
-from .random_bias_field import RandomBiasField
-from .random_elastic_deformation import RandomElasticDeformation
+from .transform import Transform
 
-from .interpolation import Interpolation
+# Augmentation
+from .augmentation.spatial import RandomFlip
+from .augmentation.spatial import RandomAffine
+from .augmentation.spatial import RandomElasticDeformation
+from .augmentation import Interpolation
 
-# Intensity transforms
-from .rescale import Rescale
-from .rescale_within_mask import RescaleMask
-from .z_normalization import ZNormalization
-from .histogram_standardization import HistogramStandardization
+
+from .augmentation.intensity import RandomNoise
+from .augmentation.intensity import RandomMotion
+from .augmentation.intensity import MotionSimTransform
+from .augmentation.intensity import RandomBiasField
+
+# Normalization
+from .normalization import Rescale
+from .normalization import RescaleMask
+from .normalization import ZNormalization
+from .normalization import HistogramStandardization

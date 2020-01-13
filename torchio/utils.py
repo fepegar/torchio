@@ -92,3 +92,18 @@ def create_dummy_dataset(num_images, size_range, force=False):
             ]
             subjects.append(subject_images)
     return subjects
+
+
+def apply_transform_to_file(
+        input_path,
+        transform,
+        output_path,
+        type_=INTENSITY,
+        ):
+    from . import Image, ImagesDataset
+    subject = [
+        Image('image', input_path, type_),
+    ]
+    dataset = ImagesDataset([subject], transform=transform)
+    transformed = dataset[0]
+    dataset.save_sample(transformed, dict(image=output_path))

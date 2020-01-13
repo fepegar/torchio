@@ -8,11 +8,12 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from .transform import Transform
-from ..utils import is_image_dict
-from ..torchio import INTENSITY
+from .. import Transform
+from ...utils import is_image_dict
+from ...torchio import INTENSITY
 
-DEFAULT_CUTOFF = (0.01, 0.99)
+DEFAULT_CUTOFF = 0.01, 0.99
+STANDARD_RANGE = 0, 100
 
 
 class HistogramStandardization(Transform):
@@ -101,10 +102,6 @@ def __standardize_cutoff(cutoff, type_hist='percentile'):
     return cutoff
 
 
-def create_standard_range():
-    return 0., 100.
-
-
 def __averaged_mapping(perc_database, s1, s2):
     """
     Map the landmarks of the database to the chosen range
@@ -122,7 +119,14 @@ def __averaged_mapping(perc_database, s1, s2):
     return final_map
 
 
-def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mask_data=None):
+def normalize(
+        data,
+        landmarks,
+        cutoff=DEFAULT_CUTOFF,
+        masking_function=None,
+        mask_data=None,
+        epsilon=1e-5,
+        ):
     data = data.numpy()
     mapping = landmarks
 
@@ -154,7 +158,7 @@ def normalize(data, landmarks, cutoff=DEFAULT_CUTOFF, masking_function=None, mas
     # handling the case where two landmarks are the same
     # for a given input image. This usually happens when
     # image background is not removed from the image.
-    diff_perc[diff_perc == 0] = np.inf
+    diff_perc[diff_perc < epsilon] = np.inf
 
     affine_map = np.zeros([2, len(range_to_use) - 1])
     # compute slopes of the linear models
@@ -199,7 +203,7 @@ def train(
         percentiles = __compute_percentiles(data, mask, cutoff)
         percentiles_database.append(percentiles)
     percentiles_database = np.vstack(percentiles_database)
-    s1, s2 = create_standard_range()
+    s1, s2 = STANDARD_RANGE
     mapping = __averaged_mapping(percentiles_database, s1, s2)
 
     if output_path is not None:

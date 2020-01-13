@@ -12,8 +12,8 @@ import torchio
 from torchio import INTENSITY, LABEL, Image
 
 
-class TestRandomElasticDeformation(unittest.TestCase):
-    """Tests for `RandomElasticDeformation`."""
+class TestImagesDataset(unittest.TestCase):
+    """Tests for `ImagesDataset`."""
 
     def setUp(self):
         """Set up test fixtures, if any."""
@@ -61,21 +61,35 @@ class TestRandomElasticDeformation(unittest.TestCase):
     def test_images(self):
         self.iterate_dataset(self.subjects_list)
 
-    def test_wrong_subjects_list(self):
+    def test_empty_subjects_list(self):
         with self.assertRaises(ValueError):
             self.iterate_dataset([])
+
+    def test_empty_subjects_tuple(self):
         with self.assertRaises(ValueError):
             self.iterate_dataset(())
+
+    def test_wrong_subjects_type(self):
         with self.assertRaises(TypeError):
             self.iterate_dataset(0)
+
+    def test_wrong_subject_type_int(self):
         with self.assertRaises(TypeError):
             self.iterate_dataset([0])
+
+    def test_wrong_subject_type_dict(self):
         with self.assertRaises(TypeError):
             self.iterate_dataset([{}])
+
+    def test_image_not_found(self):
         with self.assertRaises(FileNotFoundError):
             self.iterate_dataset([[Image('t1', 'nopath', INTENSITY)]])
+
+    def test_wrong_path_type(self):
         with self.assertRaises(TypeError):
             self.iterate_dataset([[Image('t1', 5, INTENSITY)]])
+
+    def test_duplicate_image_name(self):
         with self.assertRaises(KeyError):
             with tempfile.NamedTemporaryFile() as f:
                 images = [
@@ -83,12 +97,14 @@ class TestRandomElasticDeformation(unittest.TestCase):
                     Image('t1', f.name, INTENSITY),
                 ]
             self.iterate_dataset([images])
+
+    def test_wrong_image_extension(self):
         with self.assertRaises(ValueError):
             path = self.dir / 'test.txt'
             path.touch()
             self.iterate_dataset([[Image('t1', path, INTENSITY)]])
 
-    def test_others(self):
+    def test_coverage(self):
         dataset = torchio.ImagesDataset(
             self.subjects_list, verbose=True, transform=lambda x: x)
         _ = len(dataset)  # for coverage
@@ -101,7 +117,8 @@ class TestRandomElasticDeformation(unittest.TestCase):
         ndims_sample = len(sample['t1']['data'].shape)
         assert ndims_sample == ndims_output + 1
 
-    def iterate_dataset(self, subjects_list):
+    @staticmethod
+    def iterate_dataset(subjects_list):
         dataset = torchio.ImagesDataset(subjects_list)
         for _ in dataset:
             pass

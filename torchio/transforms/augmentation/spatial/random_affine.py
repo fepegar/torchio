@@ -1,10 +1,10 @@
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ..torchio import LABEL
-from ..utils import is_image_dict
-from .interpolation import Interpolation
-from .random_transform import RandomTransform
+from ....torchio import LABEL
+from ....utils import is_image_dict
+from .. import Interpolation
+from .. import RandomTransform
 
 
 class RandomAffine(RandomTransform):

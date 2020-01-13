@@ -108,8 +108,8 @@ class Image:
         try:
             path = Path(path).expanduser()
         except TypeError:
-            print(f'Conversion to path not possible for variable: {path}')
-            raise
+            message = f'Conversion to path not possible for variable: {path}'
+            raise TypeError(message)
         if not path.is_file():
             message = (
                 f'File for image "{self.name}"'

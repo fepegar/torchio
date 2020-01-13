@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-"""Tests for `torchio` package."""
-
-
 import unittest
 import torch
 import numpy as np

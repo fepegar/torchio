@@ -6,8 +6,8 @@ import torchio
 from torchio import INTENSITY, LABEL
 
 
-class TestRandomElasticDeformation(unittest.TestCase):
-    """Tests for `RandomElasticDeformation`."""
+class TestRandomMotion(unittest.TestCase):
+    """Tests for `RandomMotion`."""
 
     def setUp(self):
         """Set up test fixtures, if any."""
@@ -37,13 +37,12 @@ class TestRandomElasticDeformation(unittest.TestCase):
     def getRandomData(shape):
         return np.random.rand(*shape)
 
-    def test_random_elastic_deformation(self):
-        transform = torchio.transforms.RandomElasticDeformation(
+    def test_random_motion(self):
+        transform = torchio.transforms.RandomMotion(
             proportion_to_augment=1,
             seed=42,
         )
-        keys = ('t1', 't2', 'label')
-        fixtures = 764.2148522171124, 734.5418868396644, 752
         transformed = transform(self.sample)
-        for key, fixture in zip(keys, fixtures):
-            assert transformed[key]['data'].sum() == fixture
+        transformed['t2']['data'] = transformed['t2']['data'] - 0.5
+        with self.assertWarns(UserWarning):
+            transformed = transform(self.sample)

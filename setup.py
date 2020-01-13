@@ -46,7 +46,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'torchio=torchio.cli:main',
+            'torchio-transform=torchio.cli:apply_transform',
         ],
     },
     install_requires=requirements,
@@ -61,6 +61,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/fepegar/torchio',
-    version='0.8.2',
+    version='0.8.3',
     zip_safe=False,
 )

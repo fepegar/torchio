@@ -1,7 +1,7 @@
 import torch
 import numpy as np
-from ..utils import is_image_dict
-from .random_transform import RandomTransform
+from ....utils import is_image_dict
+from .. import RandomTransform
 
 
 class RandomFlip(RandomTransform):

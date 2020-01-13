@@ -4,9 +4,9 @@ Adapted from NiftyNet
 
 import numpy as np
 import torch
-from ..torchio import INTENSITY
-from ..utils import is_image_dict
-from .random_transform import RandomTransform
+from ....torchio import INTENSITY
+from ....utils import is_image_dict
+from .. import RandomTransform
 
 
 class RandomBiasField(RandomTransform):
