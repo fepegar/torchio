@@ -72,11 +72,12 @@ The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 import torchio
 
 subject_a = [
-    Image('t1', '~/Dropbox/MRI/t1.nii.gz', torchio.INTENSITY),
+    Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
 ]
 subject_b = [
     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
+    Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
 ]
 subjects_list = [subject_a, subject_b]
