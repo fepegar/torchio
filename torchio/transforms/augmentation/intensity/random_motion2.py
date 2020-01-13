@@ -312,15 +312,30 @@ class MotionSimTransform(RandomTransform):
             'RMS_rot': np.sqrt(np.mean(rotations ** 2))
         }
         """
-        print(f'fitpar shape {fitpars.shape}')
+        print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
 
         to_reshape = [1, 1, 1]
-        to_reshape[self.frequency_encoding_dim] = -1
+        phase_dime = self.im_shape[self.frequency_encoding_dim]
 
-        rand_translations, rand_rotations = fitpars[:3].reshape([3] + to_reshape), fitpars[3:].reshape([3] + to_reshape)
+        x1 = np.linspace(0,1,phase_dime)
+        x2 = np.linspace(0,1,np.prod(self.im_shape))
+        fitpars_interp=[]
+        for ind in range(fitpars.shape[0]):
+            y = fitpars[ind, :]
+            yinterp = np.interp(x2,x1,y)
+            fitpars_interp.append(yinterp)
 
-        ones_multiplicator = np.ones([3] + self.im_shape)
-        rand_translations, rand_rotations = rand_translations * ones_multiplicator, rand_rotations * ones_multiplicator
+        fitpars = np.array(fitpars_interp)
+
+        rand_translations, rand_rotations = fitpars[:3].reshape([3] + self.im_shape), fitpars[3:].reshape([3] + self.im_shape)
+
+        #to_reshape[self.frequency_encoding_dim] = -1
+        #rand_translations, rand_rotations = fitpars[:3].reshape([3] + to_reshape), fitpars[3:].reshape([3] + to_reshape)
+
+        #ones_multiplicator = np.ones([3] + self.im_shape)
+        #rand_translations, rand_rotations = rand_translations * ones_multiplicator, rand_rotations * ones_multiplicator
+
+        print(f' in _simul_motionfitpar shape rand_rotation {rand_rotations.shape}')
 
         return rand_translations, rand_rotations
 
@@ -387,12 +402,14 @@ class MotionSimTransform(RandomTransform):
                 rand_translations_vox[(i,) + ix] = self.rand_translations[i, :, :]
 
         ix_to_remove = self._center_k_indices_to_preserve()
-        rand_translations_vox[ix_to_remove] = 0
-        rand_rotations_vox[ix_to_remove] = 0
+        rand_translations_vox[tuple(ix_to_remove)] = 0
+        rand_rotations_vox[tuple(ix_to_remove)] = 0
 
         self.translations = rand_translations_vox.reshape(3, -1)
         rand_rotations_vox = rand_rotations_vox.reshape(3, -1)
         self.rotations = rand_rotations_vox * (math.pi / 180.)  # convert to radians
+
+        np.save('/tmp/rp_mot.npy',np.vstack([ self.translations, self.rotations]) )
 
     def gen_test_trajectory(self, translation, rotation):
         """
@@ -447,11 +464,13 @@ class MotionSimTransform(RandomTransform):
 
         grid_coordinates = np.array([i1.T.flatten(), i2.T.flatten(), i3.T.flatten()])
 
+        print('rotation size is {}'.format( self.rotations.shape))
+
         rotations = self.rotations.reshape([3] + self.im_shape)
         ix = (len(self.im_shape) + 1) * [slice(None)]
         ix[self.frequency_encoding_dim + 1] = 0  # dont need to rotate along freq encoding
 
-        rotations = rotations[ix].reshape(3, -1)
+        rotations = rotations[tuple(ix)].reshape(3, -1)
         rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rotations).transpose([-1, 0, 1])
         rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3])
         rotation_matrices = np.expand_dims(rotation_matrices, self.frequency_encoding_dim)
@@ -467,6 +486,8 @@ class MotionSimTransform(RandomTransform):
         grid_coordinates_tiled = np.tile(grid_coordinates, [3, 1])
         grid_coordinates_tiled = grid_coordinates_tiled.reshape([3, -1], order='F').T
         rotation_matrices = rotation_matrices.reshape([-1, 3])
+
+        print('rotation matrices size is {}'.format(rotation_matrices.shape))
 
         new_grid_coords = (rotation_matrices * grid_coordinates_tiled).sum(axis=1)
 
@@ -566,12 +587,34 @@ import numpy as np
 data = pd.read_csv("/data/romain/HCPdata/suj_100307/Motion/rp_Motion_RMS_185_Disp_325_swalF_0_swalM_0_sudF_0_sudM_0_Motion_RMS_0_Disp_0_swalF_T1w_1mm.txt", header=None)
 data = data.drop(columns=[218])
 #Extract separately parameters of translation and rotation
-trans_data, rot_data = data[:3].values.reshape((3, 1, -1, 1)), data[3:].values.reshape((3, 1, -1, 1))
+trans_data, rot_data = data[:3].values.reshape((3, 1, 218, -1)), data[3:].values.reshape((3, 1, 218, -1))
 #Read MRI data
 mri_data = nb.load("/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz")
 image = mri_data.get_data()
 # Squeezed img
 squeezed_img = np.squeeze(image)
+
+fitpars=data.values
+x1 = np.linspace(0,1,data.shape[1])
+x2 = np.linspace(0,1,np.prod(image.shape[1:])) #interp on the phase_encoding * slice_endocing
+fitpars_interp=[]
+for ind in range(fitpars.shape[0]):
+    y = fitpars[ind, :]
+    yinterp = np.interp(x2,x1,y)
+    fitpars_interp.append(yinterp)
+
+fitpars = np.array(fitpars_interp)
+
+translations, rotations = fitpars[:3], fitpars[3:]
+rotations = np.radians(rotations)
+
+trans_data, rot_data = fitpars[:3].reshape((3, 1, 218, -1)), fitpars[3:].reshape((3, 1, 218, -1))
+ones_multiplicator = np.ones([3] + list(squeezed_img.shape))
+translations, rotations = trans_data * ones_multiplicator, rot_data * ones_multiplicator
+translations, rotations = translations.reshape((3, -1)), rotations.reshape((3, -1))
+rotations = np.radians(rotations)
+
+# BAD replication
 #Broadcast translation and rotation parameters to voxel level params
 ones_multiplicator = np.ones([3] + list(squeezed_img.shape))
 translations, rotations = trans_data * ones_multiplicator, rot_data * ones_multiplicator
@@ -599,10 +642,10 @@ corr_rot = abs(rotated_freq) / rotated_freq.size
 
 #Save data
 corr_trans_img = nb.Nifti1Image(corr_trans, mri_data.affine)
-corr_trans_img.to_filename("/data/ghiles/motion_simulation/tests/translated.nii")
+#corr_trans_img.to_filename("/data/ghiles/motion_simulation/tests/translated.nii")
 
 corr_rot_img = nb.Nifti1Image(corr_rot, mri_data.affine)
-corr_rot_img.to_filename("/data/ghiles/motion_simulation/tests/rotated.nii")
+corr_rot_img.to_filename("/tmp/rotated2.nii")
 
 nT = 218
 nt_pf = np.round(nT/6)
