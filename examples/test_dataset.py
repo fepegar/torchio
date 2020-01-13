@@ -213,6 +213,50 @@ def smooth(y, box_pts):
 
 
 
+#test motion ghiles
+from torchio.transforms.random_motion2 import  MotionSimTransform
+from copy import deepcopy
+out_dir = '/data/romain/data_exemple/augment/'
+suj = [[
+    Image('T1','/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz',INTENSITY),
+    Image('mask','/data/romain/HCPdata/suj_100307/brain_mT1w_1mm.nii',LABEL)
+     ]]
+t = MotionSimTransform(std_rotation_angle=3, std_translation=2, nufft=True, proc_scale=0, verbose=True, freq_encoding_dim=(2,))
+transforms = Compose([t])
+
+dataset = ImagesDataset(suj)
+sample_orig=dataset[0]
+
+for i  in range(0,4):
+
+    sample = deepcopy(sample_orig)
+
+    transformed = transforms(sample)
+    name = 'mot'
+    path = out_dir + f'{i}_{name}.nii.gz'
+    dataset.save_sample(transformed, dict(T1=path))
+
+
+
+sample = dataset[0]
+image_data = np.squeeze(sample['T1']['data'])[..., np.newaxis, np.newaxis]
+original_image = np.squeeze(image_data[:, :, :, 0, 0])
+
+mot = MotionSimTransform(proc_scale=0)
+mot._calc_dimensions(original_image.shape)
+
+tran, rot = mot._simul_motion(200)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
