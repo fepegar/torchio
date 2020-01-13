@@ -1,4 +1,5 @@
 import math
+import torch
 import numpy as np
 from scipy.interpolate import pchip_interpolate
 try:
@@ -41,7 +42,7 @@ class MotionSimTransform(RandomTransform):
 
     def __init__(self, std_rotation_angle=0, std_translation=10,
                  corrupt_pct=(15, 20), freq_encoding_dim=(0, 1, 2), preserve_center_pct=0.07,
-                 apply_mask=True, nufft=False, proc_scale=-1, num_pieces=8):
+                 apply_mask=True, nufft=False, proc_scale=-1, num_pieces=8, verbose=False):
         """
         :param image_name (str): key in data dictionary
         :param std_rotation_angle (float) : std of rotations
@@ -56,7 +57,7 @@ class MotionSimTransform(RandomTransform):
        raises ImportError if nufft is true but finufft cannot be imported
         """
 
-        super(MotionSimTransform, self).__init__()
+        super(MotionSimTransform, self).__init__(verbose=verbose)
         self.trajectory = None
         self.preserve_center_frequency_pct = preserve_center_pct
         self.freq_encoding_choice = freq_encoding_dim
@@ -86,8 +87,9 @@ class MotionSimTransform(RandomTransform):
         if (not finufft) and nufft:
             raise ImportError('finufftpy cannot be imported')
 
-    def apply_transform(self, sample):
         self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
+
+    def apply_transform(self, sample):
         ###############################
         ########## T E S T ############
         ###############################
@@ -118,6 +120,8 @@ class MotionSimTransform(RandomTransform):
             # magnitude
             corrupted_im = abs(corrupted_im)
             image_dict["data"] = corrupted_im[np.newaxis, ...]
+            image_dict['data'] = torch.from_numpy(image_dict['data'])
+
             """
             if self.apply_mask:
                 # todo: use input arg mask
@@ -308,6 +312,8 @@ class MotionSimTransform(RandomTransform):
             'RMS_rot': np.sqrt(np.mean(rotations ** 2))
         }
         """
+        print(f'fitpar shape {fitpars.shape}')
+
         to_reshape = [1, 1, 1]
         to_reshape[self.frequency_encoding_dim] = -1
 
