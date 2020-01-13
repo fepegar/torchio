@@ -14,8 +14,8 @@ sys.path.extend(['/data/romain/toolbox_python/romain/cnnQC_pytorch'])
 from utils_file import gdir, gfile, get_parent_path
 
 import importlib
-import torchio.transforms.histogram_standardization
-importlib.reload(torchio.transforms.histogram_standardization)
+import torchio.transforms.normalization.histogram_standardization
+importlib.reload(torchio.transforms.normalization.histogram_standardization)
 from pathlib import Path
 
 import pandas as pd
