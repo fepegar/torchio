@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 import torchio
-from torchio import INTENSITY, LABEL, Image
+from torchio import INTENSITY, LABEL, DATA, Image
 
 
 class TestImagesDataset(unittest.TestCase):
@@ -114,7 +114,7 @@ class TestImagesDataset(unittest.TestCase):
         dataset.save_sample(sample, paths_dict)
         nii = nib.load(str(output_path))
         ndims_output = len(nii.shape)
-        ndims_sample = len(sample['t1']['data'].shape)
+        ndims_sample = len(sample['t1'][DATA].shape)
         assert ndims_sample == ndims_output + 1
 
     @staticmethod

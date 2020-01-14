@@ -1,8 +1,8 @@
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....torchio import LABEL
 from ....utils import is_image_dict
+from ....torchio import LABEL, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
 
@@ -35,9 +35,9 @@ class RandomAffine(RandomTransform):
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.image_interpolation
-            image_dict['data'] = self.apply_affine_transform(
-                image_dict['data'],
-                image_dict['affine'],
+            image_dict[DATA] = self.apply_affine_transform(
+                image_dict[DATA],
+                image_dict[AFFINE],
                 scaling_params,
                 rotation_params,
                 interpolation,

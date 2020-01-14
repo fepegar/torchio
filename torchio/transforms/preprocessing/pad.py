@@ -1,7 +1,8 @@
 import torch.nn.functional as F
 import numpy as np
-from .. import Transform
+from ...torchio import DATA
 from ...utils import is_image_dict
+from .. import Transform
 
 
 class Pad(Transform):
@@ -60,8 +61,8 @@ class Pad(Transform):
                 kwargs['mode'] = self.padding_mode
             if self.fill is not None:
                 kwargs['value'] = self.fill
-            image_dict['data'] = F.pad(
-                image_dict['data'],
+            image_dict[DATA] = F.pad(
+                image_dict[DATA],
                 self.padding,
                 **kwargs,
             )

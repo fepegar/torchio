@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 import torchio
-from torchio import INTENSITY, LABEL
+from torchio import INTENSITY, LABEL, DATA
 
 
 class TestRandomElasticDeformation(unittest.TestCase):
@@ -46,4 +46,4 @@ class TestRandomElasticDeformation(unittest.TestCase):
         fixtures = 764.2148522171124, 734.5418868396644, 752
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
-            assert transformed[key]['data'].sum() == fixture
+            assert transformed[key][DATA].sum() == fixture

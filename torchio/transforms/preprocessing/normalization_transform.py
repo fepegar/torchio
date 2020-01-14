@@ -1,7 +1,7 @@
 import torch
-from .. import Transform
-from ...torchio import INTENSITY
 from ...utils import is_image_dict
+from ...torchio import DATA, INTENSITY
+from .. import Transform
 
 
 class NormalizationTransform(Transform):
@@ -26,7 +26,7 @@ class NormalizationTransform(Transform):
         if self.mask_name is None:
             return self.masking_method(data)
         else:
-            return sample[self.mask_name]['data'].bool()
+            return sample[self.mask_name][DATA].bool()
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -34,7 +34,7 @@ class NormalizationTransform(Transform):
                 continue
             if not image_dict['type'] == INTENSITY:
                 continue
-            mask = self.get_mask(sample, image_dict['data'])
+            mask = self.get_mask(sample, image_dict[DATA])
             self.apply_normalization(sample, image_name, mask)
         return sample
 

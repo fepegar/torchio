@@ -8,6 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
+from ...torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -23,8 +24,8 @@ class HistogramStandardization(NormalizationTransform):
         # TODO: assert that image_name is in landmarks dict
         image_dict = sample[image_name]
         landmarks = self.landmarks_dict[image_name]
-        image_dict['data'] = normalize(
-            image_dict['data'],
+        image_dict[DATA] = normalize(
+            image_dict[DATA],
             landmarks,
             mask=mask,
         )

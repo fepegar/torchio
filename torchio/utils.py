@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 from tqdm import trange
-from .torchio import INTENSITY, LABEL
+from .torchio import INTENSITY, LABEL, DATA, AFFINE
 
 
 def to_tuple(value, n=1):
@@ -39,8 +39,8 @@ def is_image_dict(variable):
         return False
     has_right_keys = (
         'type' in variable
-        and 'data' in variable
-        and 'affine' in variable
+        and DATA in variable
+        and AFFINE in variable
     )
     return has_right_keys
 

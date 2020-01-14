@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 import torchio
-from torchio import INTENSITY, LABEL
+from torchio import INTENSITY, LABEL, DATA
 
 
 class TestRandomMotion(unittest.TestCase):
@@ -43,6 +43,6 @@ class TestRandomMotion(unittest.TestCase):
             seed=42,
         )
         transformed = transform(self.sample)
-        transformed['t2']['data'] = transformed['t2']['data'] - 0.5
+        transformed['t2'][DATA] = transformed['t2'][DATA] - 0.5
         with self.assertWarns(UserWarning):
             transformed = transform(self.sample)

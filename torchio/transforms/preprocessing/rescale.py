@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from ...torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 
@@ -20,7 +21,7 @@ class Rescale(NormalizationTransform):
         This could probably be written in two or three lines
         """
         image_dict = sample[image_name]
-        image_dict['data'] = self.rescale(image_dict['data'], mask)
+        image_dict[DATA] = self.rescale(image_dict[DATA], mask)
 
     def rescale(self, data, mask):
         array = data.numpy()

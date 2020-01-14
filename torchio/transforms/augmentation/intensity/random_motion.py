@@ -13,8 +13,8 @@ import numpy as np
 from tqdm import tqdm
 import SimpleITK as sitk
 from scipy.linalg import logm, expm
-from ....torchio import INTENSITY
 from ....utils import is_image_dict
+from ....torchio import INTENSITY, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
 
@@ -60,7 +60,7 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = p
             if not do_it:
                 return sample
-            if (image_dict['data'][0] < 0).any():
+            if (image_dict[DATA][0] < 0).any():
                 message = (
                     f'Image "{image_name}" has negative values.'
                     ' Results can be unexpected because the transformed sample'
@@ -69,8 +69,8 @@ class RandomMotion(RandomTransform):
                 )
                 warnings.warn(message)
             image = self.nib_to_sitk(
-                image_dict['data'][0],
-                image_dict['affine'],
+                image_dict[DATA][0],
+                image_dict[AFFINE],
             )
             transforms = self.get_rigid_transforms(
                 degrees_params,
@@ -81,15 +81,15 @@ class RandomMotion(RandomTransform):
                 transforms,
                 times_params,
             )
-            image_dict['data'] = self.add_artifact(
+            image_dict[DATA] = self.add_artifact(
                 image,
                 transforms,
                 times_params,
                 self.image_interpolation,
             )
             # Add channels dimension
-            image_dict['data'] = image_dict['data'][np.newaxis, ...]
-            image_dict['data'] = torch.from_numpy(image_dict['data'])
+            image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
+            image_dict[DATA] = torch.from_numpy(image_dict[DATA])
         return sample
 
     @staticmethod

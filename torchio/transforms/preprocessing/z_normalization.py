@@ -1,3 +1,4 @@
+from ...torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 
@@ -10,8 +11,8 @@ class ZNormalization(NormalizationTransform):
 
     def apply_normalization(self, sample, image_name, mask):
         image_dict = sample[image_name]
-        image_dict['data'] = self.znorm(
-            image_dict['data'],
+        image_dict[DATA] = self.znorm(
+            image_dict[DATA],
             mask,
         )
 

@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
-from torchio import ImagesDataset, Queue
+from torchio import ImagesDataset, Queue, DATA
 from torchio.sampler import ImageSampler
 from torchio.utils import create_dummy_dataset
 from torchio.transforms import (
@@ -84,8 +84,8 @@ if __name__ == "__main__":
         for epoch_index in trange(num_epochs, leave=False):
             for batch in batch_loader:
                 # The keys of batch have been defined in create_dummy_dataset()
-                inputs = batch['one_modality']['data']
-                targets = batch['segmentation']['data']
+                inputs = batch['one_modality'][DATA]
+                targets = batch['segmentation'][DATA]
                 logits = model(inputs)
         print('Time:', int(time.time() - start), 'seconds')
         print()
