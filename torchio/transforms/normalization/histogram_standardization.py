@@ -29,6 +29,7 @@ class HistogramStandardization(NormalizationTransform):
             mask=mask,
         )
 
+
 def __compute_percentiles(img, mask, cutoff):
     """
     Creates the list of percentile values to be used as landmarks for the
