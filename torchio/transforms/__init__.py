@@ -1,5 +1,5 @@
 from .transform import Transform
-from .normalization import NormalizationTransform
+from .preprocessing import NormalizationTransform
 
 # Augmentation
 from .augmentation.spatial import RandomFlip
@@ -11,7 +11,8 @@ from .augmentation.intensity import RandomNoise
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import RandomBiasField
 
-# Normalization
-from .normalization import Rescale
-from .normalization import ZNormalization
-from .normalization import HistogramStandardization
+# Preprocessing
+from .preprocessing import Pad
+from .preprocessing import Rescale
+from .preprocessing import ZNormalization
+from .preprocessing import HistogramStandardization
