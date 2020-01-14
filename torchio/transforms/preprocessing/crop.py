@@ -22,7 +22,7 @@ class Crop(Transform):
         except TypeError:
             cropping = (cropping,)
         cropping_length = len(cropping)
-        if cropping_length == 6:  # TODO: what if 6 and not constant?
+        if cropping_length == 6:
             return cropping
         elif cropping_length == 1:
             return 6 * cropping
