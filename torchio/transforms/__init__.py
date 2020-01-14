@@ -13,6 +13,7 @@ from .augmentation.intensity import RandomBiasField
 
 # Preprocessing
 from .preprocessing import Pad
+from .preprocessing import Crop
 from .preprocessing import Rescale
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization

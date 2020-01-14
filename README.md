@@ -42,6 +42,7 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
         * [Z-normalization](#z-normalization)
         * [Rescale](#rescale)
         * [Pad](#pad)
+        * [Crop](#crop)
 
 - [Example](#example)
 - [Related projects](#related-projects)
@@ -246,6 +247,11 @@ Rescale intensity values in an image to a certain range.
 ##### [Pad](torchio/transforms/preprocessing/pad.py)
 
 Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
+
+
+##### [Crop](torchio/transforms/preprocessing/crop.py)
+
+Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
 
 
 ## [Example](examples/example_times.py)

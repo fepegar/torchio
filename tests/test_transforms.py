@@ -16,6 +16,7 @@ from torchio.transforms import (
     ZNormalization,
     HistogramStandardization,
     Pad,
+    Crop,
 )
 
 
@@ -68,6 +69,7 @@ class TestTransforms(unittest.TestCase):
             ZNormalization(),
             HistogramStandardization(landmarks_dict=landmarks_dict),
             Pad((1, 2, 3, 0, 5, 6)),
+            Crop((3, 2, 8, 0, 1, 4)),
         )
         for transform in random_transforms:
             sample = self.get_sample()
