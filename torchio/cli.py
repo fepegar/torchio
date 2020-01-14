@@ -28,7 +28,7 @@ def apply_transform(input_path, transform_name, output_path, kwargs, seed, verbo
 
     params_dict = {}
     if kwargs is not None:
-        for substring in kwargs.split():
+        for substring in kwargs.split(','):
             key, value_string = substring.split('=')
             value_type = guess_type(value_string)
             try:
