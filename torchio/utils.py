@@ -46,7 +46,7 @@ def is_image_dict(variable):
 
 
 def create_dummy_dataset(num_images, size_range, force=False):
-    from .dataset import Image
+    from .data import Image
     tempdir = Path(tempfile.gettempdir())
     images_dir = tempdir / 'dummy_images'
     labels_dir = tempdir / 'dummy_labels'

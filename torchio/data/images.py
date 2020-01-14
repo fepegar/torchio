@@ -4,8 +4,8 @@ from collections.abc import Sequence
 import torch
 from torch.utils.data import Dataset
 from ..utils import get_stem
-from ..io import read_image, write_image
 from ..torchio import DATA, AFFINE
+from .io import read_image, write_image
 
 
 class ImagesDataset(Dataset):

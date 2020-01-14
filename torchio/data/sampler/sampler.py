@@ -5,8 +5,8 @@ import numpy as np
 import torch
 from torch.utils.data import IterableDataset
 
-from ..torchio import DATA
-from ..utils import to_tuple, is_image_dict
+from ...torchio import DATA
+from ...utils import to_tuple, is_image_dict
 
 
 class ImageSampler(IterableDataset):
