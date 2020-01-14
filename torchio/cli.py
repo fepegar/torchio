@@ -15,7 +15,7 @@ def apply_transform(input_path, transform_name, output_path, kwargs, seed, verbo
 
     \b
     Example:
-    $ torchio-transform input.nrrd RandomMotion output.nii --kwargs "proportion_to_augment=1,num_transforms=3"
+    $ torchio-transform input.nrrd RandomMotion output.nii --kwargs "proportion_to_augment=1 num_transforms=3"
     """
     import torchio.transforms as transforms
     from torchio.utils import apply_transform_to_file
