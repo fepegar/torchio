@@ -28,18 +28,21 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
     - [Samplers](#samplers)
     - [`Queue`](#queue)
   * [Transforms](#transforms)
-    - [Intensity](#intensity)
-      * [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
-      * [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
-      * [Gaussian noise](#gaussian-noise)
-      * [Normalization](#normalization)
-        - [Histogram standardization](#histogram-standardization)
-        - [Z-normalization](#z-normalization)
-        - [Rescale](#rescale)
-    - [Spatial](#spatial)
-      * [Flip](#flip)
-      * [Affine transform](#affine-transform)
-      * [B-spline dense deformation](#b-spline-dense-deformation)
+    - [Augmentation](#augmentation)
+      * [Intensity](#intensity)
+        - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
+        - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
+        - [Gaussian noise](#gaussian-noise)
+      * [Spatial](#spatial)
+        - [B-spline dense deformation](#b-spline-dense-deformation)
+        - [Flip](#flip)
+        - [Affine transform](#affine-transform)
+    - [Preprocessing](#preprocessing)
+        * [Histogram standardization](#histogram-standardization)
+        * [Z-normalization](#z-normalization)
+        * [Rescale](#rescale)
+        * [Pad](#pad)
+
 - [Example](#example)
 - [Related projects](#related-projects)
 - [Credits](#credits)
@@ -163,13 +166,14 @@ A transform can be quickly applied to an image file using the command-line
 tool `torchio-transform`:
 
 ```shell
-$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs
-"proportion_to_augment=1,num_transforms=4"
+$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "proportion_to_augment=1 num_transforms=4"
 ```
 
-#### Intensity
+#### Augmentation
 
-##### [MRI k-space motion artifacts](torchio/transforms/random_motion.py)
+##### Intensity
+
+###### [MRI k-space motion artifacts](torchio/transforms/augmentation/intensity/random_motion.py)
 
 Magnetic resonance images suffer from motion artifacts when the subject moves
 during image acquisition. This transform follows
@@ -179,7 +183,7 @@ simulate motion artifacts for data augmentation.
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
 
 
-##### [MRI magnetic field inhomogeneity](torchio/transforms/random_bias_field.py)
+###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
 MRI magnetic field inhomogeneity creates slow frequency intensity variations.
 This transform is very similar to the one in
@@ -188,7 +192,7 @@ This transform is very similar to the one in
 ![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
 
 
-##### [Gaussian noise](torchio/transforms/random_noise.py)
+###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
 Adds noise sampled from a normal distribution with mean 0 and standard
 deviation sampled from a uniform distribution in the range `std_range`.
@@ -198,9 +202,24 @@ this transform has zero-mean.
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
 
 
-##### Normalization
+##### Spatial
 
-###### [Histogram standardization](torchio/transforms/histogram_standardization.py)
+###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
+
+![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
+
+
+###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
+
+Reverse the order of elements in an image along the given axes.
+
+
+###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
+
+
+#### Preprocessing
+
+##### [Histogram standardization](torchio/transforms/preprocessing/histogram_standardization.py)
 
 Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
@@ -209,7 +228,7 @@ adapted from NiftyNet.
 ![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
 
 
-###### [Z-normalization](torchio/transforms/z_normalization.py)
+##### [Z-normalization](torchio/transforms/preprocessing/z_normalization.py)
 
 This transform first extracts the values with intensity greater than the mean,
 which is an approximation of the foreground voxels.
@@ -219,23 +238,14 @@ foreground standard deviation.
 ![Z-normalization](https://raw.githubusercontent.com/fepegar/torchio/master/images/z_normalization.png)
 
 
+##### [Rescale](torchio/transforms/preprocessing/rescale.py)
 
-###### [Rescale](torchio/transforms/rescale.py)
-
-
-#### Spatial
-
-##### [Flip](torchio/transforms/random_flip.py)
-
-Reverse the order of elements in an image along the given axes.
+Rescale intensity values in an image to a certain range.
 
 
-##### [Affine transform](torchio/transforms/random_affine.py)
+##### [Pad](torchio/transforms/preprocessing/pad.py)
 
-
-##### [B-spline dense elastic deformation](torchio/transforms/random_elastic_deformation.py)
-
-![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
+Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
 
 
 ## [Example](examples/example_times.py)
