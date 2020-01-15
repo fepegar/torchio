@@ -18,6 +18,29 @@ or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
 
+## Credits
+
+If you like this repository, please click on Star!
+
+If you used this package for your research, please cite this repository using
+the information available on its
+[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
+
+```bibtex
+@software{perez_garcia_fernando_2020_3598622,
+  author       = {Pérez-García, Fernando},
+  title        = {{fepegar/torchio: TorchIO: Tools for loading,
+                   augmenting and writing 3D medical images on
+                   PyTorch}},
+  month        = jan,
+  year         = 2020,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3598622},
+  url          = {https://doi.org/10.5281/zenodo.3598622}
+}
+```
+
+
 ## Index
 
 - [Installation](#installation)
@@ -45,7 +68,7 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
 - [Example](#example)
 - [Related projects](#related-projects)
-- [Credits](#credits)
+- [See also](#see-also)
 
 
 ## Installation
@@ -380,22 +403,7 @@ Time: 242 seconds
 * [`rising`](https://github.com/PhoenixDL/rising)
 
 
-## Credits
+## See also
 
-If you used this code for your research, please cite this repository using the
-information available on its
-[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
-
-```bibtex
-@software{perez_garcia_fernando_2020_3598622,
-  author       = {Pérez-García, Fernando},
-  title        = {{fepegar/torchio: TorchIO: Tools for loading,
-                   augmenting and writing 3D medical images on
-                   PyTorch}},
-  month        = jan,
-  year         = 2020,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3598622},
-  url          = {https://doi.org/10.5281/zenodo.3598622}
-}
-```
+* [`highresnet`](https://www.github.com/fepegar/highresnet)
+* [`unet`](https://www.github.com/fepegar/unet)
