@@ -1,3 +1,4 @@
+import ast
 import shutil
 import tempfile
 from pathlib import Path
@@ -107,3 +108,28 @@ def apply_transform_to_file(
     dataset = ImagesDataset([subject], transform=transform)
     transformed = dataset[0]
     dataset.save_sample(transformed, dict(image=output_path))
+
+
+def guess_type(string):
+    """
+    Adapted from
+    https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
+    """
+    string = string.replace(' ', '')
+    try:
+        value = ast.literal_eval(string)
+    except ValueError:
+        result_type = str
+    else:
+        result_type = type(value)
+    if result_type in (list, tuple):
+        string = string[1:-1]  # remove brackets
+        split = string.split(',')
+        list_result = [guess_type(n) for n in split]
+        value = tuple(list_result) if result_type is tuple else list_result
+        return value
+    try:
+        value = result_type(string)
+    except TypeError:
+        value = None
+    return value
