@@ -74,6 +74,10 @@ the information available on its
 
 ## Installation
 
+This package is on the
+[Python Package Index (PyPI)](https://pypi.org/project/torchio/).
+To install it, just run in a terminal the following command:
+
 ```shell
 $ pip install torchio
 ```
