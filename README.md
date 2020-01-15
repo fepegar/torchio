@@ -63,6 +63,7 @@ the information available on its
         * [Histogram standardization](#histogram-standardization)
         * [Z-normalization](#z-normalization)
         * [Rescale](#rescale)
+        * [Resample](#resample)
         * [Pad](#pad)
         * [Crop](#crop)
 
@@ -264,6 +265,11 @@ foreground standard deviation.
 ##### [Rescale](torchio/transforms/preprocessing/rescale.py)
 
 Rescale intensity values in an image to a certain range.
+
+
+##### [Resample](torchio/transforms/preprocessing/resample.py)
+
+Resample images to a new voxel spacing using `nibabel`.
 
 
 ##### [Pad](torchio/transforms/preprocessing/pad.py)

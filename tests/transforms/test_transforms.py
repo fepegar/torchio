@@ -13,6 +13,7 @@ from torchio.transforms import (
     RandomAffine,
     RandomMotion,
     Rescale,
+    Resample,
     ZNormalization,
     HistogramStandardization,
     Pad,
@@ -57,6 +58,7 @@ class TestTransforms(unittest.TestCase):
             t2=np.linspace(0, 100, 13),
         )
         random_transforms = (
+            Resample((1, 1.1, 1.25)),
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
             RandomNoise(),
             RandomBiasField(),
