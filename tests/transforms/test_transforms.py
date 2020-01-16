@@ -68,15 +68,14 @@ class TestTransforms(unittest.TestCase):
         )
         preprocessing_transforms = (
             Rescale(),
-            ZNormalization(),
+            ZNormalization(masking_method='label'),
             HistogramStandardization(landmarks_dict=landmarks_dict),
             Pad((1, 2, 3, 0, 5, 6)),
             Crop((3, 2, 8, 0, 1, 4)),
         )
+        transformed = self.get_sample()
         for transform in random_transforms:
-            sample = self.get_sample()
-            transformed = transform(sample)
+            transformed = transform(transformed)
 
         for transform in preprocessing_transforms:
-            sample = self.get_sample()
             transformed = transform(sample)
