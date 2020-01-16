@@ -21,3 +21,4 @@ from .preprocessing import Resample
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization
 from .preprocessing import HistogramEqualize
+from .preprocessing import HistogramRandomChange
