@@ -20,3 +20,4 @@ from .preprocessing import Rescale
 from .preprocessing import Resample
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization
+from .preprocessing import HistogramEqualize
