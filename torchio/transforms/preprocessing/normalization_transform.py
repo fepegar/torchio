@@ -19,8 +19,8 @@ class NormalizationTransform(Transform):
             self.masking_method = self.ones
         elif callable(masking_method):
             self.masking_method = masking_method
-        elif isinstance(self.masking_method, str):
-            self.mask_name = self.masking_method
+        elif isinstance(masking_method, str):
+            self.mask_name = masking_method
 
     def get_mask(self, sample, data):
         if self.mask_name is None:
