@@ -34,5 +34,5 @@ class Rescale(NormalizationTransform):
         array /= array.max()  # [0, 1]
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]
-        array -= self.out_min  # [out_min, out_max]
+        array += self.out_min  # [out_min, out_max]
         return torch.from_numpy(array)
