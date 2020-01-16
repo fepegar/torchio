@@ -4,7 +4,8 @@ from collections.abc import Sequence
 import torch
 from torch.utils.data import Dataset
 from ..utils import get_stem
-from ..io import read_image, write_image
+from ..torchio import DATA, AFFINE
+from .io import read_image, write_image
 
 
 class ImagesDataset(Dataset):
@@ -38,13 +39,13 @@ class ImagesDataset(Dataset):
         sample = {}
         for image in subject_images:
             tensor, affine = image.load(check_nans=self.check_nans)
-            image_dict = dict(
-                data=tensor,
-                path=str(image.path),
-                affine=affine,
-                stem=get_stem(image.path),
-                type=image.type,
-            )
+            image_dict = {
+                DATA: tensor,
+                AFFINE: affine,
+                'type': image.type,
+                'path': str(image.path),
+                'stem': get_stem(image.path),
+            }
             sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
@@ -93,8 +94,8 @@ class ImagesDataset(Dataset):
     @staticmethod
     def save_sample(sample, output_paths_dict):
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key]['data'][0]  # remove channels dim
-            affine = sample[key]['affine']
+            tensor = sample[key][DATA][0]  # remove channels dim
+            affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
 
 

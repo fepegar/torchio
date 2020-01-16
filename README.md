@@ -3,7 +3,6 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
-[![Coverage Status](https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master)](https://coveralls.io/github/fepegar/torchio?branch=master)
 
 
 `torchio` is a Python package containing a set of tools to efficiently
@@ -19,6 +18,29 @@ or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
 
+## Credits
+
+If you like this repository, please click on Star!
+
+If you used this package for your research, please cite this repository using
+the information available on its
+[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
+
+```bibtex
+@software{perez_garcia_fernando_2020_3598622,
+  author       = {Pérez-García, Fernando},
+  title        = {{fepegar/torchio: TorchIO: Tools for loading,
+                   augmenting and writing 3D medical images on
+                   PyTorch}},
+  month        = jan,
+  year         = 2020,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3598622},
+  url          = {https://doi.org/10.5281/zenodo.3598622}
+}
+```
+
+
 ## Index
 
 - [Installation](#installation)
@@ -28,24 +50,33 @@ This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
     - [Samplers](#samplers)
     - [`Queue`](#queue)
   * [Transforms](#transforms)
-    - [Intensity](#intensity)
-      * [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
-      * [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
-      * [Gaussian noise](#gaussian-noise)
-      * [Normalization](#normalization)
-        - [Histogram standardization](#histogram-standardization)
-        - [Z-normalization](#z-normalization)
-        - [Rescale](#rescale)
-    - [Spatial](#spatial)
-      * [Flip](#flip)
-      * [Affine transform](#affine-transform)
-      * [B-spline dense deformation](#b-spline-dense-deformation)
+    - [Augmentation](#augmentation)
+      * [Intensity](#intensity)
+        - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
+        - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
+        - [Gaussian noise](#gaussian-noise)
+      * [Spatial](#spatial)
+        - [B-spline dense deformation](#b-spline-dense-deformation)
+        - [Flip](#flip)
+        - [Affine transform](#affine-transform)
+    - [Preprocessing](#preprocessing)
+        * [Histogram standardization](#histogram-standardization)
+        * [Z-normalization](#z-normalization)
+        * [Rescale](#rescale)
+        * [Resample](#resample)
+        * [Pad](#pad)
+        * [Crop](#crop)
+
 - [Example](#example)
 - [Related projects](#related-projects)
-- [Credits](#credits)
+- [See also](#see-also)
 
 
 ## Installation
+
+This package is on the
+[Python Package Index (PyPI)](https://pypi.org/project/torchio/).
+To install it, just run in a terminal the following command:
 
 ```shell
 $ pip install torchio
@@ -72,11 +103,12 @@ The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 import torchio
 
 subject_a = [
-    Image('t1', '~/Dropbox/MRI/t1.nii.gz', torchio.INTENSITY),
+    Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
 ]
 subject_b = [
     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
+    Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
 ]
 subjects_list = [subject_a, subject_b]
@@ -162,12 +194,14 @@ A transform can be quickly applied to an image file using the command-line
 tool `torchio-transform`:
 
 ```shell
-$ torchio-transform input.nii.gz RandomMotion output.nii.gz
+$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "proportion_to_augment=1 num_transforms=4"
 ```
 
-#### Intensity
+#### Augmentation
 
-##### [MRI k-space motion artifacts](torchio/transforms/random_motion.py)
+##### Intensity
+
+###### [MRI k-space motion artifacts](torchio/transforms/augmentation/intensity/random_motion.py)
 
 Magnetic resonance images suffer from motion artifacts when the subject moves
 during image acquisition. This transform follows
@@ -177,7 +211,7 @@ simulate motion artifacts for data augmentation.
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
 
 
-##### [MRI magnetic field inhomogeneity](torchio/transforms/random_bias_field.py)
+###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
 MRI magnetic field inhomogeneity creates slow frequency intensity variations.
 This transform is very similar to the one in
@@ -186,7 +220,7 @@ This transform is very similar to the one in
 ![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
 
 
-##### [Gaussian noise](torchio/transforms/random_noise.py)
+###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
 Adds noise sampled from a normal distribution with mean 0 and standard
 deviation sampled from a uniform distribution in the range `std_range`.
@@ -196,9 +230,24 @@ this transform has zero-mean.
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
 
 
-##### Normalization
+##### Spatial
 
-###### [Histogram standardization](torchio/transforms/histogram_standardization.py)
+###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
+
+![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
+
+
+###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
+
+Reverse the order of elements in an image along the given axes.
+
+
+###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
+
+
+#### Preprocessing
+
+##### [Histogram standardization](torchio/transforms/preprocessing/histogram_standardization.py)
 
 Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
@@ -207,7 +256,7 @@ adapted from NiftyNet.
 ![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
 
 
-###### [Z-normalization](torchio/transforms/z_normalization.py)
+##### [Z-normalization](torchio/transforms/preprocessing/z_normalization.py)
 
 This transform first extracts the values with intensity greater than the mean,
 which is an approximation of the foreground voxels.
@@ -217,23 +266,24 @@ foreground standard deviation.
 ![Z-normalization](https://raw.githubusercontent.com/fepegar/torchio/master/images/z_normalization.png)
 
 
+##### [Rescale](torchio/transforms/preprocessing/rescale.py)
 
-###### [Rescale](torchio/transforms/rescale.py)
-
-
-#### Spatial
-
-##### [Flip](torchio/transforms/random_flip.py)
-
-Reverse the order of elements in an image along the given axes.
+Rescale intensity values in an image to a certain range.
 
 
-##### [Affine transform](torchio/transforms/random_affine.py)
+##### [Resample](torchio/transforms/preprocessing/resample.py)
+
+Resample images to a new voxel spacing using `nibabel`.
 
 
-##### [B-spline dense elastic deformation](torchio/transforms/random_elastic_deformation.py)
+##### [Pad](torchio/transforms/preprocessing/pad.py)
 
-![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
+Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
+
+
+##### [Crop](torchio/transforms/preprocessing/crop.py)
+
+Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
 
 
 ## [Example](examples/example_times.py)
@@ -251,7 +301,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
-from torchio import ImagesDataset, Queue
+from torchio import ImagesDataset, Queue, DATA
 from torchio.sampler import ImageSampler
 from torchio.utils import create_dummy_dataset
 from torchio.transforms import (
@@ -327,8 +377,8 @@ for num_workers in workers:
     for epoch_index in trange(num_epochs, leave=False):
         for batch in batch_loader:
             # The keys of batch have been defined in create_dummy_dataset()
-            inputs = batch['one_modality']['data']
-            targets = batch['segmentation']['data']
+            inputs = batch['one_modality'][DATA]
+            targets = batch['segmentation'][DATA]
             logits = model(inputs)
     print('Time:', int(time.time() - start), 'seconds')
     print()
@@ -363,22 +413,7 @@ Time: 242 seconds
 * [`rising`](https://github.com/PhoenixDL/rising)
 
 
-## Credits
+## See also
 
-If you used this code for your research, please cite this repository using the
-information available on its
-[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
-
-```bibtex
-@software{perez_garcia_fernando_2020_3598622,
-  author       = {Pérez-García, Fernando},
-  title        = {{fepegar/torchio: TorchIO: Tools for loading,
-                   augmenting and writing 3D medical images on
-                   PyTorch}},
-  month        = jan,
-  year         = 2020,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3598622},
-  url          = {https://doi.org/10.5281/zenodo.3598622}
-}
-```
+* [`highresnet`](https://www.github.com/fepegar/highresnet)
+* [`unet`](https://www.github.com/fepegar/unet)

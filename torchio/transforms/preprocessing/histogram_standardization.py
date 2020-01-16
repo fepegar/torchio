@@ -8,14 +8,14 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from .. import Transform
-from ...utils import is_image_dict
-from ...torchio import INTENSITY
+from ...torchio import DATA
+from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
 
 
+<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
 class HistogramStandardization(Transform):
     def __init__(self, landmarks_dict, verbose=False, mask_field_name=None):
         super().__init__(verbose=verbose)
@@ -48,6 +48,22 @@ class HistogramStandardization(Transform):
 
                 image_dict['data'] = normalize(image_dict['data'], landmarks, mask_data=mask_data)
         return sample
+=======
+class HistogramStandardization(NormalizationTransform):
+    def __init__(self, landmarks_dict, masking_method=None, verbose=False):
+        super().__init__(masking_method=masking_method, verbose=verbose)
+        self.landmarks_dict = landmarks_dict
+
+    def apply_normalization(self, sample, image_name, mask):
+        # TODO: assert that image_name is in landmarks dict
+        image_dict = sample[image_name]
+        landmarks = self.landmarks_dict[image_name]
+        image_dict[DATA] = normalize(
+            image_dict[DATA],
+            landmarks,
+            mask=mask,
+        )
+>>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
 
 
 def __compute_percentiles(img, mask, cutoff):
@@ -122,9 +138,13 @@ def __averaged_mapping(perc_database, s1, s2):
 def normalize(
         data,
         landmarks,
+        mask=None,
         cutoff=DEFAULT_CUTOFF,
+<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
         masking_function=None,
         mask_data=None,
+=======
+>>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
         epsilon=1e-5,
         ):
     data = data.numpy()
@@ -134,6 +154,7 @@ def normalize(
     image_shape = img.shape
     img = img.reshape(-1).astype(np.float32)
 
+<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
     if masking_function is not None:
         mask = masking_function(img)
     else:
@@ -141,6 +162,10 @@ def normalize(
             mask = mask_data
         else:
             mask = np.ones_like(img, dtype=np.bool)
+=======
+    if mask is None:
+        mask = np.ones_like(img, np.bool)
+>>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
     mask = mask.reshape(-1)
 
     #range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]

@@ -4,7 +4,7 @@ Adapted from NiftyNet
 
 import numpy as np
 import torch
-from ....torchio import INTENSITY
+from ....torchio import INTENSITY, DATA
 from ....utils import is_image_dict
 from .. import RandomTransform
 
@@ -39,9 +39,9 @@ class RandomBiasField(RandomTransform):
             if not do_augmentation:
                 continue
             bias_field = self.generate_bias_field(
-                image_dict['data'], self.order, coefficients)
-            image_with_bias = image_dict['data'] * torch.from_numpy(bias_field)
-            image_dict['data'] = image_with_bias
+                image_dict[DATA], self.order, coefficients)
+            image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
+            image_dict[DATA] = image_with_bias
         return sample
 
     @staticmethod

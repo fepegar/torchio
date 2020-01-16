@@ -13,8 +13,11 @@ from torchio.transforms import (
     RandomAffine,
     RandomMotion,
     Rescale,
+    Resample,
     ZNormalization,
     HistogramStandardization,
+    Pad,
+    Crop,
 )
 
 
@@ -55,6 +58,7 @@ class TestTransforms(unittest.TestCase):
             t2=np.linspace(0, 100, 13),
         )
         random_transforms = (
+            Resample((1, 1.1, 1.25)),
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
             RandomNoise(),
             RandomBiasField(),
@@ -62,15 +66,17 @@ class TestTransforms(unittest.TestCase):
             RandomAffine(),
             RandomMotion(proportion_to_augment=1),
         )
-        intensity_transforms = (
+        preprocessing_transforms = (
             Rescale(),
             ZNormalization(),
             HistogramStandardization(landmarks_dict=landmarks_dict),
+            Pad((1, 2, 3, 0, 5, 6)),
+            Crop((3, 2, 8, 0, 1, 4)),
         )
         for transform in random_transforms:
             sample = self.get_sample()
             transformed = transform(sample)
 
-        for transform in intensity_transforms:
+        for transform in preprocessing_transforms:
             sample = self.get_sample()
             transformed = transform(sample)

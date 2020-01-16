@@ -1,7 +1,7 @@
 import torch
 import SimpleITK as sitk
-from ....torchio import LABEL
 from ....utils import is_image_dict
+from ....torchio import LABEL, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
 
@@ -37,8 +37,8 @@ class RandomElasticDeformation(RandomTransform):
             # TODO: assert that all images have the same shape
             if bspline_params is None:
                 image = self.nib_to_sitk(
-                    image_dict['data'][0],
-                    image_dict['affine'],
+                    image_dict[DATA][0],
+                    image_dict[AFFINE],
                 )
                 do_augmentation, bspline_params = self.get_params(
                     image,
@@ -50,9 +50,9 @@ class RandomElasticDeformation(RandomTransform):
                 params_dict['do_augmentation'] = int(do_augmentation)
                 if not do_augmentation:
                     return sample
-            image_dict['data'] = self.apply_bspline_transform(
-                image_dict['data'],
-                image_dict['affine'],
+            image_dict[DATA] = self.apply_bspline_transform(
+                image_dict[DATA],
+                image_dict[AFFINE],
                 bspline_params,
                 interpolation,
             )

@@ -1,5 +1,5 @@
 import torch
-import numpy as np
+from ....torchio import DATA
 from ....utils import is_image_dict
 from .. import RandomTransform
 
@@ -24,7 +24,7 @@ class RandomFlip(RandomTransform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            tensor = image_dict['data']
+            tensor = image_dict[DATA]
             dims = []
             for dim, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:
@@ -32,7 +32,7 @@ class RandomFlip(RandomTransform):
                 actual_dim = dim + 1  # images are 4D
                 dims.append(actual_dim)
             tensor = torch.flip(tensor, dims=dims)
-            image_dict['data'] = tensor
+            image_dict[DATA] = tensor
         return sample
 
     @staticmethod
