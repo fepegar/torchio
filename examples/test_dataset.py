@@ -1,8 +1,8 @@
 from torchio import ImagesDataset, Image, INTENSITY, LABEL
-from torchio.io import write_image
-from torchio.dataset import  get_subject_list_and_csv_info_from_data_prameters
+from torchio.data.io import write_image
+from torchio.data import  get_subject_list_and_csv_info_from_data_prameters
 from torchio.transforms import RandomFlip, RandomAffine, RandomElasticDeformation, \
-    HistogramStandardization, Interpolation, RandomMotion, RandomBiasField, RescaleMask
+    HistogramStandardization, Interpolation, RandomMotion, RandomBiasField, Rescale
 from torchvision.transforms import Compose
 import torch
 
@@ -14,8 +14,8 @@ sys.path.extend(['/data/romain/toolbox_python/romain/cnnQC_pytorch'])
 from utils_file import gdir, gfile, get_parent_path
 
 import importlib
-import torchio.transforms.normalization.histogram_standardization
-importlib.reload(torchio.transforms.normalization.histogram_standardization)
+import torchio.transforms.preprocessing.histogram_standardization
+importlib.reload(torchio.transforms.preprocessing.histogram_standardization)
 from pathlib import Path
 
 import pandas as pd
@@ -72,8 +72,8 @@ suj = [[
      ]]
 transforms = Compose((RandomBiasField(coefficients_range=(-0.5, 0.5),order=3, verbose=True), ))
 landmarks_file = '/data/romain/data_exemple/landmarks_hcp300_res100.txt'
-transforms = Compose((HistogramStandardization(landmarks_file, verbose=True, mask_field_name='mask'), RescaleMask('mask',verbose=True)))
-transfo1 = Compose((RescaleMask('mask'), ))
+transforms = Compose((HistogramStandardization(landmarks_file, verbose=True, masking_method='mask'), Rescale(masking_method='mask',verbose=True)))
+
 dataset = ImagesDataset(suj, transform=transforms )
 dataset1 = ImagesDataset(suj, transform=transfo1 )
 
@@ -104,7 +104,7 @@ for i, transform in enumerate(transforms):
     dataset.save_sample(transformed, dict(T1=path))
 
 #histo normalization
-from torchio.transforms.histogram_standardization import train, normalize
+from torchio.transforms.preprocessing.histogram_standardization import train, normalize
 
 suj = gdir('/network/lustre/iss01/cenir/analyse/irm/users/romain.valabregue/HCPdata','^suj')
 allfiles = gfile(suj,'^T1w_1mm.nii.gz')
@@ -143,10 +143,12 @@ suj = [[
 dataset = ImagesDataset(suj)
 
 from copy import deepcopy
+transfo = Compose(( Rescale(masking_method='mask', verbose=True),))
+transfo =  Rescale( out_min_max=(-1,1), verbose=True)
 
 sample_orig = dataset[0]
 sample = deepcopy(sample_orig)
-transfo = Compose(( RescaleMask('mask', verbose=True),))
+
 sample = transfo(sample)
 path = out_dir + 'orig.nii.gz'
 dataset.save_sample(sample, dict(T1=path))
@@ -160,7 +162,8 @@ for i  in range(0,10):
     #y2 = get_curve_for_sample(yall)
 
     transforms = Compose(
-        (HistogramStandardization(y2, verbose=True, mask_field_name='mask'), RescaleMask('mask', verbose=True)))
+        (HistogramStandardization(y2, verbose=True, masking_method='mask'), Rescale( verbose=True)))
+        #(HistogramStandardization(y2, verbose=True, mask_field_name='mask'), Rescale(masking_method='mask', verbose=True)))
 
     sample = deepcopy(sample_orig)
 
