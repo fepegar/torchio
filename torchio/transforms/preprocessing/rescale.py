@@ -7,7 +7,7 @@ from .normalization_transform import NormalizationTransform
 class Rescale(NormalizationTransform):
     def __init__(
             self,
-            out_min_max=(-1, 1),
+            out_min_max=(0, 1),
             percentiles=(1, 99),
             masking_method=None,
             verbose=False,
