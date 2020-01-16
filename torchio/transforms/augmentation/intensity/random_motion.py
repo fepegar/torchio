@@ -37,10 +37,7 @@ class RandomMotion(RandomTransform):
         self.image_interpolation = image_interpolation
         self.proportion_to_augment = proportion_to_augment
 
-    def apply_transform(self, sample_orig):
-        from copy import deepcopy
-        sample = deepcopy(sample_orig)
-
+    def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
