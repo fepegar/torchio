@@ -214,7 +214,7 @@ def smooth(y, box_pts):
 
 
 #test motion ghiles
-from torchio.transforms.random_motion2 import  MotionSimTransform
+from torchio.transforms.augmentation.intensity.random_motion2 import  import  MotionSimTransform
 from copy import deepcopy
 out_dir = '/data/romain/data_exemple/augment/'
 suj = [[
