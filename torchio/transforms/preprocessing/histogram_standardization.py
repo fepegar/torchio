@@ -15,40 +15,23 @@ DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
 
 
-<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
-class HistogramStandardization(Transform):
-    def __init__(self, landmarks_dict, verbose=False, mask_field_name=None):
-        super().__init__(verbose=verbose)
+# class HistogramStandardization(Transform):
+#     def __init__(self, landmarks_dict, verbose=False, mask_field_name=None):
+#         super().__init__(verbose=verbose)
+#
+#         if isinstance(landmarks_dict, np.ndarray):
+#             pass
+#         elif isinstance(landmarks_dict, (str, Path)):
+#             mapping_path = Path(landmarks_dict)
+#             if mapping_path.suffix == '.npy':
+#                 landmarks_dict = np.load(mapping_path)
+#             elif mapping_path.suffix == '.txt':
+#                 text = mapping_path.read_text()
+#                 numbers = text.split()[1:]
+#                 landmarks_dict = np.array(numbers).astype(np.float32)
+#         self.mask_field_name = mask_field_name
+#         self.landmarks_dict = landmarks_dict
 
-        if isinstance(landmarks_dict, np.ndarray):
-            pass
-        elif isinstance(landmarks_dict, (str, Path)):
-            mapping_path = Path(landmarks_dict)
-            if mapping_path.suffix == '.npy':
-                landmarks_dict = np.load(mapping_path)
-            elif mapping_path.suffix == '.txt':
-                text = mapping_path.read_text()
-                numbers = text.split()[1:]
-                landmarks_dict = np.array(numbers).astype(np.float32)
-        self.mask_field_name = mask_field_name
-        self.landmarks_dict = landmarks_dict
-
-    def apply_transform(self, sample):
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict['type'] == INTENSITY:
-                # TODO: assert that image_name is in dict
-                landmarks = self.landmarks_dict#[image_name]
-
-                if self.mask_field_name is not None:
-                    mask_data = sample[self.mask_field_name]['data']
-                else:
-                    mask_data = None
-
-                image_dict['data'] = normalize(image_dict['data'], landmarks, mask_data=mask_data)
-        return sample
-=======
 class HistogramStandardization(NormalizationTransform):
     def __init__(self, landmarks_dict, masking_method=None, verbose=False):
         super().__init__(masking_method=masking_method, verbose=verbose)
@@ -63,7 +46,6 @@ class HistogramStandardization(NormalizationTransform):
             landmarks,
             mask=mask,
         )
->>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
 
 
 def __compute_percentiles(img, mask, cutoff):
@@ -140,11 +122,6 @@ def normalize(
         landmarks,
         mask=None,
         cutoff=DEFAULT_CUTOFF,
-<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
-        masking_function=None,
-        mask_data=None,
-=======
->>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
         epsilon=1e-5,
         ):
     data = data.numpy()
@@ -154,18 +131,8 @@ def normalize(
     image_shape = img.shape
     img = img.reshape(-1).astype(np.float32)
 
-<<<<<<< HEAD:torchio/transforms/normalization/histogram_standardization.py
-    if masking_function is not None:
-        mask = masking_function(img)
-    else:
-        if mask_data is not None:
-            mask = mask_data
-        else:
-            mask = np.ones_like(img, dtype=np.bool)
-=======
     if mask is None:
         mask = np.ones_like(img, np.bool)
->>>>>>> c5fb5329d988575867a8bc4625535cc63e701cb7:torchio/transforms/preprocessing/histogram_standardization.py
     mask = mask.reshape(-1)
 
     #range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
