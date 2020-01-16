@@ -1,6 +1,11 @@
 import time
 import warnings
 from abc import ABC, abstractmethod
+from tempfile import NamedTemporaryFile
+import torch
+import numpy as np
+import nibabel as nib
+import SimpleITK as sitk
 from ..utils import is_image_dict
 
 
@@ -39,3 +44,25 @@ class Transform(ABC):
                 'No image dicts found in sample.'
                 f' Sample keys: {sample.keys()}'
             )
+
+    @staticmethod
+    def nib_to_sitk(array, affine):
+        """
+        TODO: figure out how to get directions
+        from affine so that I don't need this
+        """
+        if isinstance(array, torch.Tensor):
+            array = array.numpy()
+        with NamedTemporaryFile(suffix='.nii') as f:
+            nib.Nifti1Image(array, affine).to_filename(f.name)
+            image = sitk.ReadImage(f.name)
+        return image
+
+    @staticmethod
+    def sitk_to_nib(image):
+        with NamedTemporaryFile(suffix='.nii') as f:
+            sitk.WriteImage(image, f.name)
+            nii = nib.load(f.name)
+            data = nii.get_fdata(dtype=np.float32)
+            affine = nii.affine
+        return data, affine
