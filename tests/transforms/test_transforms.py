@@ -3,7 +3,7 @@
 import unittest
 import torch
 import numpy as np
-from torchio import INTENSITY, LABEL
+from torchio import INTENSITY, LABEL, ImagesDataset
 
 from torchio.transforms import (
     RandomFlip,
@@ -34,16 +34,19 @@ class TestTransforms(unittest.TestCase):
                 data=self.getRandomData(shape),
                 affine=affine,
                 type=INTENSITY,
+                stem='t1',
             ),
             't2': dict(
                 data=self.getRandomData(shape),
                 affine=affine,
                 type=INTENSITY,
+                stem='t2',
             ),
             'label': dict(
                 data=(self.getRandomData(shape) > 0.5).float(),
                 affine=affine,
                 type=LABEL,
+                stem='label',
             ),
         }
         return sample
@@ -57,25 +60,20 @@ class TestTransforms(unittest.TestCase):
             t1=np.linspace(0, 100, 13),
             t2=np.linspace(0, 100, 13),
         )
-        random_transforms = (
+        transforms = (
             Resample((1, 1.1, 1.25)),
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
+            RandomMotion(proportion_to_augment=1),
             RandomNoise(),
             RandomBiasField(),
-            RandomElasticDeformation(proportion_to_augment=1),
-            RandomAffine(),
-            RandomMotion(proportion_to_augment=1),
-        )
-        preprocessing_transforms = (
             Rescale(),
             ZNormalization(masking_method='label'),
             HistogramStandardization(landmarks_dict=landmarks_dict),
+            RandomElasticDeformation(proportion_to_augment=1),
+            RandomAffine(),
             Pad((1, 2, 3, 0, 5, 6)),
             Crop((3, 2, 8, 0, 1, 4)),
         )
         transformed = self.get_sample()
-        for transform in random_transforms:
-            transformed = transform(transformed)
-
-        for transform in preprocessing_transforms:
+        for transform in transforms:
             transformed = transform(transformed)
