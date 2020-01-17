@@ -1,3 +1,4 @@
+import warnings
 import torch
 import numpy as np
 from ...torchio import DATA
@@ -21,9 +22,9 @@ class Rescale(NormalizationTransform):
         This could probably be written in two or three lines
         """
         image_dict = sample[image_name]
-        image_dict[DATA] = self.rescale(image_dict[DATA], mask)
+        image_dict[DATA] = self.rescale(image_dict[DATA], mask, image_name)
 
-    def rescale(self, data, mask):
+    def rescale(self, data, mask, image_name):
         array = data.numpy()
         mask = mask.numpy()
         values = array[mask]
@@ -31,6 +32,14 @@ class Rescale(NormalizationTransform):
         cutoff = np.percentile(values, (pa, pb))
         np.clip(array, *cutoff, out=array)
         array -= array.min()  # [0, max]
+        array_max = array.max()
+        if array_max == 0:
+            message = (
+                f'Rescaling image "{image_name}" not possible'
+                ' due to division by zero'
+            )
+            warnings.warn(message)
+            return data
         array /= array.max()  # [0, 1]
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]
