@@ -1,5 +1,6 @@
 import ast
 import shutil
+import pprint
 import tempfile
 from pathlib import Path
 import numpy as np
@@ -133,3 +134,18 @@ def guess_type(string):
     except TypeError:
         value = None
     return value
+
+
+def check_consistent_shape(sample):
+    shapes_dict = {}
+    for image_name, image_dict in sample.items():
+        if not is_image_dict(image_dict):
+            continue
+        shapes_dict[image_name] = image_dict[DATA].shape
+    num_unique_shapes = len(set(shapes_dict.values()))
+    if num_unique_shapes > 1:
+        message = (
+            'Images in sample have inconsistent shapes:'
+            f'\n{pprint.pformat(shapes_dict)}'
+        )
+        raise ValueError(message)
