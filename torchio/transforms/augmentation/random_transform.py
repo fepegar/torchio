@@ -15,7 +15,7 @@ class RandomTransform(Transform):
 
     @staticmethod
     @abstractmethod
-    def get_params():
+    def get_params(*args, **kwargs):
         pass
 
     @staticmethod
