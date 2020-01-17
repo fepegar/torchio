@@ -11,9 +11,6 @@ from ...utils import to_tuple, is_image_dict
 
 class ImageSampler(IterableDataset):
     def __init__(self, sample, patch_size):
-        """
-        sample['image'] expected to have no batch dimensions
-        """
         self.sample = sample
         self.patch_size = np.array(to_tuple(patch_size, n=3), dtype=np.uint16)
 
@@ -41,18 +38,27 @@ class ImageSampler(IterableDataset):
 
     def get_random_indices(self, sample, patch_size):
         """
-        TODO? Assert that shape is consistent across modalities (and label)
-        TODO: check that array shape is >= patch size
+        TODO: Make sure that shape is consistent across images in sample
         """
         first_image_name = list(sample.keys())[0]
         first_image_array = sample[first_image_name][DATA]
         # first_image_array should have shape (1, H, W, D)
         shape = np.array(first_image_array.shape[1:], dtype=np.uint16)
-        max_index = shape - patch_size
-        index = [
-            torch.randint(i, size=(1,)).item() for i in max_index.tolist()
-        ]
-        index_ini = np.array(index, np.uint16)
+        max_index_ini = shape - patch_size
+        if (max_index_ini < 0).any():
+            message = (
+                f'Patch size {patch_size} must not be'
+                f' larger than image size {tuple(shape)}'
+            )
+            raise ValueError(message)
+        coordinates = []
+        for max_coordinate in max_index_ini.tolist():
+            if max_coordinate == 0:
+                coordinate = 0
+            else:
+                coordinate = torch.randint(max_coordinate, size=(1,)).item()
+            coordinates.append(coordinate)
+        index_ini = np.array(coordinates, np.uint16)
         index_fin = index_ini + patch_size
         return index_ini, index_fin
 
