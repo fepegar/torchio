@@ -48,11 +48,15 @@ class ImageSampler(IterableDataset):
         first_image_array = sample[first_image_name][DATA]
         # first_image_array should have shape (1, H, W, D)
         shape = np.array(first_image_array.shape[1:], dtype=np.uint16)
-        max_index = shape - patch_size
-        index = [
-            torch.randint(i, size=(1,)).item() for i in max_index.tolist()
-        ]
-        index_ini = np.array(index, np.uint16)
+        max_index_ini = shape - patch_size
+        coordinates = []
+        for max_coordinate in max_index_ini.tolist():
+            if max_coordinate == 0:
+                coordinate = 0
+            else:
+                coordinate = torch.randint(max_coordinate, size=(1,)).item()
+            coordinates.append(coordinate)
+        index_ini = np.array(coordinates, np.uint16)
         index_fin = index_ini + patch_size
         return index_ini, index_fin
 
