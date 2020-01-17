@@ -38,14 +38,19 @@ class ImageSampler(IterableDataset):
 
     def get_random_indices(self, sample, patch_size):
         """
-        TODO? Assert that shape is consistent across modalities (and label)
-        TODO: check that array shape is >= patch size
+        TODO: Make sure that shape is consistent across images in sample
         """
         first_image_name = list(sample.keys())[0]
         first_image_array = sample[first_image_name][DATA]
         # first_image_array should have shape (1, H, W, D)
         shape = np.array(first_image_array.shape[1:], dtype=np.uint16)
         max_index_ini = shape - patch_size
+        if (max_index_ini < 0).any():
+            message = (
+                f'Patch size {patch_size} must not be'
+                f' larger than image size {tuple(shape)}'
+            )
+            raise ValueError(message)
         coordinates = []
         for max_coordinate in max_index_ini.tolist():
             if max_coordinate == 0:
