@@ -91,8 +91,8 @@ class ImagesDataset(Dataset):
                     raise KeyError(message)
                 names.append(image.name)
 
-    @staticmethod
-    def save_sample(sample, output_paths_dict):
+    @classmethod
+    def save_sample(cls, sample, output_paths_dict):
         for key, output_path in output_paths_dict.items():
             tensor = sample[key][DATA][0]  # remove channels dim
             affine = sample[key][AFFINE]
