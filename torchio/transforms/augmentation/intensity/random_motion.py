@@ -101,7 +101,7 @@ class RandomMotion(RandomTransform):
             perturbation=0.3,
             ):
         """
-        If perturbation is 0, the intervals between movements are constants
+        If perturbation is 0, the intervals between movements are constant
         """
         degrees_params = get_params_array(
             degrees_range, num_transforms)
