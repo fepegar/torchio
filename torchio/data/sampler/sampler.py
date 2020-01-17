@@ -11,9 +11,6 @@ from ...utils import to_tuple, is_image_dict
 
 class ImageSampler(IterableDataset):
     def __init__(self, sample, patch_size):
-        """
-        sample['image'] expected to have no batch dimensions
-        """
         self.sample = sample
         self.patch_size = np.array(to_tuple(patch_size, n=3), dtype=np.uint16)
 
