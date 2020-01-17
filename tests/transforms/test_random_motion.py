@@ -20,16 +20,19 @@ class TestRandomMotion(unittest.TestCase):
                 data=self.getRandomData(shape),
                 affine=affine,
                 type=INTENSITY,
+                stem='t1',
             ),
             't2': dict(
                 data=self.getRandomData(shape),
                 affine=affine,
                 type=INTENSITY,
+                stem='t2',
             ),
             'label': dict(
                 data=(self.getRandomData(shape) > 0.5).astype(np.float32),
                 affine=affine,
                 type=LABEL,
+                stem='label',
             ),
         }
 
