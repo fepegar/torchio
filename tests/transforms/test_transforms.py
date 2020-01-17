@@ -78,4 +78,4 @@ class TestTransforms(unittest.TestCase):
             transformed = transform(transformed)
 
         for transform in preprocessing_transforms:
-            transformed = transform(sample)
+            transformed = transform(transformed)
