@@ -1,6 +1,6 @@
 import torch
 import SimpleITK as sitk
-from ....utils import is_image_dict
+from ....utils import is_image_dict, check_consistent_shape
 from ....torchio import LABEL, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
@@ -20,21 +20,25 @@ class RandomElasticDeformation(RandomTransform):
         self._bspline_transformation = None
         self.num_control_points = max(num_control_points, 2)
         self.deformation_std = max(deformation_std, 1)
-        self.proportion_to_augment = proportion_to_augment
-        self.image_interpolation = image_interpolation
+        self.proportion_to_augment = self.parse_probability(
+            proportion_to_augment,
+            'proportion_to_augment',
+        )
+        self.interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, sample):
+        check_consistent_shape(sample)
         bspline_params = None
         sample['random_elastic_deformation'] = {}
         params_dict = sample['random_elastic_deformation']
+
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
             if image_dict['type'] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
-                interpolation = self.image_interpolation
-            # TODO: assert that all images have the same shape
+                interpolation = self.interpolation
             if bspline_params is None:
                 image = self.nib_to_sitk(
                     image_dict[DATA][0],
@@ -56,7 +60,6 @@ class RandomElasticDeformation(RandomTransform):
                 bspline_params,
                 interpolation,
             )
-
         return sample
 
     @staticmethod
@@ -82,28 +85,21 @@ class RandomElasticDeformation(RandomTransform):
             bspline_params,
             interpolation: Interpolation,
             ):
-        if array.ndim != 4:
-            message = (
-                'Only 4D images (channels, i, j, k) are supported,'
-                f' not {array.shape}'
-            )
-            raise NotImplementedError(message)
-        for i, channel_array in enumerate(array):  # use sitk.VectorImage?
-            image = self.nib_to_sitk(channel_array, affine)
-            bspline_transform = self.get_bspline_transform(
-                image,
-                self.num_control_points,
-                bspline_params,
-            )
+        assert array.ndim == 4
+        image = self.nib_to_sitk(array[0], affine)
+        bspline_transform = self.get_bspline_transform(
+            image,
+            self.num_control_points,
+            bspline_params,
+        )
+        resampler = sitk.ResampleImageFilter()
+        resampler.SetInterpolator(interpolation.value)
+        resampler.SetReferenceImage(image)
+        resampler.SetDefaultPixelValue(0)  # should I change this?
+        resampler.SetTransform(bspline_transform)
+        resampled = resampler.Execute(image)
 
-            resampler = sitk.ResampleImageFilter()
-            resampler.SetInterpolator(interpolation.value)
-            resampler.SetReferenceImage(image)
-            resampler.SetDefaultPixelValue(0)  # should I change this?
-            resampler.SetTransform(bspline_transform)
-            resampled = resampler.Execute(image)
-
-            channel_array = sitk.GetArrayFromImage(resampled)
-            channel_array = channel_array.transpose()  # ITK to NumPy
-            array[i] = torch.from_numpy(channel_array)
+        np_array = sitk.GetArrayFromImage(resampled)
+        np_array = np_array.transpose()  # ITK to NumPy
+        array[0] = torch.from_numpy(np_array)
         return array

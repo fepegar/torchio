@@ -35,7 +35,10 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
-        self.proportion_to_augment = proportion_to_augment
+        self.proportion_to_augment = self.parse_probability(
+            proportion_to_augment,
+            'proportion_to_augment',
+        )
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
