@@ -66,7 +66,7 @@ class TestTransforms(unittest.TestCase):
             RandomMotion(proportion_to_augment=1),
             RandomNoise(),
             RandomBiasField(),
-            Rescale(),
+            Rescale((0, 1)),
             ZNormalization(masking_method='label'),
             HistogramStandardization(landmarks_dict=landmarks_dict),
             RandomElasticDeformation(proportion_to_augment=1),

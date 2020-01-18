@@ -47,11 +47,17 @@ def is_image_dict(variable):
     return has_right_keys
 
 
-def create_dummy_dataset(num_images, size_range, force=False):
+def create_dummy_dataset(
+        num_images,
+        size_range,
+        directory=None,
+        suffix='.nii.gz',
+        force=False,
+        ):
     from .data import Image
-    tempdir = Path(tempfile.gettempdir())
-    images_dir = tempdir / 'dummy_images'
-    labels_dir = tempdir / 'dummy_labels'
+    output_dir = Path(tempfile.gettempdir() if directory is None else directory)
+    images_dir = output_dir / 'dummy_images'
+    labels_dir = output_dir / 'dummy_labels'
 
     if force:
         shutil.rmtree(images_dir)
@@ -60,16 +66,16 @@ def create_dummy_dataset(num_images, size_range, force=False):
     subjects = []
     if images_dir.is_dir():
         for i in trange(num_images):
-            image_path = images_dir / f'image_{i}.nii.gz'
-            label_path = labels_dir / f'label_{i}.nii.gz'
+            image_path = images_dir / f'image_{i}{suffix}'
+            label_path = labels_dir / f'label_{i}{suffix}'
             subject_images = [
                 Image('one_modality', image_path, INTENSITY),
                 Image('segmentation', label_path, LABEL),
             ]
             subjects.append(subject_images)
     else:
-        images_dir.mkdir(exist_ok=True)
-        labels_dir.mkdir(exist_ok=True)
+        images_dir.mkdir(exist_ok=True, parents=True)
+        labels_dir.mkdir(exist_ok=True, parents=True)
         print('Creating dummy dataset...')
         for i in trange(num_images):
             shape = np.random.randint(*size_range, size=3)
@@ -80,11 +86,11 @@ def create_dummy_dataset(num_images, size_range, force=False):
             label[image > 0.66] = 2
             image *= 255
 
-            image_path = images_dir / f'image_{i}.nii.gz'
+            image_path = images_dir / f'image_{i}{suffix}'
             nii = nib.Nifti1Image(image.astype(np.uint8), affine)
             nii.to_filename(str(image_path))
 
-            label_path = labels_dir / f'label_{i}.nii.gz'
+            label_path = labels_dir / f'label_{i}{suffix}'
             nii = nib.Nifti1Image(label.astype(np.uint8), affine)
             nii.to_filename(str(label_path))
 

@@ -6,6 +6,8 @@ __all__ = [
     'SAMPLING_MAP',
     'DATA',
     'AFFINE',
+    'IMAGE',
+    'LOCATION',
 ]
 
 INTENSITY = 'intensity'
@@ -14,3 +16,7 @@ SAMPLING_MAP = 'sampling_map'
 
 DATA = 'data'
 AFFINE = 'affine'
+
+# For aggregator
+IMAGE = 'image'
+LOCATION = 'location'

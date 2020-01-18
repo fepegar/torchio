@@ -80,7 +80,7 @@ class RandomAffine(RandomTransform):
             interpolation: Interpolation,
             ):
         assert array.ndim == 4
-        assert array.shape[0] == 1
+        assert len(array) == 1
         image = self.nib_to_sitk(array[0], affine)
         scaling_transform = self.get_scaling_transform(scaling_params)
         rotation_transform = self.get_rotation_transform(rotation_params)

@@ -58,7 +58,7 @@ class RandomTransform(Transform):
                 'image_interpolation must be'
                 ' a member of torchio.Interpolation'
             )
-            raise ValueError(message)
+            raise TypeError(message)
         return interpolation
 
     def check_seed(self):

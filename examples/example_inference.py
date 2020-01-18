@@ -1,7 +1,8 @@
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from torchio.inference import GridSampler, GridAggregator
+from torchio import IMAGE, LOCATION
+from torchio.data.inference import GridSampler, GridAggregator
 
 
 def model(arg):
@@ -25,8 +26,8 @@ aggregator = GridAggregator(input_array, patch_overlap)
 
 with torch.no_grad():
     for patches_batch in tqdm(patch_loader):
-        input_tensor = patches_batch['one_modality']
-        locations = patches_batch['location']
+        input_tensor = patches_batch[IMAGE]
+        locations = patches_batch[LOCATION]
         logits = model(input_tensor)  # some model
         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
         outputs = labels

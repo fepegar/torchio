@@ -15,9 +15,7 @@ class GridAggregator:
         )
 
     @staticmethod
-    def crop_batch(windows, location, border=None):
-        if not border:
-            return windows, location
+    def crop_batch(windows, location, border):
         location = location.astype(np.int)
         batch_shape = windows.shape
         spatial_shape = batch_shape[2:]  # ignore batch and channels dim
@@ -25,16 +23,11 @@ class GridAggregator:
         for idx in range(num_dimensions):
             location[:, idx] = location[:, idx] + border[idx]
             location[:, idx + 3] = location[:, idx + 3] - border[idx]
-        if np.any(location < 0):
-            return windows, location
-
         cropped_shape = np.max(location[:, 3:6] - location[:, 0:3], axis=0)
         diff = spatial_shape - cropped_shape
         left = np.floor(diff / 2).astype(np.int)
         i_ini, j_ini, k_ini = left
         i_fin, j_fin, k_fin = left + cropped_shape
-        if np.any(left < 0):
-            raise ValueError
         batch = windows[
             :,  # batch dimension
             :,  # channels dimension

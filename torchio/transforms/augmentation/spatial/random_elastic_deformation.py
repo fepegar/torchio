@@ -86,6 +86,7 @@ class RandomElasticDeformation(RandomTransform):
             interpolation: Interpolation,
             ):
         assert array.ndim == 4
+        assert len(array) == 1
         image = self.nib_to_sitk(array[0], affine)
         bspline_transform = self.get_bspline_transform(
             image,

@@ -8,8 +8,8 @@ from .normalization_transform import NormalizationTransform
 class Rescale(NormalizationTransform):
     def __init__(
             self,
-            out_min_max=(-1, 1),
-            percentiles=(1, 99),
+            out_min_max,
+            percentiles=(0, 100),
             masking_method=None,
             verbose=False,
             ):
@@ -18,9 +18,6 @@ class Rescale(NormalizationTransform):
         self.percentiles = percentiles
 
     def apply_normalization(self, sample, image_name, mask):
-        """
-        This could probably be written in two or three lines
-        """
         image_dict = sample[image_name]
         image_dict[DATA] = self.rescale(image_dict[DATA], mask, image_name)
 
@@ -28,8 +25,7 @@ class Rescale(NormalizationTransform):
         array = data.numpy()
         mask = mask.numpy()
         values = array[mask]
-        pa, pb = self.percentiles
-        cutoff = np.percentile(values, (pa, pb))
+        cutoff = np.percentile(values, self.percentiles)
         np.clip(array, *cutoff, out=array)
         array -= array.min()  # [0, max]
         array_max = array.max()

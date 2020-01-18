@@ -1,4 +1,3 @@
-import numbers
 import torch
 from ....torchio import DATA
 from ....utils import is_image_dict, to_tuple
