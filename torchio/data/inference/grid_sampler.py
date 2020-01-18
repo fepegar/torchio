@@ -2,6 +2,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from torchio import IMAGE, LOCATION
 
+
 class GridSampler(Dataset):
     """
     Adapted from NiftyNet.

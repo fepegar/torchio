@@ -1,6 +1,7 @@
 import enum
 import SimpleITK as sitk
 
+
 @enum.unique
 class Interpolation(enum.IntEnum):
     NEAREST = sitk.sitkNearestNeighbor
