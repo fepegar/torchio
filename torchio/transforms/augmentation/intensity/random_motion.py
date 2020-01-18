@@ -65,7 +65,8 @@ class RandomMotion(RandomTransform):
                 return sample
             if (image_dict[DATA][0] < 0).any():
                 message = (
-                    f'Image "{image_name}" from "{image_dict["stem"]}" has negative values.'
+                    f'Image "{image_name}" from "{image_dict["stem"]}"'
+                    ' has negative values.'
                     ' Results can be unexpected because the transformed sample'
                     ' is computed as the absolute values'
                     ' of an inverse Fourier transform'

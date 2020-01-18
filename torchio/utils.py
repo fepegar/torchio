@@ -55,7 +55,8 @@ def create_dummy_dataset(
         force=False,
         ):
     from .data import Image
-    output_dir = Path(tempfile.gettempdir() if directory is None else directory)
+    output_dir = tempfile.gettempdir() if directory is None else directory
+    output_dir = Path(output_dir)
     images_dir = output_dir / 'dummy_images'
     labels_dir = output_dir / 'dummy_labels'
 

@@ -7,10 +7,25 @@ import click
 @click.argument('input-path', type=click.Path(exists=True))
 @click.argument('transform-name', type=str)
 @click.argument('output-path', type=click.Path())
-@click.option('--kwargs', '-k', type=str, help='String of kwargs, e.g. "proportion_to_augment=1,num_transforms=3"')
-@click.option('--seed', '-s', type=int, help='Seed for PyTorch random number generator')
+@click.option(
+    '--kwargs', '-k',
+    type=str,
+    help='String of kwargs, e.g. "proportion_to_augment=1,num_transforms=3"',
+)
+@click.option(
+    '--seed', '-s',
+    type=int,
+    help='Seed for PyTorch random number generator',
+)
 @click.option('--verbose/--no-verbose', '-v', default=False, show_default=True)
-def apply_transform(input_path, transform_name, output_path, kwargs, seed, verbose):
+def apply_transform(
+        input_path,
+        transform_name,
+        output_path,
+        kwargs,
+        seed,
+        verbose,
+        ):
     """Apply transform to an image.
 
     \b
