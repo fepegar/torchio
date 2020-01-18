@@ -65,13 +65,10 @@ class RandomAffine(RandomTransform):
         return transform
 
     @staticmethod
-    def get_rotation_transform(rotation_params):
-        """
-        rotation_params is in degrees
-        """
+    def get_rotation_transform(degrees):
         transform = sitk.Euler3DTransform()
-        rotation_params = np.radians(rotation_params)
-        transform.SetRotation(*rotation_params)
+        radians = np.radians(degrees)
+        transform.SetRotation(*radians)
         return transform
 
     def apply_affine_transform(
