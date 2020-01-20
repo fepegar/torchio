@@ -1,7 +1,7 @@
 import numbers
 from abc import abstractmethod
 import torch
-from .. import Transform
+from .. import Transform, Interpolation
 
 
 class RandomTransform(Transform):
@@ -15,7 +15,7 @@ class RandomTransform(Transform):
 
     @staticmethod
     @abstractmethod
-    def get_params():
+    def get_params(*args, **kwargs):
         pass
 
     @staticmethod
@@ -44,6 +44,22 @@ class RandomTransform(Transform):
 
     def parse_translation(self, translation):
         return self.parse_range(translation, 'translation')
+
+    @staticmethod
+    def parse_probability(p, name):
+        if not (isinstance(p, numbers.Number) and 0 <= p <= 1):
+            raise ValueError(f'{name} must be a number in [0, 1]')
+        return p
+
+    @staticmethod
+    def parse_interpolation(interpolation):
+        if not isinstance(interpolation, Interpolation):
+            message = (
+                'image_interpolation must be'
+                ' a member of torchio.Interpolation'
+            )
+            raise TypeError(message)
+        return interpolation
 
     def check_seed(self):
         if self.seed is not None:

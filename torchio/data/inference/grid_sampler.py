@@ -1,5 +1,6 @@
 import numpy as np
 from torch.utils.data import Dataset
+from torchio import IMAGE, LOCATION
 
 
 class GridSampler(Dataset):
@@ -24,10 +25,7 @@ class GridSampler(Dataset):
         i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
         window = self.array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
         window = window[np.newaxis, ...]  # add channels dimension
-        sample = dict(
-            image=window,
-            location=location,
-        )
+        sample = {IMAGE: window, LOCATION: location}
         return sample
 
     @staticmethod

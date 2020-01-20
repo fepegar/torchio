@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict
+from ....utils import is_image_dict, check_consistent_shape
 from ....torchio import LABEL, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
@@ -21,9 +21,10 @@ class RandomAffine(RandomTransform):
         self.scales = scales
         self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic
-        self.image_interpolation = image_interpolation
+        self.interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, sample):
+        check_consistent_shape(sample)
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
         sample['random_scaling'] = scaling_params
@@ -34,7 +35,7 @@ class RandomAffine(RandomTransform):
             if image_dict['type'] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
-                interpolation = self.image_interpolation
+                interpolation = self.interpolation
             image_dict[DATA] = self.apply_affine_transform(
                 image_dict[DATA],
                 image_dict[AFFINE],
@@ -46,11 +47,11 @@ class RandomAffine(RandomTransform):
 
     @staticmethod
     def get_params(scales, degrees, isotropic):
-        scaling_params = torch.FloatTensor(3).uniform_(*scales).tolist()
+        scaling_params = torch.FloatTensor(3).uniform_(*scales)
         if isotropic:
-            scaling_params = 3 * scaling_params[0]
-        rotation_params = torch.FloatTensor(3).uniform_(*degrees).tolist()
-        return scaling_params, rotation_params
+            scaling_params.fill_(scaling_params[0])
+        rotation_params = torch.FloatTensor(3).uniform_(*degrees)
+        return scaling_params.tolist(), rotation_params.tolist()
 
     @staticmethod
     def get_scaling_transform(scaling_params):
@@ -64,42 +65,41 @@ class RandomAffine(RandomTransform):
         return transform
 
     @staticmethod
-    def get_rotation_transform(rotation_params):
-        """
-        rotation_params is in degrees
-        """
+    def get_rotation_transform(degrees):
         transform = sitk.Euler3DTransform()
-        rotation_params = np.radians(rotation_params)
-        transform.SetRotation(*rotation_params)
+        radians = np.radians(degrees)
+        transform.SetRotation(*radians)
         return transform
 
     def apply_affine_transform(
             self,
-            array,
+            tensor,
             affine,
             scaling_params,
             rotation_params,
             interpolation: Interpolation,
             ):
-        if array.ndim != 4:
-            message = (
-                'Only 4D images (channels, i, j, k) are supported,'
-                f' not {array.shape}'
-            )
-            raise NotImplementedError(message)
-        for i, channel_array in enumerate(array):  # use sitk.VectorImage?
-            image = self.nib_to_sitk(channel_array, affine)
-            scaling_transform = self.get_scaling_transform(scaling_params)
-            rotation_transform = self.get_rotation_transform(rotation_params)
-            transform = sitk.Transform(3, sitk.sitkComposite)
-            transform.AddTransform(scaling_transform)
-            transform.AddTransform(rotation_transform)
-            resampled = sitk.Resample(
-                image,
-                transform,
-                interpolation.value,
-            )
-            channel_array = sitk.GetArrayFromImage(resampled)
-            channel_array = channel_array.transpose(2, 1, 0)  # ITK to NumPy
-            array[i] = torch.from_numpy(channel_array)
-        return array
+        assert tensor.ndim == 4
+        assert len(tensor) == 1
+
+        image = self.nib_to_sitk(tensor[0], affine)
+        floating = reference = image
+
+        scaling_transform = self.get_scaling_transform(scaling_params)
+        rotation_transform = self.get_rotation_transform(rotation_params)
+        transform = sitk.Transform(3, sitk.sitkComposite)
+        transform.AddTransform(scaling_transform)
+        transform.AddTransform(rotation_transform)
+
+        resampler = sitk.ResampleImageFilter()
+        resampler.SetInterpolator(interpolation.value)
+        resampler.SetReferenceImage(reference)
+        resampler.SetDefaultPixelValue(tensor.min().item())
+        resampler.SetOutputPixelType(sitk.sitkFloat32)
+        resampler.SetTransform(transform)
+        resampled = resampler.Execute(floating)
+
+        np_array = sitk.GetArrayFromImage(resampled)
+        np_array = np_array.transpose()  # ITK to NumPy
+        tensor[0] = torch.from_numpy(np_array)
+        return tensor

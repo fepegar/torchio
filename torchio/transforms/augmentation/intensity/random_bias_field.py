@@ -21,7 +21,10 @@ class RandomBiasField(RandomTransform):
         super().__init__(seed=seed, verbose=verbose)
         self.coefficients_range = coefficients_range
         self.order = order
-        self.proportion_to_augment = proportion_to_augment
+        self.proportion_to_augment = self.parse_probability(
+            proportion_to_augment,
+            'proportion_to_augment',
+        )
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():

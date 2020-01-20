@@ -35,7 +35,10 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
-        self.proportion_to_augment = proportion_to_augment
+        self.proportion_to_augment = self.parse_probability(
+            proportion_to_augment,
+            'proportion_to_augment',
+        )
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -60,9 +63,13 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = p
             if not do_it:
                 return sample
-            if (image_dict[DATA][0] < 0).any():
+            if (image_dict[DATA][0] < -0.1).any():
+                # I use -0.1 instead of 0 because Python was warning me when
+                # a value in a voxel was -7.191084e-35
+                # There must be a better way of solving this
                 message = (
-                    f'Image "{image_name}" from "{image_dict["stem"]}" has negative values.'
+                    f'Image "{image_name}" from "{image_dict["stem"]}"'
+                    ' has negative values.'
                     ' Results can be unexpected because the transformed sample'
                     ' is computed as the absolute values'
                     ' of an inverse Fourier transform'
@@ -101,7 +108,7 @@ class RandomMotion(RandomTransform):
             perturbation=0.3,
             ):
         """
-        If perturbation is 0, the intervals between movements are constants
+        If perturbation is 0, the intervals between movements are constant
         """
         degrees_params = get_params_array(
             degrees_range, num_transforms)
@@ -162,17 +169,19 @@ class RandomMotion(RandomTransform):
 
     def resample_images(self, image, transforms, interpolation):
         floating = reference = image
-        interpolator = interpolation.value
+        default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
         transforms = transforms[1:]  # first is identity
         images = [image]  # first is identity
         trsfs = tqdm(transforms, leave=False) if self.verbose else transforms
         for transform in trsfs:
-            resampled = sitk.Resample(
-                floating,
-                reference,
-                transform,
-                interpolator,
-            )
+            resampler = sitk.ResampleImageFilter()
+            resampler.SetInterpolator(interpolation.value)
+            resampler.SetReferenceImage(reference)
+            resampler.SetOutputPixelType(sitk.sitkFloat32)
+            resampler.SetDefaultPixelValue(default_value)
+            resampler.SetTransform(transform)
+            resampled = resampler.Execute(floating)
+
             images.append(resampled)
         return images
 
@@ -197,7 +206,7 @@ class RandomMotion(RandomTransform):
             ):
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
-        arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
+        arrays = [array.transpose() for array in arrays]  # ITK to NumPy
         arrays = tqdm(arrays, leave=False) if self.verbose else arrays
         spectra = [self.fourier_transform(array) for array in arrays]
         self.sort_spectra(spectra, times)

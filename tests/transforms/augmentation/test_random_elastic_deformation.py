@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 import torchio
 from torchio import INTENSITY, LABEL, DATA
+from torchio.transforms import RandomElasticDeformation
 
 
 class TestRandomElasticDeformation(unittest.TestCase):
@@ -38,7 +39,7 @@ class TestRandomElasticDeformation(unittest.TestCase):
         return np.random.rand(*shape)
 
     def test_random_elastic_deformation(self):
-        transform = torchio.transforms.RandomElasticDeformation(
+        transform = RandomElasticDeformation(
             proportion_to_augment=1,
             seed=42,
         )
@@ -47,3 +48,15 @@ class TestRandomElasticDeformation(unittest.TestCase):
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
             assert transformed[key][DATA].sum() == fixture
+
+    def test_random_elastic_deformation_inputs_pta(self):
+        with self.assertRaises(ValueError):
+            RandomElasticDeformation(proportion_to_augment=1.5)
+        with self.assertRaises(ValueError):
+            RandomElasticDeformation(proportion_to_augment=-1)
+
+    def test_random_elastic_deformation_inputs_interpolation(self):
+        with self.assertRaises(TypeError):
+            RandomElasticDeformation(image_interpolation=1)
+        with self.assertRaises(TypeError):
+            RandomElasticDeformation(image_interpolation='linear')

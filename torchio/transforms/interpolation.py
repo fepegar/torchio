@@ -1,8 +1,9 @@
-from enum import Enum
+import enum
 import SimpleITK as sitk
 
 
-class Interpolation(Enum):
+@enum.unique
+class Interpolation(enum.IntEnum):
     NEAREST = sitk.sitkNearestNeighbor
     LINEAR = sitk.sitkLinear
     BSPLINE = sitk.sitkBSpline

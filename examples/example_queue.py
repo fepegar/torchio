@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 from torchio import ImagesDataset, Queue, DATA
-from torchio.sampler import ImageSampler
+from torchio.data.sampler import ImageSampler
 from torchio.utils import create_dummy_dataset
 from torchio.transforms import (
     ZNormalization,

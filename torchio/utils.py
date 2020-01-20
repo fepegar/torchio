@@ -1,5 +1,6 @@
 import ast
 import shutil
+import pprint
 import tempfile
 from pathlib import Path
 import numpy as np
@@ -46,11 +47,18 @@ def is_image_dict(variable):
     return has_right_keys
 
 
-def create_dummy_dataset(num_images, size_range, force=False):
+def create_dummy_dataset(
+        num_images,
+        size_range,
+        directory=None,
+        suffix='.nii.gz',
+        force=False,
+        ):
     from .data import Image
-    tempdir = Path(tempfile.gettempdir())
-    images_dir = tempdir / 'dummy_images'
-    labels_dir = tempdir / 'dummy_labels'
+    output_dir = tempfile.gettempdir() if directory is None else directory
+    output_dir = Path(output_dir)
+    images_dir = output_dir / 'dummy_images'
+    labels_dir = output_dir / 'dummy_labels'
 
     if force:
         shutil.rmtree(images_dir)
@@ -59,16 +67,16 @@ def create_dummy_dataset(num_images, size_range, force=False):
     subjects = []
     if images_dir.is_dir():
         for i in trange(num_images):
-            image_path = images_dir / f'image_{i}.nii.gz'
-            label_path = labels_dir / f'label_{i}.nii.gz'
+            image_path = images_dir / f'image_{i}{suffix}'
+            label_path = labels_dir / f'label_{i}{suffix}'
             subject_images = [
                 Image('one_modality', image_path, INTENSITY),
                 Image('segmentation', label_path, LABEL),
             ]
             subjects.append(subject_images)
     else:
-        images_dir.mkdir(exist_ok=True)
-        labels_dir.mkdir(exist_ok=True)
+        images_dir.mkdir(exist_ok=True, parents=True)
+        labels_dir.mkdir(exist_ok=True, parents=True)
         print('Creating dummy dataset...')
         for i in trange(num_images):
             shape = np.random.randint(*size_range, size=3)
@@ -79,11 +87,11 @@ def create_dummy_dataset(num_images, size_range, force=False):
             label[image > 0.66] = 2
             image *= 255
 
-            image_path = images_dir / f'image_{i}.nii.gz'
+            image_path = images_dir / f'image_{i}{suffix}'
             nii = nib.Nifti1Image(image.astype(np.uint8), affine)
             nii.to_filename(str(image_path))
 
-            label_path = labels_dir / f'label_{i}.nii.gz'
+            label_path = labels_dir / f'label_{i}{suffix}'
             nii = nib.Nifti1Image(label.astype(np.uint8), affine)
             nii.to_filename(str(label_path))
 
@@ -133,3 +141,18 @@ def guess_type(string):
     except TypeError:
         value = None
     return value
+
+
+def check_consistent_shape(sample):
+    shapes_dict = {}
+    for image_name, image_dict in sample.items():
+        if not is_image_dict(image_dict):
+            continue
+        shapes_dict[image_name] = image_dict[DATA].shape
+    num_unique_shapes = len(set(shapes_dict.values()))
+    if num_unique_shapes > 1:
+        message = (
+            'Images in sample have inconsistent shapes:'
+            f'\n{pprint.pformat(shapes_dict)}'
+        )
+        raise ValueError(message)
