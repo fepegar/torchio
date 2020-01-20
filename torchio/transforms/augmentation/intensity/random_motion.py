@@ -169,17 +169,19 @@ class RandomMotion(RandomTransform):
 
     def resample_images(self, image, transforms, interpolation):
         floating = reference = image
-        interpolator = interpolation.value
+        default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
         transforms = transforms[1:]  # first is identity
         images = [image]  # first is identity
         trsfs = tqdm(transforms, leave=False) if self.verbose else transforms
         for transform in trsfs:
-            resampled = sitk.Resample(
-                floating,
-                reference,
-                transform,
-                interpolator,
-            )
+            resampler = sitk.ResampleImageFilter()
+            resampler.SetInterpolator(interpolation.value)
+            resampler.SetReferenceImage(reference)
+            resampler.SetOutputPixelType(sitk.sitkFloat32)
+            resampler.SetDefaultPixelValue(default_value)
+            resampler.SetTransform(transform)
+            resampled = resampler.Execute(floating)
+
             images.append(resampled)
         return images
 
@@ -204,7 +206,7 @@ class RandomMotion(RandomTransform):
             ):
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
-        arrays = [array.transpose(2, 1, 0) for array in arrays]  # ITK to NumPy
+        arrays = [array.transpose() for array in arrays]  # ITK to NumPy
         arrays = tqdm(arrays, leave=False) if self.verbose else arrays
         spectra = [self.fourier_transform(array) for array in arrays]
         self.sort_spectra(spectra, times)

@@ -80,27 +80,29 @@ class RandomElasticDeformation(RandomTransform):
 
     def apply_bspline_transform(
             self,
-            array,
+            tensor,
             affine,
             bspline_params,
             interpolation: Interpolation,
             ):
-        assert array.ndim == 4
-        assert len(array) == 1
-        image = self.nib_to_sitk(array[0], affine)
+        assert tensor.ndim == 4
+        assert len(tensor) == 1
+        image = self.nib_to_sitk(tensor[0], affine)
+        floating = reference = image
         bspline_transform = self.get_bspline_transform(
             image,
             self.num_control_points,
             bspline_params,
         )
         resampler = sitk.ResampleImageFilter()
-        resampler.SetInterpolator(interpolation.value)
-        resampler.SetReferenceImage(image)
-        resampler.SetDefaultPixelValue(0)  # should I change this?
+        resampler.SetReferenceImage(reference)
         resampler.SetTransform(bspline_transform)
-        resampled = resampler.Execute(image)
+        resampler.SetInterpolator(interpolation.value)
+        resampler.SetDefaultPixelValue(tensor.min().item())
+        resampler.SetOutputPixelType(sitk.sitkFloat32)
+        resampled = resampler.Execute(floating)
 
         np_array = sitk.GetArrayFromImage(resampled)
         np_array = np_array.transpose()  # ITK to NumPy
-        array[0] = torch.from_numpy(np_array)
-        return array
+        tensor[0] = torch.from_numpy(np_array)
+        return tensor

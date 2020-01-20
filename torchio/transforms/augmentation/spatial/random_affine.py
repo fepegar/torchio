@@ -73,22 +73,33 @@ class RandomAffine(RandomTransform):
 
     def apply_affine_transform(
             self,
-            array,
+            tensor,
             affine,
             scaling_params,
             rotation_params,
             interpolation: Interpolation,
             ):
-        assert array.ndim == 4
-        assert len(array) == 1
-        image = self.nib_to_sitk(array[0], affine)
+        assert tensor.ndim == 4
+        assert len(tensor) == 1
+
+        image = self.nib_to_sitk(tensor[0], affine)
+        floating = reference = image
+
         scaling_transform = self.get_scaling_transform(scaling_params)
         rotation_transform = self.get_rotation_transform(rotation_params)
         transform = sitk.Transform(3, sitk.sitkComposite)
         transform.AddTransform(scaling_transform)
         transform.AddTransform(rotation_transform)
-        resampled = sitk.Resample(image, transform, interpolation.value)
+
+        resampler = sitk.ResampleImageFilter()
+        resampler.SetInterpolator(interpolation.value)
+        resampler.SetReferenceImage(reference)
+        resampler.SetDefaultPixelValue(tensor.min().item())
+        resampler.SetOutputPixelType(sitk.sitkFloat32)
+        resampler.SetTransform(transform)
+        resampled = resampler.Execute(floating)
+
         np_array = sitk.GetArrayFromImage(resampled)
         np_array = np_array.transpose()  # ITK to NumPy
-        array[0] = torch.from_numpy(np_array)
-        return array
+        tensor[0] = torch.from_numpy(np_array)
+        return tensor
