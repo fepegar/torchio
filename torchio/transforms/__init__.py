@@ -15,5 +15,6 @@ from .preprocessing import Pad
 from .preprocessing import Crop
 from .preprocessing import Rescale
 from .preprocessing import Resample
+from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization

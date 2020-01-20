@@ -3,7 +3,7 @@
 import unittest
 import torch
 import numpy as np
-from torchio import INTENSITY, LABEL, ImagesDataset
+from torchio import INTENSITY, LABEL
 
 from torchio.transforms import (
     RandomFlip,
@@ -18,6 +18,7 @@ from torchio.transforms import (
     HistogramStandardization,
     Pad,
     Crop,
+    ToCanonical,
 )
 
 
@@ -27,7 +28,7 @@ class TestTransforms(unittest.TestCase):
     def get_sample(self):
         shape = 1, 10, 20, 30
         np.random.seed(42)
-        affine = np.diag((1, 2, 3, 1))
+        affine = np.diag((1, -2, 3, 1))
         affine[:3, 3] = 40, 50, 60
         sample = {
             't1': dict(
@@ -61,6 +62,7 @@ class TestTransforms(unittest.TestCase):
             t2=np.linspace(0, 100, 13),
         )
         transforms = (
+            ToCanonical(),
             Resample((1, 1.1, 1.25)),
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
             RandomMotion(proportion_to_augment=1),
