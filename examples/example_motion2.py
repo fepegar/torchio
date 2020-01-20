@@ -1,18 +1,29 @@
 from pprint import pprint
 from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
 from torchvision.transforms import Compose
+import matplotlib.pyplot as plt
+import numpy as np
 
 from torchio.transforms.augmentation.intensity.random_motion2 import   MotionSimTransform
 from copy import deepcopy
+from nibabel.viewers import OrthoSlicer3D as ov
+
 out_dir = '/data/romain/data_exemple/augment/'
 suj = [[
     Image('T1','/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz',INTENSITY),
     Image('mask','/data/romain/HCPdata/suj_100307/brain_mT1w_1mm.nii',LABEL)
      ]]
-t = MotionSimTransform(std_rotation_angle=3, std_translation=2, nufft=True, proc_scale=0, verbose=True, freq_encoding_dim=(2,))
+t = MotionSimTransform(std_rotation_angle=3, std_translation=2, nufft=True, proc_scale=0, verbose=True, freq_encoding_dim=(0,))
 transforms = Compose([t])
 
-dataset = ImagesDataset(suj)
+dataset = ImagesDataset(suj,transform=transforms)
+
+
+sample = dataset[0]
+dataset.save_sample(sample, dict(T1='/tmp/toto.nii'))
+
+
+
 sample_orig=dataset[0]
 
 for i  in range(0,1):
