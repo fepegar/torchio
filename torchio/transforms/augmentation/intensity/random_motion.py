@@ -63,7 +63,10 @@ class RandomMotion(RandomTransform):
                 sample[image_name][key] = p
             if not do_it:
                 return sample
-            if (image_dict[DATA][0] < 0).any():
+            if (image_dict[DATA][0] < -0.1).any():
+                # I use -0.1 instead of 0 because Python was warning me when
+                # a value in a voxel was -7.191084e-35
+                # There must be a better way of solving this
                 message = (
                     f'Image "{image_name}" from "{image_dict["stem"]}"'
                     ' has negative values.'
