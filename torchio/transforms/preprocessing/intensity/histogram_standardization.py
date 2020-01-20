@@ -8,7 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from ...torchio import DATA
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99

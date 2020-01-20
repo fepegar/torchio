@@ -1,7 +1,7 @@
-from .normalization_transform import NormalizationTransform
-from .pad import Pad
-from .crop import Crop
-from .rescale import Rescale
-from .resample import Resample
-from .z_normalization import ZNormalization
-from .histogram_standardization import HistogramStandardization
+from .spatial.pad import Pad
+from .spatial.crop import Crop
+from .spatial.resample import Resample
+
+from .intensity.rescale import Rescale
+from .intensity.z_normalization import ZNormalization
+from .intensity.histogram_standardization import HistogramStandardization

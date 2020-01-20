@@ -1,8 +1,8 @@
 import torch
 import numpy as np
-from ...torchio import DATA, AFFINE
-from ...utils import is_image_dict
-from .. import Transform
+from ....torchio import DATA, AFFINE
+from ....utils import is_image_dict
+from ... import Transform
 
 
 class BoundsTransform(Transform):

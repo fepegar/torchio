@@ -2,10 +2,10 @@ import torch
 import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output
-from ...utils import is_image_dict
-from ...torchio import LABEL, DATA, AFFINE
-from .. import Interpolation
-from .. import Transform
+from ....utils import is_image_dict
+from ....torchio import LABEL, DATA, AFFINE
+from ... import Interpolation
+from ... import Transform
 
 
 class Resample(Transform):

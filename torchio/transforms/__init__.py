@@ -1,6 +1,5 @@
 from .transform import Transform
 from .interpolation import Interpolation
-from .preprocessing import NormalizationTransform
 
 # Augmentation
 from .augmentation.spatial import RandomFlip

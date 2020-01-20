@@ -1,7 +1,7 @@
 import warnings
 import torch
 import numpy as np
-from ...torchio import DATA
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 
