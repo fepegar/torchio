@@ -52,6 +52,6 @@ class GridAggregator:
             self.window_border,
         )
         for window, location in zip(windows, locations):
-            window = window.squeeze()  # TODO: replace squeeze by slicing
+            window = window[0]
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
             self.output_array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = window

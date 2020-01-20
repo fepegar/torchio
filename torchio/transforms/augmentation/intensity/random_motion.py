@@ -181,7 +181,6 @@ class RandomMotion(RandomTransform):
             resampler.SetDefaultPixelValue(default_value)
             resampler.SetTransform(transform)
             resampled = resampler.Execute(floating)
-
             images.append(resampled)
         return images
 
