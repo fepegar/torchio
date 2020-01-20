@@ -21,7 +21,13 @@ class HistogramStandardization(NormalizationTransform):
         self.landmarks_dict = landmarks_dict
 
     def apply_normalization(self, sample, image_name, mask):
-        # TODO: assert that image_name is in landmarks dict
+        if image_name not in self.landmarks_dict:
+            keys = tuple(self.landmarks_dict.keys())
+            message = (
+                f'Image name "{image_name}" should be a key in the'
+                f' landmarks dictionary, whose keys are {keys}'
+            )
+            raise KeyError(message)
         image_dict = sample[image_name]
         landmarks = self.landmarks_dict[image_name]
         image_dict[DATA] = normalize(
