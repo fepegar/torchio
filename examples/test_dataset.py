@@ -2,7 +2,8 @@ from torchio import ImagesDataset, Image, INTENSITY, LABEL
 from torchio.data.io import write_image
 from torchio.data import  get_subject_list_and_csv_info_from_data_prameters
 from torchio.transforms import RandomFlip, RandomAffine, RandomElasticDeformation, \
-    HistogramStandardization, Interpolation, RandomMotion, RandomBiasField, Rescale
+    HistogramStandardization, HistogramEqualize, HistogramRandomChange,\
+    Interpolation, RandomMotion, RandomBiasField, Rescale
 from torchvision.transforms import Compose
 import torch
 
@@ -19,6 +20,7 @@ importlib.reload(torchio.transforms.preprocessing.histogram_standardization)
 from pathlib import Path
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 test = {'T1': {'csv_file':'/data/romain/HCPdata/Motion_brain_ms_train_hcp400.csv'} }
 conditions = [("corr", "<", 0.98), ("|", "noise", "==", 1)]
@@ -73,22 +75,27 @@ suj = [[
 transforms = Compose((RandomBiasField(coefficients_range=(-0.5, 0.5),order=3, verbose=True), ))
 landmarks_file = '/data/romain/data_exemple/landmarks_hcp300_res100.txt'
 transforms = Compose((HistogramStandardization(landmarks_file, verbose=True, masking_method='mask'), Rescale(masking_method='mask',verbose=True)))
+transforms = HistogramEqualize(verbose=True,masking_method='mask')
+transforms = Rescale(verbose=True,masking_method='mask')
 
-dataset = ImagesDataset(suj, transform=transforms )
-dataset1 = ImagesDataset(suj, transform=transfo1 )
+torch.manual_seed(12)
+np.random.seed(12)
+transforms = Compose((HistogramRandomChange(verbose=True, masking_method='mask'), Rescale(masking_method='mask',verbose=True)))
+dataset1 = ImagesDataset(suj, transform=transforms )
 
-dd = dataset1[0]
+for i in range(1,10):
+    dd = dataset1[0]
+    name = 'histo'
+    out_path = out_dir + f'{i}_{name}.nii.gz'
+    dataset1.save_sample(dd, dict(T1=out_path))
+
 ii = dd['T1']['data'][0]
-affine = dd['T1']['affine']
-out_path = out_dir + 'rescale_mask.nii.gz'
-write_image(ii, affine, out_path)
 
-for k in range(0,1):
-    dd = dataset[0]
-    ii = dd['T1']['data'][0]
-    affine = dd['T1']['affine']
-    out_path = out_dir + 'transfo_{}.nii.gz'.format(k)
-    write_image(ii,affine,out_path)
+ii[ii<0.1]=0
+iif = ii.flatten()
+iif = iif[iif>0]
+plt.hist(iif,bins=128)
+
 
 #fernando random motion
 dataset = ImagesDataset(suj)
@@ -140,11 +147,15 @@ suj = [[
     Image('T1','/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz',INTENSITY),
     Image('mask','/data/romain/HCPdata/suj_100307/brain_mT1w_1mm.nii',LABEL)
      ]]
+suj = [[
+    Image('T1','/data/romain/data_exemple/nifti_proc/PRISMA_MBB_DB/2017_03_07_DEV_236_MBB_DB_Pilote02/anat_S02_t1mpr_SAG_NSel_S176/cat12/s_S02_t1mpr_SAG_NSel_S176.nii.gz',INTENSITY),
+    Image('mask','/data/romain/data_exemple/nifti_proc/PRISMA_MBB_DB/2017_03_07_DEV_236_MBB_DB_Pilote02/anat_S02_t1mpr_SAG_NSel_S176/cat12/mask_brain_erode_dilate.nii.gz',LABEL)
+     ]]
 dataset = ImagesDataset(suj)
 
 from copy import deepcopy
 transfo = Compose(( Rescale(masking_method='mask', verbose=True),))
-transfo =  Rescale( out_min_max=(-1,1), verbose=True)
+transfo =  Rescale( out_min_max=(0,1), verbose=True)
 
 sample_orig = dataset[0]
 sample = deepcopy(sample_orig)
@@ -155,14 +166,14 @@ dataset.save_sample(sample, dict(T1=path))
 
 nb_point_ini = 50
 nb_smooth = 5
-yall = perc2
+#yall = perc2
 for i  in range(0,10):
 
     y2 = get_random_curve(nb_point_ini,nb_smooth)
     #y2 = get_curve_for_sample(yall)
 
     transforms = Compose(
-        (HistogramStandardization(y2, verbose=True, masking_method='mask'), Rescale( verbose=True)))
+        (HistogramStandardization(dict(T1=y2), verbose=True, masking_method='mask'), Rescale( verbose=True, masking_method='mask')))
         #(HistogramStandardization(y2, verbose=True, mask_field_name='mask'), Rescale(masking_method='mask', verbose=True)))
 
     sample = deepcopy(sample_orig)
@@ -172,46 +183,10 @@ for i  in range(0,10):
     path = out_dir + f'{i}_{name}.nii.gz'
     dataset.save_sample(transformed, dict(T1=path))
 
-def get_curve_for_sample(yall):
-    i = np.random.randint(yall.shape[0])
-    y = np.squeeze(yall[i,:])
-
-    i = np.random.randint(y.shape)
-    print(i)
-    if i<yall.shape[1]/2:
-        y = y[i[0]:]
-    else:
-        y = y[0:i[0]]
-
-    x1 = np.linspace(0, 1, y.shape[0])
-    x2 = np.linspace(0, 1, 100)
-    y2 = np.interp(x2, x1, y)
-
-    y2 = y2 - np.min(y2)
-    y2 = (y2 / np.max(y2)) * 100
-    plt.plot(y2)
-    return y2
 
 
-    return y2
-
-def get_random_curve(nb_point_ini, nb_smooth):
-    y = np.squeeze(np.sort(np.random.rand(1, nb_point_ini)))
-    x1 = np.linspace(0, 1, nb_point_ini)
-    x2 = np.linspace(0, 1, 100)
-    y2 = np.interp(x2, x1, y)
-    y2 = smooth(y2,nb_smooth)
-    y2 = np.sort(y2)
-    y2 = y2 - np.min(y2)
-    y2 = (y2 / np.max(y2)) * 100
-    plt.plot(y2)
-    return y2
 
 
-def smooth(y, box_pts):
-    box = np.ones(box_pts)/box_pts
-    y_smooth = np.convolve(y, box, mode='same')
-    return y_smooth
 
 
 
