@@ -66,6 +66,7 @@ the information available on its
         * [Resample](#resample)
         * [Pad](#pad)
         * [Crop](#crop)
+        * [ToCanonical](#tocanonical)
 
 - [Example](#example)
 - [Related projects](#related-projects)
@@ -87,7 +88,7 @@ $ pip install torchio
 
 ### Data handling
 
-#### [`ImagesDataset`](torchio/dataset/images.py)
+#### [`ImagesDataset`](torchio/data/images.py)
 
 `ImagesDataset` is a reader of medical images that directly inherits from
 [`torch.utils.Dataset`](https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset).
@@ -117,7 +118,7 @@ subject_sample = subjects_dataset[0]
 ```
 
 
-#### [Samplers](torchio/sampler/sampler.py)
+#### [Samplers](torchio/data/sampler/sampler.py)
 
 `torchio` includes grid, uniform and label patch samplers. There is also an
 aggregator used for dense predictions.
@@ -154,7 +155,7 @@ output_array = aggregator.output_array
 ```
 
 
-#### [`Queue`](torchio/queue.py)
+#### [`Queue`](torchio/data/queue.py)
 
 A patches `Queue` (or buffer) can be used for randomized patch-based sampling
 during training.
@@ -247,7 +248,7 @@ Reverse the order of elements in an image along the given axes.
 
 #### Preprocessing
 
-##### [Histogram standardization](torchio/transforms/preprocessing/histogram_standardization.py)
+##### [Histogram standardization](torchio/transforms/preprocessing/intensity/histogram_standardization.py)
 
 Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
@@ -256,7 +257,7 @@ adapted from NiftyNet.
 ![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
 
 
-##### [Z-normalization](torchio/transforms/preprocessing/z_normalization.py)
+##### [Z-normalization](torchio/transforms/preprocessing/intensity/z_normalization.py)
 
 This transform first extracts the values with intensity greater than the mean,
 which is an approximation of the foreground voxels.
@@ -266,24 +267,29 @@ foreground standard deviation.
 ![Z-normalization](https://raw.githubusercontent.com/fepegar/torchio/master/images/z_normalization.png)
 
 
-##### [Rescale](torchio/transforms/preprocessing/rescale.py)
+##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
 
 Rescale intensity values in an image to a certain range.
 
 
-##### [Resample](torchio/transforms/preprocessing/resample.py)
+##### [Resample](torchio/transforms/preprocessing/spatial/resample.py)
 
 Resample images to a new voxel spacing using `nibabel`.
 
 
-##### [Pad](torchio/transforms/preprocessing/pad.py)
+##### [Pad](torchio/transforms/preprocessing/spatial/pad.py)
 
 Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
 
 
-##### [Crop](torchio/transforms/preprocessing/crop.py)
+##### [Crop](torchio/transforms/preprocessing/spatial/crop.py)
 
 Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
+
+
+##### [ToCanonical](torchio/transforms/preprocessing/spatial/to_canonical.py)
+
+Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
 
 
 ## [Example](examples/example_times.py)

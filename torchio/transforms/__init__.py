@@ -1,6 +1,5 @@
 from .transform import Transform
 from .interpolation import Interpolation
-from .preprocessing import NormalizationTransform
 
 # Augmentation
 from .augmentation.spatial import RandomFlip
@@ -18,6 +17,7 @@ from .preprocessing import Pad
 from .preprocessing import Crop
 from .preprocessing import Rescale
 from .preprocessing import Resample
+from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization
 from .preprocessing import HistogramEqualize

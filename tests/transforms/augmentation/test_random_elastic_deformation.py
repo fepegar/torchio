@@ -44,7 +44,7 @@ class TestRandomElasticDeformation(unittest.TestCase):
             seed=42,
         )
         keys = ('t1', 't2', 'label')
-        fixtures = 764.2148522171124, 734.5418868396644, 752
+        fixtures = 764.2669872255983, 734.7786045279245, 752
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
             assert transformed[key][DATA].sum() == fixture

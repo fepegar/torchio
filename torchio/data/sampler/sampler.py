@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import IterableDataset
 
 from ...torchio import DATA
-from ...utils import to_tuple, is_image_dict
+from ...utils import to_tuple, is_image_dict, check_consistent_shape
 
 
 class ImageSampler(IterableDataset):
@@ -37,9 +37,7 @@ class ImageSampler(IterableDataset):
         return cropped_sample
 
     def get_random_indices(self, sample, patch_size):
-        """
-        TODO: Make sure that shape is consistent across images in sample
-        """
+        check_consistent_shape(sample)
         first_image_name = list(sample.keys())[0]
         first_image_array = sample[first_image_name][DATA]
         # first_image_array should have shape (1, H, W, D)

@@ -1,7 +1,7 @@
 import torch
-from ...utils import is_image_dict
-from ...torchio import DATA, INTENSITY
-from .. import Transform
+from ....utils import is_image_dict
+from ....torchio import DATA, INTENSITY
+from ... import Transform
 
 
 class NormalizationTransform(Transform):

@@ -53,6 +53,7 @@ def create_dummy_dataset(
         directory=None,
         suffix='.nii.gz',
         force=False,
+        verbose=False,
         ):
     from .data import Image
     output_dir = tempfile.gettempdir() if directory is None else directory
@@ -77,8 +78,12 @@ def create_dummy_dataset(
     else:
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
-        print('Creating dummy dataset...')
-        for i in trange(num_images):
+        if verbose:
+            print('Creating dummy dataset...')
+            iterable = trange(num_images)
+        else:
+            iterable = range(num_images)
+        for i in iterable:
             shape = np.random.randint(*size_range, size=3)
             affine = np.eye(4)
             image = np.random.rand(*shape)

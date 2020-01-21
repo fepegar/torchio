@@ -1,4 +1,4 @@
-from ...torchio import DATA
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 

@@ -8,7 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from ...torchio import DATA
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -38,7 +38,13 @@ class HistogramStandardization(NormalizationTransform):
         self.landmarks_dict = landmarks_dict
 
     def apply_normalization(self, sample, image_name, mask):
-        # TODO: assert that image_name is in landmarks dict
+        if image_name not in self.landmarks_dict:
+            keys = tuple(self.landmarks_dict.keys())
+            message = (
+                f'Image name "{image_name}" should be a key in the'
+                f' landmarks dictionary, whose keys are {keys}'
+            )
+            raise KeyError(message)
         image_dict = sample[image_name]
         landmarks = self.landmarks_dict[image_name]
         image_dict[DATA] = normalize(
