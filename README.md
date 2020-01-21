@@ -67,6 +67,7 @@ the information available on its
         * [Pad](#pad)
         * [Crop](#crop)
         * [ToCanonical](#tocanonical)
+        * [CenterCropOrPad](#centercroporpad)
 
 - [Example](#example)
 - [Related projects](#related-projects)
@@ -290,6 +291,11 @@ Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
 ##### [ToCanonical](torchio/transforms/preprocessing/spatial/to_canonical.py)
 
 Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
+
+
+##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
+
+Crops or pads image center to a target size, modifying the affine accordingly.
 
 
 ## [Example](examples/example_times.py)
