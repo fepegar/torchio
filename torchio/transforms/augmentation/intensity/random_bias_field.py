@@ -1,5 +1,15 @@
 """
-Adapted from NiftyNet
+The bias field is modelled as a linear combination of
+polynomial basis functions, as in
+
+    K. Van Leemput et al., 1999
+    Automated model-based tissue classification of MR images of the brain
+
+
+It was included in NiftyNet by Carole Sudre and used in:
+
+    C. Sudre et al., 2017
+    Longitudinal segmentation of age-related white matter hyperintensities
 """
 
 import numpy as np
