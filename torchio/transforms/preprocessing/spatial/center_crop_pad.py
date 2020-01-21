@@ -11,12 +11,16 @@ class CenterCropOrPad(BoundsTransform):
     def __init__(
             self,
             size,
+            padding_mode=None,
+            padding_fill=None,
             verbose=False,
             ):
         """
         size should be an integer or a tuple of 3 integers
         """
         super().__init__(size, verbose=verbose)
+        self.padding_mode = padding_mode
+        self.padding_fill = padding_fill
 
     def apply_transform(self, sample):
         source_shape = self.get_sample_shape(sample)
@@ -30,8 +34,11 @@ class CenterCropOrPad(BoundsTransform):
 
         padding = np.maximum(diff_shape, 0)
         if padding.any():
+            padding_kwargs = {'fill': self.padding_fill}
+            if self.padding_mode is not None:
+                padding_kwargs['padding_mode'] = self.padding_mode
             padding_params = self.get_six_bounds_parameters(padding)
-            sample = Pad(padding_params)(sample)
+            sample = Pad(padding_params, **padding_kwargs)(sample)
         return sample
 
     @staticmethod
