@@ -64,7 +64,7 @@ History
 * Add Resample transform
 
 
-0.12.0 (15-01-2020)
+0.12.0 (21-01-2020)
 -------------------
 
 * Add ToCanonical transform
