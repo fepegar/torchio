@@ -4,6 +4,4 @@ numpy
 pynrrd
 scipy
 SimpleITK
-torch>=1.2
-torchvision
 tqdm
