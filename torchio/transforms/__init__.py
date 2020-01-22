@@ -19,6 +19,7 @@ from .preprocessing import Rescale
 from .preprocessing import Resample
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
+from .preprocessing import CenterCropOrPad
 from .preprocessing import HistogramStandardization
 from .preprocessing import HistogramEqualize
 from .preprocessing import HistogramRandomChange
