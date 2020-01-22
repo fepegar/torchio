@@ -1,5 +1,5 @@
 Click>=7.0
-nibabel
+nibabel==3.0.0
 numpy
 pynrrd
 scipy
