@@ -4,4 +4,4 @@ numpy
 pynrrd
 scipy
 SimpleITK
-tqdm
+tqdm==4.41.1
