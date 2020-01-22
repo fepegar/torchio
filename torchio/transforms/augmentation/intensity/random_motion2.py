@@ -10,7 +10,7 @@ except ImportError:
 
 from torchio import  INTENSITY
 from .. import RandomTransform
-
+import warnings
 
 def create_rotation_matrix_3d(angles):
     """
@@ -42,7 +42,8 @@ class MotionSimTransform(RandomTransform):
 
     def __init__(self, std_rotation_angle=0, std_translation=10,
                  corrupt_pct=(15, 20), freq_encoding_dim=(0, 1, 2), preserve_center_pct=0.07,
-                 apply_mask=True, nufft=False, proc_scale=-1, num_pieces=8, verbose=False):
+                 apply_mask=True, nufft=True, proc_scale=-1, num_pieces=8,
+                 mvt_param=None, verbose=False):
         """
         :param image_name (str): key in data dictionary
         :param std_rotation_angle (float) : std of rotations
@@ -68,6 +69,7 @@ class MotionSimTransform(RandomTransform):
         self.corrupt_pct_range = corrupt_pct
         self.apply_mask = apply_mask
 
+        self.mvt_param = mvt_param
         if self.proc_scale == -1:
             self._simulate_trajectory = self._piecewise_simulation
             print('using piecewise motion simulation')
@@ -87,7 +89,11 @@ class MotionSimTransform(RandomTransform):
         if (not finufft) and nufft:
             raise ImportError('finufftpy cannot be imported')
 
-        self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
+        if isinstance(self.freq_encoding_choice, int):
+            self.frequency_encoding_dim = self.freq_encoding_choice
+        else:
+            self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
+            print(f'Taking dim {self.frequency_encoding_dim} as frequency encoding')
 
     def apply_transform(self, sample):
         ###############################
@@ -115,6 +121,7 @@ class MotionSimTransform(RandomTransform):
                 corrupted_im = corrupted_im / corrupted_im.size  # normalize
 
             else:
+                warnings.warn('NO rotation will be apply, (only translation) set nufft to true and install the package')
                 corrupted_im = self._ifft_im(translated_im_freq_domain)
 
             # magnitude
@@ -255,17 +262,23 @@ class MotionSimTransform(RandomTransform):
         suddenMagnitude = [4.24424] * 2
         displacement_shift = 2
         """
-        noiseBasePars, swallowFrequency, swallowMagnitude, suddenFrequency, suddenMagnitude = np.random.uniform(0.5,
-                                                                                                                5.0,
-                                                                                                                size=5)
-        displacement_shift = np.random.randint(0, 5, size=1)
+        if self.mvt_param is None:
+            noiseBasePars, swallowFrequency, swallowMagnitude, suddenFrequency, suddenMagnitude = np.random.uniform(0.5,
+                                                                                                                    5.0,
+                                                                                                                    size=5)
+            displacement_shift = np.random.randint(0, 5, size=1)
+
+        else:
+            noiseBasePars, swallowFrequency, swallowMagnitude, suddenFrequency, suddenMagnitude, displacement_shift = self.mvt_param
+
         swallowMagnitude = [swallowMagnitude]*2
         suddenMagnitude = [suddenMagnitude]*2
-        nT = self.im_shape[self.frequency_encoding_dim]
+        nT = 300 #self.im_shape[self.frequency_encoding_dim]
+
         maxRot, maxDisp = self.std_rotation_angle, self.std_translation
         fitpars = np.zeros((6, nT))
 
-        if noiseBasePars > 0:
+        if False : #noiseBasePars > 0:
             fitpars[0, :] = maxDisp * (self.perlinNoise1D(nT, noiseBasePars) - 0.5)
             fitpars[1, :] = maxDisp * (self.perlinNoise1D(nT, noiseBasePars) - 0.5)
             fitpars[2, :] = maxDisp * (self.perlinNoise1D(nT, noiseBasePars) - 0.5)
@@ -312,22 +325,36 @@ class MotionSimTransform(RandomTransform):
             'RMS_rot': np.sqrt(np.mean(rotations ** 2))
         }
         """
-        print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
+        #print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
+        import matplotlib.pyplot as plt
+        plt.plot(fitpars.T)
 
         to_reshape = [1, 1, 1]
-        phase_dime = self.im_shape[self.frequency_encoding_dim]
+        phase_encoding_shape = [self.im_shape[i] for i in self.phase_encoding_dims]
+        nPhaseSlice = np.prod(phase_encoding_shape)#self.im_shape[tuple(self.phase_encoding_dims)])
 
-        x1 = np.linspace(0,1,phase_dime)
-        x2 = np.linspace(0,1,np.prod(self.im_shape))
+        x1 = np.linspace(0,1,nT)
+        x2 = np.linspace(0,1,nPhaseSlice)
         fitpars_interp=[]
         for ind in range(fitpars.shape[0]):
             y = fitpars[ind, :]
             yinterp = np.interp(x2,x1,y)
             fitpars_interp.append(yinterp)
 
+        #np.save('/tmp/rp_mot.npy',fitpars)
         fitpars = np.array(fitpars_interp)
 
+        fitpars = fitpars.reshape([6] + phase_encoding_shape)
+        #np.save('/tmp/rp_mot_interp.npy',fitpars )
+
+        fitpars = np.expand_dims(fitpars, self.frequency_encoding_dim + 1)
+
+        fitpars = np.tile(fitpars, reps=([self.im_shape[ self.frequency_encoding_dim] if i == self.frequency_encoding_dim + 1 else 1
+                                           for i in range(4)]))  # tile in freq encoding dimension
+
+
         rand_translations, rand_rotations = fitpars[:3].reshape([3] + self.im_shape), fitpars[3:].reshape([3] + self.im_shape)
+
 
         #to_reshape[self.frequency_encoding_dim] = -1
         #rand_translations, rand_rotations = fitpars[:3].reshape([3] + to_reshape), fitpars[3:].reshape([3] + to_reshape)
@@ -335,7 +362,8 @@ class MotionSimTransform(RandomTransform):
         #ones_multiplicator = np.ones([3] + self.im_shape)
         #rand_translations, rand_rotations = rand_translations * ones_multiplicator, rand_rotations * ones_multiplicator
 
-        print(f' in _simul_motionfitpar shape rand_rotation {rand_rotations.shape}')
+        #print(f' in _simul_motionfitpar shape rand_rotation {rand_rotations.shape}')
+        #np.save('/tmp/rp_mot_interp_all.npy', np.vstack([ rand_translations, rand_rotations]) )
 
         return rand_translations, rand_rotations
 
@@ -409,7 +437,8 @@ class MotionSimTransform(RandomTransform):
         rand_rotations_vox = rand_rotations_vox.reshape(3, -1)
         self.rotations = rand_rotations_vox * (math.pi / 180.)  # convert to radians
 
-        np.save('/tmp/rp_mot.npy',np.vstack([ self.translations, self.rotations]) )
+        #np.save('/tmp/rp_mot_interp_centeroff.npy',np.vstack([ self.translations, self.rotations]) )
+
 
     def gen_test_trajectory(self, translation, rotation):
         """
@@ -464,15 +493,18 @@ class MotionSimTransform(RandomTransform):
 
         grid_coordinates = np.array([i1.T.flatten(), i2.T.flatten(), i3.T.flatten()])
 
-        print('rotation size is {}'.format( self.rotations.shape))
+        #print('rotation size is {}'.format( self.rotations.shape))
 
         rotations = self.rotations.reshape([3] + self.im_shape)
         ix = (len(self.im_shape) + 1) * [slice(None)]
         ix[self.frequency_encoding_dim + 1] = 0  # dont need to rotate along freq encoding
 
         rotations = rotations[tuple(ix)].reshape(3, -1)
+
         rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rotations).transpose([-1, 0, 1])
         rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3])
+        #rotation_matrices = rotation_matrices.reshape(self.im_shape + [3, 3])
+
         rotation_matrices = np.expand_dims(rotation_matrices, self.frequency_encoding_dim)
 
         rotation_matrices = np.tile(rotation_matrices,
@@ -487,7 +519,7 @@ class MotionSimTransform(RandomTransform):
         grid_coordinates_tiled = grid_coordinates_tiled.reshape([3, -1], order='F').T
         rotation_matrices = rotation_matrices.reshape([-1, 3])
 
-        print('rotation matrices size is {}'.format(rotation_matrices.shape))
+        #print('rotation matrices size is {}'.format(rotation_matrices.shape))
 
         new_grid_coords = (rotation_matrices * grid_coordinates_tiled).sum(axis=1)
 
