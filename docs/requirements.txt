@@ -1,7 +1,7 @@
 Click>=7.0
 nibabel
 numpy
-pynrrd
+pynrrd==0.4.0
 scipy
 SimpleITK
 tqdm
