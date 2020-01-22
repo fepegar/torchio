@@ -3,7 +3,6 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
-[![PyUp Status](https://pyup.io/repos/github/fepegar/torchio/shield.svg)](https://pyup.io/repos/github/fepegar/torchio/)
 
 
 `torchio` is a Python package containing a set of tools to efficiently
