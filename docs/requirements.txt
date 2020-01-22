@@ -3,5 +3,5 @@ nibabel
 numpy
 pynrrd
 scipy
-SimpleITK
+SimpleITK==1.2.4
 tqdm
