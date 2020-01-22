@@ -1,6 +1,6 @@
 Click>=7.0
 nibabel
-numpy
+numpy==1.18.1
 pynrrd
 scipy
 SimpleITK
