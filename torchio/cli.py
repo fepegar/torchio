@@ -48,7 +48,7 @@ def apply_transform(
             value = guess_type(value_string)
             params_dict[key] = value
     debug_kwargs = dict(verbose=verbose)
-    if isinstance(transform_class, RandomTransform):
+    if issubclass(transform_class, RandomTransform):
         debug_kwargs['seed'] = seed
     params_dict.update(debug_kwargs)
     transform = transform_class(**params_dict)
