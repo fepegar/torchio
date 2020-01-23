@@ -22,10 +22,6 @@ requirements = [
     'tqdm',
 ]
 
-setup_requirements = [ ]
-
-test_requirements = [ ]
-
 setup(
     author="Fernando Perez-Garcia",
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
@@ -57,9 +53,9 @@ setup(
     keywords='torchio',
     name='torchio',
     packages=find_packages(include=['torchio', 'torchio.*']),
-    setup_requires=setup_requirements,
+    setup_requires=[],
     test_suite='tests',
-    tests_require=test_requirements,
+    tests_require=[],
     url='https://github.com/fepegar/torchio',
     version='0.12.0',
     zip_safe=False,
