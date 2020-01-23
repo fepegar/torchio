@@ -37,3 +37,35 @@ History
 ------------------
 
 * Make transforms use PyTorch tensors consistently
+
+
+0.8.0 (11-01-2020)
+------------------
+
+* Add Image class
+
+
+0.9.0 (14-01-2020)
+------------------
+
+* Add CLI tool to transform an image from file
+
+
+0.10.0 (15-01-2020)
+-------------------
+
+* Add Pad transform
+* Add Crop transform
+
+
+0.11.0 (15-01-2020)
+-------------------
+
+* Add Resample transform
+
+
+0.12.0 (21-01-2020)
+-------------------
+
+* Add ToCanonical transform
+* Add CenterCropOrPad transform
