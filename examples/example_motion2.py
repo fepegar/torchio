@@ -8,19 +8,23 @@ from torchio.transforms.augmentation.intensity.random_motion2 import   MotionSim
 from copy import deepcopy
 from nibabel.viewers import OrthoSlicer3D as ov
 
+np.random.seed(12)
+
 out_dir = '/data/romain/data_exemple/augment/'
 suj = [[
     Image('T1','/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz',INTENSITY),
     Image('mask','/data/romain/HCPdata/suj_100307/brain_mT1w_1mm.nii',LABEL)
      ]]
-t = MotionSimTransform(std_rotation_angle=3, std_translation=2, nufft=True, proc_scale=0, verbose=True, freq_encoding_dim=(0,))
+t = MotionSimTransform(std_rotation_angle=3, std_translation=2, nufft=True, proc_scale=0, verbose=True, freq_encoding_dim=(0,),
+                       mvt_param=[0, 0, 0, 1, 10, 0])
+
 transforms = Compose([t])
 
 dataset = ImagesDataset(suj,transform=transforms)
 
 
 sample = dataset[0]
-dataset.save_sample(sample, dict(T1='/tmp/toto.nii'))
+dataset.save_sample(sample, dict(T1='/tmp/toto_no_center.nii'))
 
 
 
