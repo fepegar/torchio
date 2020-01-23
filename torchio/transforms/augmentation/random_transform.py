@@ -63,4 +63,6 @@ class RandomTransform(Transform):
 
     def check_seed(self):
         if self.seed is not None:
+            if self.verbose:
+                print('Setting torch seed to', self.seed)
             torch.manual_seed(self.seed)
