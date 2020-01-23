@@ -40,7 +40,7 @@ def create_rotation_matrix_3d(angles):
     return mat
 
 
-class MotionSimTransformRetroMocoBox(RandomTransform):
+class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=2,
@@ -60,7 +60,7 @@ class MotionSimTransformRetroMocoBox(RandomTransform):
        raises ImportError if nufft is true but finufft cannot be imported
         """
 
-        super(MotionSimTransformRetroMocoBox, self).__init__(verbose=verbose)
+        super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose)
         self.maxDisp = maxDisp
         self.maxRot = maxRot
         self.tr = tr
