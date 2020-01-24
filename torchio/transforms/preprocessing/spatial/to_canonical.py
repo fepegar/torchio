@@ -26,7 +26,7 @@ class ToCanonical(Transform):
             reoriented = nib.as_closest_canonical(nii)
             array = reoriented.get_fdata(dtype=np.float32)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            array = array.copy()
-            image_dict[DATA][0] = torch.from_numpy(array)
+            array = array.copy()[np.newaxis, ...]
+            image_dict[DATA] = torch.from_numpy(array)
             image_dict[AFFINE] = reoriented.affine
         return sample
