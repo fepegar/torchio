@@ -29,7 +29,7 @@ class TestTransforms(unittest.TestCase):
     def get_sample(self):
         shape = 1, 10, 20, 30
         np.random.seed(42)
-        affine = np.diag((1, -2, 3, 1))
+        affine = np.diag((1, -2, 3, 1))  # TODO: other orientations
         affine[:3, 3] = 40, 50, 60
         sample = {
             't1': dict(

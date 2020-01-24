@@ -4,10 +4,7 @@ from abc import ABC, abstractmethod
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ..utils import is_image_dict
-
-
-FLIP_XY = np.diag((-1, -1, 1))
+from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 
 
 class Transform(ABC):
@@ -48,28 +45,8 @@ class Transform(ABC):
 
     @staticmethod
     def nib_to_sitk(data, affine):
-        if isinstance(data, torch.Tensor):
-            data = data.numpy()
-        origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
-        RZS = affine[:3, :3]
-        spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
-        R = RZS / spacing
-        direction = np.dot(FLIP_XY, R).flatten()
-        image = sitk.GetImageFromArray(data.transpose())
-        image.SetOrigin(origin)
-        image.SetSpacing(spacing)
-        image.SetDirection(direction)
-        return image
+        return nib_to_sitk(data, affine)
 
     @staticmethod
     def sitk_to_nib(image):
-        data = sitk.GetArrayFromImage(image).transpose()
-        spacing = np.array(image.GetSpacing())
-        R = np.array(image.GetDirection()).reshape(3, 3)
-        R = np.dot(FLIP_XY, R)
-        RZS = R * spacing
-        translation = np.dot(FLIP_XY, image.GetOrigin())
-        affine = np.eye(4)
-        affine[:3, :3] = RZS
-        affine[:3, 3] = translation
-        return data, affine
+        return sitk_to_nib(image)

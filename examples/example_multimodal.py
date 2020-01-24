@@ -5,8 +5,8 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 import torchio
-from torchio import Image, ImagesDataset, Queue
-from torchio.sampler import ImageSampler
+from torchio import Image, Subject, ImagesDataset, Queue
+from torchio.data import ImageSampler
 from torchio.transforms import (
     ZNormalization,
     RandomNoise,
@@ -35,20 +35,20 @@ transforms = (
 transform = Compose(transforms)
 
 # Populate a list with images
-one_subject_images = [
+one_subject = Subject(
     Image('T1', '../BRATS2018_crop_renamed/LGG75_T1.nii.gz', torchio.INTENSITY),
     Image('T2', '../BRATS2018_crop_renamed/LGG75_T2.nii.gz', torchio.INTENSITY),
     Image('label', '../BRATS2018_crop_renamed/LGG75_Label.nii.gz', torchio.LABEL),
-]
+)
 
-another_subject_images = [
+another_subject = Subject(
     Image('T1', '../BRATS2018_crop_renamed/LGG74_T1.nii.gz', torchio.INTENSITY),
     Image('label', '../BRATS2018_crop_renamed/LGG74_Label.nii.gz', torchio.LABEL),
-]
+)
 
 subjects = [
-    one_subject_images,
-    another_subject_images,
+    one_subject,
+    another_subject,
 ]
 
 subjects_dataset = ImagesDataset(subjects, transform=transform)
