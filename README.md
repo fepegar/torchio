@@ -97,24 +97,26 @@ It can be used with a
 [`torch.utils.DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
 for efficient reading and data augmentation.
 
-It receives a list of subjects, where each subject is composed of a list of
-[`torchio.Image`](torchio/dataset/images.py) instances.
+It receives a list of subjects, where each subject is an instance of
+[`torchio.Subject`](torchio/data/images.py) containing
+[`torchio.Image`](torchio/data/images.py) instances.
 The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 
 ```python
 import torchio
+from torchio import ImagesDataset, Image, Subject
 
-subject_a = [
+subject_a = Subject([
     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
-]
-subject_b = [
+])
+subject_b = Subject(
     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
     Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
-]
+)
 subjects_list = [subject_a, subject_b]
-subjects_dataset = torchio.ImagesDataset(subjects_list)
+subjects_dataset = ImagesDataset(subjects_list)
 subject_sample = subjects_dataset[0]
 ```
 
@@ -351,12 +353,12 @@ subjects_list = create_dummy_dataset(
     force=False,
 )
 
-# Each element of subjects_list is a dictionary:
-# subject_images = [
+# Each element of subjects_list is an instance of torchio.Subject:
+# subject = Subject(
 #     torchio.Image('one_image', path_to_one_image, torchio.INTENSITY),
 #     torchio.Image('another_image', path_to_another_image, torchio.INTENSITY),
 #     torchio.Image('a_label', path_to_a_label, torchio.LABEL),
-# ]
+# )
 
 # Define transforms for data normalization and augmentation
 transforms = (

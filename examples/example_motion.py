@@ -1,11 +1,11 @@
 from pprint import pprint
-from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
+from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 
-subject_images = [
+subject = Subject(
     Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
     Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
-]
-subjects_list = [subject_images]
+)
+subjects_list = [subject]
 
 dataset = ImagesDataset(subjects_list)
 sample = dataset[0]

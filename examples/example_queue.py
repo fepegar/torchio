@@ -46,12 +46,12 @@ if __name__ == "__main__":
         force=False,
     )
 
-    # Each element of subjects_list is a dictionary:
-    # subject_images = [
+    # Each element of subjects_list is an instance of torchio.Subject:
+    # subject = Subject(
     #     torchio.Image('one_image', path_to_one_image, torchio.INTENSITY),
     #     torchio.Image('another_image', path_to_another_image, torchio.INTENSITY),
     #     torchio.Image('a_label', path_to_a_label, torchio.LABEL),
-    # ]
+    # )
 
     # Define transforms for data normalization and augmentation
     transforms = (

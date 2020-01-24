@@ -65,31 +65,8 @@ class ImagesDataset(Dataset):
             raise ValueError('Subjects list is empty')
 
         # Check each element
-        for subject_images in subjects_list:
-            # Check that each element is a list
-            if not isinstance(subject_images, Sequence):
-                message = (
-                    'Subject images list must be a sequence'
-                    f', not {type(subject_images)}'
-                )
-                raise TypeError(message)
-
-            # Check that there are only instances of Image
-            # and all images have different names
-            names = []
-            for image in subject_images:
-                if not isinstance(image, Image):
-                    message = (
-                        'Subject list elements must be instances of'
-                        f' torchio.Image, not {type(image)}'
-                    )
-                    raise TypeError(message)
-                if image.name in names:
-                    message = (
-                        f'Two images with name "{image.name}" found in list'
-                    )
-                    raise KeyError(message)
-                names.append(image.name)
+        for subject_list in subjects_list:
+            subject = Subject(*subject_list)
 
     @classmethod
     def save_sample(cls, sample, output_paths_dict):
@@ -97,6 +74,45 @@ class ImagesDataset(Dataset):
             tensor = sample[key][DATA][0]  # remove channels dim
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
+
+
+class Subject(list):
+    def __init__(self, *images, name=None):
+        self.parse_images(images)
+        super().__init__(images)
+        self.name = name
+
+    @staticmethod
+    def parse_images(images):
+        # Check that each element is a list
+        if not isinstance(images, Sequence):
+            message = (
+                'Subject "images" parameter must be a sequence'
+                f', not {type(images)}'
+            )
+            raise TypeError(message)
+
+        # Check that it's not empty
+        if not images:
+            raise ValueError('Images list is empty')
+
+        # Check that there are only instances of Image
+        # and all images have different names
+        names = []
+        for image in images:
+            if not isinstance(image, Image):
+                message = (
+                    'Subject list elements must be instances of'
+                    f' torchio.Image, not {type(image)}'
+                )
+                raise TypeError(message)
+            if image.name in names:
+                message = (
+                    f'More than one image with name "{image.name}"'
+                    ' found in images list'
+                )
+                raise KeyError(message)
+            names.append(image.name)
 
 
 class Image:

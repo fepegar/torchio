@@ -7,4 +7,4 @@ __version__ = '0.12.2'
 from . import utils
 from .torchio import *
 from .transforms import *
-from .data import io, sampler, inference, ImagesDataset, Image, Queue
+from .data import io, sampler, inference, ImagesDataset, Image, Queue, Subject

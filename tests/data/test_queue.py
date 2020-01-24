@@ -30,7 +30,7 @@ class TestQueue(unittest.TestCase):
         subjects_dataset = ImagesDataset(self.subjects_list)
         queue_dataset = Queue(
             subjects_dataset,
-            max_length=5,
+            max_length=6,
             samples_per_volume=2,
             patch_size=10,
             sampler_class=ImageSampler,
