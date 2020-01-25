@@ -4,7 +4,8 @@
 [![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
 [![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fepegar/torchio/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
+[![Code Quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
+
 
 `torchio` is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
