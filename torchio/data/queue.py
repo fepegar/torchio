@@ -89,8 +89,11 @@ class Queue(Dataset):
 
         self.print(f'Filling queue from {num_subjects_for_queue} subjects...')
         progress = trange(num_subjects_for_queue, leave=False)
-        for _ in progress:
-            progress.set_description('Filling queue...')
+        if self.verbose:
+            iterable = trange(num_subjects_for_queue, leave=False)
+        else:
+            iterable = range(num_subjects_for_queue)
+        for _ in iterable:
             subject_sample = self.get_next_subject_sample()
             sampler = self.sampler_class(subject_sample, self.patch_size)
             samples = [s for s in islice(sampler, self.samples_per_volume)]
