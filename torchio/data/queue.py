@@ -88,7 +88,6 @@ class Queue(Dataset):
             self.num_subjects, max_num_subjects_for_queue)
 
         self.print(f'Filling queue from {num_subjects_for_queue} subjects...')
-        progress = trange(num_subjects_for_queue, leave=False)
         if self.verbose:
             iterable = trange(num_subjects_for_queue, leave=False)
         else:
