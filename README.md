@@ -147,11 +147,14 @@ aggregator = torchio.inference.GridAggregator(
     patch_overlap=patch_overlap,
 )
 
+# Some torch.nn.Module
+model.to(device)
+model.eval()
 with torch.no_grad():
     for patches_batch in patch_loader:
-        input_tensor = patches_batch['image']
+        input_tensor = patches_batch['image'].to(device)
         locations = patches_batch['location']
-        logits = model(input_tensor)  # some torch.nn.Module
+        logits = model(input_tensor)
         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
         outputs = labels
         aggregator.add_batch(outputs, locations)
