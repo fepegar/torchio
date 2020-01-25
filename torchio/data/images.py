@@ -27,7 +27,7 @@ class ImagesDataset(Dataset):
         """
         self.parse_subjects_list(subjects_list)
         self.subjects_list = subjects_list
-        self.transform = transform
+        self._transform = transform
         self.check_nans = check_nans
         self.verbose = verbose
 
@@ -49,9 +49,12 @@ class ImagesDataset(Dataset):
             sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
-        if self.transform is not None:
-            sample = self.transform(sample)
+        if self._transform is not None:
+            sample = self._transform(sample)
         return sample
+
+    def set_transform(self, transform):
+        self._transform = transform
 
     @staticmethod
     def parse_subjects_list(subjects_list):
