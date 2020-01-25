@@ -169,14 +169,14 @@ def check_consistent_shape(sample):
 
 
 def nib_to_sitk(data, affine):
-    if isinstance(data, torch.Tensor):
-        data = data.numpy()
+    array = data.numpy() if isinstance(data, torch.Tensor) else data
+    affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
     origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
     RZS = affine[:3, :3]
     spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
     R = RZS / spacing
     direction = np.dot(FLIP_XY, R).flatten()
-    image = sitk.GetImageFromArray(data.transpose())
+    image = sitk.GetImageFromArray(array.transpose())
     image.SetOrigin(origin)
     image.SetSpacing(spacing)
     image.SetDirection(direction)
