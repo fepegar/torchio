@@ -17,13 +17,7 @@ class ImagesDataset(Dataset):
             verbose=False,
             ):
         """
-        Each element of subjects_list is a dictionary:
-        subject_list = [
-            Image('one_image', path_to_one_image, torchio.INTENSITY),
-            Image('another_image', path_to_another_image, torchio.INTENSITY),
-            Image('a_label', path_to_a_label, torchio.LABEL),
-        }
-        See examples/example_multimodal.py for -obviously- an example.
+        Each element of subjects_list should be an instance of torchio.Subject
         """
         self.parse_subjects_list(subjects_list)
         self.subjects_list = subjects_list

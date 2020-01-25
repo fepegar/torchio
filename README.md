@@ -173,7 +173,7 @@ import torchio
 
 patches_queue = torchio.Queue(
     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
-    queue_length=300,
+    max_length=300,
     samples_per_volume=10,
     patch_size=96,
     sampler_class=torchio.sampler.ImageSampler,
