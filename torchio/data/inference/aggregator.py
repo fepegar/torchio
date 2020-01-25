@@ -1,4 +1,5 @@
 import numpy as np
+from torchio.utils import to_tuple
 
 
 class GridAggregator:
@@ -12,7 +13,7 @@ class GridAggregator:
             fill_value=0,
             dtype=np.uint16,
         )
-        self.patch_overlap = patch_overlap
+        self.patch_overlap = to_tuple(patch_overlap)
 
 
     @staticmethod

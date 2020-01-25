@@ -1,6 +1,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 from torchio import IMAGE, LOCATION
+from torchio.utils import to_tuple
 
 
 class GridSampler(Dataset):
@@ -10,6 +11,8 @@ class GridSampler(Dataset):
     """
     def __init__(self, data, patch_size, patch_overlap):
         self.array = data
+        patch_size = to_tuple(to_tuple)
+        patch_overlap = to_tuple(patch_overlap)
         self.locations = self.grid_spatial_coordinates(
             self.array,
             patch_size,
