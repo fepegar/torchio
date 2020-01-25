@@ -15,7 +15,6 @@ class GridAggregator:
         )
         self.patch_overlap = to_tuple(patch_overlap)
 
-
     @staticmethod
     def crop_batch(windows, location, border):
         location = location.astype(np.int)

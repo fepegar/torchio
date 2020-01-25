@@ -11,7 +11,7 @@ class GridSampler(Dataset):
     """
     def __init__(self, data, patch_size, patch_overlap):
         self.array = data
-        patch_size = to_tuple(to_tuple)
+        patch_size = to_tuple(patch_size)
         patch_overlap = to_tuple(patch_overlap)
         self.locations = self.grid_spatial_coordinates(
             self.array,
