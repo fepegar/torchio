@@ -168,13 +168,18 @@ def check_consistent_shape(sample):
         raise ValueError(message)
 
 
+def get_rotation_and_spacing_from_affine(affine):
+    RZS = affine[:3, :3]
+    spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
+    R = RZS / spacing
+    return R, spacing
+
+
 def nib_to_sitk(data, affine):
     array = data.numpy() if isinstance(data, torch.Tensor) else data
     affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
     origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
-    RZS = affine[:3, :3]
-    spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
-    R = RZS / spacing
+    R, spacing = get_rotation_and_spacing_from_affine(affine)
     direction = np.dot(FLIP_XY, R).flatten()
     image = sitk.GetImageFromArray(array.transpose())
     image.SetOrigin(origin)
