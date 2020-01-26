@@ -1,6 +1,7 @@
 # TorchIO
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
+[![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
 [![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
 [![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
@@ -41,6 +42,15 @@ the information available on its
   url          = {https://doi.org/10.5281/zenodo.3598622}
 }
 ```
+
+
+## Interactive notebook
+
+The best way to understand and try the library is the
+[interactive Google Colab notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i).
+It includes many examples and visualization of most of the classes and even
+training of a 3D U-Net for brain segmentation of T1-weighted MRI with whole
+images and patch-based sampling.
 
 
 ## Index
