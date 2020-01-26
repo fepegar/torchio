@@ -10,7 +10,7 @@ read, sample and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
 including intensity and spatial transforms
 for data augmentation and preprocessing. Transforms include typical computer vision operations
-such as random affine transformations and also domain specific ones such as
+such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
@@ -24,7 +24,14 @@ If you like this repository, please click on Star!
 
 If you used this package for your research, please cite this repository using
 the information available on its
-[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
+[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this text:
+
+> Pérez-García, Fernando.
+(2020, January 15).
+fepegar/torchio: TorchIO: Tools for loading, augmenting and writing 3D medical images on PyTorch. Zenodo.
+http://doi.org/10.5281/zenodo.3598622
+
+BibTeX entry:
 
 ```bibtex
 @software{perez_garcia_fernando_2020_3598622,
