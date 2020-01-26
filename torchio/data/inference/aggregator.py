@@ -1,4 +1,5 @@
 import numpy as np
+from torchio.utils import to_tuple
 
 
 class GridAggregator:
@@ -6,13 +7,13 @@ class GridAggregator:
     Adapted from NiftyNet.
     See https://niftynet.readthedocs.io/en/dev/window_sizes.html
     """
-    def __init__(self, data, window_border):
-        self.window_border = window_border
+    def __init__(self, data, patch_overlap):
         self.output_array = np.full(
             data.shape,
             fill_value=0,
             dtype=np.uint16,
         )
+        self.patch_overlap = to_tuple(patch_overlap)
 
     @staticmethod
     def crop_batch(windows, location, border):
@@ -43,13 +44,13 @@ class GridAggregator:
         init_ones = np.ones_like(windows)
         windows, _ = self.crop_batch(
             windows, location_init,
-            self.window_border,
+            self.patch_overlap,
         )
         location_init = np.copy(locations)
         _, locations = self.crop_batch(
             init_ones,
             location_init,
-            self.window_border,
+            self.patch_overlap,
         )
         for window, location in zip(windows, locations):
             window = window[0]

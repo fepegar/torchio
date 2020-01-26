@@ -78,7 +78,7 @@ class TestImagesDataset(unittest.TestCase):
             self.iterate_dataset([0])
 
     def test_wrong_subject_type_dict(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             self.iterate_dataset([{}])
 
     def test_image_not_found(self):

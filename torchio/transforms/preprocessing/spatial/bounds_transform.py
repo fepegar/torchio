@@ -35,7 +35,7 @@ class BoundsTransform(Transform):
         elif bounds_parameters_length == 1:
             return 6 * bounds_parameters
         elif bounds_parameters_length == 3:
-            return tuple(np.repeat(bounds_parameters, 2))
+            return tuple(np.repeat(bounds_parameters, 2).tolist())
         message = (
             'Bounds parameter must be an integer or a tuple of'
             f' 3 or 6 integers, not {bounds_parameters}'

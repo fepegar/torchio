@@ -17,17 +17,11 @@ class ImagesDataset(Dataset):
             verbose=False,
             ):
         """
-        Each element of subjects_list is a dictionary:
-        subject_list = [
-            Image('one_image', path_to_one_image, torchio.INTENSITY),
-            Image('another_image', path_to_another_image, torchio.INTENSITY),
-            Image('a_label', path_to_a_label, torchio.LABEL),
-        }
-        See examples/example_multimodal.py for -obviously- an example.
+        Each element of subjects_list should be an instance of torchio.Subject
         """
         self.parse_subjects_list(subjects_list)
         self.subjects_list = subjects_list
-        self.transform = transform
+        self._transform = transform
         self.check_nans = check_nans
         self.verbose = verbose
 
@@ -49,9 +43,12 @@ class ImagesDataset(Dataset):
             sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
-        if self.transform is not None:
-            sample = self.transform(sample)
+        if self._transform is not None:
+            sample = self._transform(sample)
         return sample
+
+    def set_transform(self, transform):
+        self._transform = transform
 
     @staticmethod
     def parse_subjects_list(subjects_list):
@@ -65,31 +62,8 @@ class ImagesDataset(Dataset):
             raise ValueError('Subjects list is empty')
 
         # Check each element
-        for subject_images in subjects_list:
-            # Check that each element is a list
-            if not isinstance(subject_images, Sequence):
-                message = (
-                    'Subject images list must be a sequence'
-                    f', not {type(subject_images)}'
-                )
-                raise TypeError(message)
-
-            # Check that there are only instances of Image
-            # and all images have different names
-            names = []
-            for image in subject_images:
-                if not isinstance(image, Image):
-                    message = (
-                        'Subject list elements must be instances of'
-                        f' torchio.Image, not {type(image)}'
-                    )
-                    raise TypeError(message)
-                if image.name in names:
-                    message = (
-                        f'Two images with name "{image.name}" found in list'
-                    )
-                    raise KeyError(message)
-                names.append(image.name)
+        for subject_list in subjects_list:
+            subject = Subject(*subject_list)
 
     @classmethod
     def save_sample(cls, sample, output_paths_dict):
@@ -97,6 +71,45 @@ class ImagesDataset(Dataset):
             tensor = sample[key][DATA][0]  # remove channels dim
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
+
+
+class Subject(list):
+    def __init__(self, *images, name=None):
+        self.parse_images(images)
+        super().__init__(images)
+        self.name = name
+
+    @staticmethod
+    def parse_images(images):
+        # Check that each element is a list
+        if not isinstance(images, Sequence):
+            message = (
+                'Subject "images" parameter must be a sequence'
+                f', not {type(images)}'
+            )
+            raise TypeError(message)
+
+        # Check that it's not empty
+        if not images:
+            raise ValueError('Images list is empty')
+
+        # Check that there are only instances of Image
+        # and all images have different names
+        names = []
+        for image in images:
+            if not isinstance(image, Image):
+                message = (
+                    'Subject list elements must be instances of'
+                    f' torchio.Image, not {type(image)}'
+                )
+                raise TypeError(message)
+            if image.name in names:
+                message = (
+                    f'More than one image with name "{image.name}"'
+                    ' found in images list'
+                )
+                raise KeyError(message)
+            names.append(image.name)
 
 
 class Image:
