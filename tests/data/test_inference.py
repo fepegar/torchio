@@ -1,5 +1,6 @@
 import unittest
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchio import IMAGE, LOCATION
@@ -9,9 +10,7 @@ from torchio.data.inference import GridSampler, GridAggregator
 class TestInference(unittest.TestCase):
     """Tests for `inference` module."""
     def test_inference(self):
-        def model(arg):
-            """Mock PyTorch model"""
-            return arg
+        model = nn.Conv3d(1, 1, 3)
         patch_size = 10, 15, 27
         patch_overlap = 4, 5, 8
         batch_size = 6

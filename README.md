@@ -1,8 +1,11 @@
 # TorchIO
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
-[![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
+[![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
+[![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
+[![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
+[![Code Quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
 
 
 `torchio` is a Python package containing a set of tools to efficiently
@@ -10,7 +13,7 @@ read, sample and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
 including intensity and spatial transforms
 for data augmentation and preprocessing. Transforms include typical computer vision operations
-such as random affine transformations and also domain specific ones such as
+such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
@@ -24,7 +27,14 @@ If you like this repository, please click on Star!
 
 If you used this package for your research, please cite this repository using
 the information available on its
-[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this BibTeX:
+[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this text:
+
+> Pérez-García, Fernando.
+(2020, January 15).
+fepegar/torchio: TorchIO: Tools for loading, augmenting and writing 3D medical images on PyTorch. Zenodo.
+http://doi.org/10.5281/zenodo.3598622
+
+BibTeX entry:
 
 ```bibtex
 @software{perez_garcia_fernando_2020_3598622,
@@ -39,6 +49,15 @@ the information available on its
   url          = {https://doi.org/10.5281/zenodo.3598622}
 }
 ```
+
+
+## Interactive notebook
+
+The best way to understand and try the library is the
+[interactive Google Colab notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i).
+It includes many examples and visualization of most of the classes and even
+training of a 3D U-Net for brain segmentation of T1-weighted MRI with whole
+images and patch-based sampling.
 
 
 ## Index
@@ -145,11 +164,14 @@ aggregator = torchio.inference.GridAggregator(
     patch_overlap=patch_overlap,
 )
 
+# Some torch.nn.Module
+model.to(device)
+model.eval()
 with torch.no_grad():
     for patches_batch in patch_loader:
-        input_tensor = patches_batch['image']
+        input_tensor = patches_batch['image'].to(device)
         locations = patches_batch['location']
-        logits = model(input_tensor)  # some torch.nn.Module
+        logits = model(input_tensor)
         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
         outputs = labels
         aggregator.add_batch(outputs, locations)
@@ -171,7 +193,7 @@ import torchio
 
 patches_queue = torchio.Queue(
     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
-    queue_length=300,
+    max_length=300,
     samples_per_volume=10,
     patch_size=96,
     sampler_class=torchio.sampler.ImageSampler,
