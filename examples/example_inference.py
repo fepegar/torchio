@@ -1,17 +1,17 @@
+"""
+Example of segmenting a big image using patch-based dense inference.
+"""
+
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchio import IMAGE, LOCATION
 from torchio.data.inference import GridSampler, GridAggregator
 
 
-def model(arg):
-    """Mock PyTorch model"""
-    return arg
-
-
-patch_size = 128, 128, 128
-patch_overlap = 4, 4, 4
+patch_size = 128, 128, 128  # or just 128
+patch_overlap = 4, 4, 4  # or just 4
 batch_size = 6
 CHANNELS_DIMENSION = 1
 
@@ -24,11 +24,13 @@ grid_sampler = GridSampler(input_array, patch_size, patch_overlap)
 patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
 aggregator = GridAggregator(input_array, patch_overlap)
 
+model = nn.Module()  # some Pytorch model
+
 with torch.no_grad():
     for patches_batch in tqdm(patch_loader):
         input_tensor = patches_batch[IMAGE]
         locations = patches_batch[LOCATION]
-        logits = model(input_tensor)  # some model
+        logits = model(input_tensor)
         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
         outputs = labels
         aggregator.add_batch(outputs, locations)
