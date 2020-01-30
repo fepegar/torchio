@@ -29,7 +29,7 @@ def read_image(path):
 
 
 def _read_nifti(path):
-    nii = nib.load(str(path))
+    nii = nib.load(str(path), mmap=False)
     ndims = len(nii.shape)
     assert ndims == 3
     data = nii.get_fdata(dtype=np.float32)
