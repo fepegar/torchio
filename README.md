@@ -272,6 +272,8 @@ Reverse the order of elements in an image along the given axes.
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
 
+Random affine transformation of the image keeping center invariant.
+
 
 #### Preprocessing
 
