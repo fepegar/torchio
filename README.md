@@ -76,7 +76,7 @@ BibTeX entry:
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Gaussian noise](#gaussian-noise)
       * [Spatial](#spatial)
-        - [B-spline dense deformation](#b-spline-dense-deformation)
+        - [B-spline dense elastic deformation](#b-spline-dense-elastic-deformation)
         - [Flip](#flip)
         - [Affine transform](#affine-transform)
     - [Preprocessing](#preprocessing)
