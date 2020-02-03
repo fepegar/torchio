@@ -1,7 +1,7 @@
 # TorchIO
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
 [![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
@@ -19,6 +19,16 @@ simulation of intensity artifacts due to
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
+
+
+## Jupyter notebook
+
+The best way to quickly understand and try the library is the
+[Jupyter notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
+hosted by Google Colab.
+It includes many examples and visualization of most of the classes and even
+training of a [3D U-Net](https://www.github.com/fepegar/unet) for brain
+segmentation of T1-weighted MRI with whole images and patch-based sampling.
 
 
 ## Credits
@@ -51,15 +61,6 @@ BibTeX entry:
 ```
 
 
-## Interactive notebook
-
-The best way to understand and try the library is the
-[interactive Google Colab notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i).
-It includes many examples and visualization of most of the classes and even
-training of a 3D U-Net for brain segmentation of T1-weighted MRI with whole
-images and patch-based sampling.
-
-
 ## Index
 
 - [Installation](#installation)
@@ -75,7 +76,7 @@ images and patch-based sampling.
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Gaussian noise](#gaussian-noise)
       * [Spatial](#spatial)
-        - [B-spline dense deformation](#b-spline-dense-deformation)
+        - [B-spline dense elastic deformation](#b-spline-dense-elastic-deformation)
         - [Flip](#flip)
         - [Affine transform](#affine-transform)
     - [Preprocessing](#preprocessing)
@@ -259,8 +260,9 @@ this transform has zero-mean.
 ##### Spatial
 
 ###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
-
-![Random elastic deformation](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
+</p>
 
 
 ###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
@@ -269,6 +271,8 @@ Reverse the order of elements in an image along the given axes.
 
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
+
+Random affine transformation of the image keeping center invariant.
 
 
 #### Preprocessing
@@ -282,19 +286,17 @@ adapted from NiftyNet.
 ![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
 
 
+##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
+
+Rescale intensity values in an image to a certain range.
+
+
 ##### [Z-normalization](torchio/transforms/preprocessing/intensity/z_normalization.py)
 
 This transform first extracts the values with intensity greater than the mean,
 which is an approximation of the foreground voxels.
 Then the foreground mean is subtracted from the image and it is divided by the
 foreground standard deviation.
-
-![Z-normalization](https://raw.githubusercontent.com/fepegar/torchio/master/images/z_normalization.png)
-
-
-##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
-
-Rescale intensity values in an image to a certain range.
 
 
 ##### [Resample](torchio/transforms/preprocessing/spatial/resample.py)
