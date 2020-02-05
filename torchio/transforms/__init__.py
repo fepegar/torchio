@@ -6,6 +6,7 @@ from .augmentation.spatial import RandomFlip
 from .augmentation.spatial import RandomAffine
 from .augmentation.spatial import RandomElasticDeformation
 
+from .augmentation.intensity import RandomBlur
 from .augmentation.intensity import RandomNoise
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import RandomBiasField

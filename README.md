@@ -75,6 +75,7 @@ BibTeX entry:
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Gaussian noise](#gaussian-noise)
+        - [Gaussian blurring](#gaussian-blurring)
       * [Spatial](#spatial)
         - [B-spline dense elastic deformation](#b-spline-dense-elastic-deformation)
         - [Flip](#flip)
@@ -255,6 +256,12 @@ It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
+
+
+###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
+
+Blurs the image using a
+[discrete Gaussian image filter](https://itk.org/Doxygen/html/classitk_1_1DiscreteGaussianImageFilter.html).
 
 
 ##### Spatial
