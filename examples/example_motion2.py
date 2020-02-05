@@ -4,7 +4,7 @@ from torchvision.transforms import Compose
 import matplotlib.pyplot as plt
 import numpy as np
 
-from torchio.transforms.augmentation.intensity.random_motion2 import   MotionSimTransform
+from torchio.transforms.augmentation.intensity.random_motion2 import MotionSimTransform
 from copy import deepcopy
 from nibabel.viewers import OrthoSlicer3D as ov
 
