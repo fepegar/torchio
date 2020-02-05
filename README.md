@@ -81,14 +81,17 @@ BibTeX entry:
         - [Flip](#flip)
         - [Affine transform](#affine-transform)
     - [Preprocessing](#preprocessing)
-        * [Histogram standardization](#histogram-standardization)
-        * [Z-normalization](#z-normalization)
-        * [Rescale](#rescale)
-        * [Resample](#resample)
-        * [Pad](#pad)
-        * [Crop](#crop)
-        * [ToCanonical](#tocanonical)
-        * [CenterCropOrPad](#centercroporpad)
+      * [Histogram standardization](#histogram-standardization)
+      * [Z-normalization](#z-normalization)
+      * [Rescale](#rescale)
+      * [Resample](#resample)
+      * [Pad](#pad)
+      * [Crop](#crop)
+      * [ToCanonical](#tocanonical)
+      * [CenterCropOrPad](#centercroporpad)
+    - [Others](#others)
+      * [Lambda](#lambda)
+
 
 - [Example](#example)
 - [Related projects](#related-projects)
@@ -329,6 +332,18 @@ Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
 ##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
 
 Crops or pads image center to a target size, modifying the affine accordingly.
+
+
+#### Others
+
+##### [Lambda](torchio/transforms/lambda_transform.py)
+
+Applies a user-defined function as transform.
+For example, image intensity can be inverted with
+`Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])`
+and a mask can be negated with
+`Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])`.
+
 
 
 ## [Example](examples/example_times.py)

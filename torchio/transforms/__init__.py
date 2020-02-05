@@ -1,6 +1,9 @@
 from .transform import Transform
 from .interpolation import Interpolation
 
+# Generic
+from .lambda_transform import Lambda
+
 # Augmentation
 from .augmentation.spatial import RandomFlip
 from .augmentation.spatial import RandomAffine
