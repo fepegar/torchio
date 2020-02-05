@@ -67,7 +67,7 @@ BibTeX entry:
 - [Features](#features)
   * [Data handling](#data-handling)
     - [`ImagesDataset`](#imagesdataset)
-    - [Samplers](#samplers)
+    - [Samplers and aggregators](#samplers-and-aggregators)
     - [`Queue`](#queue)
   * [Transforms](#transforms)
     - [Augmentation](#augmentation)
@@ -115,15 +115,15 @@ $ pip install torchio
 
 #### [`ImagesDataset`](torchio/data/images.py)
 
-`ImagesDataset` is a reader of medical images that directly inherits from
+`ImagesDataset` is a reader of 3D medical images that directly inherits from
 [`torch.utils.Dataset`](https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset).
 It can be used with a
 [`torch.utils.DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
-for efficient reading and data augmentation.
+for efficient loading and data augmentation.
 
 It receives a list of subjects, where each subject is an instance of
-[`torchio.Subject`](torchio/data/images.py) containing
-[`torchio.Image`](torchio/data/images.py) instances.
+[`torchio.Subject`](torchio/data/images.py) containing instances of
+[`torchio.Image`](torchio/data/images.py).
 The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 
 ```python
@@ -145,7 +145,7 @@ subject_sample = subjects_dataset[0]
 ```
 
 
-#### [Samplers](torchio/data/sampler/sampler.py)
+#### [Samplers and aggregators](torchio/data/sampler/sampler.py)
 
 `torchio` includes grid, uniform and label patch samplers. There is also an
 aggregator used for dense predictions.
