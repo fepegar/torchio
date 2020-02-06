@@ -291,37 +291,6 @@ class RandomMotionFromTimeCourse(RandomTransform):
         tiles = np.floor_divide(target_shape, data_shape, dtype=int)
         return np.tile(params_to_reshape, reps=tiles)
 
-    def _fft_im(self, image):
-        output = (np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(image)))).astype(np.complex128)
-        return output
-
-    def _ifft_im(self, freq_domain):
-        output = np.fft.ifftshift(np.fft.ifftn(freq_domain))
-        return output
-
-    @staticmethod
-    def _oversample(data, perc_oversampling=.10):
-        """
-        Oversamples data with a zero padding. Adds perc_oversampling percentage values
-        """
-        data_shape = list(data.shape)
-        to_pad = np.ceil(np.asarray(data_shape) * perc_oversampling)
-        left_pad = np.floor(to_pad / 2).astype(int)
-        right_pad = np.ceil(to_pad / 2).astype(int)
-        # padding_values = np.stack((left_pad, right_pad), -1).reshape(-1)[::-1]
-        return np.pad(data, list(zip(left_pad, right_pad)))  # torch.nn.functional(data, tuple(padding_values))
-
-    @staticmethod
-    def crop_volume(data, cropping_shape):
-        '''
-        Cropping data to cropping_shape size. Cropping starts from center of the image
-        '''
-        vol_centers = (np.asarray(data.shape) / 2).astype(int)
-        dim_ranges = np.ceil(np.asarray(cropping_shape) / 2).astype(int)
-        slicing = [slice(dim_center - dim_range, dim_center + dim_range)
-                   for dim_center, dim_range in zip(vol_centers, dim_ranges)]
-        return data[slicing]
-
     def _translate_freq_domain(self, freq_domain):
         """
         image domain translation by adding phase shifts in frequency domain
