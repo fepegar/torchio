@@ -67,27 +67,32 @@ BibTeX entry:
 - [Features](#features)
   * [Data handling](#data-handling)
     - [`ImagesDataset`](#imagesdataset)
-    - [Samplers](#samplers)
+    - [Samplers and aggregators](#samplers-and-aggregators)
     - [`Queue`](#queue)
   * [Transforms](#transforms)
     - [Augmentation](#augmentation)
       * [Intensity](#intensity)
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
+        - [Patch swap](#patch-swap)
         - [Gaussian noise](#gaussian-noise)
+        - [Gaussian blurring](#gaussian-blurring)
       * [Spatial](#spatial)
         - [B-spline dense elastic deformation](#b-spline-dense-elastic-deformation)
         - [Flip](#flip)
         - [Affine transform](#affine-transform)
     - [Preprocessing](#preprocessing)
-        * [Histogram standardization](#histogram-standardization)
-        * [Z-normalization](#z-normalization)
-        * [Rescale](#rescale)
-        * [Resample](#resample)
-        * [Pad](#pad)
-        * [Crop](#crop)
-        * [ToCanonical](#tocanonical)
-        * [CenterCropOrPad](#centercroporpad)
+      * [Histogram standardization](#histogram-standardization)
+      * [Z-normalization](#z-normalization)
+      * [Rescale](#rescale)
+      * [Resample](#resample)
+      * [Pad](#pad)
+      * [Crop](#crop)
+      * [ToCanonical](#tocanonical)
+      * [CenterCropOrPad](#centercroporpad)
+    - [Others](#others)
+      * [Lambda](#lambda)
+
 
 - [Example](#example)
 - [Related projects](#related-projects)
@@ -111,15 +116,15 @@ $ pip install torchio
 
 #### [`ImagesDataset`](torchio/data/images.py)
 
-`ImagesDataset` is a reader of medical images that directly inherits from
+`ImagesDataset` is a reader of 3D medical images that directly inherits from
 [`torch.utils.Dataset`](https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset).
 It can be used with a
 [`torch.utils.DataLoader`](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader)
-for efficient reading and data augmentation.
+for efficient loading and data augmentation.
 
 It receives a list of subjects, where each subject is an instance of
-[`torchio.Subject`](torchio/data/images.py) containing
-[`torchio.Image`](torchio/data/images.py) instances.
+[`torchio.Subject`](torchio/data/images.py) containing instances of
+[`torchio.Image`](torchio/data/images.py).
 The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
 
 ```python
@@ -141,7 +146,7 @@ subject_sample = subjects_dataset[0]
 ```
 
 
-#### [Samplers](torchio/data/sampler/sampler.py)
+#### [Samplers and aggregators](torchio/data/sampler/sampler.py)
 
 `torchio` includes grid, uniform and label patch samplers. There is also an
 aggregator used for dense predictions.
@@ -247,6 +252,15 @@ This transform is very similar to the one in
 ![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
 
 
+##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
+
+Randomly swaps patches in the image.
+This is typically done for
+[context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
+
+![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_swap.jpg)
+
+
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
 Adds noise sampled from a normal distribution with mean 0 and standard
@@ -255,6 +269,12 @@ It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
+
+
+###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
+
+Blurs the image using a
+[discrete Gaussian image filter](https://itk.org/Doxygen/html/classitk_1_1DiscreteGaussianImageFilter.html).
 
 
 ##### Spatial
@@ -322,6 +342,18 @@ Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
 ##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
 
 Crops or pads image center to a target size, modifying the affine accordingly.
+
+
+#### Others
+
+##### [Lambda](torchio/transforms/lambda_transform.py)
+
+Applies a user-defined function as transform.
+For example, image intensity can be inverted with
+`Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])`
+and a mask can be negated with
+`Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])`.
+
 
 
 ## [Example](examples/example_times.py)

@@ -1,9 +1,6 @@
 import time
 import warnings
 from abc import ABC, abstractmethod
-import torch
-import numpy as np
-import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 
 

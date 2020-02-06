@@ -6,7 +6,10 @@ import numpy as np
 from torchio import INTENSITY, LABEL
 
 from torchio.transforms import (
+    Lambda,
     RandomFlip,
+    RandomBlur,
+    RandomSwap,
     RandomNoise,
     RandomBiasField,
     RandomElasticDeformation,
@@ -69,6 +72,9 @@ class TestTransforms(unittest.TestCase):
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
             RandomMotion(proportion_to_augment=1),
             RandomNoise(),
+            RandomBlur(),
+            RandomSwap(patch_size=2, num_iterations=5),
+            Lambda(lambda x: 1.5 * x, types_to_apply=INTENSITY),
             RandomBiasField(),
             Rescale((0, 1)),
             ZNormalization(masking_method='label'),
