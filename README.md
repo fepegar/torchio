@@ -74,6 +74,7 @@ BibTeX entry:
       * [Intensity](#intensity)
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
+        - [Patch swap](#patch-swap)
         - [Gaussian noise](#gaussian-noise)
         - [Gaussian blurring](#gaussian-blurring)
       * [Spatial](#spatial)
@@ -249,6 +250,15 @@ This transform is very similar to the one in
 [NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
 
 ![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
+
+
+##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
+
+Randomly swaps patches in the image.
+This is typically done for
+[context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
+
+![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
