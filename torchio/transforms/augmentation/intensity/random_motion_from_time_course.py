@@ -44,7 +44,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
-                 freq_encoding_dim=(0, 1, 2), preserve_center_pct=0.07, tr=2.3, es=4E-3, nufft=False,
+                 freq_encoding_dim=(0, 1, 2), preserve_center_pct=0.07, tr=2.3, es=4E-3, nufft=True,
                  verbose=False, fitpars=None, oversampling_pct=0.0, read_func=lambda x: pd.read_csv(x).values):
         """
         :param nT (int): number of points of the time course
@@ -162,6 +162,11 @@ class RandomMotionFromTimeCourse(RandomTransform):
         elif len(fpars.shape) != 2:
             warnings.warn("Expected motion parameters to be of shape (6, N), found {}. Setting motions to None".format(fpars.shape))
             fpars = None
+
+          if self.displacement_shift > 0:
+            to_substract = fpars[:, int(round(self.nT / 2))]
+            fpars = np.subtract(fpars, to_substract[..., np.newaxis])
+
         return fpars
 
     def _calc_dimensions(self, im_shape):
@@ -328,7 +333,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         rotations = rotations[tuple(ix)].reshape(3, -1)
         rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rotations).transpose([-1, 0, 1])
-        rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3])
+        rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3], order='F')#rrr
         rotation_matrices = np.expand_dims(rotation_matrices, self.frequency_encoding_dim)
 
         rotation_matrices = np.tile(rotation_matrices,
