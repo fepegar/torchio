@@ -1,3 +1,4 @@
+from typing import Tuple
 import torch
 import numpy as np
 import nibabel as nib
@@ -11,17 +12,17 @@ from ... import Transform
 class Resample(Transform):
     def __init__(
             self,
-            voxel_sizes,
-            antialiasing=True,
-            image_interpolation=Interpolation.LINEAR,
-            verbose=False,
+            voxel_sizes: Tuple[float, float, float],
+            antialiasing: bool = True,
+            image_interpolation: Interpolation = Interpolation.LINEAR,
+            verbose: bool = False,
             ):
         super().__init__(verbose=verbose)
         self.voxel_sizes = voxel_sizes
         self.antialiasing = antialiasing
         self.image_interpolation = image_interpolation
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -39,11 +40,11 @@ class Resample(Transform):
 
     def apply_resample(
             self,
-            tensor,
-            affine,
-            voxel_sizes,
+            tensor: torch.Tensor,
+            affine: np.ndarray,
+            voxel_sizes: Tuple[float, float, float],
             interpolation: Interpolation,
-            ):
+            ) -> Tuple[torch.Tensor, np.ndarray]:
         if interpolation == Interpolation.NEAREST:
             order = 0
         elif interpolation == Interpolation.LINEAR:

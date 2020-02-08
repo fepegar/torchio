@@ -9,12 +9,12 @@ from ... import Transform
 class ToCanonical(Transform):
     def __init__(
             self,
-            verbose=False,
+            verbose: bool = False,
             ):
         """Reorder the data to be closest to canonical (RAS+) orientation"""
         super().__init__(verbose=verbose)
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue

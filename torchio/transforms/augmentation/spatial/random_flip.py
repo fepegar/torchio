@@ -1,3 +1,4 @@
+from typing import Union, Tuple, Optional, List
 import torch
 from ....torchio import DATA
 from ....utils import is_image_dict, to_tuple
@@ -7,10 +8,10 @@ from .. import RandomTransform
 class RandomFlip(RandomTransform):
     def __init__(
             self,
-            axes=0,
-            flip_probability=0.5,
-            seed=None,
-            verbose=False,
+            axes: Union[int, Tuple[int]] = 0,
+            flip_probability: float = 0.5,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.axes = self.parse_axes(axes)
@@ -19,7 +20,7 @@ class RandomFlip(RandomTransform):
             'flip_probability',
         )
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         axes_to_flip_hot = self.get_params(self.axes, self.flip_probability)
         sample['random_flip'] = axes_to_flip_hot
         for image_dict in sample.values():
@@ -37,7 +38,7 @@ class RandomFlip(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(axes, probability):
+    def get_params(axes: Tuple[int], probability: float) -> List[bool]:
         axes_hot = [False, False, False]
         for axis in axes:
             random_number = torch.rand(1)
@@ -46,7 +47,7 @@ class RandomFlip(RandomTransform):
         return axes_hot
 
     @staticmethod
-    def parse_axes(axes):
+    def parse_axes(axes: Union[int, Tuple[int]]):
         axes = to_tuple(axes)
         for axis in axes:
             if not (isinstance(axis, int) and 0 <= axis <= 2):

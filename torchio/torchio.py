@@ -1,5 +1,10 @@
 """Main module."""
 
+from pathlib import Path
+from typing import Union, Tuple
+import torch
+import numpy as np
+
 __all__ = [
     'INTENSITY',
     'LABEL',
@@ -8,6 +13,10 @@ __all__ = [
     'AFFINE',
     'IMAGE',
     'LOCATION',
+    'TypePath',
+    'TypeNumber',
+    'TypeData',
+    'TypeTuple',
 ]
 
 INTENSITY = 'intensity'
@@ -20,3 +29,8 @@ AFFINE = 'affine'
 # For aggregator
 IMAGE = 'image'
 LOCATION = 'location'
+
+TypePath = Union[Path, str]
+TypeNumber = Union[int, float]
+TypeData = Union[torch.Tensor, np.ndarray]
+TypeTuple = Union[int, Tuple[int, int, int]]

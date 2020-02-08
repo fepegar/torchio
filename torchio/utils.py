@@ -3,18 +3,22 @@ import shutil
 import pprint
 import tempfile
 from pathlib import Path
+from typing import Union, Iterable, Tuple
 import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
-from .torchio import INTENSITY, LABEL, DATA, AFFINE
+from .torchio import INTENSITY, LABEL, DATA, AFFINE, TypeData, TypeNumber
 
 
 FLIP_XY = np.diag((-1, -1, 1))
 
 
-def to_tuple(value, n=1):
+def to_tuple(
+        value: Union[TypeNumber, Iterable[TypeNumber]],
+        n: int = 1,
+        ) -> Tuple[TypeNumber]:
     """
     to_tuple(1, n=1) -> (1,)
     to_tuple(1, n=3) -> (1, 1, 1)

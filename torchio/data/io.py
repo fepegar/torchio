@@ -1,11 +1,13 @@
 from pathlib import Path
+from typing import Union, Tuple, TypeVar
 import nrrd
 import torch
 import numpy as np
 import nibabel as nib
+from .. import TypePath, TypeData
 
 
-def parse_path(path):
+def parse_path(path: TypePath) -> Path:
     path = Path(path).expanduser()
     suffixes = path.suffixes
     if '.nii' not in suffixes and '.nrrd' not in suffixes:
@@ -15,7 +17,7 @@ def parse_path(path):
     return path
 
 
-def read_image(path):
+def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     path = parse_path(path)
     suffixes = path.suffixes
     if '.nii' in suffixes:
@@ -28,7 +30,7 @@ def read_image(path):
     return read(path)
 
 
-def _read_nifti(path):
+def _read_nifti(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     nii = nib.load(str(path), mmap=False)
     ndims = len(nii.shape)
     assert ndims == 3
@@ -38,7 +40,7 @@ def _read_nifti(path):
     return tensor, affine
 
 
-def _read_nrrd(path):
+def _read_nrrd(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     data, header = nrrd.read(path)
     data = data.astype(np.float32)
     tensor = torch.from_numpy(data)
@@ -50,7 +52,11 @@ def _read_nrrd(path):
     return tensor, affine
 
 
-def write_image(tensor, affine, path):
+def write_image(
+        tensor: torch.Tensor,
+        affine: TypeData,
+        path: TypePath,
+        ) -> None:
     path = Path(path)
     suffixes = path.suffixes
     if '.nii' in suffixes:
@@ -63,12 +69,20 @@ def write_image(tensor, affine, path):
     write(tensor, affine, path)
 
 
-def _write_nifti(tensor, affine, path):
+def _write_nifti(
+        tensor: torch.Tensor,
+        affine: TypeData,
+        path: TypePath,
+        ) -> None:
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
     nii.header['sform_code'] = 0
     nii.to_filename(str(path))
 
 
-def _write_nrrd(tensor, affine, path):
+def _write_nrrd(
+        tensor: torch.Tensor,
+        affine: TypeData,
+        path: TypePath,
+        ) -> None:
     raise NotImplementedError

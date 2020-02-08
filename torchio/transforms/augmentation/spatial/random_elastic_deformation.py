@@ -1,4 +1,6 @@
+from typing import Tuple, Optional
 import torch
+import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict, check_consistent_shape
 from ....torchio import LABEL, DATA, AFFINE
@@ -9,12 +11,12 @@ from .. import RandomTransform
 class RandomElasticDeformation(RandomTransform):
     def __init__(
             self,
-            num_control_points=4,
-            deformation_std=15,
-            proportion_to_augment=0.5,
-            image_interpolation=Interpolation.LINEAR,
-            seed=None,
-            verbose=False,
+            num_control_points: int = 4,
+            deformation_std: float = 15,
+            proportion_to_augment: float = 0.5,
+            image_interpolation: Interpolation = Interpolation.LINEAR,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self._bspline_transformation = None
@@ -26,7 +28,7 @@ class RandomElasticDeformation(RandomTransform):
         )
         self.interpolation = self.parse_interpolation(image_interpolation)
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         check_consistent_shape(sample)
         bspline_params = None
         sample['random_elastic_deformation'] = {}
@@ -63,7 +65,12 @@ class RandomElasticDeformation(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(image, num_control_points, deformation_std, probability):
+    def get_params(
+            image: sitk.Image,
+            num_control_points: int,
+            deformation_std: float,
+            probability: float,
+            ) -> Tuple:
         mesh_shape = 3 * (num_control_points,)
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
         default_params = bspline_transform.GetParameters()
@@ -72,7 +79,11 @@ class RandomElasticDeformation(RandomTransform):
         return do_augmentation, bspline_params.numpy()
 
     @staticmethod
-    def get_bspline_transform(image, num_control_points, bspline_params):
+    def get_bspline_transform(
+            image: sitk.Image,
+            num_control_points: int,
+            bspline_params: np.ndarray,
+            ) -> sitk.BSplineTransformInitializer:
         mesh_shape = 3 * (num_control_points,)
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
         bspline_transform.SetParameters(bspline_params.tolist())
@@ -80,11 +91,11 @@ class RandomElasticDeformation(RandomTransform):
 
     def apply_bspline_transform(
             self,
-            tensor,
-            affine,
-            bspline_params,
+            tensor: torch.Tensor,
+            affine: np.ndarray,
+            bspline_params: np.ndarray,
             interpolation: Interpolation,
-            ):
+            ) -> torch.Tensor:
         assert tensor.ndim == 4
         assert len(tensor) == 1
         image = self.nib_to_sitk(tensor[0], affine)

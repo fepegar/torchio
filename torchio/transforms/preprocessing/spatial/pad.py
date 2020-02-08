@@ -1,3 +1,4 @@
+from typing import Union, Tuple, Callable
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform
 
@@ -12,10 +13,10 @@ class Pad(BoundsTransform):
 
     def __init__(
             self,
-            padding,
-            padding_mode='constant',
-            fill=None,
-            verbose=False,
+            padding: Union[int, Tuple[int, int, int]],
+            padding_mode: str = 'constant',
+            fill: float = None,
+            verbose: bool = False,
             ):
         """
         padding_mode can be 'constant', 'reflect', 'replicate' or 'circular'.
@@ -27,7 +28,7 @@ class Pad(BoundsTransform):
         self.fill = fill
 
     @property
-    def bounds_function(self):
+    def bounds_function(self) -> Callable:
         try:
             return self.PADDING_FUNCTIONS[self.padding_mode]
         except KeyError:

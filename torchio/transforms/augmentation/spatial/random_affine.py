@@ -1,3 +1,4 @@
+from typing import Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
@@ -10,12 +11,12 @@ from .. import RandomTransform
 class RandomAffine(RandomTransform):
     def __init__(
             self,
-            scales=(0.9, 1.1),
-            degrees=10,
-            isotropic=False,
-            image_interpolation=Interpolation.LINEAR,
-            seed=None,
-            verbose=False,
+            scales: Tuple[float, float] = (0.9, 1.1),
+            degrees: float = 10,
+            isotropic: bool = False,
+            image_interpolation: Interpolation = Interpolation.LINEAR,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.scales = scales
@@ -23,7 +24,7 @@ class RandomAffine(RandomTransform):
         self.isotropic = isotropic
         self.interpolation = self.parse_interpolation(image_interpolation)
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         check_consistent_shape(sample)
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
@@ -46,7 +47,11 @@ class RandomAffine(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(scales, degrees, isotropic):
+    def get_params(
+            scales: Tuple[float, float],
+            degrees: Tuple[float, float],
+            isotropic: bool,
+            ) -> Tuple[List[float], List[float]]:
         scaling_params = torch.FloatTensor(3).uniform_(*scales)
         if isotropic:
             scaling_params.fill_(scaling_params[0])
@@ -54,7 +59,9 @@ class RandomAffine(RandomTransform):
         return scaling_params.tolist(), rotation_params.tolist()
 
     @staticmethod
-    def get_scaling_transform(scaling_params):
+    def get_scaling_transform(
+            scaling_params: List[float],
+            ) -> sitk.ScaleTransform:
         """
         scaling_params are inverted so that they are more intuitive
         For example, 1.5 means the objects look 1.5 times larger
@@ -65,7 +72,9 @@ class RandomAffine(RandomTransform):
         return transform
 
     @staticmethod
-    def get_rotation_transform(degrees):
+    def get_rotation_transform(
+            degrees: List[float],
+            ) -> sitk.Euler3DTransform:
         transform = sitk.Euler3DTransform()
         radians = np.radians(degrees)
         transform.SetRotation(*radians)
@@ -73,12 +82,12 @@ class RandomAffine(RandomTransform):
 
     def apply_affine_transform(
             self,
-            tensor,
-            affine,
-            scaling_params,
-            rotation_params,
+            tensor: torch.Tensor,
+            affine: np.ndarray,
+            scaling_params: List[float],
+            rotation_params: List[float],
             interpolation: Interpolation,
-            ):
+            ) -> torch.Tensor:
         assert tensor.ndim == 4
         assert len(tensor) == 1
 
