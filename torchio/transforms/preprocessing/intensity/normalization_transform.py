@@ -1,3 +1,4 @@
+from typing import Union, Optional, Callable
 import torch
 from ....utils import is_image_dict
 from ....torchio import DATA, INTENSITY
@@ -5,7 +6,11 @@ from ... import Transform
 
 
 class NormalizationTransform(Transform):
-    def __init__(self, masking_method=None, verbose=False):
+    def __init__(
+            self,
+            masking_method: Optional[Union[str, Callable]] = None,
+            verbose: bool = False,
+            ):
         """
         masking_method is used to choose the values used for normalization.
         It can be:
@@ -22,13 +27,13 @@ class NormalizationTransform(Transform):
         elif isinstance(masking_method, str):
             self.mask_name = masking_method
 
-    def get_mask(self, sample, data):
+    def get_mask(self, sample: dict, tensor: torch.Tensor) -> torch.Tensor:
         if self.mask_name is None:
-            return self.masking_method(data)
+            return self.masking_method(tensor)
         else:
             return sample[self.mask_name][DATA].bool()
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
@@ -38,15 +43,20 @@ class NormalizationTransform(Transform):
             self.apply_normalization(sample, image_name, mask)
         return sample
 
-    def apply_normalization(self, sample, image_name, mask):
+    def apply_normalization(
+            self,
+            sample: dict,
+            image_name: str,
+            mask: torch.Tensor,
+            ):
         """There must be a nicer way of doing this"""
         raise NotImplementedError
 
     @staticmethod
-    def ones(data):
-        return torch.ones_like(data, dtype=torch.bool)
+    def ones(tensor: torch.Tensor) -> torch.Tensor:
+        return torch.ones_like(tensor, dtype=torch.bool)
 
     @staticmethod
-    def mean(data):
-        mask = data > data.mean()
+    def mean(tensor: torch.Tensor) -> torch.Tensor:
+        mask = tensor > tensor.mean()
         return mask

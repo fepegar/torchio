@@ -1,4 +1,5 @@
 import warnings
+from typing import Tuple, Union, Optional, Callable
 import torch
 import numpy as np
 from ....torchio import DATA
@@ -8,21 +9,31 @@ from .normalization_transform import NormalizationTransform
 class Rescale(NormalizationTransform):
     def __init__(
             self,
-            out_min_max,
-            percentiles=(0, 100),
-            masking_method=None,
-            verbose=False,
+            out_min_max: Tuple[float, float],
+            percentiles: Tuple[int, int] = (0, 100),
+            masking_method: Optional[Union[str, Callable]] = None,
+            verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method, verbose=verbose)
         self.out_min, self.out_max = out_min_max
         self.percentiles = percentiles
 
-    def apply_normalization(self, sample, image_name, mask):
+    def apply_normalization(
+            self,
+            sample: dict,
+            image_name: str,
+            mask: torch.Tensor,
+            ) -> None:
         image_dict = sample[image_name]
         image_dict[DATA] = self.rescale(image_dict[DATA], mask, image_name)
 
-    def rescale(self, data, mask, image_name):
-        array = data.numpy()
+    def rescale(
+            self,
+            tensor: torch.Tensor,
+            mask: torch.Tensor,
+            image_name: str,
+            ) -> torch.Tensor:
+        array = tensor.numpy()
         mask = mask.numpy()
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
@@ -35,7 +46,7 @@ class Rescale(NormalizationTransform):
                 ' due to division by zero'
             )
             warnings.warn(message)
-            return data
+            return tensor
         array /= array.max()  # [0, 1]
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]

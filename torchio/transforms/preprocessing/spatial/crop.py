@@ -1,3 +1,4 @@
+from typing import Union, Tuple, Callable
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform
 
@@ -5,14 +6,11 @@ from .bounds_transform import BoundsTransform
 class Crop(BoundsTransform):
     def __init__(
             self,
-            cropping,
-            verbose=False,
+            cropping: Union[int, Tuple[int, int, int]],
+            verbose: bool = False,
             ):
-        """
-        cropping should be an integer or a tuple of 3 or 6 integers
-        """
         super().__init__(cropping, verbose=verbose)
 
     @property
-    def bounds_function(self):
+    def bounds_function(self) -> Callable:
         return sitk.Crop

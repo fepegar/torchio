@@ -4,13 +4,13 @@ import SimpleITK as sitk
 
 @enum.unique
 class Interpolation(enum.IntEnum):
-    NEAREST = sitk.sitkNearestNeighbor
-    LINEAR = sitk.sitkLinear
-    BSPLINE = sitk.sitkBSpline
-    GAUSSIAN = sitk.sitkGaussian
-    LABEL_GAUSSIAN = sitk.sitkLabelGaussian
-    HAMMING = sitk.sitkHammingWindowedSinc
-    COSINE = sitk.sitkCosineWindowedSinc
-    WELCH = sitk.sitkWelchWindowedSinc
-    LANCZOS = sitk.sitkLanczosWindowedSinc
-    BLACKMAN = sitk.sitkBlackmanWindowedSinc
+    NEAREST: int = sitk.sitkNearestNeighbor
+    LINEAR: int = sitk.sitkLinear
+    BSPLINE: int = sitk.sitkBSpline
+    GAUSSIAN: int = sitk.sitkGaussian
+    LABEL_GAUSSIAN: int = sitk.sitkLabelGaussian
+    HAMMING: int = sitk.sitkHammingWindowedSinc
+    COSINE: int = sitk.sitkCosineWindowedSinc
+    WELCH: int = sitk.sitkWelchWindowedSinc
+    LANCZOS: int = sitk.sitkLanczosWindowedSinc
+    BLACKMAN: int = sitk.sitkBlackmanWindowedSinc
