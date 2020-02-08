@@ -50,7 +50,9 @@ def swap(
                 tensor.shape,
                 patch_size,
             )
-            if np.all(second_ini >= first_ini) and np.all(second_fin <= first_fin):
+            larger_than_initial = np.all(second_ini >= first_ini)
+            less_than_final = np.all(second_fin <= first_fin)
+            if larger_than_initial and less_than_final:
                 continue  # patches overlap
             else:
                 break  # patches don't overlap
