@@ -1,7 +1,7 @@
 """Main module."""
 
 from pathlib import Path
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 import torch
 import numpy as np
 
@@ -17,6 +17,7 @@ __all__ = [
     'TypeNumber',
     'TypeData',
     'TypeTuple',
+    'TypeCallable',
 ]
 
 INTENSITY = 'intensity'
@@ -34,3 +35,4 @@ TypePath = Union[Path, str]
 TypeNumber = Union[int, float]
 TypeData = Union[torch.Tensor, np.ndarray]
 TypeTuple = Union[int, Tuple[int, int, int]]
+TypeCallable = Callable[[torch.Tensor], torch.Tensor]

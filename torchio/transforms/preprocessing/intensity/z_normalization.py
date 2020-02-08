@@ -1,6 +1,6 @@
 from typing import Union, Optional, Callable
 import torch
-from ....torchio import DATA
+from ....torchio import DATA, TypeCallable
 from .normalization_transform import NormalizationTransform
 
 
@@ -10,7 +10,7 @@ class ZNormalization(NormalizationTransform):
     """
     def __init__(
             self,
-            masking_method: Optional[Union[str, Callable]] = None,
+            masking_method: Optional[Union[str, TypeCallable]] = None,
             verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method, verbose=verbose)

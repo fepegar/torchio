@@ -2,7 +2,7 @@ import warnings
 from typing import Tuple, Union, Optional, Callable
 import torch
 import numpy as np
-from ....torchio import DATA
+from ....torchio import DATA, TypeCallable
 from .normalization_transform import NormalizationTransform
 
 
@@ -11,7 +11,7 @@ class Rescale(NormalizationTransform):
             self,
             out_min_max: Tuple[float, float],
             percentiles: Tuple[int, int] = (0, 100),
-            masking_method: Optional[Union[str, Callable]] = None,
+            masking_method: Optional[Union[str, TypeCallable]] = None,
             verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method, verbose=verbose)

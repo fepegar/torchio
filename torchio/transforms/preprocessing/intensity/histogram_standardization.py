@@ -9,7 +9,7 @@ import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from ....torchio import DATA, TypePath
+from ....torchio import DATA, TypePath, TypeCallable
 from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -20,7 +20,7 @@ class HistogramStandardization(NormalizationTransform):
     def __init__(
             self,
             landmarks_dict: Dict[str, np.ndarray],
-            masking_method: Optional[Callable] = None,
+            masking_method: Optional[TypeCallable] = None,
             verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method, verbose=verbose)

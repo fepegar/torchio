@@ -1,6 +1,6 @@
 from typing import Callable, Sequence, Optional
 import torch
-from ..torchio import DATA
+from ..torchio import DATA, TypeCallable
 from ..utils import is_image_dict
 from .transform import Transform
 
@@ -8,7 +8,7 @@ from .transform import Transform
 class Lambda(Transform):
     def __init__(
             self,
-            function: Callable,
+            function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
             verbose: bool = False,
             ):

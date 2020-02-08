@@ -1,14 +1,14 @@
 from typing import Union, Optional, Callable
 import torch
 from ....utils import is_image_dict
-from ....torchio import DATA, INTENSITY
+from ....torchio import DATA, INTENSITY, TypeCallable
 from ... import Transform
 
 
 class NormalizationTransform(Transform):
     def __init__(
             self,
-            masking_method: Optional[Union[str, Callable]] = None,
+            masking_method: Optional[Union[str, TypeCallable]] = None,
             verbose: bool = False,
             ):
         """
