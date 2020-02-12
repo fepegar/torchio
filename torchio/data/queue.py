@@ -80,8 +80,9 @@ class Queue(Dataset):
         assert self.patch_size is not None
         if self.max_length % self.samples_per_volume != 0:
             message = (
-                f'Samples per volume ({self.samples_per_volume})'
-                f' not divisible by max length ({self.max_length})'
+                f'Queue length ({self.max_length})'
+                ' not divisible by the number of'
+                f' patches per volume ({self.samples_per_volume})'
             )
             warnings.warn(message)
 
