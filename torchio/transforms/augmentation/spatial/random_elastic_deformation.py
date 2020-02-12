@@ -13,7 +13,7 @@ class RandomElasticDeformation(RandomTransform):
             self,
             num_control_points: int = 4,
             deformation_std: float = 15,
-            proportion_to_augment: float = 0.5,
+            proportion_to_augment: float = 1,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             seed: Optional[int] = None,
             verbose: bool = False,

@@ -27,7 +27,7 @@ class RandomMotion(RandomTransform):
             translation: float = 10,  # in mm
             num_transforms: int = 2,
             image_interpolation: Interpolation = Interpolation.LINEAR,
-            proportion_to_augment: float = 0.5,
+            proportion_to_augment: float = 1,
             seed: Optional[int] = None,
             verbose: bool = False,
             ):

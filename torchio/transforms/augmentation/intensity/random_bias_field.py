@@ -25,7 +25,7 @@ class RandomBiasField(RandomTransform):
             self,
             coefficients: Union[float, Tuple[float]] = 0.5,
             order: int = 3,
-            proportion_to_augment: float = 0.5,
+            proportion_to_augment: float = 1,
             seed: Optional[int] = None,
             verbose: bool = False,
             ):
