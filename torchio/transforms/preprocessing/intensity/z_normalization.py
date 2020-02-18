@@ -1,4 +1,6 @@
-from ....torchio import DATA
+from typing import Union, Optional, Callable
+import torch
+from ....torchio import DATA, TypeCallable
 from .normalization_transform import NormalizationTransform
 
 
@@ -6,10 +8,19 @@ class ZNormalization(NormalizationTransform):
     """
     Subtract mean and divide by standard deviation
     """
-    def __init__(self, masking_method=None, verbose=False):
+    def __init__(
+            self,
+            masking_method: Optional[Union[str, TypeCallable]] = None,
+            verbose: bool = False,
+            ):
         super().__init__(masking_method=masking_method, verbose=verbose)
 
-    def apply_normalization(self, sample, image_name, mask):
+    def apply_normalization(
+            self,
+            sample: dict,
+            image_name: str,
+            mask: torch.Tensor,
+            ) -> None:
         image_dict = sample[image_name]
         image_dict[DATA] = self.znorm(
             image_dict[DATA],
@@ -17,9 +28,9 @@ class ZNormalization(NormalizationTransform):
         )
 
     @staticmethod
-    def znorm(data, mask):
-        values = data[mask]
+    def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        values = tensor[mask]
         mean, std = values.mean(), values.std()
-        data = data - mean
-        data = data / std
-        return data
+        tensor = tensor - mean
+        tensor = tensor / std
+        return tensor

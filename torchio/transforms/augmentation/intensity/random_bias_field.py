@@ -12,9 +12,10 @@ It was included in NiftyNet by Carole Sudre and used in:
     Longitudinal segmentation of age-related white matter hyperintensities
 """
 
+from typing import Union, Tuple, Optional
 import numpy as np
 import torch
-from ....torchio import INTENSITY, DATA
+from ....torchio import INTENSITY, DATA, TypeData
 from ....utils import is_image_dict
 from .. import RandomTransform
 
@@ -22,21 +23,22 @@ from .. import RandomTransform
 class RandomBiasField(RandomTransform):
     def __init__(
             self,
-            coefficients_range=(-0.5, 0.5),
-            order=3,
-            proportion_to_augment=0.5,
-            seed=None,
-            verbose=False,
+            coefficients: Union[float, Tuple[float]] = 0.5,
+            order: int = 3,
+            proportion_to_augment: float = 1,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
-        self.coefficients_range = coefficients_range
+        self.coefficients_range = self.parse_range(
+            coefficients, 'coefficients_range')
         self.order = order
         self.proportion_to_augment = self.parse_probability(
             proportion_to_augment,
             'proportion_to_augment',
         )
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
@@ -58,7 +60,11 @@ class RandomBiasField(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(order, coefficients_range, probability):
+    def get_params(
+            order: int,
+            coefficients_range: Tuple[float, float],
+            probability: float,
+            ) -> Tuple:
         """
         Sampling of the appropriate number of coefficients for the creation
         of the bias field map
@@ -73,7 +79,11 @@ class RandomBiasField(RandomTransform):
         return do_augmentation, np.array(random_coefficients)
 
     @staticmethod
-    def generate_bias_field(data, order, coefficients):
+    def generate_bias_field(
+            data: TypeData,
+            order: int,
+            coefficients: TypeData,
+            ) -> np.ndarray:
         """
         Create the bias field map using a linear combination of polynomial
         functions and the coefficients previously sampled

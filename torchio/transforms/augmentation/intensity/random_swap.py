@@ -1,7 +1,8 @@
-
+from typing import Tuple, Optional
+import torch
 import numpy as np
 from ....utils import is_image_dict, to_tuple
-from ....torchio import DATA, INTENSITY
+from ....torchio import DATA, INTENSITY, TypeTuple, TypeData
 from ....data.sampler.sampler import get_random_indices_from_shape, crop
 from .. import RandomTransform
 
@@ -9,10 +10,10 @@ from .. import RandomTransform
 class RandomSwap(RandomTransform):
     def __init__(
             self,
-            patch_size=15,
-            num_iterations=100,
-            seed=None,
-            verbose=False,
+            patch_size: TypeTuple = 15,
+            num_iterations: int = 100,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.patch_size = to_tuple(patch_size)
@@ -20,10 +21,10 @@ class RandomSwap(RandomTransform):
 
     @staticmethod
     def get_params():
-        # TODO
+        # TODO: return locations?
         return
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -33,7 +34,11 @@ class RandomSwap(RandomTransform):
         return sample
 
 
-def swap(tensor, patch_size, num_iterations):
+def swap(
+        tensor: torch.Tensor,
+        patch_size: TypeTuple,
+        num_iterations: int,
+        ) -> None:
     patch_size = to_tuple(patch_size)
     for _ in range(num_iterations):
         first_ini, first_fin = get_random_indices_from_shape(
@@ -45,7 +50,9 @@ def swap(tensor, patch_size, num_iterations):
                 tensor.shape,
                 patch_size,
             )
-            if np.all(second_ini >= first_ini) and np.all(second_fin <= first_fin):
+            larger_than_initial = np.all(second_ini >= first_ini)
+            less_than_final = np.all(second_fin <= first_fin)
+            if larger_than_initial and less_than_final:
                 continue  # patches overlap
             else:
                 break  # patches don't overlap
@@ -55,7 +62,7 @@ def swap(tensor, patch_size, num_iterations):
         insert(tensor, second_patch, first_ini)
 
 
-def insert(tensor, patch, index_ini):
+def insert(tensor: TypeData, patch: TypeData, index_ini: np.ndarray) -> None:
     index_fin = index_ini + np.array(patch.shape)
     i_ini, j_ini, k_ini = index_ini
     i_fin, j_fin, k_fin = index_fin

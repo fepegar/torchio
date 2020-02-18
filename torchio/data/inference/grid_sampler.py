@@ -1,4 +1,6 @@
+from typing import Union, Sequence, Tuple
 import numpy as np
+import torch
 from torch.utils.data import Dataset
 from torchio import IMAGE, LOCATION
 from torchio.utils import to_tuple
@@ -9,11 +11,16 @@ class GridSampler(Dataset):
     Adapted from NiftyNet.
     See https://niftynet.readthedocs.io/en/dev/window_sizes.html
     """
-    def __init__(self, data, patch_size, patch_overlap):
+    def __init__(
+            self,
+            data: Union[np.ndarray, torch.Tensor],
+            patch_size: Union[int, Sequence[int]],
+            patch_overlap: Union[int, Sequence[int]],
+            ):
         self.array = data
         patch_size = to_tuple(patch_size)
         patch_overlap = to_tuple(patch_overlap)
-        self.locations = self.grid_spatial_coordinates(
+        self.locations = self._grid_spatial_coordinates(
             self.array,
             patch_size,
             patch_overlap,
@@ -32,7 +39,12 @@ class GridSampler(Dataset):
         return sample
 
     @staticmethod
-    def _enumerate_step_points(starting, ending, win_size, step_size):
+    def _enumerate_step_points(
+            starting: int,
+            ending: int,
+            win_size: int,
+            step_size: int,
+            ) -> np.ndarray:
         starting = max(int(starting), 0)
         ending = max(int(ending), 0)
         win_size = max(int(win_size), 1)
@@ -53,7 +65,11 @@ class GridSampler(Dataset):
         return sampling_point_set[np.sort(uniq_idx)]
 
     @staticmethod
-    def grid_spatial_coordinates(array, window_shape, border):
+    def _grid_spatial_coordinates(
+            array: np.ndarray,
+            window_shape: Tuple[int],
+            border: Tuple[int],
+            ):
         shape = array.shape
         num_dims = len(shape)
         grid_size = [

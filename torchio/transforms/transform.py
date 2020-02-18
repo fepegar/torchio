@@ -1,14 +1,16 @@
 import time
 import warnings
 from abc import ABC, abstractmethod
+import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
+from .. import TypeData
 
 
 class Transform(ABC):
-    def __init__(self, verbose=False):
+    def __init__(self, verbose: bool = False):
         self.verbose = verbose
 
-    def __call__(self, sample):
+    def __call__(self, sample: dict):
         if self.verbose:
             start = time.time()
         self.parse_sample(sample)
@@ -19,11 +21,11 @@ class Transform(ABC):
         return sample
 
     @abstractmethod
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict):
         pass
 
     @staticmethod
-    def parse_sample(sample):
+    def parse_sample(sample: dict) -> None:
         images_found = False
         type_in_dict = False
         for image_dict in sample.values():
@@ -41,11 +43,11 @@ class Transform(ABC):
             )
 
     @staticmethod
-    def nib_to_sitk(data, affine):
+    def nib_to_sitk(data: TypeData, affine: TypeData):
         return nib_to_sitk(data, affine)
 
     @staticmethod
-    def sitk_to_nib(image):
+    def sitk_to_nib(image: sitk.Image):
         return sitk_to_nib(image)
 
     @staticmethod

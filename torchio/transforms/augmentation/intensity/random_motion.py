@@ -8,6 +8,7 @@ Custom implementation of
 """
 
 import warnings
+from typing import Tuple, Optional, List
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -22,13 +23,13 @@ from .. import RandomTransform
 class RandomMotion(RandomTransform):
     def __init__(
             self,
-            degrees=10,
-            translation=10,  # in mm
-            num_transforms=2,
-            image_interpolation=Interpolation.LINEAR,
-            proportion_to_augment=0.5,
-            seed=None,
-            verbose=False,
+            degrees: float = 10,
+            translation: float = 10,  # in mm
+            num_transforms: int = 2,
+            image_interpolation: Interpolation = Interpolation.LINEAR,
+            proportion_to_augment: float = 1,
+            seed: Optional[int] = None,
+            verbose: bool = False,
             ):
         super().__init__(seed=seed, verbose=verbose)
         self.degrees_range = self.parse_degrees(degrees)
@@ -40,7 +41,7 @@ class RandomMotion(RandomTransform):
             'proportion_to_augment',
         )
 
-    def apply_transform(self, sample):
+    def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
@@ -101,12 +102,12 @@ class RandomMotion(RandomTransform):
 
     @staticmethod
     def get_params(
-            degrees_range,
-            translation_range,
-            num_transforms,
-            probability,
-            perturbation=0.3,
-            ):
+            degrees_range: Tuple[float, float],
+            translation_range: Tuple[float, float],
+            num_transforms: int,
+            probability: float,
+            perturbation: float = 0.3,
+            ) -> Tuple:
         """
         If perturbation is 0, the intervals between movements are constant
         """
@@ -123,7 +124,12 @@ class RandomMotion(RandomTransform):
         do_it = torch.rand(1) < probability
         return times_params, degrees_params, translation_params, do_it
 
-    def get_rigid_transforms(self, degrees_params, translation_params, image):
+    def get_rigid_transforms(
+            self,
+            degrees_params: np.ndarray,
+            translation_params: np.ndarray,
+            image: sitk.Image,
+            ) -> List[sitk.Euler3DTransform]:
         center_ijk = np.array(image.GetSize()) / 2
         center_lps = image.TransformContinuousIndexToPhysicalPoint(center_ijk)
         identity = np.eye(4)
@@ -139,7 +145,11 @@ class RandomMotion(RandomTransform):
         transforms = [self.matrix_to_transform(m) for m in matrices]
         return transforms
 
-    def demean_transforms(self, transforms, times):
+    def demean_transforms(
+            self,
+            transforms: List,
+            times: np.ndarray,
+            ) -> List[sitk.Euler3DTransform]:
         matrices = [self.transform_to_matrix(t) for t in transforms]
         times = np.insert(times, 0, 0)
         times = np.append(times, 1)
@@ -152,7 +162,7 @@ class RandomMotion(RandomTransform):
         return demeaned_transforms
 
     @staticmethod
-    def transform_to_matrix(transform):
+    def transform_to_matrix(transform: sitk.Euler3DTransform) -> np.ndarray:
         matrix = np.eye(4)
         rotation = np.array(transform.GetMatrix()).reshape(3, 3)
         matrix[:3, :3] = rotation
@@ -160,14 +170,19 @@ class RandomMotion(RandomTransform):
         return matrix
 
     @staticmethod
-    def matrix_to_transform(matrix):
+    def matrix_to_transform(matrix: np.ndarray) -> sitk.Euler3DTransform:
         transform = sitk.Euler3DTransform()
         rotation = matrix[:3, :3].flatten().tolist()
         transform.SetMatrix(rotation)
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
-    def resample_images(self, image, transforms, interpolation):
+    def resample_images(
+            self,
+            image: sitk.Image,
+            transforms: List[sitk.Euler3DTransform],
+            interpolation: Interpolation,
+            ) -> List[sitk.Image]:
         floating = reference = image
         default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
         transforms = transforms[1:]  # first is identity
@@ -185,10 +200,8 @@ class RandomMotion(RandomTransform):
         return images
 
     @staticmethod
-    def sort_spectra(spectra, times):
-        """
-        Use original spectrum to fill the center of K-space
-        """
+    def sort_spectra(spectra: np.ndarray, times: np.ndarray):
+        """Use original spectrum to fill the center of K-space"""
         num_spectra = len(spectra)
         if np.any(times > 0.5):
             index = np.where(times > 0.5)[0].min()
@@ -198,9 +211,9 @@ class RandomMotion(RandomTransform):
 
     def add_artifact(
             self,
-            image,
-            transforms,
-            times,
+            image: sitk.Image,
+            transforms: List[sitk.Euler3DTransform],
+            times: np.ndarray,
             interpolation: Interpolation,
             ):
         images = self.resample_images(image, transforms, interpolation)
@@ -221,18 +234,22 @@ class RandomMotion(RandomTransform):
         return result_image.astype(np.float32)
 
     @staticmethod
-    def fourier_transform(array):
+    def fourier_transform(array: np.ndarray):
         transformed = np.fft.fft2(array)
         fshift = np.fft.fftshift(transformed)
         return fshift
 
     @staticmethod
-    def inv_fourier_transform(fshift):
+    def inv_fourier_transform(fshift: np.ndarray):
         f_ishift = np.fft.ifftshift(fshift)
         img_back = np.fft.ifft2(f_ishift)
         return np.abs(img_back)
 
-    def matrix_average(self, matrices, weights=None):
+    def matrix_average(
+            self,
+            matrices: List[np.ndarray],
+            weights: Optional[np.ndarray] = None,
+            ):
         if weights is None:
             num_matrices = len(matrices)
             weights = num_matrices * (1 / num_matrices,)
@@ -242,6 +259,6 @@ class RandomMotion(RandomTransform):
         return expm(logs_sum)
 
 
-def get_params_array(nums_range, num_transforms):
+def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
     return tensor.numpy()

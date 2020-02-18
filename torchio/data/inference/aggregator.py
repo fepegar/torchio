@@ -1,4 +1,6 @@
+from typing import Union, Sequence
 import numpy as np
+import torch
 from torchio.utils import to_tuple
 
 
@@ -7,7 +9,11 @@ class GridAggregator:
     Adapted from NiftyNet.
     See https://niftynet.readthedocs.io/en/dev/window_sizes.html
     """
-    def __init__(self, data, patch_overlap):
+    def __init__(
+            self,
+            data: Union[torch.Tensor, np.ndarray],
+            patch_overlap: Union[int, Sequence[int]],
+            ):
         self.output_array = np.full(
             data.shape,
             fill_value=0,
@@ -38,7 +44,7 @@ class GridAggregator:
         ]
         return batch, location
 
-    def add_batch(self, windows, locations):
+    def add_batch(self, windows: torch.Tensor, locations: torch.Tensor):
         windows = windows.cpu()
         location_init = np.copy(locations)
         init_ones = np.ones_like(windows)

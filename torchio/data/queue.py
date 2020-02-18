@@ -1,22 +1,26 @@
 import random
 import warnings
+from typing import List, Iterable, Iterator
 from itertools import islice
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
+from .. import TypeTuple
+from .images import ImagesDataset
+from .sampler import ImageSampler
 
 
 class Queue(Dataset):
     def __init__(
             self,
-            subjects_dataset,
-            max_length,
-            samples_per_volume,
-            patch_size,
-            sampler_class,
-            num_workers=0,
-            shuffle_subjects=True,
-            shuffle_patches=True,
-            verbose=False,
+            subjects_dataset: ImagesDataset,
+            max_length: int,
+            samples_per_volume: int,
+            patch_size: TypeTuple,
+            sampler_class: ImageSampler,
+            num_workers: int = 0,
+            shuffle_subjects: bool = True,
+            shuffle_patches: bool = True,
+            verbose: bool = False,
             ):
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
@@ -28,7 +32,7 @@ class Queue(Dataset):
         self.num_workers = num_workers
         self.verbose = verbose
         self.subjects_iterable = self.get_subjects_iterable()
-        self.patches_list = []
+        self.patches_list: List[dict] = []
         self.num_sampled_patches = 0
         self.print('init queue with {}'.format(self.__repr__()))
 
@@ -66,24 +70,25 @@ class Queue(Dataset):
             print(*args)
 
     @property
-    def num_subjects(self):
+    def num_subjects(self) -> int:
         return len(self.subjects_dataset)
 
     @property
-    def num_patches(self):
+    def num_patches(self) -> int:
         return len(self.patches_list)
 
     @property
-    def iterations_per_epoch(self):
+    def iterations_per_epoch(self) -> int:
         return self.num_subjects * self.samples_per_volume
 
-    def fill(self):
+    def fill(self) -> None:
         assert self.sampler_class is not None
         assert self.patch_size is not None
         if self.max_length % self.samples_per_volume != 0:
             message = (
-                f'Samples per volume ({self.samples_per_volume})'
-                f' not divisible by max length ({self.max_length})'
+                f'Queue length ({self.max_length})'
+                ' not divisible by the number of'
+                f' patches per volume ({self.samples_per_volume})'
             )
             print(message)
             warnings.warn(message)
@@ -108,8 +113,7 @@ class Queue(Dataset):
         if self.shuffle_patches:
             random.shuffle(self.patches_list)
 
-
-    def get_next_subject_sample(self):
+    def get_next_subject_sample(self) -> dict:
         """A StopIteration exception is expected when the queue is empty"""
         try:
             subject_sample = next(self.subjects_iterable)
@@ -119,7 +123,7 @@ class Queue(Dataset):
             subject_sample = next(self.subjects_iterable)
         return subject_sample
 
-    def get_subjects_iterable(self):
+    def get_subjects_iterable(self) -> Iterator:
         """
         I need a DataLoader to handle parallelism
         But this loader is always expected to yield single subject samples

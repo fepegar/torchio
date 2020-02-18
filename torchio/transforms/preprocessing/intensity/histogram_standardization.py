@@ -3,12 +3,13 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
+from typing import Dict, Optional, Callable, Tuple, Sequence
 import torch
 import numpy as np
 import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
-from ....torchio import DATA
+from ....torchio import DATA, TypePath, TypeCallable
 from .normalization_transform import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -33,11 +34,21 @@ STANDARD_RANGE = 0, 100
 #         self.landmarks_dict = landmarks_dict
 
 class HistogramStandardization(NormalizationTransform):
-    def __init__(self, landmarks_dict, masking_method=None, verbose=False):
+    def __init__(
+            self,
+            landmarks_dict: Dict[str, np.ndarray],
+            masking_method: Optional[TypeCallable] = None,
+            verbose: bool = False,
+            ):
         super().__init__(masking_method=masking_method, verbose=verbose)
         self.landmarks_dict = landmarks_dict
 
-    def apply_normalization(self, sample, image_name, mask):
+    def apply_normalization(
+            self,
+            sample: dict,
+            image_name: str,
+            mask: torch.Tensor,
+            ) -> None:
         if image_name not in self.landmarks_dict:
             keys = tuple(self.landmarks_dict.keys())
             message = (
@@ -54,7 +65,11 @@ class HistogramStandardization(NormalizationTransform):
         )
 
 
-def __compute_percentiles(img, mask, cutoff):
+def __compute_percentiles(
+        img: np.ndarray,
+        mask: np.ndarray,
+        cutoff: Tuple[float, float],
+        ) -> np.ndarray:
     """
     Creates the list of percentile values to be used as landmarks for the
     linear fitting.
@@ -77,7 +92,10 @@ def __compute_percentiles(img, mask, cutoff):
     return perc_results
 
 
-def __standardize_cutoff(cutoff, type_hist='percentile'):
+def __standardize_cutoff(
+        cutoff: np.ndarray,
+        type_hist: str = 'percentile',
+        ) -> np.ndarray:
     """
     Standardizes the cutoff values given in the configuration
 
@@ -106,7 +124,11 @@ def __standardize_cutoff(cutoff, type_hist='percentile'):
     return cutoff
 
 
-def __averaged_mapping(perc_database, s1, s2):
+def __averaged_mapping(
+        perc_database: np.ndarray,
+        s1: float,
+        s2: float,
+        ) -> np.ndarray:
     """
     Map the landmarks of the database to the chosen range
     :param perc_database: perc_database over which to perform the averaging
@@ -124,16 +146,17 @@ def __averaged_mapping(perc_database, s1, s2):
 
 
 def normalize(
-        data,
-        landmarks,
-        mask=None,
-        cutoff=DEFAULT_CUTOFF,
-        epsilon=1e-5,
-        ):
-    data = data.numpy()
+        tensor: torch.Tensor,
+        landmarks: np.ndarray,
+        mask: Optional[np.ndarray],
+        cutoff: Optional[Tuple[float, float]] = None,
+        epsilon: float = 1e-5,
+        ) -> torch.Tensor:
+    cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+    array = tensor.numpy()
     mapping = landmarks
 
-    img = data
+    img = array
     image_shape = img.shape
     img = img.reshape(-1).astype(np.float32)
 
@@ -175,12 +198,12 @@ def normalize(
 
 
 def train(
-        images_paths,
-        cutoff=None,
-        mask_path=None,
-        masking_function=None,
-        output_path=None,
-        ):
+        images_paths: Sequence,
+        cutoff: Optional[Tuple[float, float]] = None,
+        mask_path: Optional[TypePath] = None,
+        masking_function: Optional[Callable] = None,
+        output_path: Optional[TypePath] = None,
+        ) -> np.ndarray:
     """
     Output path extension should be .txt or .npy
     """
