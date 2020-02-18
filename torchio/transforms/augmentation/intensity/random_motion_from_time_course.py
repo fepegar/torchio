@@ -163,7 +163,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             warnings.warn("Expected motion parameters to be of shape (6, N), found {}. Setting motions to None".format(fpars.shape))
             fpars = None
 
-          if self.displacement_shift > 0:
+        if self.displacement_shift > 0:
             to_substract = fpars[:, int(round(self.nT / 2))]
             fpars = np.subtract(fpars, to_substract[..., np.newaxis])
 
