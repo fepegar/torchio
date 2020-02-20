@@ -3,6 +3,7 @@ from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
 from torchvision.transforms import Compose
 import numpy as np
 from nibabel.viewers import OrthoSlicer3D as ov
+from copy import deepcopy
 
 np.random.seed(12)
 
@@ -14,18 +15,28 @@ subject = [[
      ]]
 subjects_list = [subject]
 dataset = ImagesDataset(subject)
-sample = dataset[0]
+sample_orig = dataset[0]
+#sample = deepcopy(sample_orig)
+sample = sample_orig
 
-nT = 200
-time_points = [.5, 1.0]
-dim_modif = 4
+nT = 100
+time_points = [.58, 1.0]
+dim_modif = 1
 fitpars = np.zeros((6, nT))
-fitpars[dim_modif, :100] = 12
 
-ov(sample["T1"]["data"][0], sample["T1"]["affine"])
+fitpars[0, 58:] = -94
+fitpars[1, 58:] = -5
+fitpars[2, 58:] = -88
+#fitpars[dim_modif, :45] = -7.5
+#fitpars[dim_modif, 45:] = 7.5
+
+#ov(sample["T1"]["data"][0], sample["T1"]["affine"])
 
 transform = RandomMotionTimeCourseAffines(fitpars=fitpars, time_points=time_points, pct_oversampling=0.30, verbose=True)
+#transform = RandomMotionTimeCourseAffines(fitpars=fitpars, time_points=time_points, pct_oversampling=0.30, verbose=True,combine_axis=0)
+
 transformed = transform(sample)
 
+dataset.save_sample(transformed, dict(T1='/home/romain.valabregue/tmp/mot/t1_motion.nii.gz'))
 
-ov(transformed["T1"]["data"][0], sample["T1"]["affine"])
+#ov(transformed["T1"]["data"][0], sample["T1"]["affine"])
