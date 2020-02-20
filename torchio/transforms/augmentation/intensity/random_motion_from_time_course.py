@@ -44,7 +44,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
-                 freq_encoding_dim=(0, 1, 2), preserve_center_pct=0.07, tr=2.3, es=4E-3, nufft=True,
+                 freq_encoding_dim=(0, 1, 2), tr=2.3, es=4E-3, nufft=True,
                  verbose=False, fitpars=None, oversampling_pct=0.0, read_func=lambda x: pd.read_csv(x).values):
         """
         :param nT (int): number of points of the time course
@@ -57,7 +57,6 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param suddenMagnitude (float): magnitude of the sudden movements to generate
         :param displacement_shift (bool): whether or not to demean the time course by the values of the center of the kspace
         :param freq_encoding_dim (tuple of ints): potential frequency encoding dims to use (one of them is randomly chosen)
-        :param preserve_center_pct (float between 0 and 1): percentage of the center of the kspace to preserve
         :param tr (float): repetition time of the data acquisition (used for interpolating the time course movement)
         :param es (float): echo spacing time of the data acquisition (used for interpolating the time course movement)
         :param nufft (bool): whether or not to apply nufft (if false, no rotation is simulated)
@@ -81,7 +80,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.suddenMagnitude = [np.random.uniform(high=suddenMagnitude/2),
                                 np.random.uniform(low=suddenMagnitude/2, high=suddenMagnitude)]
         self.displacement_shift = displacement_shift
-        self.preserve_center_frequency_pct = preserve_center_pct
+        # no more used self.preserve_center_frequency_pct = preserve_center_pct
         self.freq_encoding_choice = freq_encoding_dim
         self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
         self.read_func = read_func
@@ -186,6 +185,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.frequency_encoding_dim = len(self.im_shape) - 1 if self.frequency_encoding_dim == -1 \
             else self.frequency_encoding_dim
 
+    # no more used
     def _center_k_indices_to_preserve(self):
         """get center k indices of freq domain"""
         mid_pts = [int(math.ceil(x / 2)) for x in self.phase_encoding_shape]
