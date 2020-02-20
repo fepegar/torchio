@@ -85,10 +85,6 @@ class RandomMotion(RandomTransform):
                 translation_params,
                 image,
             )
-            transforms = self.demean_transforms(
-                transforms,
-                times_params,
-            )
             image_dict[DATA] = self.add_artifact(
                 image,
                 transforms,
@@ -144,22 +140,6 @@ class RandomMotion(RandomTransform):
             matrices.append(motion_matrix)
         transforms = [self.matrix_to_transform(m) for m in matrices]
         return transforms
-
-    def demean_transforms(
-            self,
-            transforms: List,
-            times: np.ndarray,
-            ) -> List[sitk.Euler3DTransform]:
-        matrices = [self.transform_to_matrix(t) for t in transforms]
-        times = np.insert(times, 0, 0)
-        times = np.append(times, 1)
-        weights = np.diff(times)
-        mean = self.matrix_average(matrices, weights=weights)
-        inverse_mean = np.linalg.inv(mean)
-        demeaned_matrices = [inverse_mean @ matrix for matrix in matrices]
-        demeaned_transforms = [
-            self.matrix_to_transform(m) for m in demeaned_matrices]
-        return demeaned_transforms
 
     @staticmethod
     def transform_to_matrix(transform: sitk.Euler3DTransform) -> np.ndarray:
@@ -244,19 +224,6 @@ class RandomMotion(RandomTransform):
         f_ishift = np.fft.ifftshift(fshift)
         img_back = np.fft.ifft2(f_ishift)
         return np.abs(img_back)
-
-    def matrix_average(
-            self,
-            matrices: List[np.ndarray],
-            weights: Optional[np.ndarray] = None,
-            ):
-        if weights is None:
-            num_matrices = len(matrices)
-            weights = num_matrices * (1 / num_matrices,)
-        logs = [w * logm(A) for (w, A) in zip(weights, matrices)]
-        logs = np.array(logs)
-        logs_sum = logs.sum(axis=0)
-        return expm(logs_sum)
 
 
 def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
