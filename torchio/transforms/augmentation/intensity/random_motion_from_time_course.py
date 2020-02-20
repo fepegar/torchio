@@ -260,7 +260,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             fitpars = np.subtract(fitpars, to_substract[..., np.newaxis])
 
         self.fitpars = fitpars
-        print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
+        #print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
 
         fitpars = self._interpolate_space_timing(fitpars)
         fitpars = self._tile_params_to_volume_dims(fitpars)
@@ -325,7 +325,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         grid_coordinates = np.array([i1.T.flatten(), i2.T.flatten(), i3.T.flatten()])
 
-        print('rotation size is {}'.format(self.rotations.shape))
+        #print('rotation size is {}'.format(self.rotations.shape))
 
         rotations = self.rotations.reshape([3] + self.im_shape)
         ix = (len(self.im_shape) + 1) * [slice(None)]
@@ -348,7 +348,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         grid_coordinates_tiled = grid_coordinates_tiled.reshape([3, -1], order='F').T
         rotation_matrices = rotation_matrices.reshape([-1, 3])
 
-        print('rotation matrices size is {}'.format(rotation_matrices.shape))
+        #print('rotation matrices size is {}'.format(rotation_matrices.shape))
 
         new_grid_coords = (rotation_matrices * grid_coordinates_tiled).sum(axis=1)
 
