@@ -100,11 +100,11 @@ class RandomMotionTimeCourseAffines(RandomTransform):
     def get_params(*args, **kwargs):
         pass
 
-"""
-following functin are not use, I just keep it to note the nice way to combine affine (with logm and expm)
-http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.91.4405&rep=rep1&type=pdf
-"""
 
+    """
+    following functin are not use, I just keep it to note the nice way to combine affine (with logm and expm)
+    http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.91.4405&rep=rep1&type=pdf
+    """
     def matrix_average(
             self,
             matrices: List[np.ndarray],
