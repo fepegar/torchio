@@ -10,6 +10,7 @@ from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE
 from .. import Interpolation
 from .. import RandomTransform
+from typing import Optional, List
 
 
 class RandomMotionTimeCourseAffines(RandomTransform):
@@ -51,7 +52,7 @@ class RandomMotionTimeCourseAffines(RandomTransform):
         transform = sitk.Euler3DTransform()
         transform.SetTranslation(fitpars[:3])
         transform.SetRotation(*np.radians(fitpars[3:]))
-        matrix = np.empty((4, 4))
+        matrix = np.eye(4)
         rotation = np.array(transform.GetMatrix()).reshape(3, 3)
         matrix[:3, :3] = rotation
         matrix[:3, 3] = transform.GetTranslation()
@@ -98,3 +99,47 @@ class RandomMotionTimeCourseAffines(RandomTransform):
     @staticmethod
     def get_params(*args, **kwargs):
         pass
+
+"""
+following functin are not use, I just keep it to note the nice way to combine affine (with logm and expm)
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.91.4405&rep=rep1&type=pdf
+"""
+
+    def matrix_average(
+            self,
+            matrices: List[np.ndarray],
+            weights: Optional[np.ndarray] = None,
+            ):
+        if weights is None:
+            num_matrices = len(matrices)
+            weights = num_matrices * (1 / num_matrices,)
+        logs = [w * logm(A) for (w, A) in zip(weights, matrices)]
+        logs = np.array(logs)
+        logs_sum = logs.sum(axis=0)
+        return expm(logs_sum)
+
+    @staticmethod
+    def transform_to_matrix(transform: sitk.Euler3DTransform) -> np.ndarray:
+        matrix = np.eye(4)
+        rotation = np.array(transform.GetMatrix()).reshape(3, 3)
+        matrix[:3, :3] = rotation
+        matrix[:3, 3] = transform.GetTranslation()
+        return matrix
+
+    def demean_transforms(
+            self,
+            transforms: List,
+            times: np.ndarray,
+            ) -> List[sitk.Euler3DTransform]:
+        #matrices = [self.transform_to_matrix(t) for t in transforms]
+        matrices = transforms
+
+        times = np.insert(times, 0, 0)
+        times = np.append(times, 1)
+        weights = np.diff(times)
+        mean = self.matrix_average(matrices, weights=weights)
+        inverse_mean = np.linalg.inv(mean)
+        demeaned_matrices = [inverse_mean @ matrix for matrix in matrices]
+#        demeaned_transforms = [
+#            self.matrix_to_transform(m) for m in demeaned_matrices]
+        return demeaned_matrices
