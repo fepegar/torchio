@@ -14,8 +14,8 @@ from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 #    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
 #)
 subject = Subject(
-    Image('t1', '/data/romain/data_exemple/mni/MNI152_T1_1mm.nii.gz', INTENSITY),
-    Image('label', '/data/romain/data_exemple/mni/mean_nr1000/Mean_S50_all.nii', LABEL),
+    Image('t1', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
+    Image('label', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL),
 )
 
 subjects_list = [subject]
@@ -24,10 +24,10 @@ dataset = ImagesDataset(subjects_list)
 
 sample = dataset[0]
 transform = transforms.RandomMotion(
-    seed=42,
-    degrees=10,
-    translation=10,
-    num_transforms=3,
+    seed=2,
+    degrees=0,
+    translation=100,
+    num_transforms=1,
     verbose=True,
     proportion_to_augment=1,
 )
