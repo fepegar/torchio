@@ -44,8 +44,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
-                 freq_encoding_dim=(0, 1, 2), tr=2.3, es=4E-3, nufft=True,
-                 verbose=False, fitpars=None, oversampling_pct=0.0, read_func=lambda x: pd.read_csv(x).values):
+                 freq_encoding_dim=(0), tr=2.3, es=4E-3, nufft=True,
+                 verbose=False, fitpars=None, read_func=lambda x: pd.read_csv(x).values,
+                 oversampling_pct=0.3):
         """
         :param nT (int): number of points of the time course
         :param maxDisp (float): maximal value of displacement in the perlin noise (useless if noiseBasePars is 0)
@@ -64,6 +65,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param oversampling_pct (float): percentage with which the data will be oversampled in the image domain prior to applying the motion
         :param read_func (function): if fitpars is a string, function to use to read the data. Must return an array of shape (6, nT)
         :param verbose (bool): verbose
+        Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
         """
 
         super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose)
@@ -333,7 +335,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         rotations = rotations[tuple(ix)].reshape(3, -1)
         rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rotations).transpose([-1, 0, 1])
-        rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3], order='F')#rrr
+        #rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3], order='F')#rrr
+        rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3])
         rotation_matrices = np.expand_dims(rotation_matrices, self.frequency_encoding_dim)
 
         rotation_matrices = np.tile(rotation_matrices,
