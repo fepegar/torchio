@@ -74,7 +74,9 @@ class RandomElasticDeformation(RandomTransform):
         mesh_shape = 3 * (num_control_points,)
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
         default_params = bspline_transform.GetParameters()
-        bspline_params = torch.rand(len(default_params)) * deformation_std
+        bspline_params = torch.rand(len(default_params))  # [0, 1)
+        bspline_params -= 0.5  # [-0.5, 0.5)
+        bspline_params *= deformation_std  # [-std/2, std/2)
         do_augmentation = torch.rand(1) < probability
         return do_augmentation, bspline_params.numpy()
 
