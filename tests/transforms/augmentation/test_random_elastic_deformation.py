@@ -44,10 +44,10 @@ class TestRandomElasticDeformation(unittest.TestCase):
             seed=42,
         )
         keys = ('t1', 't2', 'label')
-        fixtures = 764.2669872255983, 734.7786045279245, 752
+        fixtures = 2463.8931905687296, 2465.493324966148, 2532
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
-            assert transformed[key][DATA].sum() == fixture
+            self.assertAlmostEqual(transformed[key][DATA].sum(), fixture)
 
     def test_random_elastic_deformation_inputs_pta(self):
         with self.assertRaises(ValueError):
