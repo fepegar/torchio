@@ -44,8 +44,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
-                 freq_encoding_dim=(0), tr=2.3, es=4E-3, nufft=True,
-                 verbose=False, fitpars=None, read_func=lambda x: pd.read_csv(x).values,
+                 freq_encoding_dim=[0], tr=2.3, es=4E-3, nufft=True,
+                 verbose=False, fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  oversampling_pct=0.3):
         """
         :param nT (int): number of points of the time course
@@ -117,8 +117,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
             self.translations, self.rotations = fitpars_vox[:3], np.radians(fitpars_vox[3:])
             # fft
             im_freq_domain = self._fft_im(original_image)
+            #print('translation')
             translated_im_freq_domain = self._translate_freq_domain(freq_domain=im_freq_domain)
-
+            #print('rotaion')
             # iNufft for rotations
             if self.nufft:
                 corrupted_im = self._nufft(translated_im_freq_domain)
@@ -135,6 +136,11 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             image_dict["data"] = corrupted_im[np.newaxis, ...]
             image_dict['data'] = torch.from_numpy(image_dict['data'])
+
+            #add extra field to follow what have been done
+            sample[image_name]['fit_pars'] = self.fitpars
+            sample[image_name]['fit_pars_interp'] = self.fitpars_interp
+
         return sample
 
     @staticmethod
@@ -167,6 +173,14 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if self.displacement_shift > 0:
             to_substract = fpars[:, int(round(self.nT / 2))]
             fpars = np.subtract(fpars, to_substract[..., np.newaxis])
+
+        #print(fpars.shape)
+        if np.any(np.isnan(fpars)) :
+            #assume it is the last column, as can happen if the the csv line ends with ,
+            fpars = fpars[:, :-1]
+            if np.any(np.isnan(fpars)):
+                warnings.warn('There is still NaN in the fitpar, it will crash the nufft')
+        self.nT = fpars.shape[1]
 
         return fpars
 
@@ -226,6 +240,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         Simulates the parameters of the transformation through the vector fitpars using 6 dimensions (3 translations and
         3 rotations).
         """
+        #print('simulate FITpars')
         if self.noiseBasePars > 0:
             fitpars = np.asarray([self.perlinNoise1D(self.nT, self.noiseBasePars) - 0.5 for _ in range(6)])
             fitpars[:3] *= self.maxDisp
@@ -357,6 +372,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         # reshape new grid coords back to 3 x nvoxels
         new_grid_coords = new_grid_coords.reshape([3, -1], order='F')
+        #print('new_grid_coords matrices size is {}'.format(new_grid_coords.shape))
 
         # scale data between -pi and pi
         max_vals = [abs(x) for x in grid_coordinates[:, 0]]
@@ -382,7 +398,6 @@ class RandomMotionFromTimeCourse(RandomTransform):
             raise ImportError('finufftpy not available')
 
         new_grid_coords = self._rotate_coordinates()[0]
-
         # initialize array for nufft output
         f = np.zeros([len(new_grid_coords[0])], dtype=np.complex128, order='F')
 
