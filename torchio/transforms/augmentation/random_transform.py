@@ -2,6 +2,7 @@ import numbers
 from typing import Optional, Tuple, Union
 from abc import abstractmethod
 import torch
+import numpy as np
 from .. import Transform, Interpolation
 from ... import TypeNumber
 
@@ -77,3 +78,15 @@ class RandomTransform(Transform):
             if self.verbose:
                 print('Setting torch seed to', self.seed)
             torch.manual_seed(self.seed)
+
+    @staticmethod
+    def fourier_transform(array: np.ndarray):
+        transformed = np.fft.fft2(array)
+        fshift = np.fft.fftshift(transformed)
+        return fshift
+
+    @staticmethod
+    def inv_fourier_transform(fshift: np.ndarray):
+        f_ishift = np.fft.ifftshift(fshift)
+        img_back = np.fft.ifft2(f_ishift)
+        return np.abs(img_back)
