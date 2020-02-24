@@ -74,6 +74,7 @@ BibTeX entry:
       * [Intensity](#intensity)
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
         - [MRI k-space ghosting artifacts](#mri-k-space-ghosting-artifacts)
+        - [MRI k-space spike artifacts](#mri-k-space-spike-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Patch swap](#patch-swap)
         - [Gaussian noise](#gaussian-noise)
@@ -250,6 +251,14 @@ Discrete "ghost" artifacts may occur along the phase-encode direction whenever t
 Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
 
 ![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_ghosting.gif)
+
+
+###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
+
+Also known as [Herringbone artifact](https://radiopaedia.org/articles/herringbone-artifact?lang=gb), crisscross artifact or corduroy artifact,
+it creates stripes in different directions in image space due to spikes in k-space.
+
+![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_spike.gif)
 
 
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
