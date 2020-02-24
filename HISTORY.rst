@@ -69,3 +69,13 @@ History
 
 * Add ToCanonical transform
 * Add CenterCropOrPad transform
+
+
+0.13.0 (24-02-2020)
+-------------------
+
+* Add Subject class
+* Add random blur transform
+* Add lambda transform
+* Add random patches swapping transform
+* Add MRI k-space ghosting artefact augmentation

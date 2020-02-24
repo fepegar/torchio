@@ -12,6 +12,7 @@ from .augmentation.spatial import RandomElasticDeformation
 from .augmentation.intensity import RandomSwap
 from .augmentation.intensity import RandomBlur
 from .augmentation.intensity import RandomNoise
+from .augmentation.intensity import RandomSpike
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import MotionSimTransform
 from .augmentation.intensity import RandomMotionFromTimeCourse
