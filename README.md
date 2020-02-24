@@ -73,6 +73,7 @@ BibTeX entry:
     - [Augmentation](#augmentation)
       * [Intensity](#intensity)
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
+        - [MRI k-space ghosting artifacts](#mri-k-space-ghosting-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Patch swap](#patch-swap)
         - [Gaussian noise](#gaussian-noise)
@@ -243,6 +244,14 @@ simulate motion artifacts for data augmentation.
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
 
 
+###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
+
+Discrete "ghost" artifacts may occur along the phase-encode direction whenever the position or signal intensity of imaged structures within the field-of-view vary or move in a regular (periodic) fashion.
+Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
+
+![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_ghosting.gif)
+
+
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
 MRI magnetic field inhomogeneity creates slow frequency intensity variations.
@@ -356,7 +365,7 @@ and a mask can be negated with
 
 
 
-## [Example](examples/example_times.py)
+## [Example](examples/example_queue.py)
 
 This example shows the improvement in performance when multiple workers are
 used to load and preprocess the volumes using multiple workers.

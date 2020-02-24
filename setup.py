@@ -32,7 +32,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
@@ -57,6 +56,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.12.13',
+    version='0.13.0',
     zip_safe=False,
 )

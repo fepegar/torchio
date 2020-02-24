@@ -213,18 +213,6 @@ class RandomMotion(RandomTransform):
         result_image = self.inv_fourier_transform(result_spectrum)
         return result_image.astype(np.float32)
 
-    @staticmethod
-    def fourier_transform(array: np.ndarray):
-        transformed = np.fft.fft2(array)
-        fshift = np.fft.fftshift(transformed)
-        return fshift
-
-    @staticmethod
-    def inv_fourier_transform(fshift: np.ndarray):
-        f_ishift = np.fft.ifftshift(fshift)
-        img_back = np.fft.ifft2(f_ishift)
-        return np.abs(img_back)
-
 
 def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
     tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
