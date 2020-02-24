@@ -73,6 +73,7 @@ BibTeX entry:
     - [Augmentation](#augmentation)
       * [Intensity](#intensity)
         - [MRI k-space motion artifacts](#mri-k-space-motion-artifacts)
+        - [MRI k-space ghosting artifacts](#mri-k-space-ghosting-artifacts)
         - [MRI magnetic field inhomogeneity](#mri-magnetic-field-inhomogeneity)
         - [Patch swap](#patch-swap)
         - [Gaussian noise](#gaussian-noise)
