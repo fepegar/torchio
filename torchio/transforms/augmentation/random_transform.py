@@ -81,12 +81,12 @@ class RandomTransform(Transform):
 
     @staticmethod
     def fourier_transform(array: np.ndarray):
-        transformed = np.fft.fft2(array)
+        transformed = np.fft.fftn(array)
         fshift = np.fft.fftshift(transformed)
         return fshift
 
     @staticmethod
     def inv_fourier_transform(fshift: np.ndarray):
         f_ishift = np.fft.ifftshift(fshift)
-        img_back = np.fft.ifft2(f_ishift)
+        img_back = np.fft.ifftn(f_ishift)
         return np.abs(img_back)
