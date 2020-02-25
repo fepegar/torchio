@@ -18,7 +18,7 @@ FLIP_XY = np.diag((-1, -1, 1))
 def to_tuple(
         value: Union[TypeNumber, Iterable[TypeNumber]],
         n: int = 1,
-        ) -> Tuple[TypeNumber]:
+        ) -> Tuple[TypeNumber, ...]:
     """
     to_tuple(1, n=1) -> (1,)
     to_tuple(1, n=3) -> (1, 1, 1)

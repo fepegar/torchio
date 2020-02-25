@@ -35,4 +35,4 @@ with torch.no_grad():
         outputs = labels
         aggregator.add_batch(outputs, locations)
 
-output_array = aggregator.output_array
+output_tensor = aggregator.get_output_tensor()

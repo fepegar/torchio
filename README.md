@@ -157,22 +157,25 @@ For more information about patch-based training, see
 
 ```python
 import torch
+import torch.nn as nn
 import torchio
 
 CHANNELS_DIMENSION = 1
 patch_overlap = 4
+patch_size = 128
+
 grid_sampler = torchio.inference.GridSampler(
-    input_array,  # some NumPy array
-    patch_size=128,
-    patch_overlap=patch_overlap,
+    input_data,  # some PyTorch tensor or NumPy array
+    patch_size,
+    patch_overlap,
 )
 patch_loader = torch.utils.data.DataLoader(grid_sampler, batch_size=4)
 aggregator = torchio.inference.GridAggregator(
-    input_array,
-    patch_overlap=patch_overlap,
+    input_data,  # some PyTorch tensor or NumPy array
+    patch_overlap,
 )
 
-# Some torch.nn.Module
+model = nn.Module()
 model.to(device)
 model.eval()
 with torch.no_grad():
@@ -184,7 +187,7 @@ with torch.no_grad():
         outputs = labels
         aggregator.add_batch(outputs, locations)
 
-output_array = aggregator.output_array
+output_tensor = aggregator.get_output_tensor()
 ```
 
 
@@ -273,7 +276,7 @@ This transform is very similar to the one in
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
 
 Randomly swaps patches in the image.
-This is typically done for
+This is typically used in
 [context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
 
 ![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_swap.jpg)
