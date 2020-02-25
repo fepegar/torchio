@@ -8,8 +8,8 @@ from ... import TypeNumber
 
 
 class RandomTransform(Transform):
-    def __init__(self, seed: Optional[int] = None, verbose: bool = False):
-        super().__init__(verbose=verbose)
+    def __init__(self, seed: Optional[int] = None, verbose: bool = False, keep_original=False):
+        super().__init__(verbose=verbose, keep_original=keep_original)
         self.seed = seed
 
     def __call__(self, sample: dict):

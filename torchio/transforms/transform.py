@@ -4,13 +4,25 @@ from abc import ABC, abstractmethod
 import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 from .. import TypeData
+from .. import INTENSITY
 import numpy as np
 
 class Transform(ABC):
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False, keep_original=False):
         self.verbose = verbose
+        self.keep_orignial = keep_original
 
     def __call__(self, sample: dict):
+        if self.keep_orignial:
+            for image_name in list(sample):
+                image_dict = sample[image_name]
+                if not is_image_dict(image_dict):
+                    continue
+                if image_dict['type'] == INTENSITY:
+                    new_key = image_name +'_orig'
+                    if new_key not in sample:
+                        sample[new_key] = dict(data=image_dict['data'])
+
         if self.verbose:
             start = time.time()
         self.parse_sample(sample)
