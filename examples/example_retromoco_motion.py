@@ -8,6 +8,52 @@ from torchio.transforms import RandomMotionFromTimeCourse, RandomAffine
 from copy import deepcopy
 from nibabel.viewers import OrthoSlicer3D as ov
 
+"""
+Comparing result with retromocoToolbox
+"""
+from utils_file import gfile, get_parent_path
+
+from torchio.transforms import Interpolation
+suj = [[ Image('T1', '/data/romain/HCPdata/suj_274542/mT1w_1mm.nii', INTENSITY), ]]
+
+rp_files = gfile('/data/romain/HCPdata/suj_274542/Motion_ms','^rp')
+
+rpf = rp_files[10]
+for rpf in rp_files:
+    dirpath,name = get_parent_path([rpf])
+    fout = dirpath[0] + '/check/'+name[0][3:-4] + '.nii'
+
+    t = RandomMotionFromTimeCourse(fitpars=rpf, nufft=True, oversampling_pct=0, keep_original=True, verbose=True)
+    dataset = ImagesDataset(suj, transform=t)
+    sample = dataset[0]
+
+    dataset.save_sample(sample, dict(T1=fout))
+
+fit_pars = sample['T1']['fit_pars']
+plt.figure; plt.plot(fit_pars[3:].T)
+plt.figure; plt.plot(fit_pars.T)
+
+
+
+
+
+
+
+
+#test transforms
+from torchio.transforms import RandomSpike
+t = RandomSpike(num_spikes_range=(5,10), intensity_range=(0.1,0.2))
+dataset = ImagesDataset(suj, transform=t)
+
+for i in range(1,10):
+    sample = dataset[0]
+    fout='/tmp/toto{}.nii'.format(i)
+    dataset.save_sample(sample, dict(T1=fout))
+
+
+
+
+
 out_dir = '/data/ghiles/motion_simulation/tests/'
 
 def corrupt_data(data, percentage):
@@ -87,59 +133,11 @@ rots = t.rotations.reshape((3, 182, 218, 182))
 translats = t.translations.reshape((3, 182, 218, 182))
 
 
-"""
-#### INTERPOLATION DEBUG
-nT = 200
-phase_encoding_shape = [182, 218]
-tr = 2.3
-es = 4e-3
-frequency_encoding_dim = 2
-fitpars = fpars_list[0]
-
-n_phase, n_slice = phase_encoding_shape[0], phase_encoding_shape[1]
-# Time steps
-t_steps = n_phase * tr
-# Echo spacing dimension
-dim_es = np.cumsum(es * np.ones(n_slice)) - es
-dim_tr = np.cumsum(tr * np.ones(n_phase)) - tr
-# Build grid
-mg_es, mg_tr = np.meshgrid(*[dim_es, dim_tr])
-mg_total = mg_es + mg_tr  # MP-rage timing
-# Flatten grid and sort values
-mg_total = np.sort(mg_total.reshape(-1))
-# Equidistant time spacing
-teq = np.linspace(0, t_steps, nT)
-# Actual interpolation
-print("Shapes\nmg_total\t{}\nteq\t{}\nparams\t{}".format(mg_total.shape, teq.shape, fitpars.shape))
-fitpars_interp = np.asarray([np.interp(mg_total, teq, params) for params in fitpars])
-# Reshaping to phase encoding dimensions
-fitpars_interp = fitpars_interp.reshape([6] + phase_encoding_shape)
-
-# Add missing dimension
-fitpars_interp = np.expand_dims(fitpars_interp, axis=frequency_encoding_dim + 1)
-"""
-from torchio.transforms import Interpolation
-suj = [[
-    Image('T1', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
-    Image('mask', '/data/romain/HCPdata/suj_100307/brain_mT1w_1mm.nii', LABEL)
-     ]]
-
-trans = RandomAffine()
-
-dataset = ImagesDataset(suj)
-sample = dataset[0]
-ii, affine = sample['T1']['data'], sample['T1']['affine']
-#ov(ii[0])
-
-rot = [10,20,0]
-scal = [1, 1, 1]
-iist = trans.apply_affine_transform(ii, sample['T1']['affine'], scal, rot,Interpolation.LINEAR)
-ov(iist[0])
 
 
 
 
-
+# TESTING AFFINE GRIG from pytorch
 from torchio.transforms.augmentation.intensity.random_motion_from_time_course import create_rotation_matrix_3d
 #import sys
 #sys.path.append('/data/romain/toolbox_python/romain/cnnQC/')
