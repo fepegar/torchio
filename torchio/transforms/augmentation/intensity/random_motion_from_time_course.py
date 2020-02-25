@@ -12,6 +12,7 @@ except ImportError:
 
 from torchio import  INTENSITY
 from .. import RandomTransform
+from ....utils import is_image_dict
 
 
 def create_rotation_matrix_3d(angles):
@@ -45,7 +46,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
     def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
                  suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
                  freq_encoding_dim=[0], tr=2.3, es=4E-3, nufft=True,
-                 verbose=False, fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
+                 verbose=False, keep_original=False,
+                 fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  oversampling_pct=0.3):
         """
         :param nT (int): number of points of the time course
@@ -68,7 +70,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
         """
 
-        super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose)
+        super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose, keep_original = keep_original)
         self.maxDisp = maxDisp
         self.maxRot = maxRot
         self.tr = tr
@@ -94,7 +96,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
-            if not isinstance(image_dict, dict) or 'type' not in image_dict:
+            if not is_image_dict(image_dict):
                 # Not an image
                 continue
             if image_dict['type'] != INTENSITY:
