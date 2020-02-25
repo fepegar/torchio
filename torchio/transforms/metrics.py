@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 from math import exp
+import time
 
 
 def gaussian(window_size, sigma):
@@ -69,7 +70,18 @@ class SSIM3D(torch.nn.Module):
         return _ssim_3D(img1, img2, window, self.window_size, channel, self.size_average)
 
 
-def ssim3D(img1, img2, window_size=11, size_average=True):
+def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
+
+    if verbose:
+        start = time.time()
+
+    if len(img1.size()) == 4: #missing batch dim
+        img1 = img1.unsqueeze(0)
+        img2 = img2.unsqueeze(0)
+
+    #img1 = img1.float()
+    #img2 = img2.float()
+
     (_, channel, _, _, _) = img1.size()
     window = create_window_3D(window_size, channel)
 
@@ -77,4 +89,29 @@ def ssim3D(img1, img2, window_size=11, size_average=True):
         window = window.cuda(img1.get_device())
     window = window.type_as(img1)
 
-    return _ssim_3D(img1, img2, window, window_size, channel, size_average)
+    res =  _ssim_3D(img1, img2, window, window_size, channel, size_average)
+
+    if verbose:
+        duration = time.time() - start
+        print(f'Ssim calculation : {duration:.3f} seconds')
+
+    return res
+
+
+def th_pearsonr(x, y):
+    """
+    mimics scipy.stats.pearsonr
+    """
+    x = torch.flatten(x)
+    y = torch.flatten(y)
+
+    mean_x = torch.mean(x)
+    mean_y = torch.mean(y)
+    xm = x.sub(mean_x)
+    ym = y.sub(mean_y)
+    r_num = xm.dot(ym)
+    r_den = torch.norm(xm, 2) * torch.norm(ym, 2)
+    r_val = r_num / r_den
+    return r_val
+
+

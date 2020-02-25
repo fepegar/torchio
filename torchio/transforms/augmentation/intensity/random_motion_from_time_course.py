@@ -13,32 +13,7 @@ except ImportError:
 from torchio import  INTENSITY
 from .. import RandomTransform
 from ....utils import is_image_dict
-
-
-def create_rotation_matrix_3d(angles):
-    """
-    given a list of 3 angles, create a 3x3 rotation matrix that describes rotation about the origin
-    :param angles (list or numpy array) : rotation angles in 3 dimensions
-    :return (numpy array) : rotation matrix 3x3
-    """
-
-    mat1 = np.array([[1., 0., 0.],
-                     [0., math.cos(angles[0]), math.sin(angles[0])],
-                     [0., -math.sin(angles[0]), math.cos(angles[0])]],
-                    dtype='float')
-
-    mat2 = np.array([[math.cos(angles[1]), 0., -math.sin(angles[1])],
-                     [0., 1., 0.],
-                     [math.sin(angles[1]), 0., math.cos(angles[1])]],
-                    dtype='float')
-
-    mat3 = np.array([[math.cos(angles[2]), math.sin(angles[2]), 0.],
-                     [-math.sin(angles[2]), math.cos(angles[2]), 0.],
-                     [0., 0., 1.]],
-                    dtype='float')
-
-    mat = (mat1 @ mat2) @ mat3
-    return mat
+from ...metrics import ssim3D, th_pearsonr
 
 
 class RandomMotionFromTimeCourse(RandomTransform):
@@ -137,13 +112,23 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 corrupted_im = self.crop_volume(corrupted_im, original_image_shape)
 
             image_dict["data"] = corrupted_im[np.newaxis, ...]
-            image_dict['data'] = torch.from_numpy(image_dict['data'])
+            image_dict['data'] = torch.from_numpy(image_dict['data']).float()
 
             #add extra field to follow what have been done
             sample[image_name]['fit_pars'] = self.fitpars
-            sample[image_name]['fit_pars_interp'] = self.fitpars_interp
+            #sample[image_name]['fit_pars_interp'] = self.fitpars_interp
+
+            if self.keep_orignial:
+                metrics = dict()
+                metrics['ssim'] = ssim3D(image_dict["data"],sample[image_name+'_orig']['data'], verbose=self.verbose)
+                metrics['corr'] = th_pearsonr(image_dict["data"],sample[image_name+'_orig']['data'])
+                metrics['FrameDispP'] = calculate_mean_FD_P(self.fitpars)
+                metrics['Disp'] = calculate_mean_displacment(self.fitpars)
+
+                sample[image_name]['metrics'] = metrics
 
         return sample
+        #output type is double, TODO where to cast in Float ?
 
     @staticmethod
     def get_params():
@@ -412,3 +397,137 @@ class RandomMotionFromTimeCourse(RandomTransform):
         im_out = f.reshape(self.im_shape, order='F')
 
         return im_out
+
+
+def create_rotation_matrix_3d(angles):
+    """
+    given a list of 3 angles, create a 3x3 rotation matrix that describes rotation about the origin
+    :param angles (list or numpy array) : rotation angles in 3 dimensions
+    :return (numpy array) : rotation matrix 3x3
+    """
+
+    mat1 = np.array([[1., 0., 0.],
+                     [0., math.cos(angles[0]), math.sin(angles[0])],
+                     [0., -math.sin(angles[0]), math.cos(angles[0])]],
+                    dtype='float')
+
+    mat2 = np.array([[math.cos(angles[1]), 0., -math.sin(angles[1])],
+                     [0., 1., 0.],
+                     [math.sin(angles[1]), 0., math.cos(angles[1])]],
+                    dtype='float')
+
+    mat3 = np.array([[math.cos(angles[2]), math.sin(angles[2]), 0.],
+                     [-math.sin(angles[2]), math.cos(angles[2]), 0.],
+                     [0., 0., 1.]],
+                    dtype='float')
+
+    mat = (mat1 @ mat2) @ mat3
+    return mat
+
+def calculate_mean_FD_P(motion_params):
+    """
+    Method to calculate Framewise Displacement (FD)  as per Power et al., 2012
+    """
+    translations = np.transpose(np.abs(np.diff(motion_params[0:3, :])))
+    rotations = np.transpose(np.abs(np.diff(motion_params[3:6, :])))
+
+    fd = np.sum(translations, axis=1) + (50 * np.pi / 180) * np.sum(rotations, axis=1)
+    #fd = np.insert(fd, 0, 0)
+
+    return np.mean(fd)
+
+
+def calculate_mean_FD_J(motion_params):
+    """
+    Method to calculate framewise displacement as per Jenkinson et al. 2002
+    may be false, the magnitude is very high
+    """
+    pm = np.zeros((motion_params.shape[1],16))
+    for tt in range(motion_params.shape[1]):
+        P = np.hstack((motion_params[:, tt], np.array([1, 1, 1, 0, 0, 0])))
+        pm[tt,:] = spm_matrix(P, order=0).reshape(-1)
+
+    # The default radius (as in FSL) of a sphere represents the brain
+    rmax = 80.0
+
+    T_rb_prev = pm[0].reshape(4, 4)
+
+    fd = np.zeros(pm.shape[0])
+
+    for i in range(1, pm.shape[0]):
+        T_rb = pm[i].reshape(4, 4)
+        M = np.dot(T_rb, np.linalg.inv(T_rb_prev)) - np.eye(4)
+        A = M[0:3, 0:3]
+        b = M[0:3, 3]
+        fd[i] = np.sqrt( (rmax * rmax / 5) * np.trace(np.dot(A.T, A)) + np.dot(b.T, b) )
+        T_rb_prev = T_rb
+
+    return np.mean(fd)
+
+
+def calculate_mean_displacment(fit_pars):
+    """
+    very crude approximation where rotation in degree and translation are average ...
+    """
+    r1 = np.sqrt(np.sum(fit_pars[0:3] * fit_pars[0:3], axis=0))
+    rms1 = np.sqrt(np.mean(r1 * r1))
+    r2 = np.sqrt(np.sum(fit_pars[3:6] * fit_pars[3:6], axis=0))
+    rms2 = np.sqrt(np.mean(r2 * r2))
+    res = (rms1 + rms2) / 2
+
+    return res
+
+
+def spm_matrix(P, order=0):
+    """
+    FORMAT [A] = spm_matrix(P )
+    P(0)  - x translation
+    P(1)  - y translation
+    P(2)  - z translation
+    P(3)  - x rotation around x in degree
+    P(4)  - y rotation around y in degree
+    P(5)  - z rotation around z in degree
+    P(6)  - x scaling
+    P(7)  - y scaling
+    P(8)  - z scaling
+    P(9) - x affine
+    P(10) - y affine
+    P(11) - z affine
+
+    order - application order of transformations. if order (the Default): T*R*Z*S if order==0 S*Z*R*T
+    """
+    convert_to_torch=False
+    if torch.is_tensor(P):
+        P = P.numpy()
+        convert_to_torch=True
+
+    [P[3], P[4], P[5]] = [P[3]*180/np.pi, P[4]*180/np.pi, P[5]*180/np.pi] #degre to radian
+
+    T = np.array([[1,0,0,P[0]],[0,1,0,P[1]],[0,0,1,P[2]],[0,0,0,1]])
+    R1 =  np.array([[1,0,0,0],
+                    [0,np.cos(P[3]),np.sin(P[3]),0],#sing change compare to spm because neuro versus radio ?
+                    [0,-np.sin(P[3]),np.cos(P[3]),0],
+                    [0,0,0,1]])
+    R2 =  np.array([[np.cos(P[4]),0,-np.sin(P[4]),0],
+                    [0,1,0,0],
+                    [np.sin(P[4]),0,np.cos(P[4]),0],
+                    [0,0,0,1]])
+    R3 =  np.array([[np.cos(P[5]),np.sin(P[5]),0,0],  #sing change compare to spm because neuro versus radio ?
+                    [-np.sin(P[5]),np.cos(P[5]),0,0],
+                    [0,0,1,0],
+                    [0,0,0,1]])
+
+    #R = R1.dot(R2.dot(R3))
+    R = (R1.dot(R2)).dot(R3)
+
+    Z = np.array([[P[6],0,0,0],[0,P[7],0,0],[0,0,P[8],0],[0,0,0,1]])
+    S = np.array([[1,P[9],P[10],0],[0,1,P[11],0],[0,0,1,0],[0,0,0,1]])
+    if order==0:
+        A = S.dot(Z.dot(R.dot(T)))
+    else:
+        A = T.dot(R.dot(Z.dot(S)))
+
+    if convert_to_torch:
+        A = torch.from_numpy(A).float()
+
+    return A
