@@ -23,7 +23,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  suddenFrequency=(0,5), suddenMagnitude=(2,6),
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  displacement_shift=True, freq_encoding_dim=[0], tr=2.3, es=4E-3,
-                 nufft=True,  oversampling_pct=0.3, proportion_to_augment: float = 1,
+                 nufft=True,  oversampling_pct=0.3, proba_to_augment: float = 1,
                  verbose=False, keep_original=False):
         """
         parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
@@ -77,7 +77,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.oversampling_pct = oversampling_pct
         if (not finufft) and nufft:
             raise ImportError('finufftpy cannot be imported')
-        self.probability = proportion_to_augment
+        self.proba_to_augment = proba_to_augment
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -87,7 +87,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             if image_dict['type'] != INTENSITY:
                 continue
 
-            do_it = np.random.uniform() <= self.probability
+            do_it = np.random.uniform() <= self.proba_to_augment
             if not do_it:
                 sample[image_name]['motion'] = False
                 return sample
