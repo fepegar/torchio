@@ -122,13 +122,12 @@ $ pip install --upgrade torchio
 
 #### [IXI](torchio/datasets/ixi.py)
 
-The [Information eXtraction from Images (IXI)](https://brain-development.org/ixi-dataset/)
+The [Information eXtraction from Images (IXI)](https://brain-development.org/ixi-dataset/) dataset
 contains "nearly 600 MR images from normal, healthy subjects", including
 "T1, T2 and PD-weighted images, MRA images and Diffusion-weighted images (15 directions)".
 
-The usage is similar to [`torchvision.datasets`](https://pytorch.org/docs/stable/torchvision/datasets.html):
+The usage is very similar to [`torchvision.datasets`](https://pytorch.org/docs/stable/torchvision/datasets.html):
 ```python
-import torch
 import torchio
 import torchvision
 
