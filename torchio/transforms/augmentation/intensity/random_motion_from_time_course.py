@@ -33,14 +33,14 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param swallowMagnitude (float, float): (min, max) magnitude of the swallowing movements to generate
         :param suddenFrequency (int, int): (min, max) number of sudden movements to generate in the time course
         :param suddenMagnitude (float, float): (min, max) magnitude of the sudden movements to generate
-        :param displacement_shift (bool): whether or not to demean the time course by the values of the center of the kspace
+        :param displacement_shift (bool): whether or not to substract the time course by the values of the center of the kspace
         :param freq_encoding_dim (tuple of ints): potential frequency encoding dims to use (one of them is randomly chosen)
         :param tr (float): repetition time of the data acquisition (used for interpolating the time course movement)
         :param es (float): echo spacing time of the data acquisition (used for interpolating the time course movement)
-        :param nufft (bool): whether or not to apply nufft (if false, no rotation is simulated)
+        :param nufft (bool): whether or not to apply nufft (if false, no rotation is aaplyed ! )
         :param fitpars : movement parameters to use (if specified, will be applied as such, no movement is simulated)
-        :param oversampling_pct (float): percentage with which the data will be oversampled in the image domain prior to applying the motion
         :param read_func (function): if fitpars is a string, function to use to read the data. Must return an array of shape (6, nT)
+        :param oversampling_pct (float): percentage with which the data will be oversampled in the image domain prior to applying the motion
         :param verbose (bool): verbose
         Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
         Note fot suddenFrequency and swallowFrequency min max must differ and the max is never achieved, so to have 0 put (0,1)
