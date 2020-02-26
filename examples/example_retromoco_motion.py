@@ -12,13 +12,16 @@ from nibabel.viewers import OrthoSlicer3D as ov
 Comparing result with retromocoToolbox
 """
 from utils_file import gfile, get_parent_path
+import pandas as pd
 
 from torchio.transforms import Interpolation
 suj = [[ Image('T1', '/data/romain/HCPdata/suj_274542/mT1w_1mm.nii', INTENSITY), ]]
 
 rp_files = gfile('/data/romain/HCPdata/suj_274542/Motion_ms','^rp')
+rp_files = gfile('/data/romain/HCPdata/suj_274542/mot_separate','^rp')
 
 rpf = rp_files[10]
+res = pd.DataFrame()
 for rpf in rp_files:
     dirpath,name = get_parent_path([rpf])
     fout = dirpath[0] + '/check/'+name[0][3:-4] + '.nii'
@@ -26,13 +29,50 @@ for rpf in rp_files:
     t = RandomMotionFromTimeCourse(fitpars=rpf, nufft=True, oversampling_pct=0, keep_original=True, verbose=True)
     dataset = ImagesDataset(suj, transform=t)
     sample = dataset[0]
-
+    dicm = sample['T1']['metrics']
+    dicm['fname'] = fout
+    res = res.append(dicm, ignore_index=True)
     dataset.save_sample(sample, dict(T1=fout))
+
 
 fit_pars = sample['T1']['fit_pars']
 plt.figure; plt.plot(fit_pars[3:].T)
 plt.figure; plt.plot(fit_pars.T)
 
+
+#mot_separate
+y_Disp, y_swalF, y_swalM, y_sudF, y_sudM = [], [], [], [], []
+plt.figure()
+for rpf in rp_files:
+    fit_pars = pd.read_csv(rpf, header=None).values
+    st=rpf
+    temp = [pos for pos, char in enumerate(st) if char == "_"]
+    y_Disp=int(st[temp[-13]+1:temp[-12]])/100
+    y_Noise=int(st[temp[-11]+1:temp[-10]])/100
+    y_swalF=np.floor(int(st[temp[-9]+1:temp[-8]])/100)
+    y_swalM=int(st[temp[-7]+1:temp[-6]])/100
+    y_sudF=np.floor(int(st[temp[-5]+1:temp[-4]])/100)
+    y_sudM=int(st[temp[-3]+1:temp[-2]])/100
+
+    dico_params = {
+        "maxDisp": (y_Disp,y_Disp),
+        "maxRot": (y_Disp,y_Disp),
+        "noiseBasePars": (y_Noise,y_Noise),
+        "swallowFrequency": (y_swalF,y_swalF+1), #(y_swalF,np.max((y_swalF,1))),
+        "swallowMagnitude": (y_swalM,y_swalM),
+        "suddenFrequency": (y_sudF, y_sudF+1),
+        "suddenMagnitude": (y_sudM, y_sudM),
+        "verbose": True,
+    }
+
+    t = RandomMotionFromTimeCourse(**dico_params)
+    t._calc_dimensions((100,20,50))
+    fitP = t._simulate_random_trajectory()
+    fitP = t.fitpars
+    if True:# y_Disp>0:
+        plt.figure()
+        plt.plot(fit_pars.T)
+        plt.plot(fitP.T,'--')
 
 
 
