@@ -18,13 +18,15 @@ from ...metrics import ssim3D, th_pearsonr
 
 class RandomMotionFromTimeCourse(RandomTransform):
 
-    def __init__(self, nT=200, maxDisp=(2,5), maxRot=(2,5), noiseBasePars=(5,15), swallowFrequency=(0,5), swallowMagnitude=(2,6),
-                 suddenFrequency=(0,5), suddenMagnitude=(2,6), displacement_shift=True,
-                 freq_encoding_dim=[0], tr=2.3, es=4E-3, nufft=True,
-                 verbose=False, keep_original=False,
+    def __init__(self, nT=200, maxDisp=(2,5), maxRot=(2,5), noiseBasePars=(5,15),
+                 swallowFrequency=(0,5), swallowMagnitude=(2,6),
+                 suddenFrequency=(0,5), suddenMagnitude=(2,6),
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
-                 oversampling_pct=0.3):
+                 displacement_shift=True, freq_encoding_dim=[0], tr=2.3, es=4E-3,
+                 nufft=True,                  oversampling_pct=0.3,
+                 verbose=False, keep_original=False):
         """
+        parameters to simulate displacement
         :param nT (int): number of points of the time course
         :param maxDisp (float, float): (min, max) value of displacement in the perlin noise (useless if noiseBasePars is 0)
         :param maxRot (float, float): (min, max) value of rotation in the perlin noise (useless if noiseBasePars is 0)
@@ -33,13 +35,13 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param swallowMagnitude (float, float): (min, max) magnitude of the swallowing movements to generate
         :param suddenFrequency (int, int): (min, max) number of sudden movements to generate in the time course
         :param suddenMagnitude (float, float): (min, max) magnitude of the sudden movements to generate
-        :param displacement_shift (bool): whether or not to substract the time course by the values of the center of the kspace
+        if fitpars is not None previous parameter are not used
+        :param fitpars : movement parameters to use (if specified, will be applied as such, no movement is simulated)
+        :param read_func (function): if fitpars is a string, function to use to read the data. Must return an array of shape (6, nT)        :param displacement_shift (bool): whether or not to substract the time course by the values of the center of the kspace
         :param freq_encoding_dim (tuple of ints): potential frequency encoding dims to use (one of them is randomly chosen)
         :param tr (float): repetition time of the data acquisition (used for interpolating the time course movement)
         :param es (float): echo spacing time of the data acquisition (used for interpolating the time course movement)
         :param nufft (bool): whether or not to apply nufft (if false, no rotation is aaplyed ! )
-        :param fitpars : movement parameters to use (if specified, will be applied as such, no movement is simulated)
-        :param read_func (function): if fitpars is a string, function to use to read the data. Must return an array of shape (6, nT)
         :param oversampling_pct (float): percentage with which the data will be oversampled in the image domain prior to applying the motion
         :param verbose (bool): verbose
         Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
