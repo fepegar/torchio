@@ -3,13 +3,14 @@ import shutil
 import pprint
 import tempfile
 from pathlib import Path
-from typing import Union, Iterable, Tuple
+from typing import Union, Iterable, Tuple, Any, Optional
 import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
-from .torchio import INTENSITY, LABEL, DATA, AFFINE, TypeData, TypeNumber
+from .torchio import (
+    INTENSITY, LABEL, DATA, AFFINE, TypeData, TypeNumber, TypePath)
 
 
 FLIP_XY = np.diag((-1, -1, 1))
@@ -36,7 +37,7 @@ def to_tuple(
     return value
 
 
-def get_stem(path):
+def get_stem(path: TypePath) -> str:
     """
     '/home/user/image.nii.gz' -> 'image'
     """
@@ -44,7 +45,7 @@ def get_stem(path):
     return path.name.split('.')[0]
 
 
-def is_image_dict(variable):
+def is_image_dict(variable: Any) -> bool:
     is_dict = isinstance(variable, dict)
     if not is_dict:
         return False
@@ -57,12 +58,12 @@ def is_image_dict(variable):
 
 
 def create_dummy_dataset(
-        num_images,
-        size_range,
-        directory=None,
-        suffix='.nii.gz',
-        force=False,
-        verbose=False,
+        num_images: int,
+        size_range: Tuple[int, int],
+        directory: Optional[TypePath] = None,
+        suffix: str = '.nii.gz',
+        force: bool = False,
+        verbose: bool = False,
         ):
     from .data import Image
     output_dir = tempfile.gettempdir() if directory is None else directory
@@ -118,10 +119,10 @@ def create_dummy_dataset(
 
 
 def apply_transform_to_file(
-        input_path,
-        transform,
-        output_path,
-        type_=INTENSITY,
+        input_path: TypePath,
+        transform,  # : Transform seems to create a circular import (TODO)
+        output_path: TypePath,
+        type_: str = INTENSITY,
         ):
     from . import Image, ImagesDataset
     subject = [
@@ -132,7 +133,7 @@ def apply_transform_to_file(
     dataset.save_sample(transformed, dict(image=output_path))
 
 
-def guess_type(string):
+def guess_type(string: str) -> Any:
     """
     Adapted from
     https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
@@ -157,7 +158,7 @@ def guess_type(string):
     return value
 
 
-def check_consistent_shape(sample):
+def check_consistent_shape(sample: dict) -> None:
     shapes_dict = {}
     for image_name, image_dict in sample.items():
         if not is_image_dict(image_dict):
@@ -172,14 +173,16 @@ def check_consistent_shape(sample):
         raise ValueError(message)
 
 
-def get_rotation_and_spacing_from_affine(affine):
+def get_rotation_and_spacing_from_affine(
+        affine: np.ndarray,
+        ) -> Tuple[np.ndarray, np.ndarray]:
     RZS = affine[:3, :3]
     spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
     R = RZS / spacing
     return R, spacing
 
 
-def nib_to_sitk(data, affine):
+def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
     array = data.numpy() if isinstance(data, torch.Tensor) else data
     affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
     origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
@@ -192,7 +195,7 @@ def nib_to_sitk(data, affine):
     return image
 
 
-def sitk_to_nib(image):
+def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     spacing = np.array(image.GetSpacing())
     R = np.array(image.GetDirection()).reshape(3, 3)
