@@ -18,8 +18,8 @@ from ...metrics import ssim3D, th_pearsonr
 
 class RandomMotionFromTimeCourse(RandomTransform):
 
-    def __init__(self, nT=200, maxDisp=7, maxRot=3, noiseBasePars=6.5, swallowFrequency=2, swallowMagnitude=4.23554,
-                 suddenFrequency=4, suddenMagnitude=4.24424, displacement_shift=False,
+    def __init__(self, nT=200, maxDisp=(2,5), maxRot=(2,5), noiseBasePars=(5,15), swallowFrequency=(0,5), swallowMagnitude=(2,6),
+                 suddenFrequency=(0,5), suddenMagnitude=(2,6), displacement_shift=True,
                  freq_encoding_dim=[0], tr=2.3, es=4E-3, nufft=True,
                  verbose=False, keep_original=False,
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
@@ -46,24 +46,27 @@ class RandomMotionFromTimeCourse(RandomTransform):
         """
 
         super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose, keep_original = keep_original)
-        self.maxDisp = maxDisp
-        self.maxRot = maxRot
         self.tr = tr
         self.es = es
         self.nT = nT
-        self.noiseBasePars = np.random.uniform(high=noiseBasePars)
-        self.swallowFrequency = np.random.randint(low=1, high=swallowFrequency) if swallowFrequency > 0 else 0
-        self.swallowMagnitude = [np.random.uniform(high=swallowMagnitude/2),
-                                 np.random.uniform(low=swallowMagnitude/2, high=swallowMagnitude)]
-        self.suddenFrequency = np.random.randint(low=1, high=suddenFrequency) if suddenFrequency > 0 else 0
-        self.suddenMagnitude = [np.random.uniform(high=suddenMagnitude/2),
-                                np.random.uniform(low=suddenMagnitude/2, high=suddenMagnitude)]
+        self.maxDisp = maxDisp
+        self.maxRot = maxRot
+        self.noiseBasePars = noiseBasePars
+        self.swallowFrequency = swallowFrequency
+        self.swallowMagnitude = swallowMagnitude
+        self.suddenFrequency = suddenFrequency
+        self.suddenMagnitude = suddenMagnitude
         self.displacement_shift = displacement_shift
         # no more used self.preserve_center_frequency_pct = preserve_center_pct
         self.freq_encoding_choice = freq_encoding_dim
         self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
         self.read_func = read_func
-        self.fitpars = None if fitpars is None else self.read_fitpars(fitpars)
+        if fitpars is None:
+            self.fitpars = None
+            self.simulate_displacement = True
+        else:
+            self.read_fitpars(fitpars)
+            self.simulate_displacement = False
         self.nufft = nufft
         self.oversampling_pct = oversampling_pct
         if (not finufft) and nufft:
@@ -84,8 +87,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             self._calc_dimensions(original_image.shape)
 
-            if self.fitpars is None:
+            if self.simulate_displacement:
                 fitpars_interp = self._simulate_random_trajectory()
+                sample[image_name]['simu_param'] = self.simu_param
             else:
                 fitpars_interp = self._interpolate_space_timing(self.fitpars)
                 fitpars_interp = self._tile_params_to_volume_dims(fitpars_interp)
@@ -120,8 +124,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             if self.keep_orignial:
                 metrics = dict()
-                metrics['ssim'] = ssim3D(image_dict["data"],sample[image_name+'_orig']['data'], verbose=self.verbose)
-                metrics['corr'] = th_pearsonr(image_dict["data"],sample[image_name+'_orig']['data'])
+                metrics['ssim'] = ssim3D(image_dict["data"],sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
+                metrics['corr'] = th_pearsonr(image_dict["data"],sample[image_name+'_orig']['data']).numpy()
                 metrics['FrameDispP'] = calculate_mean_FD_P(self.fitpars)
                 metrics['Disp'] = calculate_mean_displacment(self.fitpars)
 
@@ -227,34 +231,44 @@ class RandomMotionFromTimeCourse(RandomTransform):
         Simulates the parameters of the transformation through the vector fitpars using 6 dimensions (3 translations and
         3 rotations).
         """
-        #print('simulate FITpars')
-        if self.noiseBasePars > 0:
-            fitpars = np.asarray([self.perlinNoise1D(self.nT, self.noiseBasePars) - 0.5 for _ in range(6)])
-            fitpars[:3] *= self.maxDisp
-            fitpars[3:] *= self.maxRot
+        maxDisp = np.random.uniform(low=self.maxDisp[0], high=self.maxDisp[1])
+        maxRot = np.random.uniform(low=self.maxRot[0], high=self.maxRot[1])
+        noiseBasePars = np.random.uniform(low=self.noiseBasePars[0], high=self.noiseBasePars[1])
+        swallowFrequency = np.random.randint(low=self.swallowFrequency[0], high=self.swallowFrequency[1])
+        swallowMagnitude = [np.random.uniform(low=self.swallowMagnitude[0], high=self.swallowMagnitude[1]),
+                            np.random.uniform(low=self.swallowMagnitude[0], high=self.swallowMagnitude[1])]
+        suddenFrequency = np.random.randint(low=self.suddenFrequency[0], high=self.suddenFrequency[1])
+        suddenMagnitude = [np.random.uniform(low=self.suddenMagnitude[0], high=self.suddenMagnitude[1]),
+                            np.random.uniform(low=self.suddenMagnitude[0], high=self.suddenMagnitude[1])]
+
+        print('simulate FITpars')
+        if noiseBasePars > 0:
+            fitpars = np.asarray([self.perlinNoise1D(self.nT, noiseBasePars) - 0.5 for _ in range(6)])
+            fitpars[:3] *= maxDisp
+            fitpars[3:] *= maxRot
         else:
             fitpars = np.zeros((6, self.nT))
         # add in swallowing-like movements - just to z direction and pitch
-        if self.swallowFrequency > 0:
+        if swallowFrequency > 0:
             swallowTraceBase = np.exp(-np.linspace(0, 100, self.nT))
             swallowTrace = np.zeros(self.nT)
 
-            for i in range(self.swallowFrequency):
+            for i in range(swallowFrequency):
                 rand_shifts = int(round(np.random.rand() * self.nT))
                 rolled = np.roll(swallowTraceBase, rand_shifts, axis=0)
                 swallowTrace += rolled
 
-            fitpars[2, :] += self.swallowMagnitude[0] * swallowTrace
-            fitpars[3, :] += self.swallowMagnitude[1] * swallowTrace
+            fitpars[2, :] += swallowMagnitude[0] * swallowTrace
+            fitpars[3, :] += swallowMagnitude[1] * swallowTrace
 
         # add in random sudden movements in any direction
-        if self.suddenFrequency > 0:
+        if suddenFrequency > 0:
             suddenTrace = np.zeros(fitpars.shape)
 
-            for i in range(self.suddenFrequency):
+            for i in range(suddenFrequency):
                 iT_sudden = int(np.ceil(np.random.rand() * self.nT))
-                to_add = np.asarray([self.suddenMagnitude[0] * (2 * np.random.random(3) - 1),
-                                     self.suddenMagnitude[1] * (2 * np.random.random(3) - 1)]).reshape((-1, 1))
+                to_add = np.asarray([suddenMagnitude[0] * (2 * np.random.random(3) - 1),
+                                     suddenMagnitude[1] * (2 * np.random.random(3) - 1)]).reshape((-1, 1))
                 suddenTrace[:, iT_sudden:] = np.add(suddenTrace[:, iT_sudden:], to_add)
 
             fitpars += suddenTrace
@@ -265,7 +279,10 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         self.fitpars = fitpars
         #print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
-
+        simu_param = dict(noisPar=noiseBasePars,maxDisp=maxDisp,maxRot=maxRot,
+                          swallowFrequency=swallowFrequency, swallowMagnitude=swallowMagnitude,
+                          suddenFrequency=suddenFrequency,suddenMagnitude=suddenMagnitude)
+        self.simu_param = simu_param
         fitpars = self._interpolate_space_timing(fitpars)
         fitpars = self._tile_params_to_volume_dims(fitpars)
 
