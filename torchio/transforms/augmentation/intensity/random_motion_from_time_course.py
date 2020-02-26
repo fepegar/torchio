@@ -26,13 +26,13 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  oversampling_pct=0.3):
         """
         :param nT (int): number of points of the time course
-        :param maxDisp (float): maximal value of displacement in the perlin noise (useless if noiseBasePars is 0)
-        :param maxRot (float): maximal value of rotation in the perlin noise (useless if noiseBasePars is 0)
-        :param noiseBasePars (float): base value of the perlin noise to generate for the time course
-        :param swallowFrequency (int): number of swallowing movements to generate in the time course
-        :param swallowMagnitude (float): magnitude of the swallowing movements to generate
-        :param suddenFrequency (int): number of sudden movements to generate in the time course
-        :param suddenMagnitude (float): magnitude of the sudden movements to generate
+        :param maxDisp (float, float): (min, max) value of displacement in the perlin noise (useless if noiseBasePars is 0)
+        :param maxRot (float, float): (min, max) value of rotation in the perlin noise (useless if noiseBasePars is 0)
+        :param noiseBasePars (float, float): (min, max) base value of the perlin noise to generate for the time course
+        :param swallowFrequency (int, int): (min, max) number of swallowing movements to generate in the time course
+        :param swallowMagnitude (float, float): (min, max) magnitude of the swallowing movements to generate
+        :param suddenFrequency (int, int): (min, max) number of sudden movements to generate in the time course
+        :param suddenMagnitude (float, float): (min, max) magnitude of the sudden movements to generate
         :param displacement_shift (bool): whether or not to demean the time course by the values of the center of the kspace
         :param freq_encoding_dim (tuple of ints): potential frequency encoding dims to use (one of them is randomly chosen)
         :param tr (float): repetition time of the data acquisition (used for interpolating the time course movement)
@@ -43,6 +43,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param read_func (function): if fitpars is a string, function to use to read the data. Must return an array of shape (6, nT)
         :param verbose (bool): verbose
         Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
+        Note fot suddenFrequency and swallowFrequency min max must differ and the max is never achieved, so to have 0 put (0,1)
         """
 
         super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose, keep_original = keep_original)
