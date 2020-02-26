@@ -7,14 +7,11 @@ https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 """
 
 from pathlib import Path
-from typing import Optional, Sequence, TYPE_CHECKING
+from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
 from ..transforms import Transform
-from .. import ImagesDataset, Subject, Image, INTENSITY
+from .. import ImagesDataset, Subject, Image, INTENSITY, TypePath
 from torchvision.datasets.utils import download_and_extract_archive
-
-if TYPE_CHECKING:
-    from .. import TypePath
 
 
 class IXI(ImagesDataset):
