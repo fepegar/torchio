@@ -23,17 +23,20 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  suddenFrequency=(0,5), suddenMagnitude=(2,6),
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  displacement_shift=True, freq_encoding_dim=[0], tr=2.3, es=4E-3,
-                 nufft=True,                  oversampling_pct=0.3,
+                 nufft=True,  oversampling_pct=0.3,
                  verbose=False, keep_original=False):
         """
-        parameters to simulate displacement
+        parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
         :param nT (int): number of points of the time course
         :param maxDisp (float, float): (min, max) value of displacement in the perlin noise (useless if noiseBasePars is 0)
         :param maxRot (float, float): (min, max) value of rotation in the perlin noise (useless if noiseBasePars is 0)
         :param noiseBasePars (float, float): (min, max) base value of the perlin noise to generate for the time course
+        optional (float, float, float) where the third is the probability to performe this type of noise
         :param swallowFrequency (int, int): (min, max) number of swallowing movements to generate in the time course
+        optional (float, float, float) where the third is the probability to performe this type of noise
         :param swallowMagnitude (float, float): (min, max) magnitude of the swallowing movements to generate
         :param suddenFrequency (int, int): (min, max) number of sudden movements to generate in the time course
+        optional (float, float, float) where the third is the probability to performe this type of noise
         :param suddenMagnitude (float, float): (min, max) magnitude of the sudden movements to generate
         if fitpars is not None previous parameter are not used
         :param fitpars : movement parameters to use (if specified, will be applied as such, no movement is simulated)
@@ -127,8 +130,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             if self.keep_orignial:
                 metrics = dict()
-                metrics['ssim'] = ssim3D(image_dict["data"],sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
-                metrics['corr'] = th_pearsonr(image_dict["data"],sample[image_name+'_orig']['data']).numpy()
+                metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
+                metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
                 metrics['FrameDispP'] = calculate_mean_FD_P(self.fitpars)
                 metrics['Disp'] = calculate_mean_displacment(self.fitpars)
 
@@ -243,6 +246,19 @@ class RandomMotionFromTimeCourse(RandomTransform):
         suddenFrequency = np.random.randint(low=self.suddenFrequency[0], high=self.suddenFrequency[1])
         suddenMagnitude = [np.random.uniform(low=self.suddenMagnitude[0], high=self.suddenMagnitude[1]),
                             np.random.uniform(low=self.suddenMagnitude[0], high=self.suddenMagnitude[1])]
+
+        #prba to include the different type of noise
+        proba_noiseBase = self.noiseBasePars[2] if len(self.noiseBasePars) == 3 else 1
+        proba_swallow = self.swallowFrequency[2] if len(self.swallowFrequency) == 3 else 1
+        proba_sudden = self.suddenFrequency[2] if len(self.suddenFrequency) == 3 else 1
+        do_noise, do_swallow, do_sudden = False, False, False
+        while (do_noise or do_swallow or do_sudden) is False: #at least one is not false
+            do_noise = np.random.uniform() <= proba_noiseBase
+            do_swallow = np.random.uniform() <= proba_swallow
+            do_sudden = np.random.uniform() <= proba_sudden
+        if do_noise is False: noiseBasePars = 0
+        if do_swallow is False: swallowFrequency = 0
+        if do_sudden is False: suddenFrequency = 0
 
         print('simulate FITpars')
         if noiseBasePars > 0:
