@@ -88,6 +88,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 continue
 
             do_it = np.random.uniform() <= self.proba_to_augment
+            sample[image_name]['simu_param'] = dict(noisPar=0.0, maxDisp=0.0, maxRot=0.0, swallowFrequency=0.0,
+            swallowMagnitude=[0.0,0.0], suddenFrequency=0.0, suddenMagnitude=[0.0,0.0])
+            sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, FrameDispP=0.0,Disp=0.0)
             if not do_it:
                 sample[image_name]['motion'] = False
                 return sample
@@ -234,8 +237,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
             if this_npts > 1:
                 total += weights[i] * pchip_interpolate(np.linspace(0, 1, this_npts), np.random.random((this_npts, 1)),
                                                         xvals)
-            else:
-                print("Maxed out at octave {}".format(i))
+#            else:
+                # TODO does it matter print("Maxed out at octave {}".format(i))
 
         total = total - np.min(total)
         total = total / np.max(total)
@@ -269,7 +272,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if do_swallow is False: swallowFrequency = 0
         if do_sudden is False: suddenFrequency = 0
 
-        print('simulate FITpars')
+        #print('simulate FITpars')
         if noiseBasePars > 0:
             fitpars = np.asarray([self.perlinNoise1D(self.nT, noiseBasePars) - 0.5 for _ in range(6)])
             fitpars[:3] *= maxDisp
