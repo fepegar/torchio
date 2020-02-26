@@ -60,11 +60,22 @@ BibTeX entry:
 }
 ```
 
+## Installation
+
+This package is on the
+[Python Package Index (PyPI)](https://pypi.org/project/torchio/).
+To install the latest published version, just run the following command in a terminal:
+
+```shell
+$ pip install --upgrade torchio
+```
+
 
 ## Index
 
-- [Installation](#installation)
 - [Features](#features)
+  * [Medical image datasets](#medical-image-datasets)
+    - [IXI](#ixi)
   * [Data handling](#data-handling)
     - [`ImagesDataset`](#imagesdataset)
     - [Samplers and aggregators](#samplers-and-aggregators)
@@ -101,18 +112,46 @@ BibTeX entry:
 - [See also](#see-also)
 
 
-## Installation
 
-This package is on the
-[Python Package Index (PyPI)](https://pypi.org/project/torchio/).
-To install it, just run in a terminal the following command:
-
-```shell
-$ pip install torchio
-```
 
 
 ## Features
+
+
+### Medical image datasets
+
+#### [IXI](torchio/datasets/ixi.py)
+
+The [Information eXtraction from Images (IXI)](https://brain-development.org/ixi-dataset/)
+contains "nearly 600 MR images from normal, healthy subjects", including
+"T1, T2 and PD-weighted images, MRA images and Diffusion-weighted images (15 directions)".
+
+The usage is similar to [`torchvision.datasets`](https://pytorch.org/docs/stable/torchvision/datasets.html):
+```python
+import torch
+import torchio
+import torchvision
+
+transforms = [
+    torchio.ToCanonical(),  # to RAS
+    torchio.Resample((1, 1, 1)),  # to 1 mm iso
+]
+
+ixi_dataset = torchio.datasets.IXI(
+    'path/to/ixi_root/',
+    modalities=('T1', 'T2'),
+    transform=torchvision.transforms.Compose(transforms),
+    download=True,
+)
+print('Number of subjects in dataset:', len(ixi_dataset))  # 577
+
+sample_subject = ixi_dataset[0]
+print('Keys in subject sample:', tuple(sample_subject.keys()))  # ('T1', 'T2')
+print('Shape of T1 data:', sample_subject['T1'][torchio.DATA].shape)  # [1, 180, 268, 268]
+print('Shape of T2 data:', sample_subject['T2'][torchio.DATA].shape)  # [1, 241, 257, 188]
+```
+
+
 
 ### Data handling
 

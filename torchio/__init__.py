@@ -8,3 +8,4 @@ from . import utils
 from .torchio import *
 from .transforms import *
 from .data import io, sampler, inference, ImagesDataset, Image, Queue, Subject
+from . import datasets
