@@ -1,0 +1,6 @@
+Installation
+============
+
+::
+
+    pip install torchio
