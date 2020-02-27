@@ -13,7 +13,7 @@ class Transform(ABC):
         self.keep_original = keep_original
 
     def __call__(self, sample: dict):
-        if self.keep_orignial:
+        if self.keep_original:
             for image_name in list(sample):
                 image_dict = sample[image_name]
                 if not is_image_dict(image_dict):
