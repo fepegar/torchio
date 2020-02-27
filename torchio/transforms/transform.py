@@ -10,7 +10,7 @@ import numpy as np
 class Transform(ABC):
     def __init__(self, verbose: bool = False, keep_original=False):
         self.verbose = verbose
-        self.keep_orignial = keep_original
+        self.keep_original = keep_original
 
     def __call__(self, sample: dict):
         if self.keep_orignial:
@@ -95,4 +95,4 @@ class Transform(ABC):
         dim_ranges = np.ceil(np.asarray(cropping_shape) / 2).astype(int)
         slicing = [slice(dim_center - dim_range, dim_center + dim_range)
                    for dim_center, dim_range in zip(vol_centers, dim_ranges)]
-        return data[slicing]
+        return data[tuple(slicing)]
