@@ -35,7 +35,7 @@ class ImagesClassifDataset(ImagesDataset):
         if length:
             self.length = length
         else:
-            self.length = len(self.subjects_list)
+            self.length = len(self.subjects)
 
         if equal:
             self.gen = self.get_data_equal
