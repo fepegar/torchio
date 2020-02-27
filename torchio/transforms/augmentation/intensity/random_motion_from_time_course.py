@@ -90,7 +90,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
             do_it = np.random.uniform() <= self.proba_to_augment
             sample[image_name]['simu_param'] = dict(noisPar=0.0, maxDisp=0.0, maxRot=0.0, swallowFrequency=0.0,
             swallowMagnitude=[0.0,0.0], suddenFrequency=0.0, suddenMagnitude=[0.0,0.0])
-            sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, FrameDispP=0.0,Disp=0.0)
+            if self.keep_original:
+                sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, FrameDispP=0.0,Disp=0.0)
+
             if not do_it:
                 sample[image_name]['motion'] = False
                 return sample
@@ -137,10 +139,10 @@ class RandomMotionFromTimeCourse(RandomTransform):
             image_dict['data'] = torch.from_numpy(image_dict['data']).float()
 
             #add extra field to follow what have been done
-            sample[image_name]['fit_pars'] = self.fitpars
+            #sample[image_name]['fit_pars'] = self.fitpars
             #sample[image_name]['fit_pars_interp'] = self.fitpars_interp
 
-            if self.keep_orignial:
+            if self.keep_original:
                 metrics = dict()
                 metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
                 metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
