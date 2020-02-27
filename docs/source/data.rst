@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Data handling
 =============
 
@@ -9,3 +10,7 @@ Images dataset
     :members:
     :undoc-members:
     :show-inheritance:
+=======
+Data
+====
+>>>>>>> Add docs skeleton

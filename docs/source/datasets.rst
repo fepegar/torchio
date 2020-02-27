@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Medical image datasets
 ======================
 
@@ -7,3 +8,9 @@ IXI
     :members:
     :undoc-members:
     :show-inheritance:
+=======
+Datasets
+========
+
+IXI.
+>>>>>>> Add docs skeleton
