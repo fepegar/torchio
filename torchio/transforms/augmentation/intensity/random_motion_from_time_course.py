@@ -71,7 +71,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             self.fitpars = None
             self.simulate_displacement = True
         else:
-            self.read_fitpars(fitpars)
+            self.fitpars = self.read_fitpars(fitpars)
             self.simulate_displacement = False
         self.nufft = nufft
         self.oversampling_pct = oversampling_pct
@@ -88,6 +88,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 continue
 
             do_it = np.random.uniform() <= self.proba_to_augment
+
             sample[image_name]['simu_param'] = dict(noisPar=0.0, maxDisp=0.0, maxRot=0.0, swallowFrequency=0.0,
             swallowMagnitude=[0.0,0.0], suddenFrequency=0.0, suddenMagnitude=[0.0,0.0])
             if self.keep_original:
