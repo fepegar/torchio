@@ -81,7 +81,8 @@ class Transform(ABC):
         :return oversampled version of the data:
         """
         data_shape = list(data.shape)
-        to_pad = np.ceil(np.asarray(data_shape) * perc_oversampling)
+        to_pad = np.ceil(np.asarray(data_shape) * perc_oversampling/2) * 2 #to force an even number
+        print("Pading at {}".format(to_pad))
         left_pad = np.floor(to_pad / 2).astype(int)
         right_pad = np.ceil(to_pad / 2).astype(int)
         return np.pad(data, list(zip(left_pad, right_pad)))
