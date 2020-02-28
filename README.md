@@ -3,6 +3,7 @@
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
+[![Downloads](https://img.shields.io/pypi/dm/torchio.svg)](https://pypi.org/project/torchio/)
 [![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
 [![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
 [![Code Quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
