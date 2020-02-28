@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 Medical image datasets
 ======================
 
@@ -14,3 +15,14 @@ Datasets
 
 IXI.
 >>>>>>> Add docs skeleton
+=======
+Medical image datasets
+======================
+
+IXI
+***
+.. autoclass:: torchio.datasets.IXI
+    :members:
+    :undoc-members:
+    :show-inheritance:
+>>>>>>> Update docs

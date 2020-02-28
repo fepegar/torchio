@@ -7,6 +7,7 @@ TorchIO
 =======
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 TorchIO is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
@@ -21,6 +22,8 @@ or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 >>>>>>> Add docs skeleton
+=======
+>>>>>>> Update docs
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab Notebook
@@ -51,6 +54,9 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Update docs
 TorchIO is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
 written in `PyTorch <https://pytorch.org/>`_,
@@ -79,6 +85,7 @@ You can preview and run most features in TorchIO in this
 `Google Colab Notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_.
 
 
+<<<<<<< HEAD
 .. toctree::
    :maxdepth: 2
    :caption: API
@@ -87,14 +94,20 @@ You can preview and run most features in TorchIO in this
    data.rst
    transforms/transforms.rst
 =======
+=======
+>>>>>>> Update docs
 .. toctree::
    :maxdepth: 2
+   :caption: API
 
-   installation.rst
    datasets.rst
    data.rst
+<<<<<<< HEAD
    transforms.rst
 >>>>>>> Add docs skeleton
+=======
+   transforms/transforms.rst
+>>>>>>> Update docs
 
 
 Indices and tables
