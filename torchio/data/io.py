@@ -46,24 +46,29 @@ def write_image(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
+        itk_first: bool = False,
         ) -> None:
-    path = Path(path)
-    suffixes = path.suffixes
-    if '.nii' in suffixes:
-        write = _write_nifti
-    elif '.nrrd' in suffixes:
-        write = _write_sitk
+    if itk_first:
+        try:
+            _write_sitk(tensor, affine, path)
+        except RuntimeError:  # try with NiBabel
+            _write_nibabel(tensor, affine, path)
     else:
-        raise NotImplementedError(
-            f'Writing not implemented for this format: "{path}"')
-    write(tensor, affine, path)
+        try:
+            _write_nibabel(tensor, affine, path)
+        except nib.loadsave.ImageFileError:  # try with ITK
+            _write_sitk(tensor, affine, path)
 
 
-def _write_nifti(
+def _write_nibabel(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
         ) -> None:
+    """
+    Expects a path with .nii or .nii.gz extension, and writes a NIfTI-1 file
+    with qform only
+    """
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
     nii.header['sform_code'] = 0
@@ -75,5 +80,5 @@ def _write_sitk(
         affine: TypeData,
         path: TypePath,
         ) -> None:
-    nib_to_sitk
-    raise NotImplementedError
+    image = nib_to_sitk(tensor, affine)
+    sitk.WriteImage(image, str(path))
