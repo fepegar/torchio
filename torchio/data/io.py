@@ -1,54 +1,44 @@
 from pathlib import Path
 from typing import Union, Tuple, TypeVar
-import nrrd
 import torch
 import numpy as np
 import nibabel as nib
+import SimpleITK as sitk
 from .. import TypePath, TypeData
+from ..utils import nib_to_sitk, sitk_to_nib
 
 
-def parse_path(path: TypePath) -> Path:
-    path = Path(path).expanduser()
-    suffixes = path.suffixes
-    if '.nii' not in suffixes and '.nrrd' not in suffixes:
-        raise ValueError(
-            'Image suffixes must contain ".nii" or ".nrrd",'
-            f' but they are {suffixes}')
-    return path
-
-
-def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
-    path = parse_path(path)
-    suffixes = path.suffixes
-    if '.nii' in suffixes:
-        read = _read_nifti
-    elif '.nrrd' in suffixes:
-        read = _read_nrrd
+def read_image(
+        path: TypePath,
+        itk_first: bool = False,
+        ) -> Tuple[torch.Tensor, np.ndarray]:
+    if itk_first:
+        try:
+            result = _read_sitk(path)
+        except RuntimeError:  # try with NiBabel
+            result = _read_nibabel(path)
     else:
-        raise NotImplementedError(
-            f'Reading not implemented for this format: "{path}"')
-    return read(path)
+        try:
+            result = _read_nibabel(path)
+        except nib.loadsave.ImageFileError:  # try with ITK
+            result = _read_sitk(path)
+    return result
 
 
-def _read_nifti(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     nii = nib.load(str(path), mmap=False)
-    ndims = len(nii.shape)
-    assert ndims == 3
     data = nii.get_fdata(dtype=np.float32)
     tensor = torch.from_numpy(data)
     affine = nii.affine
     return tensor, affine
 
 
-def _read_nrrd(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
-    data, header = nrrd.read(path)
-    data = data.astype(np.float32)
+def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+    image = sitk.ReadImage(str(path))
+    data, affine = sitk_to_nib(image)
+    if data.dtype != np.float32:
+        data = data.astype(np.float32)
     tensor = torch.from_numpy(data)
-    affine = np.eye(4)
-    affine[:3, :3] = header['space directions'].T
-    affine[:3, 3] = header['space origin']
-    lps_to_ras = np.diag((-1, -1, 1, 1))
-    affine = np.dot(lps_to_ras, affine)
     return tensor, affine
 
 
@@ -56,33 +46,39 @@ def write_image(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
+        itk_first: bool = False,
         ) -> None:
-    path = Path(path)
-    suffixes = path.suffixes
-    if '.nii' in suffixes:
-        write = _write_nifti
-    elif '.nrrd' in suffixes:
-        write = _write_nrrd
+    if itk_first:
+        try:
+            _write_sitk(tensor, affine, path)
+        except RuntimeError:  # try with NiBabel
+            _write_nibabel(tensor, affine, path)
     else:
-        raise NotImplementedError(
-            f'Writing not implemented for this format: "{path}"')
-    write(tensor, affine, path)
+        try:
+            _write_nibabel(tensor, affine, path)
+        except nib.loadsave.ImageFileError:  # try with ITK
+            _write_sitk(tensor, affine, path)
 
 
-def _write_nifti(
+def _write_nibabel(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
         ) -> None:
+    """
+    Expects a path with an extension that can be used by nibabel.save
+    to write a NIfTI-1 image, such as '.nii.gz' or '.img'
+    """
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
     nii.header['sform_code'] = 0
     nii.to_filename(str(path))
 
 
-def _write_nrrd(
+def _write_sitk(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
         ) -> None:
-    raise NotImplementedError
+    image = nib_to_sitk(tensor, affine)
+    sitk.WriteImage(image, str(path))
