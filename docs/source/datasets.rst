@@ -1,4 +1,9 @@
-Datasets
-========
+Medical image datasets
+======================
 
-IXI.
+IXI
+***
+.. autoclass:: torchio.datasets.IXI
+    :members:
+    :undoc-members:
+    :show-inheritance:

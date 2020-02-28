@@ -6,18 +6,6 @@
 TorchIO
 =======
 
-TorchIO is a Python package containing a set of tools to efficiently
-read, sample and write 3D medical images in deep learning applications
-written in `PyTorch <https://pytorch.org/>`_,
-including intensity and spatial transforms for data augmentation and preprocessing.
-Transforms include typical computer vision operations
-such as random affine transformations and also domain-specific ones such as
-simulation of intensity artifacts due to
-`MRI magnetic field inhomogeneity <http://mriquestions.com/why-homogeneity.html>`_
-or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
-
-This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
-
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab Notebook
@@ -47,13 +35,41 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
    :alt: Code quality
 
 
+TorchIO is a Python package containing a set of tools to efficiently
+read, sample and write 3D medical images in deep learning applications
+written in `PyTorch <https://pytorch.org/>`_,
+including intensity and spatial transforms for data augmentation and preprocessing.
+Transforms include typical computer vision operations
+such as random affine transformations and also domain-specific ones such as
+simulation of intensity artifacts due to
+`MRI magnetic field inhomogeneity <http://mriquestions.com/why-homogeneity.html>`_
+or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
+
+This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
+
+
+Installation
+------------
+
+.. code-block:: bash
+
+    pip install torchio
+
+
+Google Colab Jupyter Notebok
+----------------------------
+
+You can preview and run most features in TorchIO in this
+`Google Colab Notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_.
+
+
 .. toctree::
    :maxdepth: 2
+   :caption: API
 
-   installation.rst
    datasets.rst
    data.rst
-   transforms.rst
+   transforms/transforms.rst
 
 
 Indices and tables
