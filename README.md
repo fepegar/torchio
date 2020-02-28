@@ -173,7 +173,7 @@ for efficient loading and data augmentation.
 It receives a list of subjects, where each subject is an instance of
 [`torchio.Subject`](torchio/data/images.py) containing instances of
 [`torchio.Image`](torchio/data/images.py).
-The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
+The paths suffix must be compatible with NiBabel or [SimpleITK] readers.
 
 ```python
 import torchio
