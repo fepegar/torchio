@@ -10,7 +10,7 @@ try:
 except ImportError:
     finufft = False
 
-from torchio import  INTENSITY
+from torchio import INTENSITY
 from .. import RandomTransform
 from ....utils import is_image_dict
 from ...metrics import ssim3D, th_pearsonr
@@ -24,7 +24,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  displacement_shift=True, freq_encoding_dim=[0], tr=2.3, es=4E-3,
                  nufft=True,  oversampling_pct=0.3, proba_to_augment: float = 1,
-                 verbose=False, keep_original=False):
+                 verbose=False, keep_original=False, compare_to_original=False):
         """
         parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
         :param nT (int): number of points of the time course
@@ -50,8 +50,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
         Note currently on freq_encoding_dim=0 give the same ringing direction for rotation and translation, dim 1 and 2 are not coherent
         Note fot suddenFrequency and swallowFrequency min max must differ and the max is never achieved, so to have 0 put (0,1)
         """
-
-        super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose, keep_original = keep_original)
+        if compare_to_original: keep_original=True
+        super(RandomMotionFromTimeCourse, self).__init__(verbose=verbose, keep_original=keep_original)
+        self.compare_to_original = compare_to_original
         self.tr = tr
         self.es = es
         self.nT = nT
@@ -91,7 +92,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             sample[image_name]['simu_param'] = dict(noisPar=0.0, maxDisp=0.0, maxRot=0.0, swallowFrequency=0.0,
             swallowMagnitude=[0.0,0.0], suddenFrequency=0.0, suddenMagnitude=[0.0,0.0])
-            if self.keep_original:
+            if self.compare_to_original:
                 sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, mean_DispP=0.0,rmse_Disp=0.0)
 
             if not do_it:
@@ -143,10 +144,14 @@ class RandomMotionFromTimeCourse(RandomTransform):
             #sample[image_name]['fit_pars'] = self.fitpars
             #sample[image_name]['fit_pars_interp'] = self.fitpars_interp
 
-            if self.keep_original:
+            if self.compare_to_original:
                 metrics = dict()
                 metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
                 metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
+                lossL2 = torch.nn.MSELoss()
+                lossL1 = torch.nn.L1Loss()
+                metrics['MSE'] = lossL2(image_dict["data"].unsqueeze(0), sample[image_name+'_orig']['data'].unsqueeze(0)).numpy()
+                metrics['L1'] = lossL1(image_dict["data"].unsqueeze(0), sample[image_name+'_orig']['data'].unsqueeze(0)).numpy()
                 metrics['mean_DispP'] = calculate_mean_Disp_P(self.fitpars)
                 metrics['rmse_Disp'] = calculate_mean_RMSE_displacment(self.fitpars)
 
