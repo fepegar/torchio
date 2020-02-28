@@ -99,7 +99,7 @@ class TestImagesDataset(unittest.TestCase):
             self.iterate_dataset([images])
 
     def test_wrong_image_extension(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             path = self.dir / 'test.txt'
             path.touch()
             self.iterate_dataset([[Image('t1', path, INTENSITY)]])
