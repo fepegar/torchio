@@ -34,10 +34,46 @@ for rpf in rp_files:
     res = res.append(dicm, ignore_index=True)
     dataset.save_sample(sample, dict(T1=fout))
 
-
 fit_pars = sample['T1']['fit_pars']
 plt.figure; plt.plot(fit_pars[3:].T)
 plt.figure; plt.plot(fit_pars.T)
+
+
+dic_no_mot ={ "noiseBasePars": (5, 20, 0),"swallowFrequency": (0, 1, 1), "suddenFrequency": (0, 1, 1),
+              "oversampling_pct":0.3, "nufft":True , "keep_original": True}
+t = RandomMotionFromTimeCourse(**dic_no_mot)
+dataset = ImagesDataset(suj, transform=t)
+sample = dataset[0]
+
+
+dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0),
+               "swallowFrequency": (2, 6, 0),  "swallowMagnitude": (1, 6),
+               "suddenFrequency": (1, 2, 1),  "suddenMagnitude": (6, 6),
+               "verbose": True, "keep_original": True}
+dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0.8),
+               "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (1, 6),
+               "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (1, 6),
+               "verbose": True, "keep_original": True}
+t = RandomMotionFromTimeCourse(**dico_params)
+dataset = ImagesDataset(suj, transform=t)
+
+res = pd.DataFrame()
+dirpath = ['/data/romain/HCPdata/suj_274542/check/']
+
+for i in range(100):
+    sample = dataset[0]
+    dicm = sample['T1']['metrics']
+    dics = sample['T1']['simu_param']
+    fout = dirpath[0]  +'mot_sim{}'.format(np.floor(dicm['ssim']*1000))
+    dicm['fname'] = fout
+    dicm.update(dics)
+    #fit_pars = sample['T1']['fit_pars']
+    #np.savetxt(fout+'.csv', fit_pars, delimiter=',')
+    res = res.append(dicm, ignore_index=True)
+    dataset.save_sample(sample, dict(T1=fout+'.nii'))
+
+fout = dirpath[0] +'res_simu.csv'
+res.to_csv(fout)
 
 
 #mot_separate
@@ -55,13 +91,9 @@ for rpf in rp_files:
     y_sudM=int(st[temp[-3]+1:temp[-2]])/100
 
     dico_params = {
-        "maxDisp": (y_Disp,y_Disp),
-        "maxRot": (y_Disp,y_Disp),
-        "noiseBasePars": (y_Noise,y_Noise),
-        "swallowFrequency": (y_swalF,y_swalF+1), #(y_swalF,np.max((y_swalF,1))),
-        "swallowMagnitude": (y_swalM,y_swalM),
-        "suddenFrequency": (y_sudF, y_sudF+1),
-        "suddenMagnitude": (y_sudM, y_sudM),
+        "maxDisp": (y_Disp,y_Disp),"maxRot": (y_Disp,y_Disp),"noiseBasePars": (y_Noise,y_Noise),
+        "swallowFrequency": (y_swalF,y_swalF+1), "swallowMagnitude": (y_swalM,y_swalM),
+        "suddenFrequency": (y_sudF, y_sudF+1),"suddenMagnitude": (y_sudM, y_sudM),
         "verbose": True,
     }
 
@@ -87,7 +119,7 @@ dataset = ImagesDataset(suj, transform=t)
 
 for i in range(1,10):
     sample = dataset[0]
-    fout='/tmp/toto{}.nii'.format(i)
+    fout='/tmp/toto{}_nb{}_I{}.nii'.format(i,sample['T1']['random_spike_num_spikes'],np.floor(sample['T1']['random_spike_intensity']*100))
     dataset.save_sample(sample, dict(T1=fout))
 
 
@@ -126,6 +158,7 @@ dico_params = {
     "oversampling_pct": 0.3,
     "nufft": True,
     "verbose": True,
+    "keep_original": True,
 }
 
 
