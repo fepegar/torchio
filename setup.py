@@ -8,31 +8,16 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Add requirements to docs
 requirements = [
     'Click>=7.0',
     'nibabel',
     'numpy',
-<<<<<<< HEAD
-=======
-    'pynrrd',
->>>>>>> Add requirements to docs
     'scipy',
     'SimpleITK',
     'torch>=1.2',  # for IterableDataset
     'torchvision',
     'tqdm',
 ]
-<<<<<<< HEAD
-=======
-with open('requirements.txt') as requirements_file:
-    requirements = requirements_file.readlines()
->>>>>>> Update docs
-=======
->>>>>>> Add requirements to docs
 
 setup(
     author="Fernando Perez-Garcia",
