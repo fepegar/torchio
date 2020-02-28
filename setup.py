@@ -10,17 +10,8 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    'Click>=7.0',
-    'nibabel',
-    'numpy',
-    'pynrrd',
-    'scipy',
-    'SimpleITK',
-    'torch>=1.2',  # for IterableDataset
-    'torchvision',
-    'tqdm',
-]
+with open('requirements.txt') as requirements_file:
+    requirements = requirements_file.readlines()
 
 setup(
     author="Fernando Perez-Garcia",
