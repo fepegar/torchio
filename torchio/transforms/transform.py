@@ -21,7 +21,7 @@ class Transform(ABC):
                 if image_dict['type'] == INTENSITY:
                     new_key = image_name +'_orig'
                     if new_key not in sample:
-                        sample[new_key] = dict(data=image_dict['data'])
+                        sample[new_key] = dict(data=image_dict['data'], type='original', affine=image_dict['affine'])
 
         if self.verbose:
             start = time.time()
