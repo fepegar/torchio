@@ -66,8 +66,8 @@ def _write_nibabel(
         path: TypePath,
         ) -> None:
     """
-    Expects a path with .nii or .nii.gz extension, and writes a NIfTI-1 file
-    with qform only
+    Expects a path with an extension that can be used by nibabel.save
+    to write a NIfTI-1 image, such as '.nii.gz' or '.img'
     """
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
