@@ -173,7 +173,8 @@ for efficient loading and data augmentation.
 It receives a list of subjects, where each subject is an instance of
 [`torchio.Subject`](torchio/data/images.py) containing instances of
 [`torchio.Image`](torchio/data/images.py).
-The paths suffix must be compatible with NiBabel or [SimpleITK] readers.
+The paths suffix must be compatible with [NiBabel](https://nipy.org/nibabel/) or
+[SimpleITK](http://www.simpleitk.org/) readers.
 
 ```python
 import torchio
