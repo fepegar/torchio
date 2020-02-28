@@ -77,6 +77,7 @@ $ pip install --upgrade torchio
 - [Features](#features)
   * [Medical image datasets](#medical-image-datasets)
     - [IXI](#ixi)
+    - [Tiny IXI](#tiny-ixi)
   * [Data handling](#data-handling)
     - [`ImagesDataset`](#imagesdataset)
     - [Samplers and aggregators](#samplers-and-aggregators)
@@ -151,6 +152,12 @@ print('Shape of T1 data:', sample_subject['T1'][torchio.DATA].shape)  # [1, 180,
 print('Shape of T2 data:', sample_subject['T2'][torchio.DATA].shape)  # [1, 241, 257, 188]
 ```
 
+
+#### [Tiny IXI](torchio/datasets/ixi.py)
+
+This is the dataset used in the [notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i).
+It is a tiny version of IXI, containing 566 T1-weighted brain MR images
+and their corresponding brain segmentations, all with size (83 x 44 x 55).
 
 
 ### Data handling

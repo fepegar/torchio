@@ -6,11 +6,12 @@ Adapted from
 https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 """
 
+import shutil
 from pathlib import Path
 from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
 from ..transforms import Transform
-from .. import ImagesDataset, Subject, Image, INTENSITY, TypePath
+from .. import ImagesDataset, Subject, Image, INTENSITY, LABEL, TypePath
 from torchvision.datasets.utils import download_and_extract_archive
 
 
@@ -26,10 +27,10 @@ class IXI(ImagesDataset):
 
     def __init__(
             self,
-            root: 'TypePath',
+            root: TypePath,
             transform: Optional[Transform] = None,
             download: bool = False,
-            modalities: Sequence[str] = ('T1', 'T2'),
+            modalities: Sequence[str] = ['T1', 'T2'],
             ):
         root = Path(root)
         for modality in modalities:
@@ -116,3 +117,64 @@ class IXI(ImagesDataset):
                     filename=f.name,
                     md5=md5,
                 )
+
+
+class IXITiny(ImagesDataset):
+    url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
+    md5 = 'bfb60f4074283d78622760230bfa1f98'
+
+    def __init__(
+            self,
+            root: TypePath,
+            transform: Optional[Transform] = None,
+            download: bool = False,
+            ):
+        root = Path(root)
+        if download:
+            self._download(root)
+        if not self._check_exists(root):
+            message = (
+                'Dataset not found.'
+                ' You can use download=True to download it'
+            )
+            raise RuntimeError(message)
+        subjects_list = self._get_subjects_list(root)
+        super().__init__(subjects_list, transform=transform)
+
+    def _check_exists(self, root):
+        return root.is_dir()
+
+    def _get_subjects_list(self, root):
+        image_paths = sglob(root / 'image', '*.nii.gz')
+        label_paths = sglob(root / 'label', '*.nii.gz')
+
+        subjects = []
+        for image_path, label_path in zip(image_paths, label_paths):
+            subject_id = get_subject_id(image_path)
+            images = []
+            images.append(Image('image', image_path, INTENSITY))
+            images.append(Image('label', label_path, LABEL))
+            subjects.append(Subject(*images, name=subject_id))
+        return subjects
+
+    def _download(self, root):
+        """Download the tiny IXI data if it doesn't exist already."""
+
+        with NamedTemporaryFile(suffix='.zip') as f:
+            download_and_extract_archive(
+                self.url,
+                download_root=root,
+                filename=f.name,
+                md5=self.md5,
+            )
+        ixi_tiny_dir = root / 'ixi_tiny'
+        (ixi_tiny_dir / 'image').rename(root / 'image')
+        (ixi_tiny_dir / 'label').rename(root / 'label')
+        shutil.rmtree(ixi_tiny_dir)
+
+
+def sglob(directory, pattern):
+    return sorted(list(Path(directory).glob(pattern)))
+
+def get_subject_id(path):
+    return '-'.join(path.name.split('-')[:-1])

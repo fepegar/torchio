@@ -1,1 +1,1 @@
-from .ixi import IXI
+from .ixi import IXI, IXITiny
