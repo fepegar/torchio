@@ -92,7 +92,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             sample[image_name]['simu_param'] = dict(noisPar=0.0, maxDisp=0.0, maxRot=0.0, swallowFrequency=0.0,
             swallowMagnitude=[0.0,0.0], suddenFrequency=0.0, suddenMagnitude=[0.0,0.0])
             if self.keep_original:
-                sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, FrameDispP=0.0,Disp=0.0)
+                sample[image_name]['metrics'] = dict(ssim=0.0, corr=0.0, mean_DispP=0.0,rmse_Disp=0.0)
 
             if not do_it:
                 sample[image_name]['motion'] = False
@@ -147,8 +147,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 metrics = dict()
                 metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
                 metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
-                metrics['FrameDispP'] = calculate_mean_FD_P(self.fitpars)
-                metrics['Disp'] = calculate_mean_displacment(self.fitpars)
+                metrics['mean_DispP'] = calculate_mean_Disp_P(self.fitpars)
+                metrics['rmse_Disp'] = calculate_mean_RMSE_displacment(self.fitpars)
 
                 sample[image_name]['metrics'] = metrics
 
@@ -475,6 +475,7 @@ def create_rotation_matrix_3d(angles):
     mat = (mat1 @ mat2) @ mat3
     return mat
 
+
 def calculate_mean_FD_P(motion_params):
     """
     Method to calculate Framewise Displacement (FD)  as per Power et al., 2012
@@ -488,10 +489,20 @@ def calculate_mean_FD_P(motion_params):
     return np.mean(fd)
 
 
+def calculate_mean_Disp_P(motion_params):
+    """
+    Same as previous, but without taking the diff between frame
+    """
+    translations = np.transpose(np.abs(motion_params[0:3, :]))
+    rotations = np.transpose(np.abs(motion_params[3:6, :]))
+    fd = np.sum(translations, axis=1) + (50 * np.pi / 180) * np.sum(rotations, axis=1)
+
+    return np.mean(fd)
+
+
 def calculate_mean_FD_J(motion_params):
     """
     Method to calculate framewise displacement as per Jenkinson et al. 2002
-    may be false, the magnitude is very high
     """
     pm = np.zeros((motion_params.shape[1],16))
     for tt in range(motion_params.shape[1]):
@@ -516,7 +527,7 @@ def calculate_mean_FD_J(motion_params):
     return np.mean(fd)
 
 
-def calculate_mean_displacment(fit_pars):
+def calculate_mean_RMSE_displacment(fit_pars):
     """
     very crude approximation where rotation in degree and translation are average ...
     """
