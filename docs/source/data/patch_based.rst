@@ -4,6 +4,5 @@ Patch-based training
 .. toctree::
    :maxdepth: 2
 
-   sampler.rst
+   sampling.rst
    queue.rst
-   aggregator.rst

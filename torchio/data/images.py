@@ -116,12 +116,38 @@ class Subject(list):
 class ImagesDataset(Dataset):
     """Base TorchIO dataset.
 
+    :class:`ImagesDataset` is a reader of 3D medical images that directly
+    inherits from :class:`torch.utils.Dataset`.
+    It can be used with a :class:`torch.utils.DataLoader`
+    for efficient loading and augmentation.
+    It receives a list of subjects, where each subject is an instance of
+    :class:`torchio.Subject` containing instances of :class:`torchio.Image`.
+    The file format must be compatible with NiBabel or SimpleITK readers.
+
     Args:
         subjects: Sequence of instances of :class:`torchio.Subject`.
-        transform: transform: An instance of
-            :class:`torchio.transforms.Transform`.
+        transform: An instance of
+            :class:`torchio.transforms.Transform` that is applied to each image
+            after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image
+
+    Example::
+
+        >>> import torchio
+        >>> from torchio import ImagesDataset, Image, Subject
+        >>> subject_a = Subject([
+        ...     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
+        ...     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
+        >>> ])
+        >>> subject_b = Subject(
+        ...     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
+        ...     Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
+        ...     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
+        ... )
+        >>> subjects_list = [subject_a, subject_b]
+        >>> subjects_dataset = ImagesDataset(subjects_list)
+        >>> subject_sample = subjects_dataset[0]
     """
     def __init__(
             self,
@@ -157,6 +183,10 @@ class ImagesDataset(Dataset):
         return sample
 
     def set_transform(self, transform: Any) -> None:
+        """Set the :attr:`transform` attribute.
+
+        Args: an instance of :class:`torchio.transforms.Transform`
+        """
         self._transform = transform
 
     @staticmethod

@@ -1,10 +1,10 @@
 Images dataset
---------------
+==============
 
 .. currentmodule:: torchio.data.images
 
 :class:`ImagesDataset`
-======================
+----------------------
 
 .. autoclass:: ImagesDataset
     :members:
@@ -12,7 +12,7 @@ Images dataset
 
 
 :class:`Subject`
-================
+----------------
 
 .. autoclass:: Subject
     :members:
@@ -20,7 +20,7 @@ Images dataset
 
 
 :class:`Image`
-==============
+--------------
 
 .. autoclass:: Image
     :members:

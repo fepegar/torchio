@@ -19,9 +19,7 @@ class ImageSampler(IterableDataset):
         return self.get_stream(self.sample, self.patch_size)
 
     def get_stream(self, sample: dict, patch_size: Tuple[int]):
-        """
-        Is cycle neccesary?
-        """
+        # Is cycle neccesary?
         return cycle(self.extract_patch_generator(sample, patch_size))
 
     def extract_patch_generator(

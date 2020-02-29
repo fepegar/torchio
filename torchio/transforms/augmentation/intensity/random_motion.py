@@ -103,7 +103,7 @@ class RandomMotion(RandomTransform):
             num_transforms: int,
             probability: float,
             perturbation: float = 0.3,
-            ) -> Tuple:
+            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
         """
         If perturbation is 0, the intervals between movements are constant
         """
@@ -181,7 +181,7 @@ class RandomMotion(RandomTransform):
 
     @staticmethod
     def sort_spectra(spectra: np.ndarray, times: np.ndarray):
-        """Use original spectrum to fill the center of K-space"""
+        """Use original spectrum to fill the center of k-space"""
         num_spectra = len(spectra)
         if np.any(times > 0.5):
             index = np.where(times > 0.5)[0].min()
