@@ -15,8 +15,8 @@ class RandomTransform(Transform):
     """Base class for stochastic augmentation transforms.
 
     Args:
-        seed: seed for ``torch`` random number generator.
-        verbose: if set to ``True``, will print the running time of the
+        seed: Seed for :mod:`torch` random number generator.
+        verbose: If set to ``True``, will print the running time of the
             transform.
     """
     def __init__(self, seed: Optional[int] = None, verbose: bool = False):
@@ -35,11 +35,11 @@ class RandomTransform(Transform):
         r"""Adapted from ``torchvision.RandomRotation``.
 
         Args:
-            nums_range: tuple of two numbers :math:`(a, b)`,
+            nums_range: Tuple of two numbers :math:`(a, b)`,
                 where :math:`a \leq b`.
                 If a single positive number :math:`n` is provided,
                 a tuple :math:`(-n, n)` will be returned.
-            name: name of the parameter, so that an informative error message
+            name: Name of the parameter, so that an informative error message
                 can be printed.
 
         Returns:

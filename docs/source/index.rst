@@ -68,7 +68,7 @@ You can preview and run most features in TorchIO in this
    :caption: API
 
    datasets.rst
-   data.rst
+   data/data.rst
    transforms/transforms.rst
 
 

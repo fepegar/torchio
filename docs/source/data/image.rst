@@ -1,9 +1,8 @@
-Data handling
-=============
-
+Images dataset
+--------------
 
 Images dataset
-**************
+~~~~~~~~~~~~~~
 
 .. autoclass:: torchio.data.images.ImagesDataset
     :members:
