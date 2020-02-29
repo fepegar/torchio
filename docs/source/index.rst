@@ -6,6 +6,10 @@
 TorchIO
 =======
 
+.. image:: https://img.shields.io/pypi/dm/torchio.svg
+   :target: https://pypi.org/project/torchio/
+   :alt: Number of PyPI downloads
+
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab Notebook
@@ -18,13 +22,13 @@ TorchIO
    :target: https://badge.fury.io/py/torchio
    :alt: PyPI Version
 
-.. image:: https://img.shields.io/pypi/dm/torchio.svg
-   :target: https://pypi.org/project/torchio/
-   :alt: Number of PyPI downloads
-
 .. image:: https://travis-ci.org/fepegar/torchio.svg?branch=master
    :target: https://travis-ci.org/fepegar/torchio
-   :alt: Build Status
+   :alt: Build status
+
+.. image:: https://readthedocs.org/projects/torchio/badge/?version=latest
+   :target: https://readthedocs.org/projects/torchio/?badge=latest
+   :alt: Docs status
 
 .. image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio

@@ -2,7 +2,7 @@ Handling data
 =============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    image.rst
    patch_based.rst

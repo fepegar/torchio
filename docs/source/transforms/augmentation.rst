@@ -25,6 +25,22 @@ Intensity
     :show-inheritance:
 
 
+:class:`RandomGhosting`
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomGhosting
+    :members:
+    :show-inheritance:
+
+
+:class:`RandomSpike`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomSpike
+    :members:
+    :show-inheritance:
+
+
 :class:`RandomBiasField`
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -41,26 +57,10 @@ Intensity
     :show-inheritance:
 
 
-:class:`RandomGhosting`
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomGhosting
-    :members:
-    :show-inheritance:
-
-
 :class:`RandomNoise`
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RandomNoise
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomSpike`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomSpike
     :members:
     :show-inheritance:
 
