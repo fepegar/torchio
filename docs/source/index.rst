@@ -22,8 +22,8 @@ TorchIO
    :alt: Build status
 
 .. image:: https://readthedocs.org/projects/torchio/badge/?version=latest
-   :target: https://readthedocs.org/projects/torchio/?badge=latest
-   :alt: Docs status
+   :target: https://torchio.readthedocs.io/?badge=latest
+   :alt: Documentation status
 
 .. image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
