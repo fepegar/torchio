@@ -1,13 +1,9 @@
 Transforms
 ==========
 
-Augmentation
-------------
+.. toctree::
+   :maxdepth: 2
 
-
-Preprocessing
--------------
-
-
-Others
-------
+   augmentation.rst
+   preprocessing.rst
+   others.rst

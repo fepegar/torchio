@@ -70,7 +70,6 @@ You can preview and run most features in TorchIO in this
    datasets.rst
    data.rst
    transforms/transforms.rst
-   transforms/transforms.rst
 
 
 Indices and tables

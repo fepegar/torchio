@@ -1,3 +1,7 @@
+"""
+This is the docstring of random transform module
+"""
+
 import numbers
 from typing import Optional, Tuple, Union
 from abc import abstractmethod
@@ -8,18 +12,20 @@ from ... import TypeNumber
 
 
 class RandomTransform(Transform):
+    r"""Base class for stochastic augmentation transforms.
+
+    Args:
+        seed: seed for ``torch`` random number generator.
+        verbose: if set to ``True``, will print the running time of the
+            transform.
+    """
     def __init__(self, seed: Optional[int] = None, verbose: bool = False):
         super().__init__(verbose=verbose)
-        self.seed = seed
+        self._seed = seed
 
     def __call__(self, sample: dict):
         self.check_seed()
         return super().__call__(sample)
-
-    @staticmethod
-    @abstractmethod
-    def get_params(*args, **kwargs):
-        pass
 
     @staticmethod
     def parse_range(
@@ -74,10 +80,10 @@ class RandomTransform(Transform):
         return interpolation
 
     def check_seed(self) -> None:
-        if self.seed is not None:
+        if self._seed is not None:
             if self.verbose:
-                print('Setting torch seed to', self.seed)
-            torch.manual_seed(self.seed)
+                print('Setting torch seed to', self._seed)
+            torch.manual_seed(self._seed)
 
     @staticmethod
     def fourier_transform(array: np.ndarray):
