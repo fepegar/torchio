@@ -106,7 +106,7 @@ class TestImagesDataset(unittest.TestCase):
 
     def test_coverage(self):
         dataset = torchio.ImagesDataset(
-            self.subjects_list, verbose=True, transform=lambda x: x)
+            self.subjects_list, transform=lambda x: x)
         _ = len(dataset)  # for coverage
         sample = dataset[0]
         output_path = self.dir / 'test.nii.gz'
