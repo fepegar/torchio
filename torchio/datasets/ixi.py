@@ -31,8 +31,8 @@ class IXI(ImagesDataset):
 
     Args:
         root: Root directory to which the dataset will be downloaded.
-        transform: An instance of :class:`torchio.transforms.Transform`
-        download: If set to ``True``, will download the data into :attr:`root`
+        transform: An instance of :class:`torchio.transforms.Transform`.
+        download: If set to ``True``, will download the data into :attr:`root`.
         modalities: List of modalities to be downloaded. They must be in
             ``('T1', 'T2', 'PD', 'MRA', 'DTI')``.
 
@@ -229,6 +229,7 @@ class IXITiny(ImagesDataset):
 
 def sglob(directory, pattern):
     return sorted(list(Path(directory).glob(pattern)))
+
 
 def get_subject_id(path):
     return '-'.join(path.name.split('-')[:-1])

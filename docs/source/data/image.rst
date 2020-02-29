@@ -1,24 +1,26 @@
 Images dataset
 --------------
 
-Images dataset
-~~~~~~~~~~~~~~
+.. currentmodule:: torchio.data.images
 
-.. autoclass:: torchio.data.images.ImagesDataset
+:class:`ImagesDataset`
+======================
+
+.. autoclass:: ImagesDataset
     :members:
     :show-inheritance:
 
 
-Subject
-*******
+:class:`Subject`
+================
 
-.. autoclass:: torchio.data.images.Subject
+.. autoclass:: Subject
     :members:
     :show-inheritance:
 
 
-Image
-*****
+:class:`Image`
+==============
 
-.. autoclass:: torchio.data.images.Image
+.. autoclass:: Image
     :members:

@@ -1,5 +1,8 @@
+Handling data
+=============
+
 .. toctree::
    :maxdepth: 2
-   :caption: Data handling
 
    image.rst
+   patch_based.rst

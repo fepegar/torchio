@@ -1,9 +1,6 @@
 Medical image datasets
 ======================
 
-.. currentmodule:: torchio.datasets
-
-
 IXI
 ---
 

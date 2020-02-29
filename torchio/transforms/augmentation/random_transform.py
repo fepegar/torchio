@@ -35,15 +35,19 @@ class RandomTransform(Transform):
         r"""Adapted from ``torchvision.RandomRotation``.
 
         Args:
-            nums_range: Tuple of two numbers :math:`(a, b)`,
-                where :math:`a \leq b`.
+            nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
+                where :math:`n_{min} \leq n_{max}`.
                 If a single positive number :math:`n` is provided,
                 a tuple :math:`(-n, n)` will be returned.
             name: Name of the parameter, so that an informative error message
                 can be printed.
 
         Returns:
-            A tuple of two numbers :math:`(a, b)`, where :math:`a \leq b`.
+            A tuple of two numbers :math:`(n_{min}, n_{max})`.
+
+        Raises:
+            ValueError: if :attr:`nums_range` is negative
+            ValueError: if :math:`n_{min} \gt n_{max}`.
         """
         if isinstance(nums_range, numbers.Number):
             if nums_range < 0:
