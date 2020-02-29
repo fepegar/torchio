@@ -12,7 +12,7 @@ from ... import TypeNumber
 
 
 class RandomTransform(Transform):
-    r"""Base class for stochastic augmentation transforms.
+    """Base class for stochastic augmentation transforms.
 
     Args:
         seed: seed for ``torch`` random number generator.
@@ -29,10 +29,22 @@ class RandomTransform(Transform):
 
     @staticmethod
     def parse_range(
-            nums_range: Union[TypeNumber, Tuple[TypeNumber]],
+            nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        """Adapted from torchvision.RandomRotation"""
+        r"""Adapted from ``torchvision.RandomRotation``.
+
+        Args:
+            nums_range: tuple of two numbers :math:`(a, b)`,
+                where :math:`a \leq b`.
+                If a single positive number :math:`n` is provided,
+                a tuple :math:`(-n, n)` will be returned.
+            name: name of the parameter, so that an informative error message
+                can be printed.
+
+        Returns:
+            A tuple of two numbers :math:`(a, b)`, where :math:`a \leq b`.
+        """
         if isinstance(nums_range, numbers.Number):
             if nums_range < 0:
                 raise ValueError(
