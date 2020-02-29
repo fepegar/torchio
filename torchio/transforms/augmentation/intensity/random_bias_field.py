@@ -64,7 +64,7 @@ class RandomBiasField(RandomTransform):
             order: int,
             coefficients_range: Tuple[float, float],
             probability: float,
-            ) -> Tuple:
+            ) -> Tuple[bool, np.ndarray]:
         """
         Sampling of the appropriate number of coefficients for the creation
         of the bias field map

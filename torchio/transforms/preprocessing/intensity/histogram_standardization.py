@@ -10,7 +10,7 @@ import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
 from ....torchio import DATA, TypePath, TypeCallable
-from .normalization_transform import NormalizationTransform
+from . import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100

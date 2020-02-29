@@ -1,10 +1,20 @@
 """
-Create a TorchIO dataset with the IXI data from
-https://brain-development.org/ixi-dataset/
+The `Information eXtraction from Images (IXI) <https://brain-development.org/ixi-dataset/>`_
+dataset contains "nearly 600 MR images from normal, healthy subjects",
+including "T1, T2 and PD-weighted images,
+MRA images and Diffusion-weighted images (15 directions)".
 
-Adapted from
-https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
+
+.. note ::
+    This data is made available under the
+    Creative Commons CC BY-SA 3.0 license.
+    If you use it please acknowledge the source of the IXI data, e.g.
+    `the IXI website <https://brain-development.org/ixi-dataset/>`_.
 """
+
+# Adapted from
+# https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
+
 
 import shutil
 from pathlib import Path
@@ -16,6 +26,41 @@ from torchvision.datasets.utils import download_and_extract_archive
 
 
 class IXI(ImagesDataset):
+    """
+    Full IXI dataset.
+
+    Args:
+        root: Root directory to which the dataset will be downloaded.
+        transform: An instance of :class:`torchio.transforms.Transform`.
+        download: If set to ``True``, will download the data into :attr:`root`.
+        modalities: List of modalities to be downloaded. They must be in
+            ``('T1', 'T2', 'PD', 'MRA', 'DTI')``.
+
+    .. warning:: The size of this dataset is multiple GB.
+        If you set :attr:`download` to ``True``, it will take some time
+        to be downloaded if it is not already present.
+
+    Example::
+
+        >>> import torchio
+        >>> import torchvision
+        >>> transforms = [
+        ...     torchio.ToCanonical(),  # to RAS
+        ...     torchio.Resample((1, 1, 1)),  # to 1 mm iso
+        ... ]
+        >>> ixi_dataset = torchio.datasets.IXI(
+        ...     'path/to/ixi_root/',
+        ...     modalities=('T1', 'T2'),
+        ...     transform=torchvision.transforms.Compose(transforms),
+        ...     download=True,
+        ... )
+        >>> print('Number of subjects in dataset:', len(ixi_dataset))  # 577
+        >>> sample_subject = ixi_dataset[0]
+        >>> print('Keys in subject sample:', tuple(sample_subject.keys()))  # ('T1', 'T2')
+        >>> print('Shape of T1 data:', sample_subject['T1'][torchio.DATA].shape)  # [1, 180, 268, 268]
+        >>> print('Shape of T2 data:', sample_subject['T2'][torchio.DATA].shape)  # [1, 241, 257, 188]
+    """
+
     base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
@@ -120,6 +165,15 @@ class IXI(ImagesDataset):
 
 
 class IXITiny(ImagesDataset):
+    r"""
+    This is the dataset used in the
+    `notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_.
+    It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR
+    images and their corresponding brain segmentations,
+    all with size :math:`83 \times 44 \times 55`.
+
+    It can be used as a medical image MNIST.
+    """
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
@@ -175,6 +229,7 @@ class IXITiny(ImagesDataset):
 
 def sglob(directory, pattern):
     return sorted(list(Path(directory).glob(pattern)))
+
 
 def get_subject_id(path):
     return '-'.join(path.name.split('-')[:-1])
