@@ -18,7 +18,8 @@ class Image:
         name: String corresponding to the name of the image, e.g. ``t1``,
             or ``segmentation``.
         path: Path to a file that can be read by
-            :mod:`SimpleITK` or :mod:`nibabel`.
+            :mod:`SimpleITK` or :mod:`nibabel` or to a directory containing
+            DICOM files.
         type\_: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
@@ -35,7 +36,7 @@ class Image:
         except TypeError:
             message = f'Conversion to path not possible for variable: {path}'
             raise TypeError(message)
-        if not path.is_file():
+        if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
             message = (
                 f'File for image "{self.name}"'
                 f' not found: "{path}"'
@@ -123,6 +124,8 @@ class ImagesDataset(Dataset):
     It receives a list of subjects, where each subject is an instance of
     :class:`torchio.Subject` containing instances of :class:`torchio.Image`.
     The file format must be compatible with NiBabel or SimpleITK readers.
+    It can also be a directory containing
+    `DICOM <https://www.dicomstandard.org/>`_ files.
 
     Args:
         subjects: Sequence of instances of :class:`torchio.Subject`.

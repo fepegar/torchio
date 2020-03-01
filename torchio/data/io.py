@@ -34,12 +34,32 @@ def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
 
 
 def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
-    image = sitk.ReadImage(str(path))
+    if Path(path).is_dir():  # assume DICOM
+        image = _read_dicom(path)
+    else:
+        image = sitk.ReadImage(str(path))
     data, affine = sitk_to_nib(image)
     if data.dtype != np.float32:
         data = data.astype(np.float32)
     tensor = torch.from_numpy(data)
     return tensor, affine
+
+
+def _read_dicom(directory: TypePath):
+    directory = Path(directory)
+    if not directory.is_dir():
+        raise ValueError(f'Directory "{directory}" not found')
+    reader = sitk.ImageSeriesReader()
+    dicom_names = reader.GetGDCMSeriesFileNames(str(directory))
+    if not dicom_names:
+        message = (
+            f'The directory "{directory}"'
+            ' does not seem to contain DICOM files'
+        )
+        raise FileNotFoundError(message)
+    reader.SetFileNames(dicom_names)
+    image = reader.Execute()
+    return image
 
 
 def write_image(

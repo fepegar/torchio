@@ -19,9 +19,15 @@ class RandomTransform(Transform):
         verbose: If set to ``True``, will print the running time of the
             transform.
     """
-    def __init__(self, seed: Optional[int] = None, verbose: bool = False):
+    def __init__(
+            self,
+            seed: Optional[int] = None,
+            verbose: bool = False,
+            save_parameters: bool = False,
+            ):
         super().__init__(verbose=verbose)
         self._seed = seed
+        self.save_parameters = save_parameters
 
     def __call__(self, sample: dict):
         self.check_seed()
