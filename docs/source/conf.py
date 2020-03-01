@@ -25,9 +25,9 @@ copyright = '2020, Fernando Pérez-García'
 author = 'Fernando Pérez-García'
 
 # The short X.Y version
-version = '0.13.6'
+version = 'version = release = '0.13.7''
 # The full version, including alpha/beta/rc tags
-release = '0.13.6'
+release = 'version = release = '0.13.7''
 
 
 # -- General configuration ---------------------------------------------------
