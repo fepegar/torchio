@@ -24,10 +24,9 @@ project = 'TorchIO'
 copyright = '2020, Fernando Pérez-García'
 author = 'Fernando Pérez-García'
 
-# The short X.Y version
-version = 'version = release = '0.13.7''
-# The full version, including alpha/beta/rc tags
-release = 'version = release = '0.13.7''
+# version is the short X.Y version
+# release is the full version, including alpha/beta/rc tags
+version = release = '0.13.7'
 
 
 # -- General configuration ---------------------------------------------------
