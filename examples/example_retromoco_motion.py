@@ -49,26 +49,30 @@ sample = dataset[0]
 dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0),
                "swallowFrequency": (2, 6, 0),  "swallowMagnitude": (1, 6),
                "suddenFrequency": (1, 2, 1),  "suddenMagnitude": (6, 6),
-               "verbose": True, "keep_original": True}
+               "verbose": True, "keep_original": True, "compare_to_original": True}
 dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0.8),
                "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (1, 6),
                "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (1, 6),
-               "verbose": True, "keep_original": True}
+               "verbose": True, "keep_original": True, "compare_to_original": True}
 t = RandomMotionFromTimeCourse(**dico_params)
 dataset = ImagesDataset(suj, transform=t)
 
 res = pd.DataFrame()
-dirpath = ['/data/romain/HCPdata/suj_274542/check/']
-
+dirpath = ['/data/romain/HCPdata/suj_274542/check2/']
+plt.ioff()
 for i in range(100):
     sample = dataset[0]
     dicm = sample['T1']['metrics']
     dics = sample['T1']['simu_param']
-    fout = dirpath[0]  +'mot_sim{}'.format(np.floor(dicm['ssim']*1000))
+    fout = dirpath[0]  +'mot_sim{}'.format(np.floor(dicm['ssim']*10000))
     dicm['fname'] = fout
     dicm.update(dics)
-    #fit_pars = sample['T1']['fit_pars']
-    #np.savetxt(fout+'.csv', fit_pars, delimiter=',')
+    fit_pars = t.fitpars
+    np.savetxt(fout+'.csv', fit_pars, delimiter=',')
+    fig = plt.figure()
+    plt.plot(fit_pars.T)
+    plt.savefig(fout+'.png')
+    plt.close(fig)
     res = res.append(dicm, ignore_index=True)
     dataset.save_sample(sample, dict(T1=fout+'.nii'))
 
