@@ -23,4 +23,3 @@ Images dataset
 --------------
 
 .. autoclass:: Image
-    :members:
