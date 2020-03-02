@@ -1,7 +1,7 @@
 from typing import Union, Optional, Callable
 import torch
 from ....torchio import DATA, TypeCallable
-from .normalization_transform import NormalizationTransform
+from . import NormalizationTransform
 
 
 class ZNormalization(NormalizationTransform):

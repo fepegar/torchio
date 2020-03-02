@@ -99,14 +99,14 @@ class TestImagesDataset(unittest.TestCase):
             self.iterate_dataset([images])
 
     def test_wrong_image_extension(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             path = self.dir / 'test.txt'
             path.touch()
             self.iterate_dataset([[Image('t1', path, INTENSITY)]])
 
     def test_coverage(self):
         dataset = torchio.ImagesDataset(
-            self.subjects_list, verbose=True, transform=lambda x: x)
+            self.subjects_list, transform=lambda x: x)
         _ = len(dataset)  # for coverage
         sample = dataset[0]
         output_path = self.dir / 'test.nii.gz'

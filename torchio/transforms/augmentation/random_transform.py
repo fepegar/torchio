@@ -1,3 +1,7 @@
+"""
+This is the docstring of random transform module
+"""
+
 import numbers
 from typing import Optional, Tuple, Union
 from abc import abstractmethod
@@ -8,25 +12,49 @@ from ... import TypeNumber
 
 
 class RandomTransform(Transform):
-    def __init__(self, seed: Optional[int] = None, verbose: bool = False, keep_original=False):
+    """Base class for stochastic augmentation transforms.
+
+    Args:
+        seed: Seed for :mod:`torch` random number generator.
+        verbose: If set to ``True``, will print the running time of the
+            transform.
+    """
+    def __init__(
+            self,
+            seed: Optional[int] = None,
+            verbose: bool = False,
+            save_parameters: bool = False, keep_original=False,
+            ):
         super().__init__(verbose=verbose, keep_original=keep_original)
-        self.seed = seed
+        self._seed = seed
+        self.save_parameters = save_parameters
 
     def __call__(self, sample: dict):
         self.check_seed()
         return super().__call__(sample)
 
     @staticmethod
-    @abstractmethod
-    def get_params(*args, **kwargs):
-        pass
-
-    @staticmethod
     def parse_range(
-            nums_range: Union[TypeNumber, Tuple[TypeNumber]],
+            nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        """Adapted from torchvision.RandomRotation"""
+        r"""Adapted from ``torchvision.RandomRotation``.
+
+        Args:
+            nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
+                where :math:`n_{min} \leq n_{max}`.
+                If a single positive number :math:`n` is provided,
+                a tuple :math:`(-n, n)` will be returned.
+            name: Name of the parameter, so that an informative error message
+                can be printed.
+
+        Returns:
+            A tuple of two numbers :math:`(n_{min}, n_{max})`.
+
+        Raises:
+            ValueError: if :attr:`nums_range` is negative
+            ValueError: if :math:`n_{min} \gt n_{max}`.
+        """
         if isinstance(nums_range, numbers.Number):
             if nums_range < 0:
                 raise ValueError(
@@ -74,10 +102,10 @@ class RandomTransform(Transform):
         return interpolation
 
     def check_seed(self) -> None:
-        if self.seed is not None:
+        if self._seed is not None:
             if self.verbose:
-                print('Setting torch seed to', self.seed)
-            torch.manual_seed(self.seed)
+                print('Setting torch seed to', self._seed)
+            torch.manual_seed(self._seed)
 
     @staticmethod
     def fourier_transform(array: np.ndarray):

@@ -46,6 +46,6 @@ class TestRandomMotion(unittest.TestCase):
             seed=42,
         )
         transformed = transform(self.sample)
-        transformed['t2'][DATA] = transformed['t2'][DATA] - 0.5
+        self.sample['t2'][DATA] = self.sample['t2'][DATA] - 0.5
         with self.assertWarns(UserWarning):
             transformed = transform(self.sample)

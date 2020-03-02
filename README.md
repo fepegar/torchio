@@ -1,11 +1,15 @@
 # TorchIO
 
+[![Downloads](https://img.shields.io/pypi/dm/torchio.svg)](https://pypi.org/project/torchio/)
+[![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
-[![PyPI Version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
-[![Build Status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
-[![Coverage Status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
-[![Code Quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
+[![Build status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
+[![Documentation status](https://readthedocs.org/projects/torchio/badge/?version=latest)](https://torchio.readthedocs.io/?badge=latest)
+[![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
+[![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
+[![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)
+
 
 
 `torchio` is a Python package containing a set of tools to efficiently
@@ -76,6 +80,7 @@ $ pip install --upgrade torchio
 - [Features](#features)
   * [Medical image datasets](#medical-image-datasets)
     - [IXI](#ixi)
+    - [Tiny IXI](#tiny-ixi)
   * [Data handling](#data-handling)
     - [`ImagesDataset`](#imagesdataset)
     - [Samplers and aggregators](#samplers-and-aggregators)
@@ -151,6 +156,12 @@ print('Shape of T2 data:', sample_subject['T2'][torchio.DATA].shape)  # [1, 241,
 ```
 
 
+#### [Tiny IXI](torchio/datasets/ixi.py)
+
+This is the dataset used in the [notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i).
+It is a tiny version of IXI, containing 566 T1-weighted brain MR images
+and their corresponding brain segmentations, all with size (83 x 44 x 55).
+
 
 ### Data handling
 
@@ -165,7 +176,10 @@ for efficient loading and data augmentation.
 It receives a list of subjects, where each subject is an instance of
 [`torchio.Subject`](torchio/data/images.py) containing instances of
 [`torchio.Image`](torchio/data/images.py).
-The paths suffix must be `.nii`, `.nii.gz` or `.nrrd`.
+The file format must be compatible with [NiBabel](https://nipy.org/nibabel/) or
+[SimpleITK](http://www.simpleitk.org/) readers.
+It can also be a directory containing
+[DICOM](https://www.dicomstandard.org/) files.
 
 ```python
 import torchio
@@ -188,7 +202,7 @@ subject_sample = subjects_dataset[0]
 
 #### [Samplers and aggregators](torchio/data/sampler/sampler.py)
 
-`torchio` includes grid, uniform and label patch samplers. There is also an
+TorchIO includes grid, uniform and label patch samplers. There is also an
 aggregator used for dense predictions.
 For more information about patch-based training, see
 [NiftyNet docs](https://niftynet.readthedocs.io/en/dev/window_sizes.html).

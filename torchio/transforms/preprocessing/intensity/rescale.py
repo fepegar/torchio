@@ -3,7 +3,7 @@ from typing import Tuple, Union, Optional, Callable
 import torch
 import numpy as np
 from ....torchio import DATA, TypeCallable
-from .normalization_transform import NormalizationTransform
+from . import NormalizationTransform
 
 
 class Rescale(NormalizationTransform):

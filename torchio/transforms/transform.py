@@ -1,5 +1,6 @@
 import time
 import warnings
+from copy import deepcopy
 from abc import ABC, abstractmethod
 import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
@@ -26,6 +27,7 @@ class Transform(ABC):
         if self.verbose:
             start = time.time()
         self.parse_sample(sample)
+        sample = deepcopy(sample)
         sample = self.apply_transform(sample)
         if self.verbose:
             duration = time.time() - start

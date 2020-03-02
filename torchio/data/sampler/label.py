@@ -5,7 +5,7 @@ from .sampler import ImageSampler
 class LabelSampler(ImageSampler):
     """
     This iterable dataset yields patches that contain at least one voxel
-    without background. See main() for an example.
+    without background.
 
     For now, this implementation is not efficient because it uses brute force
     to look for foreground voxels.
