@@ -135,22 +135,6 @@ class ImagesDataset(Dataset):
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image
 
-    Example::
-
-        >>> import torchio
-        >>> from torchio import ImagesDataset, Image, Subject
-        >>> subject_a = Subject([
-        ...     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
-        ...     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
-        >>> ])
-        >>> subject_b = Subject(
-        ...     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
-        ...     Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
-        ...     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
-        ... )
-        >>> subjects_list = [subject_a, subject_b]
-        >>> subjects_dataset = ImagesDataset(subjects_list)
-        >>> subject_sample = subjects_dataset[0]
     """
     def __init__(
             self,

@@ -18,6 +18,8 @@ __all__ = [
     'TypeData',
     'TypeTuple',
     'TypeCallable',
+    'TypeRangeInt',
+    'TypeRangeFloat',
 ]
 
 INTENSITY = 'intensity'
@@ -35,4 +37,6 @@ TypePath = Union[Path, str]
 TypeNumber = Union[int, float]
 TypeData = Union[torch.Tensor, np.ndarray]
 TypeTuple = Union[int, Tuple[int, int, int]]
+TypeRangeInt = Union[int, Tuple[int, int]]
+TypeRangeFloat = Union[float, Tuple[float, float]]
 TypeCallable = Callable[[torch.Tensor], torch.Tensor]

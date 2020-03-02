@@ -8,5 +8,4 @@ Others
 ~~~~~~~~~~~~~~~
 
 .. autoclass:: Lambda
-    :members:
     :show-inheritance:

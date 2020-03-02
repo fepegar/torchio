@@ -3,16 +3,56 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict, check_consistent_shape
-from ....torchio import LABEL, DATA, AFFINE
+from ....torchio import LABEL, DATA, AFFINE, TypeRangeFloat
 from .. import Interpolation
 from .. import RandomTransform
 
 
 class RandomAffine(RandomTransform):
+    r"""Random affine transformation.
+
+    Args:
+        scales: Tuple :math:`(a, b)` defining the scaling
+            magnitude. The scaling values along each dimension are
+            :math:`(s_1, s_2, s_3)`, where :math:`s_i \sim \mathcal{U}(a, b)`.
+        degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
+            The rotation angles around each axis are
+            :math:`(\theta_1, \theta_2, \theta_3)`,
+            where :math:`\theta_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\theta_i \sim \mathcal{U}(-d, d)`.
+        isotropic: If ``True``, the scaling factor along all dimensions is the
+            same, i.e. :math:`s_1 = s_2 = s_3`.
+        image_interpolation: Interpolation type to use for resampling.
+            The available interpolation strategies are enumerated in
+            :class:`torchio.transforms.interpolation.Interpolation`.
+            For more information, visit
+            `ITK <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
+            and `Simple ITK <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
+            docs on image interpolation.
+        seed:
+        verbose:
+
+    .. note:: The image minimum is used as default value to fill missing values
+        during resampling.
+        This behavior might become customizable in the future.
+
+    Example:
+        >>> from torchio.transforms import RandomAffine, Interpolation
+        >>> sample = images_dataset[0]  # instance of torchio.ImagesDataset
+        >>> transform = RandomAffine(
+        ...     scales=(0.9, 1.2),
+        ...     degrees=(10),
+        ...     isotropic=False,
+        ...     image_interpolation=Interpolation.BSPLINE,
+        ... )
+        >>> transformed = transform(sample)
+
+    """
     def __init__(
             self,
             scales: Tuple[float, float] = (0.9, 1.1),
-            degrees: float = 10,
+            degrees: TypeRangeFloat = 10,
             isotropic: bool = False,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             seed: Optional[int] = None,

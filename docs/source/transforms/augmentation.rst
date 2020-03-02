@@ -14,74 +14,14 @@ Augmentation
 .. currentmodule:: torchio.transforms
 
 
-Intensity
----------
-
-:class:`RandomMotion`
-~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomMotion
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomGhosting`
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomGhosting
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomSpike`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomSpike
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomBiasField`
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomBiasField
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomBlur`
-~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomBlur
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomNoise`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomNoise
-    :members:
-    :show-inheritance:
-
-
-:class:`RandomSwap`
-~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: RandomSwap
-    :members:
-    :show-inheritance:
-
-
 
 Spatial
 -------
 
-:class:`RandomElasticDeformation`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:class:`RandomFlip`
+~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: RandomElasticDeformation
-    :members:
+.. autoclass:: RandomFlip
     :show-inheritance:
 
 
@@ -89,13 +29,64 @@ Spatial
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RandomAffine
-    :members:
     :show-inheritance:
 
 
-:class:`RandomFlip`
+:class:`RandomElasticDeformation`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomElasticDeformation
+    :show-inheritance:
+
+
+
+Intensity
+---------
+
+:class:`RandomMotion`
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomMotion
+    :show-inheritance:
+
+
+:class:`RandomGhosting`
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomGhosting
+    :show-inheritance:
+
+
+:class:`RandomSpike`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomSpike
+    :show-inheritance:
+
+
+:class:`RandomBiasField`
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomBiasField
+    :show-inheritance:
+
+
+:class:`RandomBlur`
 ~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: RandomFlip
-    :members:
+.. autoclass:: RandomBlur
+    :show-inheritance:
+
+
+:class:`RandomNoise`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomNoise
+    :show-inheritance:
+
+
+:class:`RandomSwap`
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RandomSwap
     :show-inheritance:
