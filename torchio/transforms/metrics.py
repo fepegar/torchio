@@ -96,6 +96,7 @@ def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
         print(f'Ssim calculation : {duration:.3f} seconds')
 
     return res
+########################################################################################################################
 
 
 def th_pearsonr(x, y):
@@ -113,5 +114,54 @@ def th_pearsonr(x, y):
     r_den = torch.norm(xm, 2) * torch.norm(ym, 2)
     r_val = r_num / r_den
     return r_val
+########################################################################################################################
 
 
+def nrmse(image_true, image_test, normalization="euclidean"):
+    '''
+    A Pytorch version of scikit-image's implementation of normalized_root_mse
+    https://scikit-image.org/docs/dev/api/skimage.metrics.html#skimage.metrics.normalized_root_mse
+    Compute the normalized root mean-squared error (NRMSE) between two
+    images.
+    Parameters
+    ----------
+    image_true : ndarray
+        Ground-truth image, same shape as im_test.
+    image_test : ndarray
+        Test image.
+    normalization : {'euclidean', 'min-max', 'mean'}, optional
+        Controls the normalization method to use in the denominator of the
+        NRMSE.  There is no standard method of normalization across the
+        literature [1]_.  The methods available here are as follows:
+        - 'euclidean' : normalize by the averaged Euclidean norm of
+          ``im_true``::
+              NRMSE = RMSE * sqrt(N) / || im_true ||
+          where || . || denotes the Frobenius norm and ``N = im_true.size``.
+          This result is equivalent to::
+              NRMSE = || im_true - im_test || / || im_true ||.
+        - 'min-max'   : normalize by the intensity range of ``im_true``.
+        - 'mean'      : normalize by the mean of ``im_true``
+
+    Returns
+    -------
+    nrmse : float
+        The NRMSE metric.
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Root-mean-square_deviation
+
+    '''
+
+    normalization = normalization.lower()
+
+    if normalization == "min-max":
+        denom = image_true.max() - image_true.min()
+    elif normalization == "mean":
+        denom = image_true.mean()
+    else:
+        if normalization != "euclidean":
+            raise Warning("Unsupported norm type. Found {}.\nUsing euclidean by default".format(normalization))
+        denom = torch.sqrt(torch.mean(image_true ** 2))
+
+    return (F.mse_loss(image_true, image_test).sqrt())/denom
