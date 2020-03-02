@@ -92,10 +92,14 @@ class RandomSpike(RandomTransform):
             factor: float,
             ):
         array = sitk.GetArrayViewFromImage(image).transpose()
-        spectrum = self.fourier_transform(array).ravel()
+        spectrum = self.fourier_transform(array).ravel(order='F')
         for _ in range(num_spikes):
             index = torch.randint(0, len(spectrum), (1,))
             spectrum[index] = spectrum.max() * factor
-        spectrum = spectrum.reshape(array.shape)
+            spectrum[index-1] = spectrum.max() * factor*0.8
+            spectrum[index+1] = spectrum.max() * factor*0.8
+            #spectrum[index - 2] = spectrum.max() * factor * 0.4
+            #spectrum[index + 2] = spectrum.max() * factor * 0.4
+        spectrum = spectrum.reshape(array.shape, order='F')
         result = self.inv_fourier_transform(spectrum)
         return result.astype(np.float32)
