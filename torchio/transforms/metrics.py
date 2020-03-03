@@ -45,7 +45,7 @@ def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
 
 
 class SSIM3D(torch.nn.Module):
-    def __init__(self, window_size=11, size_average=True):
+    def __init__(self, window_size=3, size_average=True):
         super(SSIM3D, self).__init__()
         self.window_size = window_size
         self.size_average = size_average
@@ -67,7 +67,7 @@ class SSIM3D(torch.nn.Module):
             self.window = window
             self.channel = channel
 
-        return _ssim_3D(img1, img2, window, self.window_size, channel, self.size_average)
+        return 1 - _ssim_3D(img1, img2, window, self.window_size, channel, self.size_average)
 
 
 def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
