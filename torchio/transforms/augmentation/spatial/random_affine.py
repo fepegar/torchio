@@ -33,6 +33,8 @@ class RandomAffine(RandomTransform):
         seed:
         verbose:
 
+    .. note:: Rotations are performed around the center of the image.
+
     .. note:: The image minimum is used as default value to fill missing values
         during resampling.
         This behavior might become customizable in the future.
