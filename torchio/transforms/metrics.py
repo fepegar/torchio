@@ -44,6 +44,45 @@ def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
         return ssim_map.mean(1).mean(1).mean(1)
 
 
+def _ssim_3D_dist(img1, img2, window_size, aggregate="avg"):
+
+    if len(img1.size()) == 4: #missing batch dim
+        img1 = img1.unsqueeze(0)
+        img2 = img2.unsqueeze(0)
+
+    (_, channel, _, _, _) = img1.size()
+    window = create_window_3D(window_size, channel)
+
+    mu1 = F.conv3d(img1, window, padding=window_size // 2, groups=channel)
+    mu2 = F.conv3d(img2, window, padding=window_size // 2, groups=channel)
+
+    mu1_sq = mu1.pow(2)
+    mu2_sq = mu2.pow(2)
+
+    mu1_mu2 = mu1 * mu2
+
+    sigma1_sq = F.conv3d(img1 * img1, window, padding=window_size // 2, groups=channel) - mu1_sq
+    sigma2_sq = F.conv3d(img2 * img2, window, padding=window_size // 2, groups=channel) - mu2_sq
+    sigma12 = F.conv3d(img1 * img2, window, padding=window_size // 2, groups=channel) - mu1_mu2
+
+    C1 = 0.01 ** 2
+    C2 = 0.03 ** 2
+
+    s1 = (2 * mu1_mu2 + C1) / (mu1_sq + mu2_sq + C1)
+    s2 = (2 * sigma12 + C2) / (sigma1_sq + sigma2_sq + C2)
+    d1 = torch.sqrt(1 - s1)
+    d2 = torch.sqrt(1 - s2)
+    d1[torch.isnan(d1)] = 0
+    d2[torch.isnan(d2)] = 0
+
+    if aggregate.lower() == "normed":
+        res = torch.norm(torch.sqrt(d1 ** 2 + d2 ** 2), 2)
+    else:
+        res = torch.mean(torch.sqrt(d1 ** 2 + d2 ** 2))
+
+    return res
+
+
 class SSIM3D(torch.nn.Module):
     def __init__(self, window_size=3, size_average=True):
         super(SSIM3D, self).__init__()
