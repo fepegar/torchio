@@ -16,6 +16,83 @@ import pandas as pd
 
 from torchio.transforms import Interpolation
 suj = [[ Image('T1', '/data/romain/HCPdata/suj_274542/mT1w_1mm.nii', INTENSITY), ]]
+suj = [[ Image('T1', '/data/romain/data_exemple/suj_274542/mask_brain.nii', INTENSITY), ]]
+
+
+
+def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss'):
+    fp = np.zeros((6, 200))
+    x = np.arange(0,200)
+    if method=='gauss':
+        y = np.exp(-(x - x0) ** 2 / float(2 * sigma ** 2))*amplitude
+    elif method == 'step':
+        if x0<100:
+            y = np.hstack((np.zeros((1,(x0-sigma))),
+                            np.linspace(0,20,2*sigma+1).reshape(1,-1),
+                            np.ones((1,((200-x0)-sigma-1)))*20 ))
+        else:
+            y = np.hstack((np.zeros((1,(x0-sigma))),
+                            np.linspace(0,-20,2*sigma+1).reshape(1,-1),
+                            np.ones((1,((200-x0)-sigma-1)))*-20 ))
+    fp[1,:] = y
+    return fp
+
+dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":False }
+
+x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1)))
+x0=[100]
+
+dirpath = ['/data/romain/data_exemple/motion_gauss']
+#plt.ioff()
+#for s in [1, 5, 10, 20 ]:
+for s in [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
+    for xx in x0:
+        fp = corrupt_data(xx, sigma=s,method='step')
+        dico_params['fitpars'] = fp
+        t = RandomMotionFromTimeCourse(**dico_params)
+        dataset = ImagesDataset(suj, transform=t)
+        sample = dataset[0]
+        fout = dirpath[0] + '/mask_mot_no_shift_s{:02d}_x{}'.format(s,xx)
+        fit_pars = t.fitpars
+        fig = plt.figure()
+        plt.plot(fit_pars.T)
+        plt.savefig(fout+'.png')
+        plt.close(fig)
+        dataset.save_sample(sample, dict(T1=fout+'.nii'))
+
+
+dataset = ImagesDataset(suj)
+so=dataset[0]
+image = so['T1']['data'][0]
+tfi = (np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(image)))).astype(np.complex128)
+sum_intensity, sum_intensity_abs = np.zeros((tfi.shape[2])), np.zeros((tfi.shape[2]))
+sum_intensity, sum_intensity_abs = np.zeros((tfi.shape[1],tfi.shape[2])), np.zeros((tfi.shape[1],tfi.shape[2]))
+#for z in range(0,tfi.shape[2]):
+for y in range(0, tfi.shape[1]):
+    for z in range(0, tfi.shape[2]):
+        ttf = np.zeros(tfi.shape,dtype=complex)
+        ttf[:,y,z] = tfi[:,y,z]
+        ifft = np.fft.ifftshift(np.fft.ifftn(ttf))
+        sum_intensity[y,z] = np.abs(np.sum(ifft))
+        sum_intensity_abs[y,z] = np.sum(np.abs(ifft))
+
+for s in [1,2, 3, 4, 5 , 8, 10 , 12, 15, 20 , 2500 ]:
+    fp = corrupt_data(50, sigma=s, method='gauss')
+    dico_params['fitpars'] = fp
+    t = RandomMotionFromTimeCourse(**dico_params)
+
+    t._calc_dimensions(sample['T1']['data'][0].shape)
+    fitpars_interp = t._interpolate_space_timing(t.fitpars)
+    trans = fitpars_interp[1,0,:]
+    #plt.figure(); plt.plot(trans.reshape(-1))
+    print(np.sum(trans*sum_intensity_abs)/np.sum(sum_intensity_abs))
+
+np.sum()
+
+
+
+
+
 
 rp_files = gfile('/data/romain/HCPdata/suj_274542/Motion_ms','^rp')
 rp_files = gfile('/data/romain/HCPdata/suj_274542/mot_separate','^rp')
@@ -109,10 +186,6 @@ for rpf in rp_files:
         plt.figure()
         plt.plot(fit_pars.T)
         plt.plot(fitP.T,'--')
-
-
-
-
 
 
 
