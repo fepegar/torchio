@@ -13,21 +13,24 @@ class Queue(Dataset):
     r"""Patches queue used for patch-based training.
 
     Args:
-        subjects_dataset: Instance of :class:`torchio.ImagesDataset`.
+        subjects_dataset: Instance of
+            :class:`~torchio.data.images.ImagesDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more RAM is needed to store the patches.
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        patch_size: Tuple of integers :math:`(D, H, W)`. If a single number
-            :math:`n` is provided, the patch size will be :math:`(n, n, n)`.
-        sampler_class: An instance of :class:`torchio.data.ImageSampler` used
+        patch_size: Tuple of integers :math:`(D, H, W)` to generate patches
+            of size :math:`D \times H \times W`.
+            If a single number :math:`n` is provided,
+            the patch size will be :math:`n \times n \times n`.
+        sampler_class: An instance of :class:`~torchio.data.ImageSampler` used
             to define the patches sampling strategy.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
-        shuffle_subjects: If ``True``, subjects dataset is shuffled at the
+        shuffle_subjects: If ``True``, the subjects dataset is shuffled at the
             beginning of each epoch, i.e. when all patches from all subjects
             have been processed.
         shuffle_patches: If ``True``, patches are shuffled after filling the
@@ -37,7 +40,6 @@ class Queue(Dataset):
     .. note:: :attr:`num_workers` refers to the number of workers used to
         load and transform the volumes. Multiprocessing is not needed to pop
         patches from the queue.
-
 
     """
     def __init__(

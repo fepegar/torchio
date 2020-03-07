@@ -1,5 +1,5 @@
 """
-The `Information eXtraction from Images (IXI) <https://brain-development.org/ixi-dataset/>`_
+The `Information eXtraction from Images (IXI)`_
 dataset contains "nearly 600 MR images from normal, healthy subjects",
 including "T1, T2 and PD-weighted images,
 MRA images and Diffusion-weighted images (15 directions)".
@@ -10,6 +10,8 @@ MRA images and Diffusion-weighted images (15 directions)".
     Creative Commons CC BY-SA 3.0 license.
     If you use it please acknowledge the source of the IXI data, e.g.
     `the IXI website <https://brain-development.org/ixi-dataset/>`_.
+
+.. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/
 """
 
 # Adapted from
@@ -31,7 +33,8 @@ class IXI(ImagesDataset):
 
     Args:
         root: Root directory to which the dataset will be downloaded.
-        transform: An instance of :class:`torchio.transforms.Transform`.
+        transform: An instance of
+            :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
         modalities: List of modalities to be downloaded. They must be in
             ``('T1', 'T2', 'PD', 'MRA', 'DTI')``.
@@ -166,13 +169,20 @@ class IXI(ImagesDataset):
 
 class IXITiny(ImagesDataset):
     r"""
-    This is the dataset used in the
-    `notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_.
+    This is the dataset used in the `notebook`_.
     It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR
     images and their corresponding brain segmentations,
     all with size :math:`83 \times 44 \times 55`.
 
     It can be used as a medical image MNIST.
+
+    Args:
+        root: Root directory to which the dataset will be downloaded.
+        transform: An instance of
+            :class:`~torchio.transforms.transform.Transform`.
+        download: If set to ``True``, will download the data into :attr:`root`.
+
+    .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
     """
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'

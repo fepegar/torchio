@@ -70,7 +70,7 @@ class Subject(list):
     """Class to store information about the images corresponding to a subject.
 
     Args:
-        *images: Instances of :class:`torchio.Image`.
+        *images: Instances of :class:`~torchio.data.images.Image`.
         name: Subject ID
     """
     def __init__(self, *images: Image, name: str = ''):
@@ -117,23 +117,41 @@ class Subject(list):
 class ImagesDataset(Dataset):
     """Base TorchIO dataset.
 
-    :class:`ImagesDataset` is a reader of 3D medical images that directly
-    inherits from :class:`torch.utils.Dataset`.
-    It can be used with a :class:`torch.utils.DataLoader`
+    :class:`~torchio.data.images.ImagesDataset`
+    is a reader of 3D medical images that directly
+    inherits from :class:`torch.utils.data.Dataset`.
+    It can be used with a :class:`torch.utils.data.DataLoader`
     for efficient loading and augmentation.
     It receives a list of subjects, where each subject is an instance of
-    :class:`torchio.Subject` containing instances of :class:`torchio.Image`.
-    The file format must be compatible with NiBabel or SimpleITK readers.
+    :class:`~torchio.data.images.Subject` containing instances of
+    :class:`~torchio.data.images.Image`.
+    The file format must be compatible with `NiBabel`_ or `SimpleITK`_ readers.
     It can also be a directory containing
-    `DICOM <https://www.dicomstandard.org/>`_ files.
+    `DICOM`_ files.
+
+    Indexing an :class:`~torchio.data.images.ImagesDataset` returns a
+    Python dictionary with the data corresponding to the queried subject.
+    The keys in the dictionary are the names of the images passed to that
+    subject, for example ``('t1', 't2', 'segmentation')``.
+
+    The value corresponding to each image name is another dictionary
+    ``image_dict`` with information about the image.
+    The data is stored in ``image_dict[torchio.IMAGE]``,
+    and the corresponding `affine matrix`_ is in ``image_dict[torchio.AFFINE]``.
 
     Args:
-        subjects: Sequence of instances of :class:`torchio.Subject`.
+        subjects: Sequence of instances of
+            :class:`~torchio.data.images.Subject`.
         transform: An instance of
-            :class:`torchio.transforms.Transform` that is applied to each image
-            after loading it.
+            :class:`torchio.transforms.Transform` that is applied to each
+            image after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image
+
+    .. _NiBabel: https://nipy.org/nibabel/#nibabel
+    .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
+    .. _DICOM: https://www.dicomstandard.org/
+    .. _affine matrix: https://nipy.org/nibabel/coordinate_systems.html
 
     """
     def __init__(
