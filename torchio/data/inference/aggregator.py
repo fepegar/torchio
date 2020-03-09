@@ -66,5 +66,5 @@ class GridAggregator:
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
             self._output_tensor[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch
 
-    def get_output_tensor(self, patches) -> torch.Tensor:
+    def get_output_tensor(self) -> torch.Tensor:
         return self._output_tensor
