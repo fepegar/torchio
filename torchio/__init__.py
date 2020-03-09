@@ -2,7 +2,7 @@
 
 __author__ = """Fernando Perez-Garcia"""
 __email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
-__version__ = '0.13.10'
+__version__ = '0.13.11'
 
 from . import utils
 from .torchio import *
