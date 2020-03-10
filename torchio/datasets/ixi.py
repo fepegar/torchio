@@ -223,7 +223,9 @@ class IXITiny(ImagesDataset):
 
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
-
+        ixi_tiny_dir = root / 'ixi_tiny'
+        if ixi_tiny_dir.is_dir():  # assume it's been downloaded
+            return
         with NamedTemporaryFile(suffix='.zip') as f:
             download_and_extract_archive(
                 self.url,
