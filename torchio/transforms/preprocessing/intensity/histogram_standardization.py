@@ -73,35 +73,17 @@ def __compute_percentiles(
     return perc_results
 
 
-def __standardize_cutoff(
-        cutoff: np.ndarray,
-        type_hist: str = 'percentile',
-        ) -> np.ndarray:
-    """
-    Standardizes the cutoff values given in the configuration
+def __standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
+    """Standardize the cutoff values given in the configuration.
 
-    :param cutoff:
-    :param type_hist: Type of landmark normalisation chosen (median,
-    quartile, percentile)
-    :return cutoff: cutoff with appropriate adapted values
+    Computes percentile landmark normalization by default.
+
     """
     cutoff = np.asarray(cutoff)
-    if cutoff is None:
-        return DEFAULT_CUTOFF
-    if len(cutoff) > 2:
-        cutoff = np.unique([np.min(cutoff), np.max(cutoff)])
-    if len(cutoff) < 2:
-        return DEFAULT_CUTOFF
-    if cutoff[0] > cutoff[1]:
-        cutoff[0], cutoff[1] = cutoff[1], cutoff[0]
     cutoff[0] = max(0., cutoff[0])
     cutoff[1] = min(1., cutoff[1])
-    if type_hist == 'quartile':
-        cutoff[0] = np.min([cutoff[0], 0.24])
-        cutoff[1] = np.max([cutoff[1], 0.76])
-    else:
-        cutoff[0] = np.min([cutoff[0], 0.09])
-        cutoff[1] = np.max([cutoff[1], 0.91])
+    cutoff[0] = np.min([cutoff[0], 0.09])
+    cutoff[1] = np.max([cutoff[1], 0.91])
     return cutoff
 
 
@@ -197,7 +179,7 @@ def train(
             mask = masking_function(data)
         else:
             if mask_path is not None:
-                mask = nib.load(mask_path[index]).get_fdata()
+                mask = nib.load(str(mask_path)).get_fdata()
                 mask = mask > 0
             else:
                 mask = np.ones_like(data, dtype=np.bool)
