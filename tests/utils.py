@@ -1,3 +1,4 @@
+import shutil
 import random
 import tempfile
 import unittest
@@ -5,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 import torchio
+from torchio.datasets import IXITiny
 from torchio import INTENSITY, LABEL, DATA, Image, ImagesDataset, Subject
 
 
@@ -43,8 +45,12 @@ class TorchioTestCase(unittest.TestCase):
 
     def tearDown(self):
         """Tear down test fixtures, if any."""
-        import shutil
+        print('Deleting', self.dir)
         shutil.rmtree(self.dir)
+
+    def get_ixi_tiny(self):
+        root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'
+        return IXITiny(root_dir, download=True)
 
     def get_image_path(self, stem):
         data = np.random.rand(10, 20, 30)

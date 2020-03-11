@@ -62,6 +62,10 @@ class TestImagesDataset(TorchioTestCase):
             path.touch()
             self.iterate_dataset([[Image('t1', path, INTENSITY)]])
 
+    def test_wrong_index(self):
+        with self.assertRaises(TypeError):
+            self.dataset[:3]
+
     def test_coverage(self):
         dataset = torchio.ImagesDataset(
             self.subjects_list, transform=lambda x: x)

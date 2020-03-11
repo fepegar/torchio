@@ -2,14 +2,14 @@ import tempfile
 import unittest
 from pathlib import Path
 from torchio.datasets import IXI, IXITiny
+from ..utils import TorchioTestCase
 
 
-class TestIXI(unittest.TestCase):
+class TestIXI(TorchioTestCase):
     """Tests for `ixi` module."""
 
     def test_ixi(self):
-        root_dir = Path(tempfile.gettempdir(), 'ixi_tiny')
-        dataset = IXITiny(root_dir, download=True)
+        self.get_ixi_tiny()
 
     def test_not_downloaded(self):
         with self.assertRaises(RuntimeError):
