@@ -9,15 +9,27 @@ from ....utils import is_image_dict, check_consistent_shape
 
 
 class CenterCropOrPad(BoundsTransform):
+    """Crop and/or pad an image to a target shape.
+
+    Args:
+        size: Tuple of integers representing target shape :math:`(D, H, W)`.
+            If a single value :math:`N` is provided, the target shape is
+            :math:`(N, N, N)`.
+        padding_mode: See :py:class:`~torchio.transforms.Pad`.
+        padding_fill: Same as :attr:`fill` in
+            :py:class:`~torchio.transforms.Pad`.
+        verbose:
+
+    """
     def __init__(
             self,
             size: Union[int, Tuple[int, int, int]],
-            padding_mode: Optional[str] = None,
+            padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
             verbose: bool = False,
             ):
         super().__init__(size, verbose=verbose)
-        self.padding_mode = padding_mode
+        self.padding_mode = Pad.parse_padding_mode(padding_mode)
         self.padding_fill = padding_fill
 
     def apply_transform(self, sample: dict) -> dict:

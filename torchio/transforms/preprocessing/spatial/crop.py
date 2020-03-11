@@ -4,6 +4,7 @@ from .bounds_transform import BoundsTransform
 
 
 class Crop(BoundsTransform):
+    """Crop an image."""
     def __init__(
             self,
             cropping: Union[int, Tuple[int, int, int]],
