@@ -4,7 +4,6 @@
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
 [![Build status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
-[![Documentation status](https://readthedocs.org/projects/torchio/badge/?version=latest)](https://torchio.readthedocs.io/?badge=latest)
 [![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
 [![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
 [![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)
@@ -61,6 +60,7 @@ BibTeX entry:
 }
 ```
 
+
 ## Installation
 
 This package is on the
@@ -70,6 +70,17 @@ To install the latest published version, just run the following command in a ter
 ```shell
 $ pip install --upgrade torchio
 ```
+
+## [Documentation](https://fepegar.github.io/torchio-docs/index.html)
+
+The docs are a work in progress, but some classes such as
+[`ImagesDataset`](https://fepegar.github.io/torchio-docs/data/image.html)
+are already fairly well documented.
+
+Note that the documentation is temporarily hosted on
+[an auxiliar GitHub repo](https://fepegar.github.io/torchio-docs/index.html)
+due to
+[a bug in Read the Docs](https://github.com/readthedocs/readthedocs.org/issues/6742).
 
 
 ## Index

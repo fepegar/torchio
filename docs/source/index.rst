@@ -17,10 +17,6 @@ TorchIO
    :target: https://travis-ci.org/fepegar/torchio
    :alt: Build status
 
-.. image:: https://readthedocs.org/projects/torchio/badge/?version=latest
-   :target: https://torchio.readthedocs.io/?badge=latest
-   :alt: Documentation status
-
 .. image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
    :alt: Coverage status
