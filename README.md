@@ -3,14 +3,19 @@
 [![Downloads](https://img.shields.io/pypi/dm/torchio.svg)](https://pypi.org/project/torchio/)
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg)](https://doi.org/10.5281/zenodo.3598622)
 [![Build status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
 [![Documentation status](https://readthedocs.org/projects/torchio/badge/?version=latest)](https://torchio.readthedocs.io/?badge=latest)
 [![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
 [![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
 [![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)
 
+---
 
+### 🎉 News: the paper is out! 🎉
+
+See the [Credits](#credits) section for more information.
+
+---
 
 `torchio` is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
@@ -39,28 +44,20 @@ segmentation of T1-weighted MRI with whole images and patch-based sampling.
 
 If you like this repository, please click on Star!
 
-If you used this package for your research, please cite this repository using
-the information available on its
-[Zenodo entry](https://doi.org/10.5281/zenodo.3598622) or use this text:
+If you used this package for your research, please cite the paper:
 
-> Pérez-García, Fernando.
-(2020, January 15).
-fepegar/torchio: TorchIO: Tools for loading, augmenting and writing 3D medical images on PyTorch. Zenodo.
-http://doi.org/10.5281/zenodo.3598622
+*[TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning](https://arxiv.org/abs/2003.04696).*
 
 BibTeX entry:
 
 ```bibtex
-@software{perez_garcia_fernando_2020_3598622,
-  author       = {Pérez-García, Fernando},
-  title        = {{fepegar/torchio: TorchIO: Tools for loading,
-                   augmenting and writing 3D medical images on
-                   PyTorch}},
-  month        = jan,
-  year         = 2020,
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3598622},
-  url          = {https://doi.org/10.5281/zenodo.3598622}
+@misc{fern2020torchio,
+    title={TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+    author={Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin},
+    year={2020},
+    eprint={2003.04696},
+    archivePrefix={arXiv},
+    primaryClass={eess.IV}
 }
 ```
 
