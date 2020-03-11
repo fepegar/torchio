@@ -1,6 +1,6 @@
 from typing import Union, Tuple, Callable
 import SimpleITK as sitk
-from .bounds_transform import BoundsTransform
+from .bounds_transform import BoundsTransform, TypeBounds
 
 
 class Crop(BoundsTransform):
@@ -21,7 +21,7 @@ class Crop(BoundsTransform):
     """
     def __init__(
             self,
-            cropping: Union[int, Tuple[int, int, int]],
+            cropping: TypeBounds,
             verbose: bool = False,
             ):
         super().__init__(cropping, verbose=verbose)

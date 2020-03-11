@@ -1,6 +1,6 @@
 from typing import Union, Tuple, Callable
 import SimpleITK as sitk
-from .bounds_transform import BoundsTransform
+from .bounds_transform import BoundsTransform, TypeBounds
 
 
 class Pad(BoundsTransform):
@@ -49,7 +49,7 @@ class Pad(BoundsTransform):
 
     def __init__(
             self,
-            padding: Union[int, Tuple[int, int, int]],
+            padding: TypeBounds,
             padding_mode: str = 'constant',
             fill: float = None,
             verbose: bool = False,
