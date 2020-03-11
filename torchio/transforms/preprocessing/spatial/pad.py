@@ -7,6 +7,15 @@ class Pad(BoundsTransform):
     """Pad an image.
 
     Args:
+        padding: Tuple
+            :math:`(D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})`
+            defining the number of values padded to the edges of each axis.
+            If only three values :math:`(D, H, W)` are provided, then
+            :math:`D_{ini} = D_{fin} = D`,
+            :math:`H_{ini} = H_{fin} = H` and
+            :math:`W_{ini} = W_{fin} = W`.
+            If only one value :math:`N` is provided, then
+            :math:`D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N`.
         padding_mode:
             Type of padding. Default is ``constant``. Should be one of:
 
@@ -24,7 +33,9 @@ class Pad(BoundsTransform):
 
 
         fill: Value for constant fill. Default is ``0``. This value is only
-            used when :attr:`padding_mode` is ``constant``
+            used when :attr:`padding_mode` is ``constant``.
+
+        verbose:
 
     """
 

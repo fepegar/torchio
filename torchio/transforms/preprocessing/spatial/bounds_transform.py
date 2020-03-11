@@ -21,6 +21,7 @@ class BoundsTransform(Transform):
             ):
         super().__init__(verbose=verbose)
         self.bounds_parameters = self.parse_bounds(bounds_parameters)
+        print(self.bounds_parameters)
 
     @property
     def bounds_function(self):
@@ -29,7 +30,7 @@ class BoundsTransform(Transform):
     def parse_bounds(
             self,
             bounds_parameters: TypeBounds,
-            ) -> Tuple[int]:
+            ) -> Tuple[int, ...]:
         try:
             bounds_parameters = tuple(bounds_parameters)
         except TypeError:
