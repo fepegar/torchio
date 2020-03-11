@@ -26,3 +26,4 @@ from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import CenterCropOrPad
 from .preprocessing import HistogramStandardization
+from .preprocessing.intensity.histogram_standardization import train as train_histogram
