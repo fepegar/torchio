@@ -15,7 +15,16 @@ class TestHistogramStandardization(TorchioTestCase):
     def test_train_histogram(self):
         samples = [self.dataset[i] for i in range(3)]
         paths = [sample['image']['path'] for sample in samples]
-        train_histogram(paths)
+        train_histogram(
+            paths,
+            masking_function=HistogramStandardization.mean,
+            output_path=(self.dir / 'landmarks.txt'),
+        )
+        train_histogram(
+            paths,
+            mask_path=samples[0]['label']['path'],
+            output_path=(self.dir / 'landmarks.npy'),
+        )
 
     def test_normalize(self):
         landmarks = np.linspace(0, 100, 13)
