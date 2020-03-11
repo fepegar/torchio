@@ -47,8 +47,8 @@ def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
 
 def _read_dicom(directory: TypePath):
     directory = Path(directory)
-    if not directory.is_dir():
-        raise ValueError(f'Directory "{directory}" not found')
+    if not directory.is_dir():  # unreachable if called from _read_sitk
+        raise FileNotFoundError(f'Directory "{directory}" not found')
     reader = sitk.ImageSeriesReader()
     dicom_names = reader.GetGDCMSeriesFileNames(str(directory))
     if not dicom_names:
