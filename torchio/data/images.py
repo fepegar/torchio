@@ -169,6 +169,8 @@ class ImagesDataset(Dataset):
         return len(self.subjects)
 
     def __getitem__(self, index: int) -> dict:
+        if not isinstance(index, int):
+            raise TypeError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
         sample = {}
         for image in subject:
