@@ -10,53 +10,11 @@ import numpy as np
 import nibabel as nib
 import torchio
 from torchio import INTENSITY, LABEL, DATA, Image
+from ..utils import TorchioTestCase
 
 
-class TestImagesDataset(unittest.TestCase):
+class TestImagesDataset(TorchioTestCase):
     """Tests for `ImagesDataset`."""
-
-    def setUp(self):
-        """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.gettempdir()) / '.torchio_tests'
-        self.dir.mkdir(exist_ok=True)
-        random.seed(42)
-        np.random.seed(42)
-
-        subject_a = [
-            Image('t1', self.get_image_path('t1_a'), INTENSITY),
-        ]
-        subject_b = [
-            Image('t1', self.get_image_path('t1_b'), INTENSITY),
-            Image('label', self.get_image_path('label_b'), LABEL),
-        ]
-        subject_c = [
-            Image('label', self.get_image_path('label_c'), LABEL),
-        ]
-        subject_d = [
-            Image('t1', self.get_image_path('t1_d'), INTENSITY),
-            Image('t2', self.get_image_path('t2_d'), INTENSITY),
-            Image('label', self.get_image_path('label_d'), LABEL),
-        ]
-        self.subjects_list = [
-            subject_a,
-            subject_b,
-            subject_c,
-            subject_d,
-        ]
-
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-        import shutil
-        shutil.rmtree(self.dir)
-
-    def get_image_path(self, stem):
-        data = np.random.rand(10, 20, 30)
-        affine = np.eye(4)
-        suffix = random.choice(('.nii.gz', '.nii'))
-        path = self.dir / f'{stem}{suffix}'
-        nib.Nifti1Image(data, affine).to_filename(str(path))
-        path = str(path) if np.random.rand() > 0.5 else path
-        return path
 
     def test_images(self):
         self.iterate_dataset(self.subjects_list)
