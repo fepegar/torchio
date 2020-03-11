@@ -211,6 +211,7 @@ class IXITiny(ImagesDataset):
     def _get_subjects_list(self, root):
         image_paths = sglob(root / 'image', '*.nii.gz')
         label_paths = sglob(root / 'label', '*.nii.gz')
+        assert image_paths and label_paths
 
         subjects = []
         for image_path, label_path in zip(image_paths, label_paths):
@@ -224,7 +225,11 @@ class IXITiny(ImagesDataset):
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
         if self._check_exists(root):  # assume it's been downloaded
+            print('Root directory for IXITiny found:', root)
             return
+        else:
+            print('Root directory for IXITiny not found:', root)
+            print('Downloading...')
         with NamedTemporaryFile(suffix='.zip') as f:
             download_and_extract_archive(
                 self.url,
