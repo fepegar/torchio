@@ -1,29 +1,7 @@
 TorchIO
 =======
 
-.. image:: https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&logo=python&logoColor=white
-   :target: https://pypi.org/project/torchio/
-   :alt: PyPI downloads
-
-.. image:: https://badge.fury.io/py/torchio.svg
-   :target: https://badge.fury.io/py/torchio
-   :alt: PyPI Version
-
-.. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
-   :alt: Google Colab Notebook
-
-.. image:: https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis
-   :target: https://travis-ci.org/fepegar/torchio
-   :alt: Build status
-
-.. image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
-   :target: https://codecov.io/github/fepegar/torchio
-   :alt: Coverage status
-
-.. image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg
-   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master
-   :alt: Code quality
+|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status| |Coverage-status| |Code-Quality|
 
 
 TorchIO is a Python package containing a set of tools to efficiently
@@ -39,12 +17,17 @@ or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 
+.. contents:: Table of contents
+   :backlinks: top
+   :local:
+
+
 Installation
 ------------
 
 .. code-block:: bash
 
-    pip install torchio
+    $ pip install torchio
 
 
 Google Colab Jupyter Notebok
@@ -57,10 +40,28 @@ You can preview and run most features in TorchIO in this
 Credits
 -------
 
-If you use this package for your research, please cite the paper:
+..
+  From https://stackoverflow.com/a/10766650/3956024
 
-`TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning <https://arxiv.org/abs/2003.04696>`_.
+If you use this package for your research, please cite the paper: |paper-url|_.
 
+.. _paper-url: https://arxiv.org/abs/2003.04696
+
+.. |paper-url| replace:: Pérez-García et al., 2020, *TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning*
+
+
+BibTeX:
+
+.. code-block:: latex
+
+   @misc{fern2020torchio,
+      title={TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+      author={Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin},
+      year={2020},
+      eprint={2003.04696},
+      archivePrefix={arXiv},
+      primaryClass={eess.IV}
+   }
 
 
 .. toctree::
@@ -70,3 +71,28 @@ If you use this package for your research, please cite the paper:
    data/data.rst
    transforms/transforms.rst
    datasets.rst
+
+
+.. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&logo=python&logoColor=white
+   :target: https://pypi.org/project/torchio/
+   :alt: PyPI downloads
+
+.. |PyPI-version| image:: https://badge.fury.io/py/torchio.svg
+   :target: https://badge.fury.io/py/torchio
+   :alt: PyPI version
+
+.. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
+   :alt: Google Colab notebook
+
+.. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis
+   :target: https://travis-ci.org/fepegar/torchio
+   :alt: Build status
+
+.. |Coverage-status| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
+   :target: https://codecov.io/github/fepegar/torchio
+   :alt: Coverage status
+
+.. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg
+   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master
+   :alt: Code quality
