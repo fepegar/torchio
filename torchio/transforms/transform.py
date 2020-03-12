@@ -8,7 +8,16 @@ from .. import TypeData, TYPE
 
 
 class Transform(ABC):
+    """Abstract class for all TorchIO transforms.
+
+    All classes used to transform a sample from an
+    :py:class:`~torchio.ImagesDataset` should subclass it.
+    All subclasses should overwrite
+    :py:meth:`torchio.tranforms.Transform.apply_transform`,
+    which takes a sample, applies some transformation and returns the result.
+    """
     def __call__(self, sample: dict):
+        """Transform a sample and return the result."""
         self.parse_sample(sample)
         sample = deepcopy(sample)
         sample = self.apply_transform(sample)
@@ -16,7 +25,7 @@ class Transform(ABC):
 
     @abstractmethod
     def apply_transform(self, sample: dict):
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def parse_sample(sample: dict) -> None:

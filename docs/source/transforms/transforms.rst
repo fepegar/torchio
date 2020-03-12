@@ -24,6 +24,14 @@ tool ``torchio-transform``::
 
 All transforms inherit from :py:class:`torchio.transforms.Transform`.
 
+.. currentmodule:: torchio.transforms
+
+:class:`Transform`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Transform
+
+
 .. toctree::
    :maxdepth: 3
 
