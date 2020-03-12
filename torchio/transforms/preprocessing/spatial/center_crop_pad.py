@@ -12,7 +12,7 @@ class CenterCropOrPad(BoundsTransform):
     """Crop and/or pad an image to a target shape.
 
     Args:
-        size: Tuple of integers representing target shape :math:`(D, H, W)`.
+        target_shape: Tuple :math:`(D, H, W)`.
             If a single value :math:`N` is provided, the target shape is
             :math:`(N, N, N)`.
         padding_mode: See :py:class:`~torchio.transforms.Pad`.
@@ -23,23 +23,25 @@ class CenterCropOrPad(BoundsTransform):
     """
     def __init__(
             self,
-            size: Union[int, Tuple[int, int, int]],
+            target_shape: Union[int, Tuple[int, int, int]],
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
             verbose: bool = False,
             ):
-        super().__init__(size, verbose=verbose)
+        super().__init__(target_shape, verbose=verbose)
         self.padding_mode = Pad.parse_padding_mode(padding_mode)
         self.padding_fill = padding_fill
 
     def apply_transform(self, sample: dict) -> dict:
-        source_shape = self.get_sample_shape(sample)
-        target_shape = np.array(self.bounds_parameters[::2])  # hack
+        source_shape = self._get_sample_shape(sample)
+        # The parent class turns the 3-element shape tuple (d, h, w)
+        # into a 6-element bounds tuple (d, d, h, h, w, w)
+        target_shape = np.array(self.bounds_parameters[::2])
         diff_shape = target_shape - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
         if cropping.any():
-            cropping_params = self.get_six_bounds_parameters(cropping)
+            cropping_params = self._get_six_bounds_parameters(cropping)
             sample = Crop(cropping_params)(sample)
 
         padding = np.maximum(diff_shape, 0)
@@ -48,13 +50,13 @@ class CenterCropOrPad(BoundsTransform):
             padding_kwargs = {'fill': self.padding_fill}
             if self.padding_mode is not None:
                 padding_kwargs['padding_mode'] = self.padding_mode
-            padding_params = self.get_six_bounds_parameters(padding)
+            padding_params = self._get_six_bounds_parameters(padding)
             sample = Pad(padding_params, **padding_kwargs)(sample)
         return sample
 
     @staticmethod
-    def get_sample_shape(sample: dict) -> Tuple[int]:
-        """Return the shape of the first image in the sample"""
+    def _get_sample_shape(sample: dict) -> Tuple[int]:
+        """Return the shape of the first image in the sample."""
         check_consistent_shape(sample)
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
@@ -64,7 +66,24 @@ class CenterCropOrPad(BoundsTransform):
         return data
 
     @staticmethod
-    def get_six_bounds_parameters(parameters):
+    def _get_six_bounds_parameters(parameters: np.ndarray):
+        r"""Compute bounds parameters for ITK filters.
+
+        Args:
+            parameters: Tuple :math:`(d, h, w)` with the number of voxels to be
+                cropped or padded.
+
+        Returns:
+            Tuple :math:`(d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})`,
+            where :math:`n_{ini} = \left \lceil \frac{n}{2} \right \rceil` and
+            :math:`n_{fin} = \left \lfloor \frac{n}{2} \right \rfloor`.
+
+        Example:
+            >>> p = np.array((4, 0, 7))
+            >>> _get_six_bounds_parameters(p)
+            (2, 2, 0, 0, 4, 3)
+
+        """
         parameters = parameters / 2
         result = []
         for n in parameters:

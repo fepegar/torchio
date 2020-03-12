@@ -37,6 +37,7 @@ Spatial
 
 .. autoclass:: CenterCropOrPad
     :show-inheritance:
+    :members: _get_six_bounds_parameters
 
 
 :class:`Crop`
