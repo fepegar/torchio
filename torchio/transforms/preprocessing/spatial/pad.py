@@ -26,6 +26,8 @@ class Pad(BoundsTransform):
 
             - ``reflect`` Pads with reflection of image without repeating the last value on the edge.
 
+            - ``mirror`` Same as ``reflect``.
+
             - ``edge`` Pads with the last value at the edge of the image.
 
             - ``replicate`` Same as ``edge``.
@@ -45,9 +47,11 @@ class Pad(BoundsTransform):
     PADDING_FUNCTIONS = {
         'constant': sitk.ConstantPad,
         'reflect': sitk.MirrorPad,
-        'replicate': sitk.ZeroFluxNeumannPad,
+        'mirror': sitk.MirrorPad,
         'edge': sitk.ZeroFluxNeumannPad,
+        'replicate': sitk.ZeroFluxNeumannPad,
         'circular': sitk.WrapPad,
+        'wrap': sitk.WrapPad,
     }
 
     def __init__(

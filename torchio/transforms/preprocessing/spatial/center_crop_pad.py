@@ -12,9 +12,8 @@ class CenterCropOrPad(BoundsTransform):
     """Crop and/or pad an image to a target shape.
 
     Args:
-        target_shape: Tuple :math:`(D, H, W)`.
-            If a single value :math:`N` is provided, the target shape is
-            :math:`(N, N, N)`.
+        target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
+            provided, then :math:`D = H = W = N`.
         padding_mode: See :py:class:`~torchio.transforms.Pad`.
         padding_fill: Same as :attr:`fill` in
             :py:class:`~torchio.transforms.Pad`.

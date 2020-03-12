@@ -17,9 +17,8 @@ class Resample(Transform):
     """Change voxel spacing keeping the field of view.
 
     Args:
-        target_spacing: Tuple :math:`(s_d, s_w, s_h)`. If only one value
-            :math:`n` is specified, the target spacing will be
-            :math:`(n, n, n)`.
+        target_spacing: Tuple :math:`(s_d, s_h, s_w)`. If only one value
+            :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
         antialiasing: (Not implemented yet).
         image_interpolation: Member of :py:class:`torchio.Interpolation`.
             It must be :py:attr:`torchio.Interpolation.NEAREST`,
