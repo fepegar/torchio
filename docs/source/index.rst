@@ -1,9 +1,9 @@
 TorchIO
 =======
 
-.. image:: https://img.shields.io/pypi/dm/torchio.svg
+.. image:: https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&logo=python&logoColor=white
    :target: https://pypi.org/project/torchio/
-   :alt: Number of PyPI downloads
+   :alt: PyPI downloads
 
 .. image:: https://badge.fury.io/py/torchio.svg
    :target: https://badge.fury.io/py/torchio
@@ -13,7 +13,7 @@ TorchIO
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab Notebook
 
-.. image:: https://travis-ci.org/fepegar/torchio.svg?branch=master
+.. image:: https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis
    :target: https://travis-ci.org/fepegar/torchio
    :alt: Build status
 
@@ -65,7 +65,7 @@ If you use this package for your research, please cite the paper:
 
 .. toctree::
    :maxdepth: 2
-   :caption: API
+   :caption: Features
 
    data/data.rst
    transforms/transforms.rst
