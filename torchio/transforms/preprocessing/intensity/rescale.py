@@ -7,6 +7,8 @@ from . import NormalizationTransform
 
 
 class Rescale(NormalizationTransform):
+    """Rescale intensity values in an image to a certain range.
+    """
     def __init__(
             self,
             out_min_max: Tuple[float, float],

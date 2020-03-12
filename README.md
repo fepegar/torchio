@@ -326,11 +326,9 @@ it creates stripes in different directions in image space due to spikes in k-spa
 
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
-MRI magnetic field inhomogeneity creates slow frequency intensity variations.
-This transform is very similar to the one in
-[NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
-![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_bias_field.gif)
+![MRI bias field artifact](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_bias_field.gif)
 
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
@@ -373,7 +371,7 @@ Reverse the order of elements in an image along the given axes.
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
 
-Random affine transformation of the image keeping center invariant.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 #### Preprocessing
@@ -389,40 +387,37 @@ adapted from NiftyNet.
 
 ##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
 
-Rescale intensity values in an image to a certain range.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Z-normalization](torchio/transforms/preprocessing/intensity/z_normalization.py)
 
-This transform first extracts the values with intensity greater than the mean,
-which is an approximation of the foreground voxels.
-Then the foreground mean is subtracted from the image and it is divided by the
-foreground standard deviation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Resample](torchio/transforms/preprocessing/spatial/resample.py)
 
-Resample images to a new voxel spacing using `nibabel`.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Pad](torchio/transforms/preprocessing/spatial/pad.py)
 
-Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Crop](torchio/transforms/preprocessing/spatial/crop.py)
 
-Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [ToCanonical](torchio/transforms/preprocessing/spatial/to_canonical.py)
 
-Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
 
-Crops or pads image center to a target size, modifying the affine accordingly.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 #### Others

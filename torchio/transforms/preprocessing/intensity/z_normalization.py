@@ -5,8 +5,7 @@ from . import NormalizationTransform
 
 
 class ZNormalization(NormalizationTransform):
-    """
-    Subtract mean and divide by standard deviation
+    """Subtract mean and divide by standard deviation.
     """
     def __init__(
             self,
