@@ -10,9 +10,8 @@ class ZNormalization(NormalizationTransform):
     def __init__(
             self,
             masking_method: Union[str, TypeCallable, None] = None,
-            verbose: bool = False,
             ):
-        super().__init__(masking_method=masking_method, verbose=verbose)
+        super().__init__(masking_method=masking_method)
 
     def apply_normalization(
             self,

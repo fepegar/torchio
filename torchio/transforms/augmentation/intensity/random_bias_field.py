@@ -18,7 +18,6 @@ class RandomBiasField(RandomTransform):
         order: Order of the basis polynomial functions.
         proportion_to_augment:
         seed:
-        verbose:
 
     """
     def __init__(
@@ -27,9 +26,8 @@ class RandomBiasField(RandomTransform):
             order: int = 3,
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = order

@@ -31,7 +31,6 @@ class RandomAffine(RandomTransform):
             and `Simple ITK <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
             docs on image interpolation.
         seed:
-        verbose:
 
     .. note:: Rotations are performed around the center of the image.
 
@@ -58,9 +57,8 @@ class RandomAffine(RandomTransform):
             isotropic: bool = False,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.scales = scales
         self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic

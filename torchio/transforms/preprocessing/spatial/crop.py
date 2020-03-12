@@ -19,15 +19,13 @@ class Crop(BoundsTransform):
             :math:`w_{ini} = w_{fin} = w`.
             If only one value :math:`n` is provided, then
             :math:`d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n`.
-        verbose:
 
     """
     def __init__(
             self,
             cropping: TypeBounds,
-            verbose: bool = False,
             ):
-        super().__init__(cropping, verbose=verbose)
+        super().__init__(cropping)
 
     @property
     def bounds_function(self) -> Callable:

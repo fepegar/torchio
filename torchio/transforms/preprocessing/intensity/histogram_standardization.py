@@ -21,9 +21,8 @@ class HistogramStandardization(NormalizationTransform):
             self,
             landmarks_dict: Dict[str, np.ndarray],
             masking_method: Union[str, TypeCallable, None] = None,
-            verbose: bool = False,
             ):
-        super().__init__(masking_method=masking_method, verbose=verbose)
+        super().__init__(masking_method=masking_method)
         self.landmarks_dict = landmarks_dict
 
     def apply_normalization(

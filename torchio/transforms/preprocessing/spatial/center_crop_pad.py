@@ -17,7 +17,6 @@ class CenterCropOrPad(BoundsTransform):
         padding_mode: See :py:class:`~torchio.transforms.Pad`.
         padding_fill: Same as :attr:`fill` in
             :py:class:`~torchio.transforms.Pad`.
-        verbose:
 
     """
     def __init__(
@@ -25,9 +24,8 @@ class CenterCropOrPad(BoundsTransform):
             target_shape: Union[int, Tuple[int, int, int]],
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
-            verbose: bool = False,
             ):
-        super().__init__(target_shape, verbose=verbose)
+        super().__init__(target_shape)
         self.padding_mode = Pad.parse_padding_mode(padding_mode)
         self.padding_fill = padding_fill
 

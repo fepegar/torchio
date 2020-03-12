@@ -16,9 +16,8 @@ class RandomElasticDeformation(RandomTransform):
             proportion_to_augment: float = 1,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self._bspline_transformation = None
         self.num_control_points = max(num_control_points, 2)
         self.deformation_std = max(deformation_std, 1)

@@ -11,9 +11,8 @@ class RandomFlip(RandomTransform):
             axes: Union[int, Tuple[int]] = 0,
             flip_probability: float = 0.5,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.axes = self.parse_axes(axes)
         self.flip_probability = self.parse_probability(
             flip_probability,

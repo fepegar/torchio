@@ -17,8 +17,6 @@ class NormalizationTransform(Transform):
 
             - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`
 
-        verbose:
-
     Example:
         >>> from torchio.datasets import IXITiny
         >>> from torchio.transforms import ZNormalization
@@ -37,7 +35,6 @@ class NormalizationTransform(Transform):
     def __init__(
             self,
             masking_method: Union[str, TypeCallable, None] = None,
-            verbose: bool = False,
             ):
         """
         masking_method is used to choose the values used for normalization.
@@ -46,7 +43,7 @@ class NormalizationTransform(Transform):
          - A function: the mask will be computed using the function
          - None: all values are used
         """
-        super().__init__(verbose=verbose)
+        super().__init__()
         self.mask_name = None
         if masking_method is None:
             self.masking_method = self.ones

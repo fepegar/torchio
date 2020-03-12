@@ -8,18 +8,10 @@ from .. import TypeData, TYPE
 
 
 class Transform(ABC):
-    def __init__(self, verbose: bool = False):
-        self.verbose = verbose
-
     def __call__(self, sample: dict):
-        if self.verbose:
-            start = time.time()
         self.parse_sample(sample)
         sample = deepcopy(sample)
         sample = self.apply_transform(sample)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'{self.__class__.__name__}: {duration:.3f} seconds')
         return sample
 
     @abstractmethod

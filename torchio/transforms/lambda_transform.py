@@ -10,9 +10,8 @@ class Lambda(Transform):
             self,
             function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
-            verbose: bool = False,
             ):
-        super().__init__(verbose=verbose)
+        super().__init__()
         self.function = function
         self.types_to_apply = types_to_apply
 

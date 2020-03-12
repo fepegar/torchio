@@ -24,11 +24,6 @@ class ToCanonical(Transform):
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
 
     """
-    def __init__(
-            self,
-            verbose: bool = False,
-            ):
-        super().__init__(verbose=verbose)
 
     def apply_transform(self, sample: dict) -> dict:
         for image_dict in sample.values():

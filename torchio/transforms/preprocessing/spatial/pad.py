@@ -40,8 +40,6 @@ class Pad(BoundsTransform):
         fill: Value for constant fill. Default is ``0``. This value is only
             used when :attr:`padding_mode` is ``constant``.
 
-        verbose:
-
     """
 
     PADDING_FUNCTIONS = {
@@ -59,14 +57,13 @@ class Pad(BoundsTransform):
             padding: TypeBounds,
             padding_mode: str = 'constant',
             fill: float = None,
-            verbose: bool = False,
             ):
         """
         padding_mode can be 'constant', 'reflect', 'replicate' or 'circular'.
         See https://pytorch.org/docs/stable/nn.functional.html#pad for more
         information about this transform.
         """
-        super().__init__(padding, verbose=verbose)
+        super().__init__(padding)
         self.padding_mode = self.parse_padding_mode(padding_mode)
         self.fill = fill
 
