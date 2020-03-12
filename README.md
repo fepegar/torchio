@@ -305,7 +305,7 @@ during image acquisition. This transform follows
 [Shaw et al., 2019](http://proceedings.mlr.press/v102/shaw19a.html) to
 simulate motion artifacts for data augmentation.
 
-![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
+![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_motion.gif)
 
 
 ###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
@@ -313,7 +313,7 @@ simulate motion artifacts for data augmentation.
 Discrete "ghost" artifacts may occur along the phase-encode direction whenever the position or signal intensity of imaged structures within the field-of-view vary or move in a regular (periodic) fashion.
 Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
 
-![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_ghosting.gif)
+![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_ghosting.gif)
 
 
 ###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
@@ -321,7 +321,7 @@ Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the m
 Also known as [Herringbone artifact](https://radiopaedia.org/articles/herringbone-artifact?lang=gb), crisscross artifact or corduroy artifact,
 it creates stripes in different directions in image space due to spikes in k-space.
 
-![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_spike.gif)
+![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_spike.gif)
 
 
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
@@ -330,7 +330,7 @@ MRI magnetic field inhomogeneity creates slow frequency intensity variations.
 This transform is very similar to the one in
 [NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
 
-![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
+![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_bias_field.gif)
 
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
@@ -339,7 +339,7 @@ Randomly swaps patches in the image.
 This is typically used in
 [context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
 
-![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_swap.jpg)
+![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
@@ -349,7 +349,7 @@ deviation sampled from a uniform distribution in the range `std_range`.
 It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
-![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
+![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_noise.gif)
 
 
 ###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
@@ -362,7 +362,7 @@ Blurs the image using a
 
 ###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
 <p align="center">
-  <img src="https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
+  <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
 </p>
 
 
@@ -384,7 +384,7 @@ Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
 adapted from NiftyNet.
 
-![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
+![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/histogram_standardization.png)
 
 
 ##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
