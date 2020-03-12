@@ -382,9 +382,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         """
         lin_spaces = [np.linspace(-0.5, 0.5, x) for x in freq_domain.shape] #todo it suposes 1 vox = 1mm
         meshgrids = np.meshgrid(*lin_spaces, indexing='ij')
-        grid_coords = np.array([mg.flatten(order='C') for mg in meshgrids])
-
-        #print('max TRANS {} GRID {}'.format(np.max(self.translations),np.max(grid_coords)))
+        grid_coords = np.array([mg.flatten() for mg in meshgrids])
 
         phase_shift = np.multiply(grid_coords, self.translations).sum(axis=0)  # phase shift is added
         #phase_shift = np.sum(grid_coords * self.translations, axis=0)  # phase shift is added
