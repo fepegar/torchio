@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output
 from ....utils import is_image_dict
-from ....torchio import LABEL, DATA, AFFINE
+from ....torchio import LABEL, DATA, AFFINE, TYPE
 from ... import Interpolation
 from ... import Transform
 
@@ -68,7 +68,7 @@ class Resample(Transform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] == LABEL:
+            if image_dict[TYPE] == LABEL:
                 interpolation_order = 0  # nearest neighbor
             else:
                 interpolation_order = self.interpolation_order

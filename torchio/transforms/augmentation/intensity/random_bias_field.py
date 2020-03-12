@@ -2,7 +2,7 @@
 from typing import Union, Tuple, Optional
 import numpy as np
 import torch
-from ....torchio import INTENSITY, DATA, TypeData
+from ....torchio import INTENSITY, DATA, TYPE, TypeData
 from ....utils import is_image_dict
 from .. import RandomTransform
 
@@ -50,7 +50,7 @@ class RandomBiasField(RandomTransform):
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             do_augmentation, coefficients = self.get_params(
                 self.order,

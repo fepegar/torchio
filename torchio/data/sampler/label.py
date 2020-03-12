@@ -1,6 +1,6 @@
 from typing import Generator
 from .sampler import ImageSampler, crop
-from ... import DATA, LABEL
+from ... import DATA, LABEL, TYPE
 from ...utils import is_image_dict
 
 
@@ -29,7 +29,7 @@ class LabelSampler(ImageSampler):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] == LABEL:
+            if image_dict[TYPE] == LABEL:
                 label_image_dict = image_dict
                 break
         else:

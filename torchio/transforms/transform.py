@@ -4,7 +4,7 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
-from .. import TypeData
+from .. import TypeData, TYPE
 
 
 class Transform(ABC):
@@ -34,7 +34,7 @@ class Transform(ABC):
             if not is_image_dict(image_dict):
                 continue
             images_found = True
-            if 'type' in image_dict:
+            if TYPE in image_dict:
                 type_in_dict = True
             if images_found and type_in_dict:
                 break

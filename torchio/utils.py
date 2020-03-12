@@ -10,7 +10,7 @@ import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
 from .torchio import (
-    INTENSITY, LABEL, DATA, AFFINE, TypeData, TypeNumber, TypePath)
+    INTENSITY, LABEL, DATA, AFFINE, TYPE, TypeData, TypeNumber, TypePath)
 
 
 FLIP_XY = np.diag((-1, -1, 1))
@@ -50,7 +50,7 @@ def is_image_dict(variable: Any) -> bool:
     if not is_dict:
         return False
     has_right_keys = (
-        'type' in variable
+        TYPE in variable
         and DATA in variable
         and AFFINE in variable
     )

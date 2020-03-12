@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict
-from ....torchio import INTENSITY, DATA, AFFINE
+from ....torchio import INTENSITY, DATA, AFFINE, TYPE
 from .. import RandomTransform
 
 
@@ -32,7 +32,7 @@ class RandomGhosting(RandomTransform):
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             params = self.get_params(
                 self.num_ghosts_range,

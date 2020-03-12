@@ -9,6 +9,9 @@ __all__ = [
     'INTENSITY',
     'LABEL',
     'SAMPLING_MAP',
+    'PATH',
+    'TYPE',
+    'STEM',
     'DATA',
     'AFFINE',
     'IMAGE',
@@ -22,10 +25,15 @@ __all__ = [
     'TypeRangeFloat',
 ]
 
+# Image types
 INTENSITY = 'intensity'
 LABEL = 'label'
 SAMPLING_MAP = 'sampling_map'
 
+# Keys for dataset samples
+PATH = 'path'
+TYPE = 'type'
+STEM = 'stem'
 DATA = 'data'
 AFFINE = 'affine'
 
@@ -33,6 +41,7 @@ AFFINE = 'affine'
 IMAGE = 'image'
 LOCATION = 'location'
 
+# For typing hints
 TypePath = Union[Path, str]
 TypeNumber = Union[int, float]
 TypeData = Union[torch.Tensor, np.ndarray]

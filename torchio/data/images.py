@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 from ..utils import get_stem
-from ..torchio import DATA, AFFINE, TypePath
+from ..torchio import DATA, AFFINE, TYPE, PATH, STEM, TypePath
 from .io import read_image, write_image
 
 
@@ -144,8 +144,6 @@ class ImagesDataset(Dataset):
         >>> sample.keys()
         dict_keys(['image', 'label'])
         >>> image_dict = sample['image']
-        >>> image_dict.keys()
-        dict_keys(['data', 'affine', 'type', 'path', 'stem'])
         >>> image_dict[torchio.DATA].shape
         torch.Size([1, 176, 256, 256])
         >>> image_dict[torchio.AFFINE]
@@ -193,9 +191,9 @@ class ImagesDataset(Dataset):
             image_dict = {
                 DATA: tensor,
                 AFFINE: affine,
-                'type': image.type,
-                'path': str(image.path),
-                'stem': get_stem(image.path),
+                TYPE: image.type,
+                PATH: str(image.path),
+                STEM: get_stem(image.path),
             }
             sample[image.name] = image_dict
 

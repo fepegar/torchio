@@ -2,7 +2,7 @@ from typing import Tuple, Optional
 import torch
 import numpy as np
 from ....utils import is_image_dict, to_tuple
-from ....torchio import DATA, INTENSITY, TypeTuple, TypeData
+from ....torchio import DATA, TYPE, INTENSITY, TypeTuple, TypeData
 from ....data.sampler.sampler import get_random_indices_from_shape, crop
 from .. import RandomTransform
 
@@ -28,7 +28,7 @@ class RandomSwap(RandomTransform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             swap(image_dict[DATA][0], self.patch_size, self.num_iterations)
         return sample
