@@ -137,7 +137,22 @@ class ImagesDataset(Dataset):
     The value corresponding to each image name is another dictionary
     ``image_dict`` with information about the image.
     The data is stored in ``image_dict[torchio.IMAGE]``,
-    and the corresponding `affine matrix`_ is in ``image_dict[torchio.AFFINE]``.
+    and the corresponding `affine matrix`_
+    is in ``image_dict[torchio.AFFINE]``:
+
+        >>> sample = images_dataset[0]
+        >>> sample.keys()
+        dict_keys(['image', 'label'])
+        >>> image_dict = sample['image']
+        >>> image_dict.keys()
+        dict_keys(['data', 'affine', 'type', 'path', 'stem'])
+        >>> image_dict[torchio.DATA].shape
+        torch.Size([1, 176, 256, 256])
+        >>> image_dict[torchio.AFFINE]
+        array([[   0.03,    1.13,   -0.08,  -88.54],
+               [   0.06,    0.08,    0.95, -129.66],
+               [   1.18,   -0.06,   -0.11,  -67.15],
+               [   0.  ,    0.  ,    0.  ,    1.  ]])
 
     Args:
         subjects: Sequence of instances of
