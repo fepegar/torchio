@@ -44,7 +44,7 @@ def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
         return ssim_map.mean(1).mean(1).mean(1)
 
 
-def _ssim_3D_dist(img1, img2, window_size, aggregate="avg"):
+def _ssim_3D_dist(img1, img2, window, window_size, channel, aggregate="avg"):
 
     if len(img1.size()) == 4: #missing batch dim
         img1 = img1.unsqueeze(0)
@@ -84,12 +84,13 @@ def _ssim_3D_dist(img1, img2, window_size, aggregate="avg"):
 
 
 class SSIM3D(torch.nn.Module):
-    def __init__(self, window_size=3, size_average=True):
+    def __init__(self, window_size=3, size_average=True, distance=1):
         super(SSIM3D, self).__init__()
         self.window_size = window_size
         self.size_average = size_average
         self.channel = 1
         self.window = create_window_3D(window_size, self.channel)
+        self.distance = distance
 
     def forward(self, img1, img2):
         (_, channel, _, _, _) = img1.size()
@@ -106,8 +107,12 @@ class SSIM3D(torch.nn.Module):
             self.window = window
             self.channel = channel
 
-        return 1 - _ssim_3D(img1, img2, window, self.window_size, channel, self.size_average)
+        if self.distance==1:
+            res =  1 - _ssim_3D(img1, img2, window, self.window_size, channel, self.size_average)
+        else :
+            res = _ssim_3D_dist(img1, img2, window, self.window_size, channel)
 
+        return res
 
 def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
 
