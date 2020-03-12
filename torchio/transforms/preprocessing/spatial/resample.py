@@ -1,4 +1,5 @@
-from typing import Tuple
+from numbers import Number
+from typing import Union, Tuple
 import torch
 import numpy as np
 import nibabel as nib
@@ -9,42 +10,50 @@ from ... import Interpolation
 from ... import Transform
 
 
+TypeSpacing = Union[float, Tuple[float, float, float]]
+
+
 class Resample(Transform):
+    """Change voxel spacing keeping the field of view.
+
+    Args:
+        target_spacing: Tuple :math:`(s_d, s_w, s_h)`. If only one value
+            :math:`n` is specified, the target spacing will be
+            :math:`(n, n, n)`.
+        antialiasing: (Not implemented yet).
+        image_interpolation: Member of :py:class:`torchio.Interpolation`.
+            It must be :py:attr:`torchio.Interpolation.NEAREST`,
+            :py:attr:`torchio.Interpolation.LINEAR` or
+            :py:attr:`torchio.Interpolation.BSPLINE`.
+        verbose:
+
+    .. note:: The resampling is performed using
+        :py:meth:`nibabel.processing.resample_to_output`.
+
+    """
     def __init__(
             self,
-            voxel_sizes: Tuple[float, float, float],
+            target_spacing: TypeSpacing,
             antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             verbose: bool = False,
             ):
         super().__init__(verbose=verbose)
-        self.voxel_sizes = voxel_sizes
+        self.target_spacing = self.parse_spacing(target_spacing)
         self.antialiasing = antialiasing
-        self.image_interpolation = image_interpolation
+        self.interpolation_order = self.parse_interpolation(
+            image_interpolation)
 
-    def apply_transform(self, sample: dict) -> dict:
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict['type'] == LABEL:
-                interpolation = Interpolation.NEAREST
-            else:
-                interpolation = self.image_interpolation
-            image_dict[DATA], image_dict[AFFINE] = self.apply_resample(
-                image_dict[DATA],
-                image_dict[AFFINE],
-                self.voxel_sizes,
-                interpolation,
-            )
-        return sample
+    @staticmethod
+    def parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
+        if isinstance(spacing, tuple) and len(spacing) == 3:
+            result = spacing
+        elif isinstance(spacing, Number):
+            result = 3 * (spacing,)
+        return result
 
-    def apply_resample(
-            self,
-            tensor: torch.Tensor,
-            affine: np.ndarray,
-            voxel_sizes: Tuple[float, float, float],
-            interpolation: Interpolation,
-            ) -> Tuple[torch.Tensor, np.ndarray]:
+    @staticmethod
+    def parse_interpolation(interpolation: Interpolation) -> int:
         if interpolation == Interpolation.NEAREST:
             order = 0
         elif interpolation == Interpolation.LINEAR:
@@ -54,11 +63,36 @@ class Resample(Transform):
         else:
             message = f'Interpolation not implemented yet: {interpolation}'
             raise NotImplementedError(message)
+        return order
+
+    def apply_transform(self, sample: dict) -> dict:
+        for image_dict in sample.values():
+            if not is_image_dict(image_dict):
+                continue
+            if image_dict['type'] == LABEL:
+                interpolation_order = 0  # nearest neighbor
+            else:
+                interpolation_order = self.interpolation_order
+            image_dict[DATA], image_dict[AFFINE] = self.apply_resample(
+                image_dict[DATA],
+                image_dict[AFFINE],
+                self.target_spacing,
+                interpolation_order,
+            )
+        return sample
+
+    def apply_resample(
+            self,
+            tensor: torch.Tensor,
+            affine: np.ndarray,
+            target_spacing: Tuple[float, float, float],
+            interpolation_order: int,
+            ) -> Tuple[torch.Tensor, np.ndarray]:
         array = tensor.numpy()[0]
         nii = resample_to_output(
             nib.Nifti1Image(array, affine),
-            voxel_sizes=voxel_sizes,
-            order=order,
+            voxel_sizes=target_spacing,
+            order=interpolation_order,
         )
         tensor = torch.from_numpy(nii.get_fdata(dtype=np.float32))
         tensor = tensor.unsqueeze(dim=0)
