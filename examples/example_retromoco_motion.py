@@ -3,10 +3,12 @@ from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
 from torchvision.transforms import Compose
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-from torchio.transforms import RandomMotionFromTimeCourse, RandomAffine
+from torchio.transforms import RandomMotionFromTimeCourse, RandomAffine, CenterCropOrPad
 from copy import deepcopy
 from nibabel.viewers import OrthoSlicer3D as ov
+from torchvision.transforms import Compose
 
 """
 Comparing result with retromocoToolbox
@@ -16,6 +18,7 @@ import pandas as pd
 
 from torchio.transforms import Interpolation
 suj = [[ Image('T1', '/data/romain/HCPdata/suj_274542/mT1w_1mm.nii', INTENSITY), ]]
+
 suj = [[ Image('T1', '/data/romain/data_exemple/suj_274542/mask_brain.nii', INTENSITY), ]]
 
 
@@ -28,31 +31,39 @@ def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss'):
     elif method == 'step':
         if x0<100:
             y = np.hstack((np.zeros((1,(x0-sigma))),
-                            np.linspace(0,20,2*sigma+1).reshape(1,-1),
-                            np.ones((1,((200-x0)-sigma-1)))*20 ))
+                            np.linspace(0,amplitude,2*sigma+1).reshape(1,-1),
+                            np.ones((1,((200-x0)-sigma-1)))*amplitude ))
         else:
             y = np.hstack((np.zeros((1,(x0-sigma))),
-                            np.linspace(0,-20,2*sigma+1).reshape(1,-1),
-                            np.ones((1,((200-x0)-sigma-1)))*-20 ))
+                            np.linspace(0,-amplitude,2*sigma+1).reshape(1,-1),
+                            np.ones((1,((200-x0)-sigma-1)))*-amplitude ))
+    #fp[3,:] = y
     fp[1,:] = y
     return fp
 
-dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":False }
+def corrupt_data_both( x0, sigma= 5, amplitude=20, method='gauss'):
+    fp1 = corrupt_data(x0, sigma, amplitude=amplitude, method='gauss')
+    fp2 = corrupt_data(30, 2, amplitude=-amplitude, method='step')
+    fp = fp1 + fp2
+    return fp
 
-x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1)))
-x0=[100]
 
+dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0}
+
+x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1))) #x0=[100]
+x0=np.hstack((np.arange(90,102,2))) #x0=[100]
 dirpath = ['/data/romain/data_exemple/motion_gauss']
 #plt.ioff()
-#for s in [1, 5, 10, 20 ]:
-for s in [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
+#for s in :
+for s in [5]: #[2, 5, 10, 20]: #[1, 2, 3,  5, 7, 10, 12 , 15, 20 ] : # [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
     for xx in x0:
-        fp = corrupt_data(xx, sigma=s,method='step')
+        fp = corrupt_data(xx, sigma=s,method='gauss',amplitude=40)
         dico_params['fitpars'] = fp
-        t = RandomMotionFromTimeCourse(**dico_params)
-        dataset = ImagesDataset(suj, transform=t)
+        t =  RandomMotionFromTimeCourse(**dico_params)
+        dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(size=(182, 218,152)),t)))
+        #dataset = ImagesDataset(suj, transform=t)
         sample = dataset[0]
-        fout = dirpath[0] + '/mask_mot_no_shift_s{:02d}_x{}'.format(s,xx)
+        fout = dirpath[0] + '/mask_mot_new_shift_s{:02d}_x{}'.format(s,xx)
         fit_pars = t.fitpars
         fig = plt.figure()
         plt.plot(fit_pars.T)
@@ -61,10 +72,27 @@ for s in [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
         dataset.save_sample(sample, dict(T1=fout+'.nii'))
 
 
+fitpars  =t.fitpars_interp
+plt.plot(fitpars[1].reshape(-1)) #order C par defaut : with the last axis index changing fastest -> display is correct
+ff=np.tile(np.expand_dims(fitpars,1),(1,182,1,1))
+#ff=np.moveaxis(ff,2,3)
+#plt.plot(ff[1].reshape(-1,order='F'))
+
+fitpars_interp =ff
+dd = ImagesDataset(suj, transform=CenterCropOrPad(size=(182, 218,152)) ); sorig = dd[0]
+original_image = sorig['T1']['data'][0]
+
+pour amplitude de 40 presque
+Removing [ 0.        -2.8949889  0.         0.         0.         0.       ] OR [0.         2.51842243 0.        -> first 5.41
+?? [ 0.         -3.23879857  0.          0.          0.          0.        ] OR [0.         2.17461276 0.         0.         0.         0.        ]
+
+
+
 dataset = ImagesDataset(suj)
 so=dataset[0]
 image = so['T1']['data'][0]
 tfi = (np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(image)))).astype(np.complex128)
+tfi_sum = np.abs(np.sum(tfi,axis=0)); #tfi_sum = np.sum(np.abs(tfi),axis=0)
 sum_intensity, sum_intensity_abs = np.zeros((tfi.shape[2])), np.zeros((tfi.shape[2]))
 sum_intensity, sum_intensity_abs = np.zeros((tfi.shape[1],tfi.shape[2])), np.zeros((tfi.shape[1],tfi.shape[2]))
 #for z in range(0,tfi.shape[2]):
@@ -75,6 +103,7 @@ for y in range(0, tfi.shape[1]):
         ifft = np.fft.ifftshift(np.fft.ifftn(ttf))
         sum_intensity[y,z] = np.abs(np.sum(ifft))
         sum_intensity_abs[y,z] = np.sum(np.abs(ifft))
+sum_intensity_abs = np.load('/data/romain/data_exemple/suj_274542/intensity_fft_mask.npz.npy')
 
 for s in [1,2, 3, 4, 5 , 8, 10 , 12, 15, 20 , 2500 ]:
     fp = corrupt_data(50, sigma=s, method='gauss')
@@ -83,16 +112,46 @@ for s in [1,2, 3, 4, 5 , 8, 10 , 12, 15, 20 , 2500 ]:
 
     t._calc_dimensions(sample['T1']['data'][0].shape)
     fitpars_interp = t._interpolate_space_timing(t.fitpars)
+    fitpars_interp = np.tile(fitpars_interp,[1,182,1,1])
     trans = fitpars_interp[1,0,:]
     #plt.figure(); plt.plot(trans.reshape(-1))
     print(np.sum(trans*sum_intensity_abs)/np.sum(sum_intensity_abs))
 
-np.sum()
+fp = corrupt_data(109,5,amplitude=40 )
+ffp = np.expand_dims(np.expand_dims(fp,1),3)
+ff = np.tile(ffp, [1, 182, 1, 152])
 
 
+#testing with smal fitpars if mean of rot is the same as mean of affine
+ff=fitpars=np.abs(t.fitpars)
+ss = np.ones(ff.shape)
+to_substract = np.zeros(6)
+for i in range(0, 6):
+    ffi = ff[i].reshape(-1, order='F')
+    ssi = ss[i].reshape(-1, order='C')
+    # mean over all kspace
+    to_substract[i] = np.sum(ffi * ssi) / np.sum(ssi)
 
+fitpars = fitpars - np.tile(to_substract[...,np.newaxis],[1,200])
 
+from torchio.transforms.augmentation.intensity.random_motion_from_time_course import create_rotation_matrix_3d
 
+affine = np.identity(4)
+rot = np.radians(fitpars[3:])
+rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rot).transpose([-1, 0, 1])
+tt = fitpars[0:3, :].transpose([1, 0])
+affs = np.tile(affine, [fitpars.shape[1], 1, 1])
+affs[:,0:3,0:3] = rotation_matrices
+affs[:, 0:3, 3] = tt
+
+from scipy.linalg import logm, expm
+weights, matrices = ss[0], affs
+
+logs = [w * logm(A) for (w, A) in zip(weights, matrices)]
+logs = np.array(logs)
+logs_sum = logs.sum(axis=0)
+expm(logs_sum/np.sum(weights, axis=0) )
+#a 10-2 pres c'est bien l'identite !
 
 rp_files = gfile('/data/romain/HCPdata/suj_274542/Motion_ms','^rp')
 rp_files = gfile('/data/romain/HCPdata/suj_274542/mot_separate','^rp')
@@ -127,21 +186,29 @@ dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20,
                "swallowFrequency": (2, 6, 0),  "swallowMagnitude": (1, 6),
                "suddenFrequency": (1, 2, 1),  "suddenMagnitude": (6, 6),
                "verbose": True, "keep_original": True, "compare_to_original": True}
+
 dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0.8),
                "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (1, 6),
                "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (1, 6),
-               "verbose": True, "keep_original": True, "compare_to_original": True}
+               "verbose": True, "keep_original": True, "compare_to_original": True, "oversampling_pct":0,
+               "preserve_center_pct":0.01}
+dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0.8),
+                       "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (3, 6),
+                                      "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (3, 6),
+                                                     "verbose": False, "keep_original": True, "proba_to_augment": 1,
+                                                                    "preserve_center_pct":0.1, "keep_original": True, "compare_to_original": True, "oversampling_pct":0}
+np.random.seed(12)
 t = RandomMotionFromTimeCourse(**dico_params)
 dataset = ImagesDataset(suj, transform=t)
 
 res = pd.DataFrame()
-dirpath = ['/data/romain/HCPdata/suj_274542/check2/']
+dirpath = ['/data/romain/data_exemple/motion_random_preserve01/']; os.mkdir(dirpath[0])
 plt.ioff()
-for i in range(100):
+for i in range(500):
     sample = dataset[0]
     dicm = sample['T1']['metrics']
     dics = sample['T1']['simu_param']
-    fout = dirpath[0]  +'mot_sim{}'.format(np.floor(dicm['ssim']*10000))
+    fout = dirpath[0]  +'mot_TF_fit_par_sim{}'.format(np.floor(dicm['ssim']*10000))
     dicm['fname'] = fout
     dicm.update(dics)
     fit_pars = t.fitpars
@@ -156,6 +223,9 @@ for i in range(100):
 fout = dirpath[0] +'res_simu.csv'
 res.to_csv(fout)
 
+dd = res[[ 'L1', 'MSE', 'ssim', 'corr', 'mean_DispP', 'rmse_Disp', 'rmse_DispTF']]
+import seaborn as sns
+sns.pairplot(dd)
 
 #mot_separate
 y_Disp, y_swalF, y_swalM, y_sudF, y_sudM = [], [], [], [], []
