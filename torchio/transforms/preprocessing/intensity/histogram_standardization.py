@@ -3,7 +3,7 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
-from typing import Dict, Optional, Callable, Tuple, Sequence
+from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
 import numpy.ma as ma
@@ -20,7 +20,7 @@ class HistogramStandardization(NormalizationTransform):
     def __init__(
             self,
             landmarks_dict: Dict[str, np.ndarray],
-            masking_method: Optional[TypeCallable] = None,
+            masking_method: Union[str, TypeCallable, None] = None,
             verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method, verbose=verbose)
