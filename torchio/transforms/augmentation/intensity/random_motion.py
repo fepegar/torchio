@@ -15,7 +15,7 @@ from tqdm import tqdm
 import SimpleITK as sitk
 from scipy.linalg import logm, expm
 from ....utils import is_image_dict
-from ....torchio import INTENSITY, DATA, AFFINE
+from ....torchio import INTENSITY, DATA, AFFINE, TYPE
 from .. import Interpolation
 from .. import RandomTransform
 
@@ -45,7 +45,7 @@ class RandomMotion(RandomTransform):
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             params = self.get_params(
                 self.degrees_range,

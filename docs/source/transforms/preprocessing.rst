@@ -10,7 +10,6 @@ Intensity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: NormalizationTransform
-    :members:
     :show-inheritance:
 
 
@@ -20,7 +19,6 @@ Intensity
 ~~~~~~~~~~~~~~~~
 
 .. autoclass:: Rescale
-    :members:
     :show-inheritance:
 
 
@@ -28,7 +26,6 @@ Intensity
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: ZNormalization
-    :members:
     :show-inheritance:
 
 
@@ -39,15 +36,14 @@ Spatial
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: CenterCropOrPad
-    :members:
     :show-inheritance:
+    :members: _get_six_bounds_parameters
 
 
 :class:`Crop`
 ~~~~~~~~~~~~~
 
 .. autoclass:: Crop
-    :members:
     :show-inheritance:
 
 
@@ -55,21 +51,18 @@ Spatial
 ~~~~~~~~~~~~
 
 .. autoclass:: Pad
-    :members:
     :show-inheritance:
 
 
 :class:`Resample`
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: Pad
-    :members:
+.. autoclass:: Resample
     :show-inheritance:
 
 
 :class:`ToCanonical`
 ~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: Pad
-    :members:
+.. autoclass:: ToCanonical
     :show-inheritance:

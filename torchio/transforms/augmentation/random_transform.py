@@ -8,7 +8,7 @@ from abc import abstractmethod
 import torch
 import numpy as np
 from .. import Transform, Interpolation
-from ... import TypeNumber
+from ... import TypeNumber, TypeRangeFloat
 
 
 class RandomTransform(Transform):
@@ -23,11 +23,10 @@ class RandomTransform(Transform):
             self,
             seed: Optional[int] = None,
             verbose: bool = False,
-            save_parameters: bool = False, keep_original=False,
+            keep_original=False,
             ):
         super().__init__(verbose=verbose, keep_original=keep_original)
         self._seed = seed
-        self.save_parameters = save_parameters
 
     def __call__(self, sample: dict):
         self.check_seed()
@@ -75,13 +74,13 @@ class RandomTransform(Transform):
 
     def parse_degrees(
             self,
-            degrees: Union[float, Tuple[float]],
+            degrees: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(degrees, 'degrees')
 
     def parse_translation(
             self,
-            translation: Union[float, Tuple[float]],
+            translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(translation, 'translation')
 

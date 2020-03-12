@@ -1,6 +1,6 @@
 from typing import Callable, Sequence, Optional
 import torch
-from ..torchio import DATA, TypeCallable
+from ..torchio import DATA, TYPE, TypeCallable
 from ..utils import is_image_dict
 from .transform import Transform
 
@@ -21,7 +21,7 @@ class Lambda(Transform):
             if not is_image_dict(image_dict):
                 continue
 
-            image_type = image_dict['type']
+            image_type = image_dict[TYPE]
             if self.types_to_apply is not None:
                 if image_type not in self.types_to_apply:
                     continue

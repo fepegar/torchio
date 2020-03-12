@@ -13,20 +13,20 @@ class GridAggregator:
     def __init__(
             self,
             data: TypeData,
-            patch_overlap: TypeTuple,
+            patch_overlap: Tuple[int, int, int],
             ):
         data = torch.from_numpy(data) if isinstance(data, np.ndarray) else data
         self._output_tensor = torch.zeros_like(data)
         self.patch_overlap: Tuple[int, int, int] = to_tuple(patch_overlap)
 
     @staticmethod
-    def crop_batch(
-            windows: TypeData,
+    def _crop_batch(
+            patches: torch.Tensor,
             location: np.ndarray,
             border: Tuple[int, int, int],
             ) -> Tuple[TypeData, np.ndarray]:
         location = location.astype(np.int)
-        batch_shape = windows.shape
+        batch_shape = patches.shape
         spatial_shape = batch_shape[2:]  # ignore batch and channels dim
         num_dimensions = 3
         for idx in range(num_dimensions):
@@ -37,7 +37,7 @@ class GridAggregator:
         left = np.floor(diff / 2).astype(np.int)
         i_ini, j_ini, k_ini = left
         i_fin, j_fin, k_fin = left + cropped_shape
-        batch = windows[
+        batch = patches[
             :,  # batch dimension
             :,  # channels dimension
             i_ini:i_fin,
@@ -46,19 +46,25 @@ class GridAggregator:
         ]
         return batch, location
 
-    def add_batch(self, windows: TypeData, locations: TypeData) -> None:
-        windows = windows.cpu()
+    def _ensure_output_dtype(self, tensor: torch.Tensor) -> None:
+        """Make sure the output tensor type is the same as the input patches."""
+        if self._output_tensor.dtype != tensor.dtype:
+            self._output_tensor = self._output_tensor.type(tensor.dtype)
+
+    def add_batch(self, patches: torch.Tensor, locations: TypeData) -> None:
+        patches = patches.cpu()
+        self._ensure_output_dtype(patches)
         location_init = np.copy(locations)
-        init_ones = np.ones_like(windows)
-        windows, _ = self.crop_batch(
-            windows, location_init, self.patch_overlap)
+        init_ones = np.ones_like(patches)
+        patches, _ = self._crop_batch(
+            patches, location_init, self.patch_overlap)
         location_init = np.copy(locations)
-        _, locations = self.crop_batch(
+        _, locations = self._crop_batch(
             init_ones, location_init, self.patch_overlap)
-        for window, location in zip(windows, locations):
-            window = window[0]
+        for patch, location in zip(patches, locations):
+            patch = patch[0]
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-            self._output_tensor[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = window
+            self._output_tensor[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch
 
     def get_output_tensor(self) -> torch.Tensor:
         return self._output_tensor

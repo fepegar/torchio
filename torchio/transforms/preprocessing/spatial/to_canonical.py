@@ -7,11 +7,27 @@ from ... import Transform
 
 
 class ToCanonical(Transform):
+    """Reorder the data to be closest to canonical (RAS+) orientation.
+
+    This transform reorders the voxels and modifies the affine matrix so that
+    the voxel orientations are nearest to:
+
+        1. First voxel axis goes from left to Right
+        2. Second voxel axis goes from posterior to Anterior
+        3. Third voxel axis goes from inferior to Superior
+
+    See `NiBabel docs about image orientation`_ for more information.
+
+    .. note:: The reorientation is performed using
+        :py:meth:`nibabel.as_closest_canonical`.
+
+    .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
+
+    """
     def __init__(
             self,
             verbose: bool = False,
             ):
-        """Reorder the data to be closest to canonical (RAS+) orientation"""
         super().__init__(verbose=verbose)
 
     def apply_transform(self, sample: dict) -> dict:

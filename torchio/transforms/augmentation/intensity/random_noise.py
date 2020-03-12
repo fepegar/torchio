@@ -1,7 +1,7 @@
 from typing import Tuple, Optional
 import torch
 from ....utils import is_image_dict
-from ....torchio import DATA, INTENSITY, TypeData
+from ....torchio import DATA, TYPE, INTENSITY, TypeData
 from .. import RandomTransform
 
 
@@ -21,7 +21,7 @@ class RandomNoise(RandomTransform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             image_dict[DATA] = add_noise(image_dict[DATA], std)
         return sample

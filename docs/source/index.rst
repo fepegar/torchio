@@ -13,17 +13,9 @@ TorchIO
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab Notebook
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3598622.svg
-   :target: https://doi.org/10.5281/zenodo.3598622
-   :alt: DOI
-
 .. image:: https://travis-ci.org/fepegar/torchio.svg?branch=master
    :target: https://travis-ci.org/fepegar/torchio
    :alt: Build status
-
-.. image:: https://readthedocs.org/projects/torchio/badge/?version=latest
-   :target: https://torchio.readthedocs.io/?badge=latest
-   :alt: Documentation status
 
 .. image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
@@ -62,10 +54,19 @@ You can preview and run most features in TorchIO in this
 `Google Colab Notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_.
 
 
+Credits
+-------
+
+If you use this package for your research, please cite the paper:
+
+`TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning <https://arxiv.org/abs/2003.04696>`_.
+
+
+
 .. toctree::
    :maxdepth: 2
    :caption: API
 
-   datasets.rst
    data/data.rst
    transforms/transforms.rst
+   datasets.rst

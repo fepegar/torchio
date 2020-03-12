@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict, nib_to_sitk, sitk_to_nib
-from ....torchio import DATA, AFFINE, INTENSITY, TypeData
+from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
 from .. import RandomTransform
 
 
@@ -23,7 +23,7 @@ class RandomBlur(RandomTransform):
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
-            if image_dict['type'] != INTENSITY:
+            if image_dict[TYPE] != INTENSITY:
                 continue
             image_dict[DATA][0] = blur(
                 image_dict[DATA][0],

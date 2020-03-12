@@ -26,7 +26,7 @@ author = 'Fernando Pérez-García'
 
 # version is the short X.Y version
 # release is the full version, including alpha/beta/rc tags
-version = release = '0.13.8'
+version = release = '0.13.13'
 
 
 # -- General configuration ---------------------------------------------------
@@ -44,7 +44,17 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx_rtd_theme',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
 ]
+
+# Add mappings
+# https://kevin.burke.dev/kevin/sphinx-interlinks/
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3', None),
+    'torch': ('https://pytorch.org/docs/master/', None),  # https://github.com/pytorch/fairseq/blob/adb5b9c71f7ef4fe2f258e0da102d819ab9920ef/docs/conf.py#L131
+    'torchvision': ('https://pytorch.org/docs/master/', None),
+    'nibabel': ('http://nipy.org/nibabel/', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

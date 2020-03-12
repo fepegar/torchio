@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 from ..utils import get_stem
-from ..torchio import DATA, AFFINE, TypePath
+from ..torchio import DATA, AFFINE, TYPE, PATH, STEM, TypePath
 from .io import read_image, write_image
 
 
@@ -70,7 +70,7 @@ class Subject(list):
     """Class to store information about the images corresponding to a subject.
 
     Args:
-        *images: Instances of :class:`torchio.Image`.
+        *images: Instances of :class:`~torchio.data.images.Image`.
         name: Subject ID
     """
     def __init__(self, *images: Image, name: str = ''):
@@ -117,40 +117,55 @@ class Subject(list):
 class ImagesDataset(Dataset):
     """Base TorchIO dataset.
 
-    :class:`ImagesDataset` is a reader of 3D medical images that directly
-    inherits from :class:`torch.utils.Dataset`.
-    It can be used with a :class:`torch.utils.DataLoader`
+    :class:`~torchio.data.images.ImagesDataset`
+    is a reader of 3D medical images that directly
+    inherits from :class:`torch.utils.data.Dataset`.
+    It can be used with a :class:`torch.utils.data.DataLoader`
     for efficient loading and augmentation.
     It receives a list of subjects, where each subject is an instance of
-    :class:`torchio.Subject` containing instances of :class:`torchio.Image`.
-    The file format must be compatible with NiBabel or SimpleITK readers.
+    :class:`~torchio.data.images.Subject` containing instances of
+    :class:`~torchio.data.images.Image`.
+    The file format must be compatible with `NiBabel`_ or `SimpleITK`_ readers.
     It can also be a directory containing
-    `DICOM <https://www.dicomstandard.org/>`_ files.
+    `DICOM`_ files.
+
+    Indexing an :class:`~torchio.data.images.ImagesDataset` returns a
+    Python dictionary with the data corresponding to the queried subject.
+    The keys in the dictionary are the names of the images passed to that
+    subject, for example ``('t1', 't2', 'segmentation')``.
+
+    The value corresponding to each image name is another dictionary
+    ``image_dict`` with information about the image.
+    The data is stored in ``image_dict[torchio.IMAGE]``,
+    and the corresponding `affine matrix`_
+    is in ``image_dict[torchio.AFFINE]``:
+
+        >>> sample = images_dataset[0]
+        >>> sample.keys()
+        dict_keys(['image', 'label'])
+        >>> image_dict = sample['image']
+        >>> image_dict[torchio.DATA].shape
+        torch.Size([1, 176, 256, 256])
+        >>> image_dict[torchio.AFFINE]
+        array([[   0.03,    1.13,   -0.08,  -88.54],
+               [   0.06,    0.08,    0.95, -129.66],
+               [   1.18,   -0.06,   -0.11,  -67.15],
+               [   0.  ,    0.  ,    0.  ,    1.  ]])
 
     Args:
-        subjects: Sequence of instances of :class:`torchio.Subject`.
+        subjects: Sequence of instances of
+            :class:`~torchio.data.images.Subject`.
         transform: An instance of
-            :class:`torchio.transforms.Transform` that is applied to each image
-            after loading it.
+            :class:`torchio.transforms.Transform` that is applied to each
+            image after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image
 
-    Example::
+    .. _NiBabel: https://nipy.org/nibabel/#nibabel
+    .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
+    .. _DICOM: https://www.dicomstandard.org/
+    .. _affine matrix: https://nipy.org/nibabel/coordinate_systems.html
 
-        >>> import torchio
-        >>> from torchio import ImagesDataset, Image, Subject
-        >>> subject_a = Subject([
-        ...     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
-        ...     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
-        >>> ])
-        >>> subject_b = Subject(
-        ...     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
-        ...     Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
-        ...     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
-        ... )
-        >>> subjects_list = [subject_a, subject_b]
-        >>> subjects_dataset = ImagesDataset(subjects_list)
-        >>> subject_sample = subjects_dataset[0]
     """
     def __init__(
             self,
@@ -167,6 +182,8 @@ class ImagesDataset(Dataset):
         return len(self.subjects)
 
     def __getitem__(self, index: int) -> dict:
+        if not isinstance(index, int):
+            raise TypeError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
         sample = {}
         for image in subject:
@@ -174,9 +191,9 @@ class ImagesDataset(Dataset):
             image_dict = {
                 DATA: tensor,
                 AFFINE: affine,
-                'type': image.type,
-                'path': str(image.path),
-                'stem': get_stem(image.path),
+                TYPE: image.type,
+                PATH: str(image.path),
+                STEM: get_stem(image.path),
             }
             sample[image.name] = image_dict
 

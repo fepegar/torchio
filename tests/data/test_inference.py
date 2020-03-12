@@ -30,3 +30,5 @@ class TestInference(unittest.TestCase):
                 labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
                 outputs = labels
                 aggregator.add_batch(outputs, locations)
+
+        output = aggregator.get_output_tensor()

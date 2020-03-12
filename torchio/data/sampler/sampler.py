@@ -18,19 +18,23 @@ class ImageSampler(IterableDataset):
     def __iter__(self):
         return self.get_stream(self.sample, self.patch_size)
 
-    def get_stream(self, sample: dict, patch_size: Tuple[int]):
+    def get_stream(self, sample: dict, patch_size: Tuple[int, int, int]):
         # Is cycle neccesary?
         return cycle(self.extract_patch_generator(sample, patch_size))
 
     def extract_patch_generator(
             self,
             sample: dict,
-            patch_size: Tuple[int],
+            patch_size: Tuple[int, int, int],
             ) -> Generator[dict, None, None]:
         while True:
             yield self.extract_patch(sample, patch_size)
 
-    def extract_patch(self, sample: dict, patch_size: Tuple[int]) -> dict:
+    def extract_patch(
+            self,
+            sample: dict,
+            patch_size: Tuple[int, int, int],
+            ) -> dict:
         index_ini, index_fin = self.get_random_indices(sample, patch_size)
         cropped_sample = self.copy_and_crop(
             sample,
@@ -40,7 +44,8 @@ class ImageSampler(IterableDataset):
         return cropped_sample
 
     @staticmethod
-    def get_random_indices(sample: dict, patch_size: Tuple[int]):
+    def get_random_indices(sample: dict, patch_size: Tuple[int, int, int]):
+        # Assume all images in sample have the same shape
         check_consistent_shape(sample)
         first_image_name = list(sample.keys())[0]
         first_image_array = sample[first_image_name][DATA]
@@ -78,8 +83,8 @@ def crop(
 
 
 def get_random_indices_from_shape(
-        shape: Tuple[int],
-        patch_size: Tuple[int],
+        shape: Tuple[int, int, int],
+        patch_size: Tuple[int, int, int],
         ) -> Tuple[np.ndarray, np.ndarray]:
     shape_array = np.array(shape, dtype=np.uint16)
     patch_size_array = np.array(patch_size, dtype=np.uint16)

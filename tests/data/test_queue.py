@@ -6,13 +6,13 @@ from torch.utils.data import DataLoader
 from torchio.data import ImageSampler
 from torchio import ImagesDataset, Queue, DATA
 from torchio.utils import create_dummy_dataset
+from ..utils import TorchioTestCase
 
 
-class TestQueue(unittest.TestCase):
+class TestQueue(TorchioTestCase):
     """Tests for `queue` module."""
     def setUp(self):
-        """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.gettempdir()) / 'torchio'
+        super().setUp()
         self.subjects_list = create_dummy_dataset(
             num_images=10,
             size_range=(10, 20),
@@ -20,11 +20,6 @@ class TestQueue(unittest.TestCase):
             suffix='.nii',
             force=False,
         )
-
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-        import shutil
-        shutil.rmtree(self.dir)
 
     def test_queue(self):
         subjects_dataset = ImagesDataset(self.subjects_list)
