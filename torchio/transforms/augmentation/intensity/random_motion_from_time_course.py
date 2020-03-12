@@ -15,16 +15,15 @@ from .. import RandomTransform
 from ....utils import is_image_dict
 from ...metrics import ssim3D, th_pearsonr
 
-
 class RandomMotionFromTimeCourse(RandomTransform):
 
     def __init__(self, nT=200, maxDisp=(2,5), maxRot=(2,5), noiseBasePars=(5,15),
                  swallowFrequency=(0,5), swallowMagnitude=(2,6),
                  suddenFrequency=(0,5), suddenMagnitude=(2,6),
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
-                 displacement_shift=True, freq_encoding_dim=[0], tr=2.3, es=4E-3,
+                 displacement_shift=1, freq_encoding_dim=[0], tr=2.3, es=4E-3,
                  nufft=True,  oversampling_pct=0.3, proba_to_augment: float = 1,
-                 verbose=False, keep_original=False, compare_to_original=False):
+                 verbose=False, keep_original=False, compare_to_original=False, preserve_center_pct=0):
         """
         parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
         :param nT (int): number of points of the time course
@@ -64,10 +63,11 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.suddenFrequency = suddenFrequency
         self.suddenMagnitude = suddenMagnitude
         self.displacement_shift = displacement_shift
-        # no more used self.preserve_center_frequency_pct = preserve_center_pct
+        self.preserve_center_frequency_pct = preserve_center_pct
         self.freq_encoding_choice = freq_encoding_dim
         self.frequency_encoding_dim = np.random.choice(self.freq_encoding_choice)
         self.read_func = read_func
+        self.displacement_substract = np.zeros(6)
         if fitpars is None:
             self.fitpars = None
             self.simulate_displacement = True
@@ -79,6 +79,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if (not finufft) and nufft:
             raise ImportError('finufftpy cannot be imported')
         self.proba_to_augment = proba_to_augment
+        self.preserve_center_pct = preserve_center_pct
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -113,8 +114,14 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 fitpars_interp = self._simulate_random_trajectory()
                 sample[image_name]['simu_param'] = self.simu_param
             else:
-                fitpars_interp = self._interpolate_space_timing(self.fitpars)
-                fitpars_interp = self._tile_params_to_volume_dims(fitpars_interp)
+                if self.fitpars.ndim==4:
+                    fitpars_interp = self.fitpars
+                else:
+                    fitpars_interp = self._interpolate_space_timing(self.fitpars)
+                    fitpars_interp = self._tile_params_to_volume_dims(fitpars_interp)
+
+            if self.displacement_shift > 1:
+                fitpars_interp = self.demean_fitpar(fitpars_interp, original_image)[0]
 
             fitpars_vox = fitpars_interp.reshape((6, -1))
             self.translations, self.rotations = fitpars_vox[:3], np.radians(fitpars_vox[3:])
@@ -155,6 +162,10 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 metrics['mean_DispP'] = calculate_mean_Disp_P(self.fitpars)
                 metrics['rmse_Disp'] = calculate_mean_RMSE_displacment(self.fitpars)
 
+                ff_interp, to_substract = self.demean_fitpar(fitpars_interp, original_image)
+                metrics['TFsubstract'] = to_substract
+                metrics['rmse_DispTF'] = calculate_mean_RMSE_displacment(ff_interp,original_image)
+
                 sample[image_name]['metrics'] = metrics
 
         return sample
@@ -190,6 +201,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if self.displacement_shift > 0:
             to_substract = fpars[:, int(round(self.nT / 2))]
             fpars = np.subtract(fpars, to_substract[..., np.newaxis])
+            self.displacement_substract = to_substract
 
         #print(fpars.shape)
         if np.any(np.isnan(fpars)) :
@@ -315,6 +327,12 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if self.displacement_shift > 0:
             to_substract = fitpars[:, int(round(self.nT / 2))]
             fitpars = np.subtract(fitpars, to_substract[..., np.newaxis])
+            self.displacement_substract = to_substract
+
+        if self.preserve_center_frequency_pct:
+            center = np.int(np.floor( fitpars.shape[1] /2 ))
+            nbpts =  np.int(np.floor(fitpars.shape[1] * self.preserve_center_frequency_pct/2))
+            fitpars[:, center-nbpts:center+nbpts] = 0
 
         self.fitpars = fitpars
         #print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
@@ -362,16 +380,19 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param freq_domain - frequency domain data 3d numpy array:
         :return frequency domain array with phase shifts added according to self.translations:
         """
-
-        lin_spaces = [np.linspace(-0.5, 0.5, x) for x in freq_domain.shape]
+        lin_spaces = [np.linspace(-0.5, 0.5, x) for x in freq_domain.shape] #todo it suposes 1 vox = 1mm
         meshgrids = np.meshgrid(*lin_spaces, indexing='ij')
-        grid_coords = np.array([mg.flatten() for mg in meshgrids])
+        grid_coords = np.array([mg.flatten(order='C') for mg in meshgrids])
+
+        #print('max TRANS {} GRID {}'.format(np.max(self.translations),np.max(grid_coords)))
 
         phase_shift = np.multiply(grid_coords, self.translations).sum(axis=0)  # phase shift is added
+        #phase_shift = np.sum(grid_coords * self.translations, axis=0)  # phase shift is added
         exp_phase_shift = np.exp(-2j * math.pi * phase_shift)
-        freq_domain_translated = np.multiply(exp_phase_shift, freq_domain.flatten(order='C')).reshape(freq_domain.shape)
+        #freq_domain_translated = np.multiply(exp_phase_shift, freq_domain.flatten()).reshape(freq_domain.shape)
+        freq_domain_translated = exp_phase_shift * freq_domain.reshape(-1)
 
-        return freq_domain_translated
+        return freq_domain_translated.reshape(freq_domain.shape)
 
     def _rotate_coordinates(self):
         """
@@ -402,7 +423,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                                                self.frequency_encoding_dim] if i == self.frequency_encoding_dim else 1
                                            for i in range(5)]))  # tile in freq encoding dimension
 
-        rotation_matrices = rotation_matrices.reshape([-1, 3, 3])
+        rotation_matrices = rotation_matrices.reshape([-1, 3, 3], order='C')
 
         # tile grid coordinates for vectorizing computation
         grid_coordinates_tiled = np.tile(grid_coordinates, [3, 1])
@@ -423,9 +444,9 @@ class RandomMotionFromTimeCourse(RandomTransform):
                                        range(new_grid_coords.shape[0])]
         new_grid_coordinates_scaled = [np.asfortranarray(i) for i in new_grid_coordinates_scaled]
 
-        self.new_grid_coordinates_scaled = new_grid_coordinates_scaled
-        self.grid_coordinates = grid_coordinates
-        self.new_grid_coords = new_grid_coords
+        #self.new_grid_coordinates_scaled = new_grid_coordinates_scaled
+        #self.grid_coordinates = grid_coordinates
+        #self.new_grid_coords = new_grid_coords
         return new_grid_coordinates_scaled, [grid_coordinates, new_grid_coords]
 
     def _nufft(self, freq_domain_data, iflag=1, eps=1E-7):
@@ -453,6 +474,42 @@ class RandomMotionFromTimeCourse(RandomTransform):
         im_out = f.reshape(self.im_shape, order='F')
 
         return im_out
+
+
+    def demean_fitpar(self,fitpars_interp, original_image):
+
+        o_shape = original_image.shape
+        #original_image = np.moveaxis(original_image.numpy(), 1, 2)
+        tfi = np.abs(np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(original_image))).astype(np.complex128))
+        #tfi = np.real((np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(original_image)))).astype(np.complex128)) does not work (make a shift)
+        #ss = np.tile(tfi, (6, 1, 1, 1))
+        ss = tfi #np.moveaxis(tfi, 1,2)  # to have the same order as previously
+
+        # mean around kspace center
+        #ss_center = np.zeros(ss.shape)
+        #nbpts = 2
+        #center = [np.floor((x - 1) / 2).astype(int) for x in o_shape]
+        #ss_center[center[0]-nbpts:center[0]+nbpts,center[1]-nbpts:center[1]+nbpts,center[2]-nbpts:center[2]+nbpts] =  ss[center[0]-nbpts:center[0]+nbpts,center[1]-nbpts:center[1]+nbpts,center[2]-nbpts:center[2]+nbpts]
+        #ss = ss_center
+
+        ff = fitpars_interp
+        #ff = np.moveaxis(fitpars_interp, 2, 3)  # because y is slowest axis  uselull to plot but not necessary if ff and ss are coherent
+
+        to_substract = np.zeros(6)
+        for i in range(0, 6):
+            ffi = ff[i].reshape(-1)
+            ssi = ss.reshape(-1)
+            #xx = np.argwhere(ssi > (np.max(ssi) * 0.001)).reshape(-1)
+            #to_substract[i] = np.sum(ffi[xx] * ssi[xx]) / np.sum(ssi[xx])
+            to_substract[i] = np.sum(ffi * ssi) / np.sum(ssi)
+        #print('Removing {} '.format(to_substract))
+
+        #print('Removing {} OR {}'.format(to_substract, (to_substract+self.displacement_substract)))
+        to_substract_tile = np.tile(to_substract[..., np.newaxis, np.newaxis, np.newaxis],
+                               (1, o_shape[0], o_shape[1], o_shape[2]))
+        fitpars_interp = np.subtract(fitpars_interp, to_substract_tile)
+        return fitpars_interp, to_substract
+
 
 
 def create_rotation_matrix_3d(angles):
@@ -532,15 +589,29 @@ def calculate_mean_FD_J(motion_params):
     return np.mean(fd)
 
 
-def calculate_mean_RMSE_displacment(fit_pars):
+def calculate_mean_RMSE_displacment(fit_pars, image=None):
     """
     very crude approximation where rotation in degree and translation are average ...
     """
-    r1 = np.sqrt(np.sum(fit_pars[0:3] * fit_pars[0:3], axis=0))
-    rms1 = np.sqrt(np.mean(r1 * r1))
-    r2 = np.sqrt(np.sum(fit_pars[3:6] * fit_pars[3:6], axis=0))
-    rms2 = np.sqrt(np.mean(r2 * r2))
-    res = (rms1 + rms2) / 2
+    if image is None:
+        r1 = np.sqrt(np.sum(fit_pars[0:3] * fit_pars[0:3], axis=0))
+        rms1 = np.sqrt(np.mean(r1 * r1))
+        r2 = np.sqrt(np.sum(fit_pars[3:6] * fit_pars[3:6], axis=0))
+        rms2 = np.sqrt(np.mean(r2 * r2))
+        res = (rms1 + rms2) / 2
+    else:
+        tfi = np.abs(np.fft.fftshift(np.fft.fftn(np.fft.ifftshift(image))).astype(np.complex128))
+        ss = tfi
+        ff = fit_pars
+
+        to_substract = np.zeros(6)
+        for i in range(0, 6):
+            ffi = ff[i].reshape(-1)
+            ssi = ss.reshape(-1)
+            # xx = np.argwhere(ssi > (np.max(ssi) * 0.001)).reshape(-1)
+            # to_substract[i] = np.sum(ffi[xx] * ssi[xx]) / np.sum(ssi[xx])
+            to_substract[i] = np.sqrt( np.sum(ffi * ffi * ssi) / np.sum(ssi) )
+        res = np.mean(to_substract)
 
     return res
 
