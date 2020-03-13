@@ -1,7 +1,8 @@
 TorchIO
 =======
 
-|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status| |Coverage-status| |Code-Quality| |Slack|
+|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status|
+|Coverage-status| |Code-Quality| |Code-Maintainability| |Slack|
 
 
 TorchIO is a Python package containing a set of tools to efficiently
@@ -99,3 +100,7 @@ BibTeX:
 .. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack
    :target: https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE
    :alt: Slack
+
+.. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
+   :target: https://codeclimate.com/github/fepegar/torchio/maintainability
+   :alt: Maintainability
