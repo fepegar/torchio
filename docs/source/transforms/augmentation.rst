@@ -50,7 +50,15 @@ Intensity
 ---------
 
 :class:`RandomMotion`
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_motion.gif
+   :alt: MRI k-space motion artifacts
+
+Magnetic resonance images suffer from motion artifacts when the subject moves
+during image acquisition. This transform follows
+`Shaw et al., 2019 <http://proceedings.mlr.press/v102/shaw19a.html>`_ to
+simulate motion artifacts for data augmentation.
 
 .. autoclass:: RandomMotion
     :show-inheritance:
@@ -59,12 +67,30 @@ Intensity
 :class:`RandomGhosting`
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../images/random_ghosting.gif
+   :alt: MRI k-space ghosting artifacts
+
+Discrete "ghost" artifacts may occur along the phase-encode direction whenever
+the position or signal intensity of imaged structures within the field-of-view
+vary or move in a regular (periodic) fashion.
+Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the
+most important patient-related causes of ghost artifacts in clinical MR imaging
+(from `mriquestions.com <http://mriquestions.com/why-discrete-ghosts.html>`_).
+
 .. autoclass:: RandomGhosting
     :show-inheritance:
 
 
 :class:`RandomSpike`
 ~~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_spike.gif
+   :alt: MRI k-space spike artifacts
+
+Also known as
+`Herringbone artifact <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
+crisscross artifact or corduroy artifact, it creates stripes in different
+directions in image space due to spikes in k-space.
 
 .. autoclass:: RandomSpike
     :show-inheritance:

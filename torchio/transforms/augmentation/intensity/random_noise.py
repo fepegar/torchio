@@ -6,6 +6,12 @@ from .. import RandomTransform
 
 
 class RandomNoise(RandomTransform):
+    """Add Gaussian noise.
+
+    Args:
+        std_range:
+
+    """
     def __init__(
             self,
             std_range: Tuple[float, float] = (0, 0.25),

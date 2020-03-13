@@ -8,6 +8,13 @@ from .. import RandomTransform
 
 
 class RandomSwap(RandomTransform):
+    """Randomly swap patches within an image.
+
+    Args:
+        patch_size:
+        num_iterations:
+        seed:
+    """
     def __init__(
             self,
             patch_size: TypeTuple = 15,

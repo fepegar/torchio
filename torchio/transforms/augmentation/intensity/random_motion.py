@@ -21,6 +21,17 @@ from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform):
+    """Add MRI motion artifact.
+
+    Args:
+        degrees:
+        translation:
+        num_transforms:
+        image_interpolation:
+        proportion_to_augment:
+        seed:
+
+    """
     def __init__(
             self,
             degrees: float = 10,

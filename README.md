@@ -300,26 +300,21 @@ $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "proportion
 
 ###### [MRI k-space motion artifacts](torchio/transforms/augmentation/intensity/random_motion.py)
 
-Magnetic resonance images suffer from motion artifacts when the subject moves
-during image acquisition. This transform follows
-[Shaw et al., 2019](http://proceedings.mlr.press/v102/shaw19a.html) to
-simulate motion artifacts for data augmentation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_motion.gif)
 
 
 ###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
 
-Discrete "ghost" artifacts may occur along the phase-encode direction whenever the position or signal intensity of imaged structures within the field-of-view vary or move in a regular (periodic) fashion.
-Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_ghosting.gif)
 
 
 ###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
 
-Also known as [Herringbone artifact](https://radiopaedia.org/articles/herringbone-artifact?lang=gb), crisscross artifact or corduroy artifact,
-it creates stripes in different directions in image space due to spikes in k-space.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_spike.gif)
 
