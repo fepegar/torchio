@@ -72,14 +72,14 @@ To install the latest published version, just run the following command in a ter
 $ pip install --upgrade torchio
 ```
 
-## [Documentation](https://fepegar.github.io/torchio-docs/index.html)
+## [Documentation](https://torchio.readthedocs.io/index.html)
 
 The docs are a work in progress, but some classes such as
-[`ImagesDataset`](https://fepegar.github.io/torchio-docs/data/image.html)
+[`ImagesDataset`](https://torchio.readthedocs.io/data/image.html)
 are already fairly well documented.
 
 Note that the documentation is temporarily hosted on
-[an auxiliar GitHub repo](https://fepegar.github.io/torchio-docs/index.html)
+[an auxiliar GitHub repo](https://torchio.readthedocs.io/index.html)
 due to
 [a bug in Read the Docs](https://github.com/readthedocs/readthedocs.org/issues/6742).
 
@@ -301,55 +301,55 @@ $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "proportion
 
 ###### [MRI k-space motion artifacts](torchio/transforms/augmentation/intensity/random_motion.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_motion.gif)
 
 
 ###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_ghosting.gif)
 
 
 ###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_spike.gif)
 
 
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![MRI bias field artifact](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_bias_field.gif)
 
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_noise.gif)
 
 
 ###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 
 ##### Spatial
 
 ###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
@@ -358,12 +358,12 @@ See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.ht
 
 ###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+See the [docs](https://torchio.readthedocs.io/transforms/augmentation.html).
 
 
 #### Preprocessing
@@ -379,44 +379,44 @@ adapted from NiftyNet.
 
 ##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [Z-normalization](torchio/transforms/preprocessing/intensity/z_normalization.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [Resample](torchio/transforms/preprocessing/spatial/resample.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [Pad](torchio/transforms/preprocessing/spatial/pad.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [Crop](torchio/transforms/preprocessing/spatial/crop.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [ToCanonical](torchio/transforms/preprocessing/spatial/to_canonical.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 ##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
+See the [docs](https://torchio.readthedocs.io/transforms/preprocessing.html).
 
 
 #### Others
 
 ##### [Lambda](torchio/transforms/lambda_transform.py)
 
-See the [docs](https://fepegar.github.io/torchio-docs/transforms/others.html).
+See the [docs](https://torchio.readthedocs.io/transforms/others.html).
 
 
 
