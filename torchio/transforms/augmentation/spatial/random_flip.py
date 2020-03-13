@@ -6,6 +6,14 @@ from .. import RandomTransform
 
 
 class RandomFlip(RandomTransform):
+    """Reverse the order of elements in an image along the given axes.
+
+    Args:
+        axes:
+        flip_probability:
+        seed:
+    """
+
     def __init__(
             self,
             axes: Union[int, Tuple[int]] = 0,

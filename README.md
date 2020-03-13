@@ -359,6 +359,8 @@ Blurs the image using a
 ##### Spatial
 
 ###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
 </p>
@@ -366,7 +368,7 @@ Blurs the image using a
 
 ###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
 
-Reverse the order of elements in an image along the given axes.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)

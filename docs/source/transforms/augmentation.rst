@@ -38,6 +38,9 @@ Spatial
 :class:`RandomElasticDeformation`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../images/random_elastic_deformation.gif
+   :alt: Random elastic deformation
+
 .. autoclass:: RandomElasticDeformation
     :show-inheritance:
 
