@@ -35,13 +35,13 @@ class RandomTransform(Transform):
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        r"""Adapted from ``torchvision.RandomRotation``.
+        r"""Adapted from ``torchvision.transforms.RandomRotation``.
 
         Args:
             nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
                 where :math:`n_{min} \leq n_{max}`.
                 If a single positive number :math:`n` is provided,
-                a tuple :math:`(-n, n)` will be returned.
+                :math:`n_{min} = -n` and :math:`n_{max} = n`.
             name: Name of the parameter, so that an informative error message
                 can be printed.
 
@@ -50,7 +50,7 @@ class RandomTransform(Transform):
 
         Raises:
             ValueError: if :attr:`nums_range` is negative
-            ValueError: if :math:`n_{min} \gt n_{max}`.
+            ValueError: if :math:`n_{max} \lt n_{min}`.
         """
         if isinstance(nums_range, numbers.Number):
             if nums_range < 0:

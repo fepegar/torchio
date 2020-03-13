@@ -9,6 +9,14 @@ from .. import RandomTransform
 
 
 class RandomGhosting(RandomTransform):
+    """Add random MRI ghosting artifact.
+
+    Args:
+        num_ghosts_range:
+        axes:
+        proportion_to_augment:
+        seed:
+    """
     def __init__(
             self,
             num_ghosts_range: Union[int, Tuple[int, int]] = (4, 10),

@@ -300,26 +300,21 @@ $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "proportion
 
 ###### [MRI k-space motion artifacts](torchio/transforms/augmentation/intensity/random_motion.py)
 
-Magnetic resonance images suffer from motion artifacts when the subject moves
-during image acquisition. This transform follows
-[Shaw et al., 2019](http://proceedings.mlr.press/v102/shaw19a.html) to
-simulate motion artifacts for data augmentation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_motion.gif)
 
 
 ###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
 
-Discrete "ghost" artifacts may occur along the phase-encode direction whenever the position or signal intensity of imaged structures within the field-of-view vary or move in a regular (periodic) fashion.
-Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_ghosting.gif)
 
 
 ###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
 
-Also known as [Herringbone artifact](https://radiopaedia.org/articles/herringbone-artifact?lang=gb), crisscross artifact or corduroy artifact,
-it creates stripes in different directions in image space due to spikes in k-space.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_spike.gif)
 
@@ -333,27 +328,21 @@ See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.ht
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
 
-Randomly swaps patches in the image.
-This is typically used in
-[context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
-Adds noise sampled from a normal distribution with mean 0 and standard
-deviation sampled from a uniform distribution in the range `std_range`.
-It is often used after [`ZNormalization`](#z-normalization), as the output of
-this transform has zero-mean.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_noise.gif)
 
 
 ###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
 
-Blurs the image using a
-[discrete Gaussian image filter](https://itk.org/Doxygen/html/classitk_1_1DiscreteGaussianImageFilter.html).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 ##### Spatial

@@ -8,7 +8,7 @@ from .. import RandomTransform
 
 
 class RandomBiasField(RandomTransform):
-    r"""Random MRI bias field artifact.
+    r"""Add random MRI bias field artifact.
 
     Args:
         coefficients: Tuple of two floats :math:`(a, b)` to specify the

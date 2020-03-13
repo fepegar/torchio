@@ -20,7 +20,6 @@ class BoundsTransform(Transform):
             ):
         super().__init__()
         self.bounds_parameters = self.parse_bounds(bounds_parameters)
-        print(self.bounds_parameters)
 
     @property
     def bounds_function(self):

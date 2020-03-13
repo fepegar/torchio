@@ -50,7 +50,15 @@ Intensity
 ---------
 
 :class:`RandomMotion`
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_motion.gif
+   :alt: MRI k-space motion artifacts
+
+Magnetic resonance images suffer from motion artifacts when the subject moves
+during image acquisition. This transform follows
+`Shaw et al., 2019 <http://proceedings.mlr.press/v102/shaw19a.html>`_ to
+simulate motion artifacts for data augmentation.
 
 .. autoclass:: RandomMotion
     :show-inheritance:
@@ -59,12 +67,30 @@ Intensity
 :class:`RandomGhosting`
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../images/random_ghosting.gif
+   :alt: MRI k-space ghosting artifacts
+
+Discrete "ghost" artifacts may occur along the phase-encode direction whenever
+the position or signal intensity of imaged structures within the field-of-view
+vary or move in a regular (periodic) fashion.
+Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the
+most important patient-related causes of ghost artifacts in clinical MR imaging
+(from `mriquestions.com <http://mriquestions.com/why-discrete-ghosts.html>`_).
+
 .. autoclass:: RandomGhosting
     :show-inheritance:
 
 
 :class:`RandomSpike`
 ~~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_spike.gif
+   :alt: MRI k-space spike artifacts
+
+Also known as
+`Herringbone artifact <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
+crisscross artifact or corduroy artifact, it creates stripes in different
+directions in image space due to spikes in k-space.
 
 .. autoclass:: RandomSpike
     :show-inheritance:
@@ -80,7 +106,7 @@ The bias field is modelled as a linear combination of
 polynomial basis functions, as in K. Van Leemput et al., 1999,
 *Automated model-based tissue classification of MR images of the brain*.
 
-It was added to NiftyNet by Carole Sudre and used in
+It was implemented for NiftyNet by Carole Sudre and used in
 C. Sudre et al., 2017, *Longitudinal segmentation of age-related
 white matter hyperintensities*.
 
@@ -101,12 +127,27 @@ white matter hyperintensities*.
 :class:`RandomNoise`
 ~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../images/random_noise.gif
+   :alt: Random Gaussian noise
+
+Adds noise sampled from a normal distribution with mean 0 and standard
+deviation sampled from a uniform distribution in the range `std_range`.
+It is often used after :py:class:`~torchio.transforms.ZNormalization`,
+because its output has zero-mean.
+
 .. autoclass:: RandomNoise
     :show-inheritance:
 
 
 :class:`RandomSwap`
 ~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_swap.jpg
+   :alt: Random patches swapping
+
+Randomly swaps patches in the image.
+This is typically used in
+`context restoration for self-supervised learning <https://www.sciencedirect.com/science/article/pii/S1361841518304699>`_.
 
 .. autoclass:: RandomSwap
     :show-inheritance:

@@ -8,6 +8,12 @@ from .. import RandomTransform
 
 
 class RandomBlur(RandomTransform):
+    """Blur an image using a random-sized Gaussian filter.
+
+    Args:
+        std_range:
+        seed:
+    """
     def __init__(
             self,
             std_range: Tuple[float, float] = (0, 4),

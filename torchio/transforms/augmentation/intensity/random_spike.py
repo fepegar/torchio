@@ -9,6 +9,14 @@ from .. import RandomTransform
 
 
 class RandomSpike(RandomTransform):
+    """Add random MRI spike artifacts.
+
+    Args:
+        num_spikes_range:
+        intensity_range:
+        proportion_to_augment:
+        seed:
+    """
     def __init__(
             self,
             num_spikes_range: Union[int, Tuple[int, int]] = 1,
