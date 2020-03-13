@@ -9,6 +9,15 @@ from .. import RandomTransform
 
 
 class RandomElasticDeformation(RandomTransform):
+    """B-spline dense elastic deformation.
+
+    Args:
+        num_control_points:
+        deformation_std:
+        proportion_to_augment:
+        image_interpolation:
+        seed:
+    """
     def __init__(
             self,
             num_control_points: int = 4,
@@ -16,9 +25,8 @@ class RandomElasticDeformation(RandomTransform):
             proportion_to_augment: float = 1,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self._bspline_transformation = None
         self.num_control_points = max(num_control_points, 2)
         self.deformation_std = max(deformation_std, 1)

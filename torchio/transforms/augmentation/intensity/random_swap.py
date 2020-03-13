@@ -13,9 +13,8 @@ class RandomSwap(RandomTransform):
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.patch_size = to_tuple(patch_size)
         self.num_iterations = num_iterations
 

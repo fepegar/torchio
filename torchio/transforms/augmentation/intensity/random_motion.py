@@ -29,9 +29,8 @@ class RandomMotion(RandomTransform):
             image_interpolation: Interpolation = Interpolation.LINEAR,
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
@@ -167,8 +166,7 @@ class RandomMotion(RandomTransform):
         default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
         transforms = transforms[1:]  # first is identity
         images = [image]  # first is identity
-        trsfs = tqdm(transforms, leave=False) if self.verbose else transforms
-        for transform in trsfs:
+        for transform in transforms:
             resampler = sitk.ResampleImageFilter()
             resampler.SetInterpolator(interpolation.value)
             resampler.SetReferenceImage(reference)
@@ -199,7 +197,6 @@ class RandomMotion(RandomTransform):
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
         arrays = [array.transpose() for array in arrays]  # ITK to NumPy
-        arrays = tqdm(arrays, leave=False) if self.verbose else arrays
         spectra = [self.fourier_transform(array) for array in arrays]
         self.sort_spectra(spectra, times)
         result_spectrum = np.empty_like(spectra[0])

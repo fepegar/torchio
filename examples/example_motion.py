@@ -1,7 +1,7 @@
 """
 Another way of getting this result is by running the command-line tool:
 
-$ torchio-transform ~/Dropbox/MRI/t1.nii.gz RandomMotion /tmp/t1_motion.nii.gz --verbose --seed 42 --kwargs "degrees=10 translation=10 num_transforms=3 proportion_to_augment=1"
+$ torchio-transform ~/Dropbox/MRI/t1.nii.gz RandomMotion /tmp/t1_motion.nii.gz --seed 42 --kwargs "degrees=10 translation=10 num_transforms=3 proportion_to_augment=1"
 
 """
 

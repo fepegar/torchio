@@ -1,6 +1,9 @@
 Preprocessing
 =============
 
+.. contents::
+   :local:
+
 Intensity
 ---------
 
@@ -26,6 +29,13 @@ Intensity
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: ZNormalization
+    :show-inheritance:
+
+
+:class:`HistogramStandardization`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: HistogramStandardization
     :show-inheritance:
 
 

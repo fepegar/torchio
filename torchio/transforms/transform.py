@@ -8,6 +8,14 @@ from .. import TypeData, TYPE, INTENSITY
 import numpy as np
 
 class Transform(ABC):
+    """Abstract class for all TorchIO transforms.
+
+    All classes used to transform a sample from an
+    :py:class:`~torchio.ImagesDataset` should subclass it.
+    All subclasses should overwrite
+    :py:meth:`torchio.tranforms.Transform.apply_transform`,
+    which takes a sample, applies some transformation and returns the result.
+    """
     def __init__(self, verbose: bool = False, keep_original=False):
         self.verbose = verbose
         self.keep_original = keep_original
@@ -25,17 +33,15 @@ class Transform(ABC):
 
         if self.verbose:
             start = time.time()
+        """Transform a sample and return the result."""
         self.parse_sample(sample)
         sample = deepcopy(sample)
         sample = self.apply_transform(sample)
-        if self.verbose:
-            duration = time.time() - start
-            print(f'{self.__class__.__name__}: {duration:.3f} seconds')
         return sample
 
     @abstractmethod
     def apply_transform(self, sample: dict):
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def parse_sample(sample: dict) -> None:

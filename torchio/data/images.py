@@ -205,7 +205,8 @@ class ImagesDataset(Dataset):
     def set_transform(self, transform: Any) -> None:
         """Set the :attr:`transform` attribute.
 
-        Args: an instance of :class:`torchio.transforms.Transform`
+        Args:
+            transform: An instance of :class:`torchio.transforms.Transform`
         """
         self._transform = transform
 

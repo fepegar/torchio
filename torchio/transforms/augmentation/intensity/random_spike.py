@@ -15,9 +15,8 @@ class RandomSpike(RandomTransform):
             intensity_range: Union[float, Tuple[float, float]] = (0.1, 1),
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.proportion_to_augment = self.parse_probability(
             proportion_to_augment,
             'proportion_to_augment',

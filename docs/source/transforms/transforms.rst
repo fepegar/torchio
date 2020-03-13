@@ -30,3 +30,11 @@ All transforms inherit from :py:class:`torchio.transforms.Transform`.
    preprocessing.rst
    augmentation.rst
    others.rst
+
+
+.. currentmodule:: torchio.transforms
+
+:class:`Transform`
+------------------
+
+.. autoclass:: Transform

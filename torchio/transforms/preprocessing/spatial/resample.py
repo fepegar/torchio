@@ -24,7 +24,6 @@ class Resample(Transform):
             It must be :py:attr:`torchio.Interpolation.NEAREST`,
             :py:attr:`torchio.Interpolation.LINEAR` or
             :py:attr:`torchio.Interpolation.BSPLINE`.
-        verbose:
 
     .. note:: The resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output`.
@@ -35,9 +34,8 @@ class Resample(Transform):
             target_spacing: TypeSpacing,
             antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
-            verbose: bool = False,
             ):
-        super().__init__(verbose=verbose)
+        super().__init__()
         self.target_spacing = self.parse_spacing(target_spacing)
         self.antialiasing = antialiasing
         self.interpolation_order = self.parse_interpolation(

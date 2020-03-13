@@ -10,9 +10,8 @@ class RandomNoise(RandomTransform):
             self,
             std_range: Tuple[float, float] = (0, 0.25),
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.std_range = std_range
 
     def apply_transform(self, sample: dict) -> dict:

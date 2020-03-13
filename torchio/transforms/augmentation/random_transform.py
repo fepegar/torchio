@@ -16,8 +16,6 @@ class RandomTransform(Transform):
 
     Args:
         seed: Seed for :mod:`torch` random number generator.
-        verbose: If set to ``True``, will print the running time of the
-            transform.
     """
     def __init__(
             self,
@@ -102,8 +100,6 @@ class RandomTransform(Transform):
 
     def check_seed(self) -> None:
         if self._seed is not None:
-            if self.verbose:
-                print('Setting torch seed to', self._seed)
             torch.manual_seed(self._seed)
 
     @staticmethod

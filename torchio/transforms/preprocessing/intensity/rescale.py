@@ -1,5 +1,5 @@
 import warnings
-from typing import Tuple, Union, Optional, Callable
+from typing import Tuple, Union, Callable
 import torch
 import numpy as np
 from ....torchio import DATA, TypeCallable
@@ -7,14 +7,28 @@ from . import NormalizationTransform
 
 
 class Rescale(NormalizationTransform):
+    """Rescale intensity values to a certain range.
+
+    Args:
+        out_min_max: Range :math:`(n_{min}, n_{max})` of output intensities.
+        percentiles: Percentile values of the input image that will be mapped
+            to :math:`(n_{min}, n_{max})`. They can be used for contrast
+            stretching, as in `this scikit-image example`_. For example,
+            Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.
+        masking_method: See
+            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+
+    .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
+    .. _nn-UNet paper: https://arxiv.org/abs/1809.10486
+    """
     def __init__(
             self,
             out_min_max: Tuple[float, float] = (0, 1),
             percentiles: Tuple[int, int] = (1, 99),
-            masking_method: Optional[Union[str, TypeCallable]] = None,
+            masking_method: Union[str, TypeCallable, None] = None,
             verbose: bool = False,
             ):
-        super().__init__(masking_method=masking_method, verbose=verbose)
+        super().__init__(masking_method=masking_method)
         self.out_min, self.out_max = out_min_max
         self.percentiles = percentiles
 

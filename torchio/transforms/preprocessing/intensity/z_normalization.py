@@ -1,19 +1,18 @@
-from typing import Union, Optional, Callable
+from typing import Union, Callable
 import torch
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
 
 class ZNormalization(NormalizationTransform):
+    """Subtract mean and divide by standard deviation.
+
+    Args:
+        masking_method: See
+            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
     """
-    Subtract mean and divide by standard deviation
-    """
-    def __init__(
-            self,
-            masking_method: Optional[Union[str, TypeCallable]] = None,
-            verbose: bool = False,
-            ):
-        super().__init__(masking_method=masking_method, verbose=verbose)
+    def __init__(self, masking_method: Union[str, TypeCallable, None] = None):
+        super().__init__(masking_method=masking_method)
 
     def apply_normalization(
             self,

@@ -17,9 +17,8 @@ class BoundsTransform(Transform):
     def __init__(
             self,
             bounds_parameters: TypeBounds,
-            verbose: bool = False,
             ):
-        super().__init__(verbose=verbose)
+        super().__init__()
         self.bounds_parameters = self.parse_bounds(bounds_parameters)
         print(self.bounds_parameters)
 

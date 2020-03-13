@@ -17,14 +17,12 @@ import click
     type=int,
     help='Seed for PyTorch random number generator',
 )
-@click.option('--verbose/--no-verbose', '-v', default=False, show_default=True)
 def apply_transform(
         input_path,
         transform_name,
         output_path,
         kwargs,
         seed,
-        verbose,
         ):
     """Apply transform to an image.
 
@@ -47,10 +45,8 @@ def apply_transform(
             key, value_string = substring.split('=')
             value = guess_type(value_string)
             params_dict[key] = value
-    debug_kwargs = dict(verbose=verbose)
     if issubclass(transform_class, RandomTransform):
-        debug_kwargs['seed'] = seed
-    params_dict.update(debug_kwargs)
+        params_dict['seed'] = seed
     transform = transform_class(**params_dict)
     apply_transform_to_file(
         input_path,

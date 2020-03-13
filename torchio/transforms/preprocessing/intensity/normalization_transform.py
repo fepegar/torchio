@@ -1,4 +1,4 @@
-from typing import Union, Optional, Callable
+from typing import Union, Callable
 import torch
 from ....utils import is_image_dict
 from ....torchio import DATA, TYPE, INTENSITY, TypeCallable
@@ -6,10 +6,35 @@ from ... import Transform
 
 
 class NormalizationTransform(Transform):
+    """Base class for intensity preprocessing transforms.
+
+    Args:
+        masking_method: Defines the mask used to compute the normalization statistics. It can be one of:
+
+            - ``None``: the mask image is all ones, i.e. all values in the image are used
+
+            - A string: the mask image is retrieved from the sample, which is expected the string as a key
+
+            - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`
+
+    Example:
+        >>> from torchio.datasets import IXITiny
+        >>> from torchio.transforms import ZNormalization
+        >>> dataset = IXITiny('ixi_root', download=True)
+        >>> sample = dataset[0]
+        >>> sample.keys()  # image is the MRI, label is a brain segmentation
+        dict_keys(['image', 'label'])
+        >>> transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform
+        >>> transformed = transform(sample)  # use all values to compute mean and std
+        >>> transform = ZNormalization(masking_method='label')
+        >>> transformed = transform(sample)  # use only values within the brain
+        >>> transform = ZNormalization(masking_method=lambda x: x > x.mean())
+        >>> transformed = transform(sample)  # use values above the image mean
+
+    """
     def __init__(
             self,
-            masking_method: Optional[Union[str, TypeCallable]] = None,
-            verbose: bool = False,
+            masking_method: Union[str, TypeCallable, None] = None,
             ):
         """
         masking_method is used to choose the values used for normalization.
@@ -18,7 +43,7 @@ class NormalizationTransform(Transform):
          - A function: the mask will be computed using the function
          - None: all values are used
         """
-        super().__init__(verbose=verbose)
+        super().__init__()
         self.mask_name = None
         if masking_method is None:
             self.masking_method = self.ones
@@ -48,8 +73,8 @@ class NormalizationTransform(Transform):
             sample: dict,
             image_name: str,
             mask: torch.Tensor,
-            ):
-        """There must be a nicer way of doing this"""
+            ) -> None:
+        # There must be a nicer way of doing this
         raise NotImplementedError
 
     @staticmethod

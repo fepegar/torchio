@@ -1,9 +1,9 @@
 # TorchIO
 
-[![Downloads](https://img.shields.io/pypi/dm/torchio.svg)](https://pypi.org/project/torchio/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&logo=python&logoColor=white)](https://pypi.org/project/torchio/)
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
-[![Build status](https://travis-ci.org/fepegar/torchio.svg?branch=master)](https://travis-ci.org/fepegar/torchio)
+[![Build status](https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis)](https://travis-ci.org/fepegar/torchio)
 [![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
 [![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
 [![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)
@@ -305,7 +305,7 @@ during image acquisition. This transform follows
 [Shaw et al., 2019](http://proceedings.mlr.press/v102/shaw19a.html) to
 simulate motion artifacts for data augmentation.
 
-![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_motion.gif)
+![MRI k-space motion artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_motion.gif)
 
 
 ###### [MRI k-space ghosting artifacts](torchio/transforms/augmentation/intensity/random_ghosting.py)
@@ -313,7 +313,7 @@ simulate motion artifacts for data augmentation.
 Discrete "ghost" artifacts may occur along the phase-encode direction whenever the position or signal intensity of imaged structures within the field-of-view vary or move in a regular (periodic) fashion.
 Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the most important patient-related causes of ghost artifacts in clinical MR imaging (From [mriquestions.com](http://mriquestions.com/why-discrete-ghosts.html)).
 
-![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_ghosting.gif)
+![MRI k-space ghosting artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_ghosting.gif)
 
 
 ###### [MRI k-space spike artifacts](torchio/transforms/augmentation/intensity/random_spike.py)
@@ -321,16 +321,14 @@ Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the m
 Also known as [Herringbone artifact](https://radiopaedia.org/articles/herringbone-artifact?lang=gb), crisscross artifact or corduroy artifact,
 it creates stripes in different directions in image space due to spikes in k-space.
 
-![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_spike.gif)
+![MRI k-space spike artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_spike.gif)
 
 
 ###### [MRI magnetic field inhomogeneity](torchio/transforms/augmentation/intensity/random_bias_field.py)
 
-MRI magnetic field inhomogeneity creates slow frequency intensity variations.
-This transform is very similar to the one in
-[NiftyNet](https://niftynet.readthedocs.io/en/dev/niftynet.layer.rand_bias_field.html).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
-![MRI bias field artifacts](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_bias_field.gif)
+![MRI bias field artifact](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_bias_field.gif)
 
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
@@ -339,7 +337,7 @@ Randomly swaps patches in the image.
 This is typically used in
 [context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
 
-![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_swap.jpg)
+![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
@@ -349,7 +347,7 @@ deviation sampled from a uniform distribution in the range `std_range`.
 It is often used after [`ZNormalization`](#z-normalization), as the output of
 this transform has zero-mean.
 
-![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/images/random_noise.gif)
+![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_noise.gif)
 
 
 ###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
@@ -361,19 +359,21 @@ Blurs the image using a
 ##### Spatial
 
 ###### [B-spline dense elastic deformation](torchio/transforms/augmentation/spatial/random_elastic_deformation.py)
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/fepegar/torchio/master/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
+  <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_elastic_deformation.gif" alt="Random elastic deformation"/>
 </p>
 
 
 ###### [Flip](torchio/transforms/augmentation/spatial/random_flip.py)
 
-Reverse the order of elements in an image along the given axes.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 ###### [Affine transform](torchio/transforms/augmentation/spatial/random_affine.py)
 
-Random affine transformation of the image keeping center invariant.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 #### Preprocessing
@@ -384,56 +384,49 @@ Implementation of
 [*New variants of a method of MRI scale standardization*](https://ieeexplore.ieee.org/document/836373)
 adapted from NiftyNet.
 
-![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/images/histogram_standardization.png)
+![Histogram standardization](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/histogram_standardization.png)
 
 
 ##### [Rescale](torchio/transforms/preprocessing/intensity/rescale.py)
 
-Rescale intensity values in an image to a certain range.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Z-normalization](torchio/transforms/preprocessing/intensity/z_normalization.py)
 
-This transform first extracts the values with intensity greater than the mean,
-which is an approximation of the foreground voxels.
-Then the foreground mean is subtracted from the image and it is divided by the
-foreground standard deviation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Resample](torchio/transforms/preprocessing/spatial/resample.py)
 
-Resample images to a new voxel spacing using `nibabel`.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Pad](torchio/transforms/preprocessing/spatial/pad.py)
 
-Pad images, like in [`torchvision.transforms.Pad`](https://pytorch.org/docs/stable/torchvision/transforms.html#torchvision.transforms.Pad).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [Crop](torchio/transforms/preprocessing/spatial/crop.py)
 
-Crop images passing 1, 3, or 6 integers, as in [Pad](#pad).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [ToCanonical](torchio/transforms/preprocessing/spatial/to_canonical.py)
 
-Reorder the data so that it is closest to canonical NIfTI (RAS+) orientation.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 ##### [CenterCropOrPad](torchio/transforms/preprocessing/spatial/center_crop_pad.py)
 
-Crops or pads image center to a target size, modifying the affine accordingly.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.html).
 
 
 #### Others
 
 ##### [Lambda](torchio/transforms/lambda_transform.py)
 
-Applies a user-defined function as transform.
-For example, image intensity can be inverted with
-`Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])`
-and a mask can be negated with
-`Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])`.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/others.html).
 
 
 

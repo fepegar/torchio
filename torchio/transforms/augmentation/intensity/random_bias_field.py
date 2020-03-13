@@ -10,14 +10,6 @@ from .. import RandomTransform
 class RandomBiasField(RandomTransform):
     r"""Random MRI bias field artifact.
 
-    The bias field is modelled as a linear combination of
-    polynomial basis functions, as in K. Van Leemput et al., 1999,
-    *Automated model-based tissue classification of MR images of the brain*.
-
-    It was added to NiftyNet by Carole Sudre and used in
-    C. Sudre et al., 2017, *Longitudinal segmentation of age-related
-    white matter hyperintensities*.
-
     Args:
         coefficients: Tuple of two floats :math:`(a, b)` to specify the
             artifact magnitude of each coefficient.
@@ -26,7 +18,6 @@ class RandomBiasField(RandomTransform):
         order: Order of the basis polynomial functions.
         proportion_to_augment:
         seed:
-        verbose:
 
     """
     def __init__(
@@ -35,9 +26,8 @@ class RandomBiasField(RandomTransform):
             order: int = 3,
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            verbose: bool = False,
             ):
-        super().__init__(seed=seed, verbose=verbose)
+        super().__init__(seed=seed)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = order
