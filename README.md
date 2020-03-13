@@ -78,11 +78,6 @@ The docs are a work in progress, but some classes such as
 [`ImagesDataset`](https://torchio.readthedocs.io/data/image.html)
 are already fairly well documented.
 
-Note that the documentation is temporarily hosted on
-[an auxiliar GitHub repo](https://torchio.readthedocs.io/index.html)
-due to
-[a bug in Read the Docs](https://github.com/readthedocs/readthedocs.org/issues/6742).
-
 
 ## Index
 
