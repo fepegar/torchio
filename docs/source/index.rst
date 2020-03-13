@@ -1,7 +1,7 @@
 TorchIO
 =======
 
-|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status| |Coverage-status| |Code-Quality|
+|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status| |Coverage-status| |Code-Quality| |Slack|
 
 
 TorchIO is a Python package containing a set of tools to efficiently
@@ -72,7 +72,7 @@ BibTeX:
    datasets.rst
 
 
-.. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&logo=python&logoColor=white
+.. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
    :target: https://pypi.org/project/torchio/
    :alt: PyPI downloads
 
@@ -84,7 +84,7 @@ BibTeX:
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab notebook
 
-.. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis
+.. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
    :target: https://travis-ci.org/fepegar/torchio
    :alt: Build status
 
@@ -92,6 +92,10 @@ BibTeX:
    :target: https://codecov.io/github/fepegar/torchio
    :alt: Coverage status
 
-.. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg
+.. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer
    :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master
    :alt: Code quality
+
+.. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack
+   :target: https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE
+   :alt: Slack
