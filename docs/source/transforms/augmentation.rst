@@ -1,6 +1,9 @@
 Augmentation
 ============
 
+.. contents::
+   :local:
+
 .. currentmodule:: torchio.transforms.augmentation
 
 :class:`RandomTransform`

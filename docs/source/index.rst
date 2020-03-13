@@ -18,7 +18,6 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 
 .. contents:: Table of contents
-   :backlinks: top
    :local:
 
 

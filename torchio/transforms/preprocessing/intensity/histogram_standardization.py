@@ -17,6 +17,7 @@ STANDARD_RANGE = 0, 100
 
 
 class HistogramStandardization(NormalizationTransform):
+    """Perform histogram standardization of intensity values."""
     def __init__(
             self,
             landmarks_dict: Dict[str, np.ndarray],

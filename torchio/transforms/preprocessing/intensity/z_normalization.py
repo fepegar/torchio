@@ -6,11 +6,12 @@ from . import NormalizationTransform
 
 class ZNormalization(NormalizationTransform):
     """Subtract mean and divide by standard deviation.
+
+    Args:
+        masking_method: See
+            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
     """
-    def __init__(
-            self,
-            masking_method: Union[str, TypeCallable, None] = None,
-            ):
+    def __init__(self, masking_method: Union[str, TypeCallable, None] = None):
         super().__init__(masking_method=masking_method)
 
     def apply_normalization(
