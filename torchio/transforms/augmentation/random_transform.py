@@ -33,7 +33,7 @@ class RandomTransform(Transform):
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        r"""Adapted from ``torchvision.RandomRotation``.
+        r"""Adapted from ``torchvision.transforms.RandomRotation``.
 
         Args:
             nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
