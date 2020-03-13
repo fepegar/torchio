@@ -424,11 +424,7 @@ See the [docs](https://fepegar.github.io/torchio-docs/transforms/preprocessing.h
 
 ##### [Lambda](torchio/transforms/lambda_transform.py)
 
-Applies a user-defined function as transform.
-For example, image intensity can be inverted with
-`Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])`
-and a mask can be negated with
-`Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])`.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/others.html).
 
 
 
