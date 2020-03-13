@@ -106,7 +106,7 @@ The bias field is modelled as a linear combination of
 polynomial basis functions, as in K. Van Leemput et al., 1999,
 *Automated model-based tissue classification of MR images of the brain*.
 
-It was added to NiftyNet by Carole Sudre and used in
+It was implemented for NiftyNet by Carole Sudre and used in
 C. Sudre et al., 2017, *Longitudinal segmentation of age-related
 white matter hyperintensities*.
 
@@ -127,12 +127,27 @@ white matter hyperintensities*.
 :class:`RandomNoise`
 ~~~~~~~~~~~~~~~~~~~~
 
+.. image:: ../../images/random_noise.gif
+   :alt: Random Gaussian noise
+
+Adds noise sampled from a normal distribution with mean 0 and standard
+deviation sampled from a uniform distribution in the range `std_range`.
+It is often used after :py:class:`~torchio.transforms.ZNormalization`,
+because its output has zero-mean.
+
 .. autoclass:: RandomNoise
     :show-inheritance:
 
 
 :class:`RandomSwap`
 ~~~~~~~~~~~~~~~~~~~
+
+.. image:: ../../images/random_swap.jpg
+   :alt: Random patches swapping
+
+Randomly swaps patches in the image.
+This is typically used in
+`context restoration for self-supervised learning <https://www.sciencedirect.com/science/article/pii/S1361841518304699>`_.
 
 .. autoclass:: RandomSwap
     :show-inheritance:

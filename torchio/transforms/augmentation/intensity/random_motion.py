@@ -21,7 +21,7 @@ from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform):
-    """Add MRI motion artifact.
+    """Add random MRI motion artifact.
 
     Args:
         degrees:

@@ -328,27 +328,21 @@ See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.ht
 
 ##### [Patch swap](torchio/transforms/augmentation/intensity/random_swap.py)
 
-Randomly swaps patches in the image.
-This is typically used in
-[context restoration for self-supervised learning](https://www.sciencedirect.com/science/article/pii/S1361841518304699).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![Random patches swapping](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_swap.jpg)
 
 
 ###### [Gaussian noise](torchio/transforms/augmentation/intensity/random_noise.py)
 
-Adds noise sampled from a normal distribution with mean 0 and standard
-deviation sampled from a uniform distribution in the range `std_range`.
-It is often used after [`ZNormalization`](#z-normalization), as the output of
-this transform has zero-mean.
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 ![Random Gaussian noise](https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/random_noise.gif)
 
 
 ###### [Gaussian blurring](torchio/transforms/augmentation/intensity/random_blur.py)
 
-Blurs the image using a
-[discrete Gaussian image filter](https://itk.org/Doxygen/html/classitk_1_1DiscreteGaussianImageFilter.html).
+See the [docs](https://fepegar.github.io/torchio-docs/transforms/augmentation.html).
 
 
 ##### Spatial

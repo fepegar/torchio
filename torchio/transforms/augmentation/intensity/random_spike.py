@@ -9,7 +9,7 @@ from .. import RandomTransform
 
 
 class RandomSpike(RandomTransform):
-    """Add MRI spike artifact.
+    """Add random MRI spike artifacts.
 
     Args:
         num_spikes_range:

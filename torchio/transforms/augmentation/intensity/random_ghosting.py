@@ -9,7 +9,7 @@ from .. import RandomTransform
 
 
 class RandomGhosting(RandomTransform):
-    """Add MRI ghosting artifact.
+    """Add random MRI ghosting artifact.
 
     Args:
         num_ghosts_range:

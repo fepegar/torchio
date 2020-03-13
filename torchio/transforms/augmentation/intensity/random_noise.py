@@ -6,7 +6,7 @@ from .. import RandomTransform
 
 
 class RandomNoise(RandomTransform):
-    """Add Gaussian noise.
+    """Add random Gaussian noise.
 
     Args:
         std_range:

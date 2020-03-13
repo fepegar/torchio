@@ -8,7 +8,7 @@ from .. import RandomTransform
 
 
 class RandomBlur(RandomTransform):
-    """Blur an image.
+    """Blur an image using a random-sized Gaussian filter.
 
     Args:
         std_range:
