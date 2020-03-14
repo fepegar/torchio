@@ -35,6 +35,13 @@ Intensity
 :class:`HistogramStandardization`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Implementation of
+`New variants of a method of MRI scale standardization <https://ieeexplore.ieee.org/document/836373>`_,
+adapted from NiftyNet.
+
+.. image:: ../../images/histogram_standardization.png
+   :alt: Histogram standardization
+
 .. autoclass:: HistogramStandardization
     :show-inheritance:
 
