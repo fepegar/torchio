@@ -1,4 +1,4 @@
-# TorchIO
+# [TorchIO](http://torchio.rtfd.io/)
 
 [![PyPI downloads](https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white)](https://pypi.org/project/torchio/)
 [![PyPI version](https://badge.fury.io/py/torchio.svg)](https://badge.fury.io/py/torchio)
@@ -29,15 +29,9 @@ or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
 
-
 ## Jupyter notebook
 
-The best way to quickly understand and try the library is the
-[Jupyter notebook](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i)
-hosted by Google Colab.
-It includes many examples and visualization of most of the classes and even
-training of a [3D U-Net](https://www.github.com/fepegar/unet) for brain
-segmentation of T1-weighted MRI with whole images and patch-based sampling.
+See the [docs](https://torchio.readthedocs.io/quickstart.html#google-colab-jupyter-notebok).
 
 
 ## Credits
@@ -72,11 +66,13 @@ To install the latest published version, just run the following command in a ter
 $ pip install --upgrade torchio
 ```
 
-## [Documentation](https://torchio.readthedocs.io/index.html)
+## [Documentation](https://torchio.readthedocs.io/)
 
-The docs are a work in progress, but some classes such as
+The documentation is a work in progress, but some classes such as
 [`ImagesDataset`](https://torchio.readthedocs.io/data/image.html)
 are already fairly well documented.
+
+The examples in this README will soon be moved to the docs.
 
 
 ## Index

@@ -55,6 +55,7 @@ BibTeX:
    data/data.rst
    transforms/transforms.rst
    datasets.rst
+   cli.rst
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
