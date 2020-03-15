@@ -19,7 +19,7 @@ See the [Credits](#credits) section below for more information.
 
 <table align="center">
     <tr>
-        <td align="center">Original + segmentation</td>
+        <td align="center">Original</td>
         <td align="center">Random blur</td>
     </tr>
     <tr>
