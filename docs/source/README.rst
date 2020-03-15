@@ -2,7 +2,7 @@
 TorchIO
 #######
 
-|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Build-status|
+|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status| |Build-status|
 |Coverage-status| |Code-Quality| |Code-Maintainability| |Slack|
 
 
@@ -68,6 +68,10 @@ BibTeX:
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab notebook
+
+.. |Docs-status| image:: https://readthedocs.org/projects/torchio/badge/?version=latest
+   :target: https://torchio.readthedocs.io/?badge=latest
+   :alt: Documentation status
 
 .. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
    :target: https://travis-ci.org/fepegar/torchio
