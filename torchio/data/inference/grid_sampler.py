@@ -1,25 +1,38 @@
-from typing import Union, Sequence, Tuple
+from typing import Union, Tuple
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-from torchio import IMAGE, LOCATION
+from torchio import IMAGE, LOCATION, TypeTuple, TypeData
 from torchio.utils import to_tuple
 
 
 class GridSampler(Dataset):
-    """
-    Adapted from NiftyNet.
-    See https://niftynet.readthedocs.io/en/dev/window_sizes.html
+    r"""Extract patches across a whole volume.
+
+    Adapted from NiftyNet. See
+    `this NiftyNet tutorial <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_
+    for more information.
+
+    Args:
+        data: Tensor from which patches will be extracted.
+        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
+            of size :math:`d \times h \times w`.
+            If a single number :math:`n` is provided,
+            :math:`d = h = w = n`.
+        patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the
+            overlap between patches for dense inference. If a single number
+            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
+
     """
     def __init__(
             self,
-            data: Union[np.ndarray, torch.Tensor],
-            patch_size: Union[int, Sequence[int]],
-            patch_overlap: Union[int, Sequence[int]],
+            data: TypeData,
+            patch_size: TypeTuple,
+            patch_overlap: TypeTuple,
             ):
         self.array = data
-        patch_size = to_tuple(patch_size)
-        patch_overlap = to_tuple(patch_overlap)
+        patch_size = to_tuple(patch_size, n=3)
+        patch_overlap = to_tuple(patch_overlap, n=3)
         self.locations = self._grid_spatial_coordinates(
             self.array,
             patch_size,

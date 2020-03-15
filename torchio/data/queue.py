@@ -21,10 +21,10 @@ class Queue(Dataset):
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        patch_size: Tuple of integers :math:`(D, H, W)` to generate patches
-            of size :math:`D \times H \times W`.
+        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
+            of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided,
-            the patch size will be :math:`n \times n \times n`.
+            :math:`d = h = w = n`.
         sampler_class: An instance of :class:`~torchio.data.ImageSampler` used
             to define the patches sampling strategy.
         num_workers: Number of subprocesses to use for data loading
