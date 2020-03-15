@@ -41,6 +41,28 @@ class Queue(Dataset):
         load and transform the volumes. Multiprocessing is not needed to pop
         patches from the queue.
 
+    Example:
+
+    >>> form torch.utils.data import DataLoader
+    >>> import torchio
+    >>> patches_queue = torchio.Queue(
+    ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
+    ...     max_length=300,
+    ...     samples_per_volume=10,
+    ...     patch_size=96,
+    ...     sampler_class=torchio.sampler.ImageSampler,
+    ...     num_workers=4,
+    ...     shuffle_subjects=True,
+    ...     shuffle_patches=True,
+    ... )
+    >>> patches_loader = DataLoader(patches_queue, batch_size=4)
+    >>> num_epochs = 20
+    >>> for epoch_index in range(num_epochs):
+    ...     for patches_batch in patches_loader:
+    ...         inputs = patches_batch['image_name'][torchio.DATA]
+    ...         targets = patches_batch['targets_name'][torchio.DATA]
+    ...         logits = model(inputs)  # model is some torch.nn.Module
+
     """
     def __init__(
             self,

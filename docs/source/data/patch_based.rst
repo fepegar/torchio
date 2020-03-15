@@ -1,6 +1,9 @@
 Patch-based training
 ====================
 
+
+
+
 .. toctree::
    :maxdepth: 2
 
