@@ -39,7 +39,11 @@ def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
     ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2))
 
     if size_average:
-        return ssim_map.mean()
+        if img1.size()[0] == 1:
+            res = ssim_map.mean()
+        else:
+            res = ssim_map.mean(axis=list(range(1, img1.ndim))) #one value per patch
+        return res
     else:
         return ssim_map.mean(1).mean(1).mean(1)
 
