@@ -361,8 +361,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.fitpars = fitpars
         #print(f' in _simul_motionfitpar shape fitpars {fitpars.shape}')
         simu_param = dict(noisPar=noiseBasePars,maxDisp=maxDisp,maxRot=maxRot,
-                          swallowFrequency=swallowFrequency, swallowMagnitude=swallowMagnitude,
-                          suddenFrequency=suddenFrequency,suddenMagnitude=suddenMagnitude)
+                          swallowFrequency=swallowFrequency, swallowMagnitudeT=swallowMagnitude[0], swallowMagnitudeR=swallowMagnitude[1],
+                          suddenFrequency=suddenFrequency,suddenMagnitudeT=suddenMagnitude[0], suddenMagnitude=suddenMagnitude[1])
         self.simu_param = simu_param
         fitpars = self._interpolate_space_timing(fitpars)
         fitpars = self._tile_params_to_volume_dims(fitpars)
