@@ -1,7 +1,8 @@
 Images dataset
 ==============
 
-The :class:`ImagesDataset` class is one of the most important in TorchIO.
+The :py:class:`~torchio.data.images.ImagesDataset` class
+is one of the most important in TorchIO.
 It inherits directly from :class:`torch.utils.data.Dataset`.
 Here is a usage example:
 
