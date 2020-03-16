@@ -17,6 +17,8 @@ simulation of intensity artifacts due to
 `MRI magnetic field inhomogeneity <http://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
+The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
+
 
 ----
 

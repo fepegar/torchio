@@ -21,43 +21,97 @@ See the [Credits](#credits) section below for more information.
 <table align="center">
     <tr>
         <td align="center">Original</td>
-        <td align="center">Random blur</td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomblur">Random blur</a>
+        </td>
     </tr>
     <tr>
         <td align="center"><img src="docs/images/gifs_readme/1_Lambda_mri.png" alt="Original"></td>
-        <td align="center"><img src="docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur"></td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomblur">
+                <img src="docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur">
+            </a>
+        </td>
     </tr>
     <tr>
-        <td align="center">Random flip</td>
-        <td align="center">Random noise</td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomflip">Random flip</a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomnoise">Random noise</a>
+        </td>
     </tr>
     <tr>
-        <td align="center"><img src="docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip"></td>
-        <td align="center"><img src="docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise"></td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomflip">
+                <img src="docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip">
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomnoise">
+                <img src="docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise">
+            </a>
+        </td>
     </tr>
     <tr>
-        <td align="center">Random affine transformation</td>
-        <td align="center">Random elastic transformation</td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomaffine">Random affine transformation</a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomelasticdeformation">Random elastic transformation</a>
+        </td>
     </tr>
     <tr>
-        <td align="center"><img src="docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation"></td>
-        <td align="center"><img src="docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation"></td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomaffine">
+                <img src="docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation">
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomelasticdeformation">
+                <img src="docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation">
+            </a>
+        </td>
     </tr>
     <tr>
-        <td align="center">Random bias field artifact</td>
-        <td align="center">Random motion artifact</td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randombiasfield">Random bias field artifact</a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randommotion">Random motion artifact</a>
+        </td>
     </tr>
     <tr>
-        <td align="center"><img src="docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact"></td>
-        <td align="center"><img src="docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact"></td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randombiasfield">
+                <img src="docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact">
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randommotion">
+                <img src="docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact">
+            </a>
+        </td>
     </tr>
     <tr>
-        <td align="center">Random spike artifact</td>
-        <td align="center">Random ghosting artifact</td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomspike">Random spike artifact</a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomghosting">Random ghosting artifact</a>
+        </td>
     </tr>
     <tr>
-        <td align="center"><img src="docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact"></td>
-        <td align="center"><img src="docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact"></td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomspike">
+                <img src="docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact">
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomghosting">
+                <img src="docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact">
+            </a>
+        </td>
     </tr>
 </table>
 
