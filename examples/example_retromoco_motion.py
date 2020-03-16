@@ -37,7 +37,7 @@ def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss'):
             y = np.hstack((np.zeros((1,(x0-sigma))),
                             np.linspace(0,-amplitude,2*sigma+1).reshape(1,-1),
                             np.ones((1,((200-x0)-sigma-1)))*-amplitude ))
-    #fp[3,:] = y
+    fp[3,:] = y
     fp[1,:] = y
     return fp
 
@@ -48,7 +48,7 @@ def corrupt_data_both( x0, sigma= 5, amplitude=20, method='gauss'):
     return fp
 
 
-dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0}
+dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0, "correct_motion":True}
 
 x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1))) #x0=[100]
 x0=np.hstack((np.arange(90,102,2))) #x0=[100]
@@ -57,10 +57,10 @@ dirpath = ['/data/romain/data_exemple/motion_gauss']
 #for s in :
 for s in [5]: #[2, 5, 10, 20]: #[1, 2, 3,  5, 7, 10, 12 , 15, 20 ] : # [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
     for xx in x0:
-        fp = corrupt_data(xx, sigma=s,method='gauss',amplitude=40)
+        fp = corrupt_data(xx, sigma=s,method='gauss',amplitude=20)
         dico_params['fitpars'] = fp
         t =  RandomMotionFromTimeCourse(**dico_params)
-        dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(size=(182, 218,152)),t)))
+        dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218,152)),t)))
         #dataset = ImagesDataset(suj, transform=t)
         sample = dataset[0]
         fout = dirpath[0] + '/mask_mot_new_shift_s{:02d}_x{}'.format(s,xx)
@@ -82,9 +82,9 @@ fitpars_interp =ff
 dd = ImagesDataset(suj, transform=CenterCropOrPad(size=(182, 218,152)) ); sorig = dd[0]
 original_image = sorig['T1']['data'][0]
 
-pour amplitude de 40 presque
-Removing [ 0.        -2.8949889  0.         0.         0.         0.       ] OR [0.         2.51842243 0.        -> first 5.41
-?? [ 0.         -3.23879857  0.          0.          0.          0.        ] OR [0.         2.17461276 0.         0.         0.         0.        ]
+#pour amplitude de 40 presque
+#Removing [ 0.        -2.8949889  0.         0.         0.         0.       ] OR [0.         2.51842243 0.        -> first 5.41
+#?? [ 0.         -3.23879857  0.          0.          0.          0.        ] OR [0.         2.17461276 0.         0.         0.         0.        ]
 
 
 
@@ -193,16 +193,19 @@ dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20,
                "verbose": True, "keep_original": True, "compare_to_original": True, "oversampling_pct":0,
                "preserve_center_pct":0.01}
 dico_params = {"maxDisp": (1, 6),  "maxRot": (1, 6),    "noiseBasePars": (5, 20, 0.8),
-                       "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (3, 6),
-                                      "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (3, 6),
-                                                     "verbose": False, "keep_original": True, "proba_to_augment": 1,
-                                                                    "preserve_center_pct":0.1, "keep_original": True, "compare_to_original": True, "oversampling_pct":0}
+               "swallowFrequency": (2, 6, 0.5),  "swallowMagnitude": (3, 6),
+               "suddenFrequency": (2, 6, 0.5),  "suddenMagnitude": (3, 6),
+               "verbose": False, "keep_original": True, "proba_to_augment": 1,
+               "preserve_center_pct":0.1, "keep_original": True, "compare_to_original": True,
+               "oversampling_pct":0, "correct_motion":True}
+
 np.random.seed(12)
 t = RandomMotionFromTimeCourse(**dico_params)
 dataset = ImagesDataset(suj, transform=t)
 
 res = pd.DataFrame()
-dirpath = ['/data/romain/data_exemple/motion_random_preserve01/']; os.mkdir(dirpath[0])
+dirpath = ['/data/romain/data_exemple/motion_random_preserve01/'];
+if not os.path.isdir(dirpath[0]): os.mkdir(dirpath[0])
 plt.ioff()
 for i in range(500):
     sample = dataset[0]
