@@ -21,10 +21,10 @@ class Queue(Dataset):
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        patch_size: Tuple of integers :math:`(D, H, W)` to generate patches
-            of size :math:`D \times H \times W`.
+        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
+            of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided,
-            the patch size will be :math:`n \times n \times n`.
+            :math:`d = h = w = n`.
         sampler_class: An instance of :class:`~torchio.data.ImageSampler` used
             to define the patches sampling strategy.
         num_workers: Number of subprocesses to use for data loading
@@ -40,6 +40,28 @@ class Queue(Dataset):
     .. note:: :attr:`num_workers` refers to the number of workers used to
         load and transform the volumes. Multiprocessing is not needed to pop
         patches from the queue.
+
+    Example:
+
+    >>> form torch.utils.data import DataLoader
+    >>> import torchio
+    >>> patches_queue = torchio.Queue(
+    ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
+    ...     max_length=300,
+    ...     samples_per_volume=10,
+    ...     patch_size=96,
+    ...     sampler_class=torchio.sampler.ImageSampler,
+    ...     num_workers=4,
+    ...     shuffle_subjects=True,
+    ...     shuffle_patches=True,
+    ... )
+    >>> patches_loader = DataLoader(patches_queue, batch_size=4)
+    >>> num_epochs = 20
+    >>> for epoch_index in range(num_epochs):
+    ...     for patches_batch in patches_loader:
+    ...         inputs = patches_batch['image_name'][torchio.DATA]
+    ...         targets = patches_batch['targets_name'][torchio.DATA]
+    ...         logits = model(inputs)  # model is some torch.nn.Module
 
     """
     def __init__(
