@@ -23,7 +23,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  fitpars=None, read_func=lambda x: pd.read_csv(x, header=None).values,
                  displacement_shift=1, freq_encoding_dim=[0], tr=2.3, es=4E-3,
                  nufft=True,  oversampling_pct=0.3, proba_to_augment: float = 1,
-                 verbose=False, keep_original=False, compare_to_original=False, preserve_center_pct=0):
+                 verbose=False, keep_original=False, compare_to_original=False,
+                 preserve_center_pct=0, correct_motion=False):
         """
         parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
         :param nT (int): number of points of the time course
@@ -80,6 +81,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             raise ImportError('finufftpy cannot be imported')
         self.proba_to_augment = proba_to_augment
         self.preserve_center_pct = preserve_center_pct
+        self.correct_motion = correct_motion
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -138,6 +140,11 @@ class RandomMotionFromTimeCourse(RandomTransform):
             else:
                 corrupted_im = self._ifft_im(translated_im_freq_domain)
 
+            if self.correct_motion:
+                corrected_im = self.do_correct_motion(corrupted_im)
+                image_dict["data_cor"] = corrected_im[np.newaxis, ...]
+                image_dict['data_cor'] = torch.from_numpy(image_dict['data_cor']).float()
+
             # magnitude
             corrupted_im = abs(corrupted_im)
 
@@ -170,6 +177,23 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         return sample
         #output type is double, TODO where to cast in Float ?
+
+    def do_correct_motion(self, image):
+        im_freq_domain = self._fft_im(image)
+        # print('translation')
+        translated_im_freq_domain = self._translate_freq_domain(freq_domain=im_freq_domain, inv_transfo=True)
+        # print('rotaion')
+        # iNufft for rotations
+        if self.nufft:
+            corrected_im = self._nufft(translated_im_freq_domain, inv_transfo=True)
+            corrected_im = corrected_im / corrected_im.size  # normalize
+        else:
+            corrected_im = self._ifft_im(translated_im_freq_domain)
+        # magnitude
+        corrected_im = abs(corrected_im)
+
+        return corrected_im
+
 
     @staticmethod
     def get_params():
@@ -374,17 +398,19 @@ class RandomMotionFromTimeCourse(RandomTransform):
         tiles = np.floor_divide(target_shape, data_shape, dtype=int)
         return np.tile(params_to_reshape, reps=tiles)
 
-    def _translate_freq_domain(self, freq_domain):
+    def _translate_freq_domain(self, freq_domain, inv_transfo=False):
         """
         image domain translation by adding phase shifts in frequency domain
         :param freq_domain - frequency domain data 3d numpy array:
         :return frequency domain array with phase shifts added according to self.translations:
         """
+        translations = -self.translations if inv_transfo else self.translations
+
         lin_spaces = [np.linspace(-0.5, 0.5, x) for x in freq_domain.shape] #todo it suposes 1 vox = 1mm
         meshgrids = np.meshgrid(*lin_spaces, indexing='ij')
         grid_coords = np.array([mg.flatten() for mg in meshgrids])
 
-        phase_shift = np.multiply(grid_coords, self.translations).sum(axis=0)  # phase shift is added
+        phase_shift = np.multiply(grid_coords, translations).sum(axis=0)  # phase shift is added
         #phase_shift = np.sum(grid_coords * self.translations, axis=0)  # phase shift is added
         exp_phase_shift = np.exp(-2j * math.pi * phase_shift)
         #freq_domain_translated = np.multiply(exp_phase_shift, freq_domain.flatten()).reshape(freq_domain.shape)
@@ -392,10 +418,13 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         return freq_domain_translated.reshape(freq_domain.shape)
 
-    def _rotate_coordinates(self):
+    def _rotate_coordinates(self, inv_transfo=False):
         """
         :return: grid_coordinates after applying self.rotations
         """
+
+        rotations = -self.rotations if inv_transfo else self.rotations
+
         center = [math.ceil((x - 1) / 2) for x in self.im_shape]
 
         [i1, i2, i3] = np.meshgrid(np.arange(self.im_shape[0]) - center[0],
@@ -406,7 +435,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         #print('rotation size is {}'.format(self.rotations.shape))
 
-        rotations = self.rotations.reshape([3] + self.im_shape)
+        rotations = rotations.reshape([3] + self.im_shape)
         ix = (len(self.im_shape) + 1) * [slice(None)]
         ix[self.frequency_encoding_dim + 1] = 0  # dont need to rotate along freq encoding
 
@@ -447,7 +476,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         #self.new_grid_coords = new_grid_coords
         return new_grid_coordinates_scaled, [grid_coordinates, new_grid_coords]
 
-    def _nufft(self, freq_domain_data, iflag=1, eps=1E-7):
+    def _nufft(self, freq_domain_data, iflag=1, eps=1E-7,  inv_transfo=False):
         """
         rotate coordinates and perform nufft
         :param freq_domain_data:
@@ -459,7 +488,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if not finufft:
             raise ImportError('finufftpy not available')
 
-        new_grid_coords = self._rotate_coordinates()[0]
+        new_grid_coords = self._rotate_coordinates(inv_transfo=inv_transfo)[0]
         # initialize array for nufft output
         f = np.zeros([len(new_grid_coords[0])], dtype=np.complex128, order='F')
 
