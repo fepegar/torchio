@@ -12,15 +12,22 @@ class RandomGhosting(RandomTransform):
     """Add random MRI ghosting artifact.
 
     Args:
-        num_ghosts_range:
-        axes:
-        proportion_to_augment:
-        seed:
+        num_ghosts: Number of 'ghosts' :math:`n` in the image.
+            If :py:attr:`num_ghosts` is a tuple :math:`(a, b)`, then
+            :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.
+        axes: Axis along which the ghosts will be created. If
+            :py:attr:`axes` is a tuple, the axis will be randomly chosen
+            from the passed values.
+        proportion_to_augment: Probability that this transform will be applied.
+        seed: Seed for the random number generator.
+
+    .. note:: The execution time of this transform does not depend on the
+        number of ghosts.
     """
     def __init__(
             self,
-            num_ghosts_range: Union[int, Tuple[int, int]] = (4, 10),
-            axes: Tuple[int, ...] = (0, 1, 2),
+            num_ghosts: Union[int, Tuple[int, int]] = (4, 10),
+            axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
             ):
@@ -29,11 +36,13 @@ class RandomGhosting(RandomTransform):
             proportion_to_augment,
             'proportion_to_augment',
         )
+        if not isinstance(axes, tuple):
+            axes = (axes,)
         self.axes = axes
-        if isinstance(num_ghosts_range, int):
-            self.num_ghosts_range = num_ghosts_range, num_ghosts_range
-        else:
-            self.num_ghosts_range = num_ghosts_range
+        if isinstance(num_ghosts, int):
+            self.num_ghosts_range = num_ghosts, num_ghosts
+        elif isinstance(num_ghosts, tuple) and len(num_ghosts) == 2:
+            self.num_ghosts_range = num_ghosts
 
     def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
