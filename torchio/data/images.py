@@ -172,11 +172,16 @@ class ImagesDataset(Dataset):
             subjects: Sequence[Subject],
             transform: Optional[Any] = None,
             check_nans: bool = True,
+            save_to_dir = None,
+            load_from_dir = None,
             ):
-        self._parse_subjects_list(subjects)
+        self.load_from_dir = load_from_dir
+        if not load_from_dir:
+            self._parse_subjects_list(subjects)
         self.subjects = subjects
         self._transform = transform
         self.check_nans = check_nans
+        self.save_to_dir = save_to_dir
 
     def __len__(self):
         return len(self.subjects)
@@ -184,6 +189,11 @@ class ImagesDataset(Dataset):
     def __getitem__(self, index: int) -> dict:
         if not isinstance(index, int):
             raise TypeError(f'Index "{index}" must be int, not {type(index)}')
+
+        if self.load_from_dir:
+            sample = torch.load(self.subjects[index])
+            return sample
+
         subject = self.subjects[index]
         sample = {}
         for image in subject:
@@ -194,12 +204,20 @@ class ImagesDataset(Dataset):
                 TYPE: image.type,
                 PATH: str(image.path),
                 STEM: get_stem(image.path),
+                'index': index,
             }
             sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
             sample = self._transform(sample)
+
+        if self.save_to_dir is not None:
+            res_dir = self.save_to_dir
+            fname = res_dir + '/sample{:05d}'.format(index)
+            if 'image_orig' in sample: sample.pop('image_orig')
+            torch.save(sample, fname + '_sample.pt')
+
         return sample
 
     def set_transform(self, transform: Any) -> None:
