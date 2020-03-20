@@ -1,7 +1,7 @@
 from copy import deepcopy
 import numpy as np
 import torch
-from torchio.transforms import HistogramStandardization, train_histogram
+from torchio.transforms import HistogramStandardization
 from ...utils import TorchioTestCase
 
 
@@ -15,12 +15,12 @@ class TestHistogramStandardization(TorchioTestCase):
     def test_train_histogram(self):
         samples = [self.dataset[i] for i in range(3)]
         paths = [sample['image']['path'] for sample in samples]
-        train_histogram(
+        HistogramStandardization.train(
             paths,
             masking_function=HistogramStandardization.mean,
             output_path=(self.dir / 'landmarks.txt'),
         )
-        train_histogram(
+        HistogramStandardization.train(
             paths,
             mask_path=samples[0]['label']['path'],
             output_path=(self.dir / 'landmarks.npy'),

@@ -17,7 +17,18 @@ STANDARD_RANGE = 0, 100
 
 
 class HistogramStandardization(NormalizationTransform):
-    """Perform histogram standardization of intensity values."""
+    """Perform histogram standardization of intensity values.
+
+    See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
+
+    Args:
+        landmarks_dict: Dictionary in which keys are image names in the sample
+            and values are NumPy arrays defining the landmarks after training
+            with :py:meth:`torchio.transforms.HistogramStandardization.train`.
+        masking_method: See
+            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+
+    """
     def __init__(
             self,
             landmarks_dict: Dict[str, np.ndarray],
@@ -47,8 +58,94 @@ class HistogramStandardization(NormalizationTransform):
             mask=mask,
         )
 
+    @classmethod
+    def train(
+            cls,
+            images_paths: Sequence[TypePath],
+            cutoff: Optional[Tuple[float, float]] = None,
+            mask_path: Optional[TypePath] = None,
+            masking_function: Optional[Callable] = None,
+            output_path: Optional[TypePath] = None,
+            ) -> np.ndarray:
+        """Extract average histogram landmarks from images used for training.
 
-def __compute_percentiles(
+        Args:
+            images_paths: List of image paths used to train.
+            cutoff: Optional "minimum and maximum percentile values,
+                respectively, that are used to select a range of intensity of
+                interest".
+                Equivalent to :math:`pc_1` and :math:`pc_2` in
+                `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
+            mask_path: Optional path to a mask image to extract voxels used for
+                training.
+            masking_function: Optional function used to extract voxels used for
+                training.
+            output_path: Optional file path with extension ``.txt`` or
+                ``.npy``, where the landmarks will be saved.
+
+        Example:
+
+            >>> from pathlib import Path
+            >>> import numpy as np
+            >>> from torchio.transforms import HistogramStandardization
+            >>>
+            >>> t1_paths = ['subject_a_t1.nii', 'subject_b_t1.nii.gz']
+            >>> t2_paths = ['subject_a_t2.nii', 'subject_b_t2.nii.gz']
+            >>>
+            >>> t1_landmarks_path = Path('t1_landmarks.npy')
+            >>> t2_landmarks_path = Path('t2_landmarks.npy')
+            >>>
+            >>> t1_landmarks = (
+            ...     np.load(t1_landmarks_path)
+            ...     if t1_landmarks_path.is_file()
+            ...     else HistogramStandardization.train(t1_paths)
+            ... )
+            >>> t2_landmarks = (
+            ...     np.load(t2_landmarks_path)
+            ...     if t2_landmarks_path.is_file()
+            ...     else HistogramStandardization.train(t2_paths)
+            ... )
+            >>>
+            >>> landmarks_dict = {
+            ...     't1': t1_landmarks,
+            ...     't2': t2_landmarks,
+            ... }
+            >>>
+            >>> transform = HistogramStandardization(landmarks_dict)
+        """
+        cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+        percentiles_database = []
+        for index, image_file_path in enumerate(tqdm(images_paths)):
+            data = nib.load(str(image_file_path)).get_fdata(dtype=np.float32)
+            if masking_function is not None:
+                mask = masking_function(data)
+            else:
+                if mask_path is not None:
+                    mask = nib.load(str(mask_path)).get_fdata()
+                    mask = mask > 0
+                else:
+                    mask = np.ones_like(data, dtype=np.bool)
+            percentiles = _compute_percentiles(data, mask, cutoff)
+            percentiles_database.append(percentiles)
+        percentiles_database = np.vstack(percentiles_database)
+        s1, s2 = STANDARD_RANGE
+        mapping = _averaged_mapping(percentiles_database, s1, s2)
+
+        if output_path is not None:
+            output_path = Path(output_path).expanduser()
+            extension = output_path.suffix
+            if extension == '.txt':
+                modality = 'image'
+                text = f'{modality} {" ".join(map(str, mapping))}'
+                output_path.write_text(text)
+            elif extension == '.npy':
+                np.save(output_path, mapping)
+
+        return mapping
+
+
+
+def _compute_percentiles(
         img: np.ndarray,
         mask: np.ndarray,
         cutoff: Tuple[float, float],
@@ -73,7 +170,7 @@ def __compute_percentiles(
     return perc_results
 
 
-def __standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
+def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
     """Standardize the cutoff values given in the configuration.
 
     Computes percentile landmark normalization by default.
@@ -87,7 +184,7 @@ def __standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
     return cutoff
 
 
-def __averaged_mapping(
+def _averaged_mapping(
         perc_database: np.ndarray,
         s1: float,
         s2: float,
@@ -115,7 +212,7 @@ def normalize(
         cutoff: Optional[Tuple[float, float]] = None,
         epsilon: float = 1e-5,
         ) -> torch.Tensor:
-    cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+    cutoff_ = DEFAULT_CUTOFF if cutoff is None else cutoff
     array = tensor.numpy()
     mapping = landmarks
 
@@ -129,8 +226,8 @@ def normalize(
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
 
-    cutoff = __standardize_cutoff(cutoff)
-    perc = __compute_percentiles(img, mask, cutoff)
+    cutoff_ = _standardize_cutoff(cutoff_)
+    perc = _compute_percentiles(img, mask, cutoff_)
 
     # Apply linear histogram standardization
     range_mapping = mapping[range_to_use]
@@ -159,44 +256,4 @@ def normalize(
     return new_img
 
 
-def train(
-        images_paths: Sequence,
-        cutoff: Optional[Tuple[float, float]] = None,
-        mask_path: Optional[TypePath] = None,
-        masking_function: Optional[Callable] = None,
-        output_path: Optional[TypePath] = None,
-        ) -> np.ndarray:
-    """
-    Output path extension should be .txt or .npy
-    """
-    cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
-    percentiles_database = []
-    for index, image_file_path in enumerate(tqdm(images_paths)):
-        # NiftyNet implementation says image should be float
-        data = nib.load(str(image_file_path)).get_fdata(dtype=np.float32)
-
-        if masking_function is not None:
-            mask = masking_function(data)
-        else:
-            if mask_path is not None:
-                mask = nib.load(str(mask_path)).get_fdata()
-                mask = mask > 0
-            else:
-                mask = np.ones_like(data, dtype=np.bool)
-        percentiles = __compute_percentiles(data, mask, cutoff)
-        percentiles_database.append(percentiles)
-    percentiles_database = np.vstack(percentiles_database)
-    s1, s2 = STANDARD_RANGE
-    mapping = __averaged_mapping(percentiles_database, s1, s2)
-
-    if output_path is not None:
-        output_path = Path(output_path).expanduser()
-        extension = output_path.suffix
-        if extension == '.txt':
-            modality = 'image'
-            text = f'{modality} {" ".join(map(str, mapping))}'
-            output_path.write_text(text)
-        elif extension == '.npy':
-            np.save(output_path, mapping)
-
-    return mapping
+train = train_histogram = HistogramStandardization.train
