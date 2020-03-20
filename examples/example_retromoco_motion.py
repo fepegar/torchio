@@ -17,9 +17,9 @@ from utils_file import gfile, get_parent_path
 import pandas as pd
 
 from torchio.transforms import Interpolation
-suj = [[ Image('T1', '/data/romain/HCPdata/suj_274542/mT1w_1mm.nii', INTENSITY), ]]
+suj = [[ Image('T1', '/data/romain/HCPdata/suj_150423/mT1w_1mm.nii', INTENSITY), ]]
 
-suj = [[ Image('T1', '/data/romain/data_exemple/suj_274542/mask_brain.nii', INTENSITY), ]]
+suj = [[ Image('T1', '/data/romain/data_exemple/suj_150423/mask_brain.nii', INTENSITY), ]]
 
 
 
