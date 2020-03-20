@@ -24,7 +24,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                  displacement_shift=1, freq_encoding_dim=[0], tr=2.3, es=4E-3,
                  nufft=True,  oversampling_pct=0.3, proba_to_augment: float = 1,
                  verbose=False, keep_original=False, compare_to_original=False,
-                 preserve_center_pct=0, correct_motion=False):
+                 preserve_center_pct=0, correct_motion=False, res_dir=None):
         """
         parameters to simulate 3 types of displacement random noise swllow or sudden mouvement
         :param nT (int): number of points of the time course
@@ -82,6 +82,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.proba_to_augment = proba_to_augment
         self.preserve_center_pct = preserve_center_pct
         self.correct_motion = correct_motion
+        self.res_dir = res_dir
+        self.nb_saved = 0
 
     def apply_transform(self, sample):
         for image_name, image_dict in sample.items():
@@ -175,8 +177,26 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
                 sample[image_name]['metrics'] = metrics
 
+            if self.res_dir is not None:
+                self.save_to_dir(image_dict)
+
         return sample
         #output type is double, TODO where to cast in Float ?
+
+    def save_to_dir(self, image_dict):
+
+        volume_path = image_dict['path']
+        dd = volume_path.split('/')
+        volume_name = dd[len(dd)-2] + '_' + image_dict['stem']
+        nb_saved = image_dict['index']
+        import os
+        resdir = self.res_dir + '/mvt_param/'
+        if not os.path.isdir(resdir): os.mkdir(resdir)
+
+        fname = resdir + 'ssim_{}_N{:04d}_suj_{}'.format(image_dict['metrics']['ssim'],
+                                                    nb_saved, volume_name)
+        np.savetxt(fname + '_mvt.csv', self.fitpars, delimiter=',')
+
 
     def do_correct_motion(self, image):
         im_freq_domain = self._fft_im(image)
