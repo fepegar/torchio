@@ -63,15 +63,15 @@ BibTeX:
    :target: https://pypi.org/project/torchio/
    :alt: PyPI downloads
 
-.. |PyPI-version| image:: https://badge.fury.io/py/torchio.svg
-   :target: https://badge.fury.io/py/torchio
+.. |PyPI-version| image:: https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white
+   :target: https://pypi.org/project/torchio/
    :alt: PyPI version
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
    :alt: Google Colab notebook
 
-.. |Docs-status| image:: https://readthedocs.org/projects/torchio/badge/?version=latest
+.. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
    :target: https://torchio.readthedocs.io/?badge=latest
    :alt: Documentation status
 

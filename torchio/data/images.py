@@ -82,18 +82,10 @@ class Subject(list):
         return f'{__class__.__name__}("{self.name}", {len(self)} images)'
 
     @staticmethod
-    def _parse_images(images: Sequence[Image]) -> None:
-        # Check that each element is a list
-        if not isinstance(images, collections.abc.Sequence):
-            message = (
-                'Subject "images" parameter must be a sequence'
-                f', not {type(images)}'
-            )
-            raise TypeError(message)
-
+    def _parse_images(images: Tuple[Image]) -> None:
         # Check that it's not empty
         if not images:
-            raise ValueError('Images list is empty')
+            raise ValueError('A subject without images cannot be created')
 
         # Check that there are only instances of Image
         # and all images have different names
@@ -102,7 +94,7 @@ class Subject(list):
             if not isinstance(image, Image):
                 message = (
                     'Subject list elements must be instances of'
-                    f' torchio.Image, not {type(image)}'
+                    f' torchio.Image, not "{type(image)}"'
                 )
                 raise TypeError(message)
             if image.name in names:
