@@ -10,6 +10,7 @@ import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
 from ....torchio import DATA, TypePath, TypeCallable
+from ....data.io import read_image
 from . import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -71,10 +72,9 @@ class HistogramStandardization(NormalizationTransform):
 
         Args:
             images_paths: List of image paths used to train.
-            cutoff: Optional "minimum and maximum percentile values,
+            cutoff: Optional minimum and maximum quartile values,
                 respectively, that are used to select a range of intensity of
-                interest".
-                Equivalent to :math:`pc_1` and :math:`pc_2` in
+                interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
                 `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
             mask_path: Optional path to a mask image to extract voxels used for
                 training.
@@ -113,10 +113,13 @@ class HistogramStandardization(NormalizationTransform):
             >>>
             >>> transform = HistogramStandardization(landmarks_dict)
         """
-        cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+        quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
+        percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
+        percentiles = _get_percentiles(percentiles_cutoff)
         for index, image_file_path in enumerate(tqdm(images_paths)):
-            data = nib.load(str(image_file_path)).get_fdata(dtype=np.float32)
+            tensor, _ = read_image(image_file_path)
+            data = tensor.numpy()
             if masking_function is not None:
                 mask = masking_function(data)
             else:
@@ -125,11 +128,10 @@ class HistogramStandardization(NormalizationTransform):
                     mask = mask > 0
                 else:
                     mask = np.ones_like(data, dtype=np.bool)
-            percentiles = _compute_percentiles(data, mask, cutoff)
-            percentiles_database.append(percentiles)
+            percentile_values = np.percentile(data[mask], percentiles)
+            percentiles_database.append(percentile_values)
         percentiles_database = np.vstack(percentiles_database)
-        s1, s2 = STANDARD_RANGE
-        mapping = _averaged_mapping(percentiles_database, s1, s2)
+        mapping = (percentiles_database)
 
         if output_path is not None:
             output_path = Path(output_path).expanduser()
@@ -140,34 +142,8 @@ class HistogramStandardization(NormalizationTransform):
                 output_path.write_text(text)
             elif extension == '.npy':
                 np.save(output_path, mapping)
-
         return mapping
 
-
-
-def _compute_percentiles(
-        img: np.ndarray,
-        mask: np.ndarray,
-        cutoff: Tuple[float, float],
-        ) -> np.ndarray:
-    """
-    Creates the list of percentile values to be used as landmarks for the
-    linear fitting.
-
-    :param img: Image on which to determine the percentiles
-    :param mask: Mask to use over the image to constraint to the relevant
-    information
-    :param cutoff: Values of the minimum and maximum percentiles to use for
-    the linear fitting
-    :return perc_results: list of percentiles value for the given image over
-    the mask
-    """
-    perc = [cutoff[0],
-            0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,
-            cutoff[1]]
-    masked_img = ma.masked_array(img, np.logical_not(mask)).compressed()
-    perc_results = np.percentile(masked_img, 100 * np.array(perc))
-    return perc_results
 
 
 def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
@@ -184,25 +160,31 @@ def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
     return cutoff
 
 
-def _averaged_mapping(
-        perc_database: np.ndarray,
-        s1: float,
-        s2: float,
-        ) -> np.ndarray:
+def _get_average_mapping(percentiles_database: np.ndarray) -> np.ndarray:
+    """Map the landmarks of the database to the chosen range.
+
+    Args:
+        percentiles_database: Percentiles database over which to perform the
+            averaging.
     """
-    Map the landmarks of the database to the chosen range
-    :param perc_database: perc_database over which to perform the averaging
-    :param s1, s2: limits of the mapping range
-    :return final_map: the average mapping
-    """
-    # assuming shape: n_data_points = perc_database.shape[0]
-    #                 n_percentiles = perc_database.shape[1]
-    slope = (s2 - s1) / (perc_database[:, -1] - perc_database[:, 0])
-    slope = np.nan_to_num(slope)
-    final_map = slope.dot(perc_database) / perc_database.shape[0]
-    intercept = np.mean(s1 - slope * perc_database[:, 0])
-    final_map = final_map + intercept
+    # Assuming shape (num_data_points, num_percentiles)
+    num_images = len(percentiles_database)
+    pc1 = percentiles_database[:, 0]
+    pc2 = percentiles_database[:, -1]
+    s1, s2 = STANDARD_RANGE
+    slopes = (s2 - s1) / (pc2 - pc1)
+    slopes = np.nan_to_num(slopes)
+    intercepts = np.mean(s1 - slopes * pc1)
+    final_map = slopes.dot(percentiles_database) / num_images + intercepts
     return final_map
+
+
+def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
+    quartiles = np.arange(25, 100, 25).tolist()
+    deciles = np.arange(10, 100, 10).tolist()
+    all_percentiles = list(percentiles_cutoff) + quartiles + deciles
+    percentiles = sorted(set(all_percentiles))
+    return np.array(percentiles)
 
 
 def normalize(
@@ -216,41 +198,41 @@ def normalize(
     array = tensor.numpy()
     mapping = landmarks
 
-    img = array
-    image_shape = img.shape
-    img = img.reshape(-1).astype(np.float32)
+    data = array
+    shape = data.shape
+    data = data.reshape(-1).astype(np.float32)
 
     if mask is None:
-        mask = np.ones_like(img, np.bool)
+        mask = np.ones_like(data, np.bool)
     mask = mask.reshape(-1)
 
-    range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
-
-    cutoff_ = _standardize_cutoff(cutoff_)
-    perc = _compute_percentiles(img, mask, cutoff_)
+    quantiles_cutoff = _standardize_cutoff(cutoff_)
+    percentiles_cutoff = 100 * np.array(quantiles_cutoff)
+    percentiles = _get_percentiles(percentiles_cutoff)
+    percentile_values = np.percentile(data[mask], percentiles)
 
     # Apply linear histogram standardization
-    range_mapping = mapping[range_to_use]
-    range_perc = perc[range_to_use]
-    diff_mapping = range_mapping[1:] - range_mapping[:-1]
-    diff_perc = range_perc[1:] - range_perc[:-1]
+    diff_mapping = np.diff(mapping)
+    diff_perc = np.diff(percentile_values)
 
-    # handling the case where two landmarks are the same
+    # Handling the case where two landmarks are the same
     # for a given input image. This usually happens when
     # image background is not removed from the image.
     diff_perc[diff_perc < epsilon] = np.inf
 
-    affine_map = np.zeros([2, len(range_to_use) - 1])
-    # compute slopes of the linear models
-    affine_map[0] = diff_mapping / diff_perc
-    # compute intercepts of the linear models
-    affine_map[1] = range_mapping[:-1] - affine_map[0] * range_perc[:-1]
+    affine_map = np.zeros([2, len(percentile_values) - 1])
 
-    bin_id = np.digitize(img, range_perc[1:-1], right=False)
+    # Compute slopes of the linear models
+    affine_map[0] = diff_mapping / diff_perc
+
+    # Compute intercepts of the linear models
+    affine_map[1] = mapping[:-1] - affine_map[0] * percentile_values[:-1]
+
+    bin_id = np.digitize(data, percentile_values[1:-1], right=False)
     lin_img = affine_map[0, bin_id]
     aff_img = affine_map[1, bin_id]
-    new_img = lin_img * img + aff_img
-    new_img = new_img.reshape(image_shape)
+    new_img = lin_img * data + aff_img
+    new_img = new_img.reshape(shape)
     new_img = new_img.astype(np.float32)
     new_img = torch.from_numpy(new_img)
     return new_img
