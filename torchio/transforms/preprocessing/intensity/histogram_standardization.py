@@ -72,7 +72,7 @@ class HistogramStandardization(NormalizationTransform):
 
         Args:
             images_paths: List of image paths used to train.
-            cutoff: Optional minimum and maximum quartile values,
+            cutoff: Optional minimum and maximum quantile values,
                 respectively, that are used to select a range of intensity of
                 interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
                 `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
@@ -167,22 +167,21 @@ def _get_average_mapping(percentiles_database: np.ndarray) -> np.ndarray:
         percentiles_database: Percentiles database over which to perform the
             averaging.
     """
-    # Assuming shape (num_data_points, num_percentiles)
-    num_images = len(percentiles_database)
+    # Assuming percentiles_database.shape == (num_data_points, num_percentiles)
     pc1 = percentiles_database[:, 0]
     pc2 = percentiles_database[:, -1]
     s1, s2 = STANDARD_RANGE
     slopes = (s2 - s1) / (pc2 - pc1)
     slopes = np.nan_to_num(slopes)
     intercepts = np.mean(s1 - slopes * pc1)
+    num_images = len(percentiles_database)
     final_map = slopes.dot(percentiles_database) / num_images + intercepts
     return final_map
 
 
 def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
-    quartiles = np.arange(25, 100, 25).tolist()
     deciles = np.arange(10, 100, 10).tolist()
-    all_percentiles = list(percentiles_cutoff) + quartiles + deciles
+    all_percentiles = list(percentiles_cutoff) + deciles
     percentiles = sorted(set(all_percentiles))
     return np.array(percentiles)
 
