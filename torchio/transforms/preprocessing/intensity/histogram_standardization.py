@@ -180,8 +180,9 @@ def _get_average_mapping(percentiles_database: np.ndarray) -> np.ndarray:
 
 
 def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
+    quartiles = np.arange(25, 100, 25).tolist()
     deciles = np.arange(10, 100, 10).tolist()
-    all_percentiles = list(percentiles_cutoff) + deciles
+    all_percentiles = list(percentiles_cutoff) + quartiles + deciles
     percentiles = sorted(set(all_percentiles))
     return np.array(percentiles)
 
@@ -205,29 +206,33 @@ def normalize(
         mask = np.ones_like(data, np.bool)
     mask = mask.reshape(-1)
 
+    range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
+
     quantiles_cutoff = _standardize_cutoff(cutoff_)
     percentiles_cutoff = 100 * np.array(quantiles_cutoff)
     percentiles = _get_percentiles(percentiles_cutoff)
     percentile_values = np.percentile(data[mask], percentiles)
 
     # Apply linear histogram standardization
-    diff_mapping = np.diff(mapping)
-    diff_perc = np.diff(percentile_values)
+    range_mapping = mapping[range_to_use]
+    range_perc = percentile_values[range_to_use]
+    diff_mapping = np.diff(range_mapping)
+    diff_perc = np.diff(range_perc)
 
     # Handling the case where two landmarks are the same
     # for a given input image. This usually happens when
     # image background is not removed from the image.
     diff_perc[diff_perc < epsilon] = np.inf
 
-    affine_map = np.zeros([2, len(percentile_values) - 1])
+    affine_map = np.zeros([2, len(range_to_use) - 1])
 
     # Compute slopes of the linear models
     affine_map[0] = diff_mapping / diff_perc
 
     # Compute intercepts of the linear models
-    affine_map[1] = mapping[:-1] - affine_map[0] * percentile_values[:-1]
+    affine_map[1] = range_mapping[:-1] - affine_map[0] * range_perc[:-1]
 
-    bin_id = np.digitize(data, percentile_values[1:-1], right=False)
+    bin_id = np.digitize(data, range_perc[1:-1], right=False)
     lin_img = affine_map[0, bin_id]
     aff_img = affine_map[1, bin_id]
     new_img = lin_img * data + aff_img
