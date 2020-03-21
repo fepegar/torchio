@@ -85,7 +85,7 @@ class TestTransforms(unittest.TestCase):
             HistogramStandardization(landmarks_dict=landmarks_dict),
             RandomElasticDeformation(proportion_to_augment=1),
             RandomAffine(),
-            Pad((1, 2, 3, 0, 5, 6)),
+            Pad((1, 2, 3, 0, 5, 6), padding_mode='constant', fill=3),
             Crop((3, 2, 8, 0, 1, 4)),
         )
         transformed = self.get_sample()
