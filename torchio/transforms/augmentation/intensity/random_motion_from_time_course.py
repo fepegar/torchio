@@ -163,6 +163,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             if self.compare_to_original:
                 metrics = dict()
                 metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
+                metrics['ssim'] = ssim3D(sample[image_name+'_orig']['data'],image_dict["data"], verbose=self.verbose).numpy()
                 metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
                 lossL2 = torch.nn.MSELoss()
                 lossL1 = torch.nn.L1Loss()
@@ -193,7 +194,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         resdir = self.res_dir + '/mvt_param/'
         if not os.path.isdir(resdir): os.mkdir(resdir)
 
-        fname = resdir + 'ssim_{}_N{:04d}_suj_{}'.format(image_dict['metrics']['ssim'],
+        fname = resdir + 'ssim_{}_N{:05d}_suj_{}'.format(image_dict['metrics']['ssim'],
                                                     nb_saved, volume_name)
         np.savetxt(fname + '_mvt.csv', self.fitpars, delimiter=',')
 
