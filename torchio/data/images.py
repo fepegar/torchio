@@ -220,6 +220,9 @@ class ImagesDataset(Dataset):
         """
         self._transform = transform
 
+    def get_transform(self) :
+        return self._transform
+
     @staticmethod
     def _parse_subjects_list(subjects_list: Sequence[Subject]) -> None:
         # Check that it's list or tuple
