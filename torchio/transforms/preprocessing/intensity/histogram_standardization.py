@@ -131,7 +131,7 @@ class HistogramStandardization(NormalizationTransform):
             percentile_values = np.percentile(data[mask], percentiles)
             percentiles_database.append(percentile_values)
         percentiles_database = np.vstack(percentiles_database)
-        mapping = (percentiles_database)
+        mapping = _get_average_mapping(percentiles_database)
 
         if output_path is not None:
             output_path = Path(output_path).expanduser()
