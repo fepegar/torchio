@@ -162,8 +162,26 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
             if self.compare_to_original:
                 metrics = dict()
-                metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name+'_orig']['data'], verbose=self.verbose).numpy()
-                metrics['ssim'] = ssim3D(sample[image_name+'_orig']['data'],image_dict["data"], verbose=self.verbose).numpy()
+                if 'brain' in sample:
+                    mask, name_mask = [ sample['brain']['data'] ], ['brain']
+                    if 'p1' in sample:
+                        mask.append(sample['p1']['data'])
+                        name_mask.append('p1')
+                    if 'p2' in sample:
+                        mask.append(sample['p2']['data'])
+                        name_mask.append('p2')
+
+                    res_ssim = ssim3D(image_dict["data"], sample[image_name + '_orig']['data'],
+                                             verbose=self.verbose, mask=mask)
+                    for ii, nn in enumerate(name_mask):
+                        metrics['ssim_' + nn] = res_ssim[ii].numpy()
+                    metrics['ssim_all'] = res_ssim[-1]
+                    metrics['ssim'] = metrics['ssim_brain']
+
+                else:
+                    metrics['ssim'] = ssim3D(image_dict["data"], sample[image_name + '_orig']['data'],
+                                             verbose=self.verbose).numpy()
+
                 metrics['corr'] = th_pearsonr(image_dict["data"], sample[image_name+'_orig']['data']).numpy()
                 lossL2 = torch.nn.MSELoss()
                 lossL1 = torch.nn.L1Loss()

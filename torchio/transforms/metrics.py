@@ -20,7 +20,7 @@ def create_window_3D(window_size, channel):
     return window
 
 
-def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
+def _ssim_3D(img1, img2, window, window_size, channel, size_average=True, mask=None):
     mu1 = F.conv3d(img1, window, padding=window_size // 2, groups=channel)
     mu2 = F.conv3d(img2, window, padding=window_size // 2, groups=channel)
 
@@ -40,8 +40,12 @@ def _ssim_3D(img1, img2, window, window_size, channel, size_average=True):
 
     if size_average:
         if img1.size()[0] == 1:
-            ssim_map = ssim_map[(img1>0) * (img2>0)]
-            res = ssim_map.mean()
+            if mask is not None:
+                res = [ ssim_map[mm >0].mean() for mm in mask]
+                res.append(  ssim_map[(img1>0) * (img2>0)].mean() )
+            else:
+                ssim_map = ssim_map[(img1>0) * (img2>0)]
+                res = ssim_map.mean()
         else:
             print('WARNIGN RRR remove 0 in image')
             res = ssim_map.mean(axis=list(range(1, img1.ndim))) #one value per patch
@@ -120,7 +124,7 @@ class SSIM3D(torch.nn.Module):
 
         return res
 
-def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
+def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False, mask=None):
 
     if verbose:
         start = time.time()
@@ -128,9 +132,9 @@ def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
     if len(img1.size()) == 4: #missing batch dim
         img1 = img1.unsqueeze(0)
         img2 = img2.unsqueeze(0)
-
-    #img1 = img1.float()
-    #img2 = img2.float()
+        if mask is not None:
+            mask = [ mm.unsqueeze(0) for mm in mask ]
+            #print('mask 1 shape {}  mask last {}'.format(mask[0].shape, mask[-1].shape))
 
     (_, channel, _, _, _) = img1.size()
     window = create_window_3D(window_size, channel)
@@ -139,7 +143,7 @@ def ssim3D(img1, img2, window_size=3, size_average=True, verbose=False):
         window = window.cuda(img1.get_device())
     window = window.type_as(img1)
 
-    res =  _ssim_3D(img1, img2, window, window_size, channel, size_average)
+    res =  _ssim_3D(img1, img2, window, window_size, channel, size_average, mask)
 
     if verbose:
         duration = time.time() - start
