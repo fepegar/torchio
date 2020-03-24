@@ -17,23 +17,6 @@ DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
 
 
-# class HistogramStandardization(Transform):
-#     def __init__(self, landmarks_dict, verbose=False, mask_field_name=None):
-#         super().__init__(verbose=verbose)
-#
-#         if isinstance(landmarks_dict, np.ndarray):
-#             pass
-#         elif isinstance(landmarks_dict, (str, Path)):
-#             mapping_path = Path(landmarks_dict)
-#             if mapping_path.suffix == '.npy':
-#                 landmarks_dict = np.load(mapping_path)
-#             elif mapping_path.suffix == '.txt':
-#                 text = mapping_path.read_text()
-#                 numbers = text.split()[1:]
-#                 landmarks_dict = np.array(numbers).astype(np.float32)
-#         self.mask_field_name = mask_field_name
-#         self.landmarks_dict = landmarks_dict
-
 class HistogramStandardization(NormalizationTransform):
     """Perform histogram standardization of intensity values.
 
