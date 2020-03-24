@@ -82,7 +82,7 @@ class Subject(list):
         return f'{__class__.__name__}("{self.name}", {len(self)} images)'
 
     @staticmethod
-    def _parse_images(images: Tuple[Image]) -> None:
+    def _parse_images(images: Tuple[Image, ...]) -> None:
         # Check that it's not empty
         if not images:
             raise ValueError('A subject without images cannot be created')
@@ -151,7 +151,11 @@ class ImagesDataset(Dataset):
             :class:`torchio.transforms.Transform` that is applied to each
             image after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
-            in the image
+            in the image.
+        load_data: If ``False``, image data and affine will not be loaded.
+            These fields will be set to ``None`` in the sample. This can be
+            used to quickly iterate over the samples to retrieve e.g. the
+            images paths.
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
@@ -164,11 +168,15 @@ class ImagesDataset(Dataset):
             subjects: Sequence[Subject],
             transform: Optional[Any] = None,
             check_nans: bool = True,
+            load_data: bool = True,
             ):
         self._parse_subjects_list(subjects)
         self.subjects = subjects
         self._transform = transform
         self.check_nans = check_nans
+        self.load_data = load_data
+        if not self.load_data and transform is not None:
+            raise ValueError('If load_data is False, transform must be None')
 
     def __len__(self):
         return len(self.subjects)
@@ -179,7 +187,10 @@ class ImagesDataset(Dataset):
         subject = self.subjects[index]
         sample = {}
         for image in subject:
-            tensor, affine = image.load(check_nans=self.check_nans)
+            if self.load_data:
+                tensor, affine = image.load(check_nans=self.check_nans)
+            else:
+                tensor = affine = None
             image_dict = {
                 DATA: tensor,
                 AFFINE: affine,

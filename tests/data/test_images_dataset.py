@@ -79,6 +79,16 @@ class TestImagesDataset(TorchioTestCase):
         ndims_sample = len(sample['t1'][DATA].shape)
         assert ndims_sample == ndims_output + 1
 
+    def test_no_load(self):
+        dataset = torchio.ImagesDataset(self.subjects_list, load_data=False)
+        for sample in dataset:
+            pass
+
+    def test_no_load_transform(self):
+        with self.assertRaises(ValueError):
+            dataset = torchio.ImagesDataset(
+                self.subjects_list, load_data=False, transform=lambda x: x)
+
     @staticmethod
     def iterate_dataset(subjects_list):
         dataset = torchio.ImagesDataset(subjects_list)
