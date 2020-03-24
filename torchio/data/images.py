@@ -155,7 +155,7 @@ class ImagesDataset(Dataset):
         load_data: If ``False``, image data and affine will not be loaded.
             These fields will be set to ``None`` in the sample. This can be
             used to quickly iterate over the samples to retrieve e.g. the
-            images paths.
+            images paths. If ``True``, transform must be ``None``.
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
@@ -174,9 +174,8 @@ class ImagesDataset(Dataset):
         self.subjects = subjects
         self._transform = transform
         self.check_nans = check_nans
-        self.load_data = load_data
-        if not self.load_data and transform is not None:
-            raise ValueError('If load_data is False, transform must be None')
+        self._load_data = load_data
+        self.set_load_image_data(load_data)
 
     def __len__(self):
         return len(self.subjects)
@@ -187,7 +186,7 @@ class ImagesDataset(Dataset):
         subject = self.subjects[index]
         sample = {}
         for image in subject:
-            if self.load_data:
+            if self._load_data:
                 tensor, affine = image.load(check_nans=self.check_nans)
             else:
                 tensor = affine = None
@@ -238,3 +237,11 @@ class ImagesDataset(Dataset):
             tensor = sample[key][DATA][0]  # remove channels dim
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
+
+    def set_load_image_data(self, load_data: bool):
+        if not load_data and self._transform is not None:
+            message = (
+                'Load data cannot be set to False if transform is not None.'
+                f'Current transform is {self._transform}')
+            raise ValueError(message)
+        self._load_data = load_data
