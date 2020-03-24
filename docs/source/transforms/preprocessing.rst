@@ -44,6 +44,7 @@ adapted from NiftyNet.
 
 .. autoclass:: HistogramStandardization
     :show-inheritance:
+    :members:
 
 
 Spatial

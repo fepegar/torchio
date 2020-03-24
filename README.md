@@ -26,10 +26,10 @@ See the [Credits](#credits) section below for more information.
         </td>
     </tr>
     <tr>
-        <td align="center"><img src="docs/images/gifs_readme/1_Lambda_mri.png" alt="Original"></td>
+        <td align="center"><img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/1_Lambda_mri.png" alt="Original"></td>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomblur">
-                <img src="docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur">
             </a>
         </td>
     </tr>
@@ -44,12 +44,12 @@ See the [Credits](#credits) section below for more information.
     <tr>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomflip">
-                <img src="docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip">
             </a>
         </td>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomnoise">
-                <img src="docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise">
             </a>
         </td>
     </tr>
@@ -64,12 +64,12 @@ See the [Credits](#credits) section below for more information.
     <tr>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomaffine">
-                <img src="docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation">
             </a>
         </td>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomelasticdeformation">
-                <img src="docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation">
             </a>
         </td>
     </tr>
@@ -84,12 +84,12 @@ See the [Credits](#credits) section below for more information.
     <tr>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randombiasfield">
-                <img src="docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact">
             </a>
         </td>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randommotion">
-                <img src="docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact">
             </a>
         </td>
     </tr>
@@ -104,12 +104,12 @@ See the [Credits](#credits) section below for more information.
     <tr>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomspike">
-                <img src="docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact">
             </a>
         </td>
         <td align="center">
             <a href="https://torchio.readthedocs.io/transforms/augmentation.html#randomghosting">
-                <img src="docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact">
             </a>
         </td>
     </tr>

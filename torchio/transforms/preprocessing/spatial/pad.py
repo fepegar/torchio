@@ -64,6 +64,12 @@ class Pad(BoundsTransform):
         information about this transform.
         """
         super().__init__(padding)
+        if fill is not None and padding_mode != 'constant':
+            message = (
+                'If the value of "fill" is not None,'
+                'the value of "padding_mode" must be "constant"'
+            )
+            raise ValueError(message)
         self.padding_mode = self.parse_padding_mode(padding_mode)
         self.fill = fill
 
@@ -80,4 +86,14 @@ class Pad(BoundsTransform):
 
     @property
     def bounds_function(self) -> Callable:
-        return self.PADDING_FUNCTIONS[self.padding_mode]
+        if self.fill is not None:
+            function = _pad_with_fill(self.fill)
+        else:
+            function = self.PADDING_FUNCTIONS[self.padding_mode]
+        return function
+
+
+def _pad_with_fill(fill):
+    def wrapped(image, bounds1, bounds2):
+        return sitk.ConstantPad(image, bounds1, bounds2, fill)
+    return wrapped
