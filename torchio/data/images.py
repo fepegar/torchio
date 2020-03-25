@@ -70,7 +70,7 @@ class Subject(list):
     """Class to store information about the images corresponding to a subject.
 
     Args:
-        *images: Instances of :class:`~torchio.data.images.Image`.
+        *images: Instances of :py:class:`~torchio.data.images.Image`.
         name: Subject ID
     """
     def __init__(self, *images: Image, name: str = ''):
@@ -152,7 +152,7 @@ class ImagesDataset(Dataset):
             image after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image.
-        load_data: If ``False``, image data and affine will not be loaded.
+        load_image_data: If ``False``, image data and affine will not be loaded.
             These fields will be set to ``None`` in the sample. This can be
             used to quickly iterate over the samples to retrieve e.g. the
             images paths. If ``True``, transform must be ``None``.
@@ -168,14 +168,14 @@ class ImagesDataset(Dataset):
             subjects: Sequence[Subject],
             transform: Optional[Any] = None,
             check_nans: bool = True,
-            load_data: bool = True,
+            load_image_data: bool = True,
             ):
         self._parse_subjects_list(subjects)
         self.subjects = subjects
         self._transform = transform
         self.check_nans = check_nans
-        self._load_data = load_data
-        self.set_load_image_data(load_data)
+        self._load_image_data: bool
+        self.set_load_image_data(load_image_data)
 
     def __len__(self):
         return len(self.subjects)
@@ -184,31 +184,58 @@ class ImagesDataset(Dataset):
         if not isinstance(index, int):
             raise TypeError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
-        sample = {}
-        for image in subject:
-            if self._load_data:
-                tensor, affine = image.load(check_nans=self.check_nans)
-            else:
-                tensor = affine = None
-            image_dict = {
-                DATA: tensor,
-                AFFINE: affine,
-                TYPE: image.type,
-                PATH: str(image.path),
-                STEM: get_stem(image.path),
-            }
-            sample[image.name] = image_dict
+        sample = self.get_sample_dict_from_subject(subject)
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
             sample = self._transform(sample)
         return sample
 
+    def get_sample_dict_from_subject(self, subject: Subject):
+        """Create a dictionary of dictionaries with subject information.
+
+        Args:
+            subject: Instance of :py:class:`~torchio.data.images.Subject`.
+        """
+        sample = {
+            image.name: self.get_image_dict_from_image(image)
+            for image in subject
+        }
+        return sample
+
+    def get_image_dict_from_image(self, image: Image):
+        """Create a dictionary with image information.
+
+        Args:
+            image: Instance of :py:class:`~torchio.data.images.Image`.
+
+        Return:
+            Dictionary with keys
+            :py:attr:`torchio.DATA`,
+            :py:attr:`torchio.AFFINE`,
+            :py:attr:`torchio.TYPE`,
+            :py:attr:`torchio.PATH` and
+            :py:attr:`torchio.STEM`.
+        """
+        if self._load_image_data:
+            tensor, affine = image.load(check_nans=self.check_nans)
+        else:
+            tensor = affine = None
+        image_dict = {
+            DATA: tensor,
+            AFFINE: affine,
+            TYPE: image.type,
+            PATH: str(image.path),
+            STEM: get_stem(image.path),
+        }
+        return image_dict
+
     def set_transform(self, transform: Any) -> None:
         """Set the :attr:`transform` attribute.
 
         Args:
-            transform: An instance of :class:`torchio.transforms.Transform`
+            transform: An instance of :py:class:`torchio.transforms.Transform`
+                or :py:class:`torchvision.transforms.Compose`.
         """
         self._transform = transform
 
@@ -238,10 +265,10 @@ class ImagesDataset(Dataset):
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
 
-    def set_load_image_data(self, load_data: bool):
-        if not load_data and self._transform is not None:
+    def set_load_image_data(self, load_image_data: bool):
+        if not load_image_data and self._transform is not None:
             message = (
                 'Load data cannot be set to False if transform is not None.'
                 f'Current transform is {self._transform}')
             raise ValueError(message)
-        self._load_data = load_data
+        self._load_image_data = load_image_data

@@ -66,7 +66,7 @@ class TestImagesDataset(TorchioTestCase):
         with self.assertRaises(TypeError):
             self.dataset[:3]
 
-    def test_coverage(self):
+    def test_save_sample(self):
         dataset = torchio.ImagesDataset(
             self.subjects_list, transform=lambda x: x)
         _ = len(dataset)  # for coverage
@@ -80,14 +80,18 @@ class TestImagesDataset(TorchioTestCase):
         assert ndims_sample == ndims_output + 1
 
     def test_no_load(self):
-        dataset = torchio.ImagesDataset(self.subjects_list, load_data=False)
+        dataset = torchio.ImagesDataset(
+            self.subjects_list, load_image_data=False)
         for sample in dataset:
             pass
 
     def test_no_load_transform(self):
         with self.assertRaises(ValueError):
             dataset = torchio.ImagesDataset(
-                self.subjects_list, load_data=False, transform=lambda x: x)
+                self.subjects_list,
+                load_image_data=False,
+                transform=lambda x: x,
+            )
 
     @staticmethod
     def iterate_dataset(subjects_list):
