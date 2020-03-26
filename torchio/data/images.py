@@ -184,21 +184,20 @@ class ImagesDataset(Dataset):
 
         if self.load_from_dir:
             sample = torch.load(self.subjects[index])
-            return sample
-
-        subject = self.subjects[index]
-        sample = {}
-        for image in subject:
-            tensor, affine = image.load(check_nans=self.check_nans)
-            image_dict = {
-                DATA: tensor,
-                AFFINE: affine,
-                TYPE: image.type,
-                PATH: str(image.path),
-                STEM: get_stem(image.path),
-                'index': index,
-            }
-            sample[image.name] = image_dict
+        else:
+            subject = self.subjects[index]
+            sample = {}
+            for image in subject:
+                tensor, affine = image.load(check_nans=self.check_nans)
+                image_dict = {
+                    DATA: tensor,
+                    AFFINE: affine,
+                    TYPE: image.type,
+                    PATH: str(image.path),
+                    STEM: get_stem(image.path),
+                    'index': index,
+                }
+                sample[image.name] = image_dict
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
