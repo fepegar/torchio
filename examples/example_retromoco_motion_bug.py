@@ -47,32 +47,27 @@ def corrupt_data_both( x0, sigma= 5, amplitude=20, method='gauss'):
 
 dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0, "correct_motion":True}
 
-x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1))) #x0=[100]
-x0=np.hstack((np.arange(90,102,2))) #x0=[100]
+do_plot=False
+z_slice = [152, 182, 218, 256, 512]
+#z_slice = [152]
+
 dirpath = ['/data/romain/data_exemple/motion_bug']
 
 fp = corrupt_data(80, sigma=1,method='step',amplitude=20)
 dico_params['fitpars'] = fp
-t =  RandomMotionFromTimeCourse(**dico_params)
-t2 =  RandomMotionFromTimeCourse(**dico_params)
-dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218, 182)), t)))
-dataset2 = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218, 256)), t2)))
-sample = dataset[0]
-sample2 = dataset2[0]
 
-fout = dirpath[0] + '/mot_step_z182'
-fout2 = dirpath[0] + '/mot_step_z256'
-dataset.save_sample(sample, dict(image=fout+'.nii'))
-dataset.save_sample(sample2, dict(image=fout2+'.nii'))
+for zs in z_slice:
+    t = RandomMotionFromTimeCourse(**dico_params)
+    dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218, zs)), t)))
+    sample = dataset[0]
 
-#check the fitpars
-fit_pars = t.fitpars
-fig = plt.figure('fitpars_182'); plt.plot(fit_pars.T)
-fit_pars = t.fitpars_interp
-fig = plt.figure('fitpars_182_interp'); plt.plot(fit_pars.reshape(6,-1).T)
+    fout = dirpath[0] + '/mot_step_z{}'.format(zs)
+    dataset.save_sample(sample, dict(image=fout+'.nii'))
 
-fit_pars = t2.fitpars
-fig = plt.figure('fitpars_256'); plt.plot(fit_pars.T)
-fit_pars = t2.fitpars_interp
-fig = plt.figure('fitpars_256_interp'); plt.plot(fit_pars.reshape(6,-1).T)
+    if do_plot:
+        #check the fitpars
+        fit_pars = t.fitpars
+        fig = plt.figure('fitpars_{}'.format(zs)); plt.plot(fit_pars.T)
+        fit_pars = t.fitpars_interp
+        fig = plt.figure('fit_interp_{}'.format(zs)); plt.plot(fit_pars.reshape(6,-1).T)
 
