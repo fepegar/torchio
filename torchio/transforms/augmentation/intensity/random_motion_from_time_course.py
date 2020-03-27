@@ -480,29 +480,25 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         rotations = rotations[tuple(ix)].reshape(3, -1)
         rotation_matrices = np.apply_along_axis(create_rotation_matrix_3d, axis=0, arr=rotations).transpose([-1, 0, 1])
-        #rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3], order='F')#rrr
         rotation_matrices = rotation_matrices.reshape(self.phase_encoding_shape + [3, 3])
         rotation_matrices = np.expand_dims(rotation_matrices, self.frequency_encoding_dim)
 
         rotation_matrices = np.tile(rotation_matrices,
-                                    reps=([self.im_shape[
-                                               self.frequency_encoding_dim] if i == self.frequency_encoding_dim else 1
+                                    reps=([self.im_shape[ self.frequency_encoding_dim] if i == self.frequency_encoding_dim else 1
                                            for i in range(5)]))  # tile in freq encoding dimension
 
-        rotation_matrices = rotation_matrices.reshape([-1, 3, 3], order='C')
+        #bug fix same order F as for grid_coordinates where it will be multiply to
+        rotation_matrices = rotation_matrices.reshape([-1, 3, 3], order='F')
 
         # tile grid coordinates for vectorizing computation
         grid_coordinates_tiled = np.tile(grid_coordinates, [3, 1])
         grid_coordinates_tiled = grid_coordinates_tiled.reshape([3, -1], order='F').T
-        rotation_matrices = rotation_matrices.reshape([-1, 3])
-
-        #print('rotation matrices size is {}'.format(rotation_matrices.shape))
+        rotation_matrices = rotation_matrices.reshape([-1, 3]) #reshape for matrix multiplication, so no order F
 
         new_grid_coords = (rotation_matrices * grid_coordinates_tiled).sum(axis=1)
 
         # reshape new grid coords back to 3 x nvoxels
         new_grid_coords = new_grid_coords.reshape([3, -1], order='F')
-        #print('new_grid_coords matrices size is {}'.format(new_grid_coords.shape))
 
         # scale data between -pi and pi
         max_vals = [abs(x) for x in grid_coordinates[:, 0]]
