@@ -1,34 +1,20 @@
 #!/usr/bin/env python
 
-"""Tests for `torchio` package."""
+"""Tests for CLI tool package."""
 
-import unittest
-import tempfile
-from pathlib import Path
 from click.testing import CliRunner
-import numpy as np
-import nibabel as nib
 from torchio import cli
+from .utils import TorchioTestCase
 
 
-class TestTorchio(unittest.TestCase):
-    """Tests for `torchio` package."""
-
-    def setUp(self):
-        """Set up test fixtures, if any."""
-        self.path = Path(tempfile.gettempdir()) / 'test.nii'
-        nii = nib.Nifti1Image(np.random.rand(10, 20, 30), np.eye(4))
-        nii.to_filename(str(self.path))
-
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-        self.path.unlink()
+class TestCLI(TorchioTestCase):
+    """Tests for CLI tool."""
 
     def test_command_line_interface(self):
         """Test the CLI."""
         runner = CliRunner()
         args = [
-            str(self.path),
+            str(self.get_image_path('t1')),
             'Rescale',
             '/tmp/test.nii',
             # '-k', r'"out_min_max=(0,1) percentiles=(10,90)"',  # not working

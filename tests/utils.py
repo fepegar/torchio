@@ -24,15 +24,15 @@ class TorchioTestCase(unittest.TestCase):
         )
         subject_b = Subject(
             Image('t1', self.get_image_path('t1_b'), INTENSITY),
-            Image('label', self.get_image_path('label_b'), LABEL),
+            Image('label', self.get_image_path('label_b', binary=True), LABEL),
         )
         subject_c = Subject(
-            Image('label', self.get_image_path('label_c'), LABEL),
+            Image('label', self.get_image_path('label_c', binary=True), LABEL),
         )
         subject_d = Subject(
             Image('t1', self.get_image_path('t1_d'), INTENSITY),
             Image('t2', self.get_image_path('t2_d'), INTENSITY),
-            Image('label', self.get_image_path('label_d'), LABEL),
+            Image('label', self.get_image_path('label_d', binary=True), LABEL),
         )
         self.subjects_list = [
             subject_a,
@@ -43,6 +43,17 @@ class TorchioTestCase(unittest.TestCase):
         self.dataset = ImagesDataset(self.subjects_list)
         self.sample = self.dataset[-1]
 
+    def get_inconsistent_sample(self):
+        """Return a sample containing images of different shape."""
+        subject = Subject(
+            Image('t1', self.get_image_path('t1_d'), INTENSITY),
+            Image('t2', self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
+            Image('label', self.get_image_path('label_d', binary=True), LABEL),
+        )
+        subjects_list = [subject]
+        dataset = ImagesDataset([subject])
+        return dataset[0]
+
     def tearDown(self):
         """Tear down test fixtures, if any."""
         print('Deleting', self.dir)
@@ -52,8 +63,10 @@ class TorchioTestCase(unittest.TestCase):
         root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'
         return IXITiny(root_dir, download=True)
 
-    def get_image_path(self, stem):
-        data = np.random.rand(10, 20, 30)
+    def get_image_path(self, stem, binary=False, shape=(10, 20, 30)):
+        data = np.random.rand(*shape)
+        if binary:
+            data = (data > 0.5).astype(np.uint8)
         affine = np.eye(4)
         suffix = random.choice(('.nii.gz', '.nii'))
         path = self.dir / f'{stem}{suffix}'
