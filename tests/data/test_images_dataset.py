@@ -93,6 +93,17 @@ class TestImagesDataset(TorchioTestCase):
                 transform=lambda x: x,
             )
 
+    def test_wrong_transform_init(self):
+        with self.assertRaises(ValueError):
+            dataset = torchio.ImagesDataset(
+                self.subjects_list,
+                transform=dict(),
+            )
+
+    def test_wrong_transform_arg(self):
+        with self.assertRaises(ValueError):
+            self.dataset.set_transform(1)
+
     @staticmethod
     def iterate_dataset(subjects_list):
         dataset = torchio.ImagesDataset(subjects_list)

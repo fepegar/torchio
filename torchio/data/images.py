@@ -2,7 +2,16 @@ import typing
 import warnings
 import collections
 from pathlib import Path
-from typing import Union, Sequence, Optional, Any, TypeVar, Dict, List, Tuple
+from typing import (
+    Dict,
+    List,
+    Tuple,
+    Union,
+    TypeVar,
+    Sequence,
+    Optional,
+    Callable,
+)
 import torch
 from torch.utils.data import Dataset
 import numpy as np
@@ -166,13 +175,14 @@ class ImagesDataset(Dataset):
     def __init__(
             self,
             subjects: Sequence[Subject],
-            transform: Optional[Any] = None,
+            transform: Optional[Callable] = None,
             check_nans: bool = True,
             load_image_data: bool = True,
             ):
         self._parse_subjects_list(subjects)
         self.subjects = subjects
-        self._transform = transform
+        self._transform: Optional[Callable]
+        self.set_transform(transform)
         self.check_nans = check_nans
         self._load_image_data: bool
         self.set_load_image_data(load_image_data)
@@ -230,13 +240,16 @@ class ImagesDataset(Dataset):
         }
         return image_dict
 
-    def set_transform(self, transform: Any) -> None:
+    def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
 
         Args:
             transform: An instance of :py:class:`torchio.transforms.Transform`
                 or :py:class:`torchvision.transforms.Compose`.
         """
+        if transform is not None and not callable(transform):
+            raise ValueError(
+                f'The transform must be a callable object, not {transform}')
         self._transform = transform
 
     @staticmethod
