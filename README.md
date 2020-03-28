@@ -121,13 +121,23 @@ TorchIO is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
 including intensity and spatial transforms
-for data augmentation and preprocessing. Transforms include typical computer vision operations
+for data augmentation and preprocessing.
+Transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
+
+
+## [Documentation](https://torchio.readthedocs.io/)
+
+The documentation is hosted on
+[Read the Docs](https://torchio.readthedocs.io/).
+
+Please [create a new issue](https://github.com/fepegar/torchio/issues/new)
+if you think something is missing.
 
 
 ## Credits
@@ -151,12 +161,3 @@ BibTeX entry:
     primaryClass={eess.IV}
 }
 ```
-
-
-## [Documentation](https://torchio.readthedocs.io/)
-
-The documentation is hosted on
-[Read the Docs](https://torchio.readthedocs.io/).
-It is a work in progress, but some classes such as
-[`ImagesDataset`](https://torchio.readthedocs.io/data/image.html)
-are already fairly well documented.
