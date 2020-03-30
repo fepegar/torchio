@@ -8,48 +8,55 @@ from ....torchio import DATA
 from ....utils import is_image_dict, check_consistent_shape
 
 
-class CenterCropOrPad(BoundsTransform):
-    """Crop and/or pad an image to a target shape.
+class CropOrPad(BoundsTransform):
 
-    Args:
-        target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
-            provided, then :math:`D = H = W = N`.
-        padding_mode: See :py:class:`~torchio.transforms.Pad`.
-        padding_fill: Same as :attr:`fill` in
-            :py:class:`~torchio.transforms.Pad`.
-
-    """
     def __init__(
-            self,
-            target_shape: Union[int, Tuple[int, int, int]],
-            padding_mode: str = 'constant',
-            padding_fill: Optional[float] = None,
-            ):
+        self,
+        target_shape: Union[int, Tuple[int, int, int]],
+        padding_mode: str = 'constant',
+        padding_fill: Optional[float] = None,
+        mode: str = "center",
+        mask_key: str = None):
+        """Crop and/or pad an image to a target shape.
+
+            Args:
+                target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
+                    provided, then :math:`D = H = W = N`.
+                padding_mode: See :py:class:`~torchio.transforms.Pad`.
+                padding_fill: Same as :attr:`fill` in
+                    :py:class:`~torchio.transforms.Pad`.
+                mode: "center" or "mask". Whether to crop/pad using the center of the image or of a given mask in
+                      :attr:'mask_key'
+                mask_key: if the mode is "mask", key of the mask to use in the sample
+        """
         super().__init__(target_shape)
-        self.padding_mode = Pad.parse_padding_mode(padding_mode)
+        self.mode = mode
+        self.padding_mode = padding_mode
         self.padding_fill = padding_fill
+        if mode == "mask":
+            self.mask_key = mask_key
+            self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
+        else:
+            self.compute_crop_or_pad = self._compute_center_crop_or_pad
 
-    def apply_transform(self, sample: dict) -> dict:
-        source_shape = self._get_sample_shape(sample)
-        # The parent class turns the 3-element shape tuple (d, h, w)
-        # into a 6-element bounds tuple (d, d, h, h, w, w)
-        target_shape = np.array(self.bounds_parameters[::2])
-        diff_shape = target_shape - source_shape
+    @staticmethod
+    def _bbox_mask(mask_volume: np.ndarray):
+        """
+        Taken from https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array
+        Returns 6 coordinates of a 3D bounding box from a given mask
+        :param mask_volume: 3D volume as a numpy array
+        :param margin: margin to add to the bounding box edges
+        :return : 6 coordinates of a 3D bounding box (rmin, rmax, cmin, xmax, zmin, zmax)
+        """
+        r = np.any(mask_volume, axis=(1, 2))
+        c = np.any(mask_volume, axis=(0, 2))
+        z = np.any(mask_volume, axis=(0, 1))
 
-        cropping = -np.minimum(diff_shape, 0)
-        if cropping.any():
-            cropping_params = self._get_six_bounds_parameters(cropping)
-            sample = Crop(cropping_params)(sample)
+        rmin, rmax = np.where(r)[0][[0, -1]]
+        cmin, cmax = np.where(c)[0][[0, -1]]
+        zmin, zmax = np.where(z)[0][[0, -1]]
 
-        padding = np.maximum(diff_shape, 0)
-        if padding.any():
-            padding_kwargs: Dict[str, Optional[Union[str, float]]]
-            padding_kwargs = {'fill': self.padding_fill}
-            if self.padding_mode is not None:
-                padding_kwargs['padding_mode'] = self.padding_mode
-            padding_params = self._get_six_bounds_parameters(padding)
-            sample = Pad(padding_params, **padding_kwargs)(sample)
-        return sample
+        return rmin, rmax, cmin, cmax, zmin, zmax
 
     @staticmethod
     def _get_sample_shape(sample: dict) -> Tuple[int]:
@@ -87,3 +94,78 @@ class CenterCropOrPad(BoundsTransform):
             ini, fin = int(np.ceil(n)), int(np.floor(n))
             result.extend([ini, fin])
         return tuple(result)
+
+    def _compute_center_crop_or_pad(self, sample: dict):
+        source_shape = self._get_sample_shape(sample)
+        # The parent class turns the 3-element shape tuple (d, h, w)
+        # into a 6-element bounds tuple (d, d, h, h, w, w)
+        target_shape = np.array(self.bounds_parameters[::2])
+        diff_shape = target_shape - source_shape
+
+        cropping = -np.minimum(diff_shape, 0)
+        if cropping.any():
+            cropping_params = self._get_six_bounds_parameters(cropping)
+
+        padding = np.maximum(diff_shape, 0)
+        if padding.any():
+            padding_params = self._get_six_bounds_parameters(padding)
+
+        return padding_params, cropping_params
+
+    def _compute_mask_center_crop_or_pad(self, sample: dict):
+        mask = sample[self.mask_key][DATA].numpy()
+        # Original sample shape (from mask shape)
+        sample_shape = np.squeeze(mask).shape
+        # Calculate the bounding box of the brain
+        xmin, xmax, ymin, ymax, zmin, zmax = self._bbox_mask(np.squeeze(mask))
+        # Coordinates of the center of the brain
+        center_mask = ((xmax - xmin) / 2 + xmin, (ymax - ymin) / 2 + ymin, (zmax - zmin) / 2 + zmin)
+        # List of padding to do
+        padding = []
+        # Final cropping (after padding)
+        cropping = []
+        for dim, center_dim in enumerate(center_mask):
+            # Compute the coordinates of the target shape taken from the center of the mask
+            begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
+            end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
+            # Check if dimension needs padding (before or after)
+            begin_pad = abs(np.minimum(begin, 0))
+            end_pad = np.maximum(end - sample_shape[dim], 0)
+            # Check if cropping needed
+            begin_crop = abs(np.round(abs(np.maximum(begin, 0)))).astype(np.uint)
+            end_crop = abs(np.round(np.minimum(end - sample_shape[dim], 0))).astype(np.uint)
+            # Add padding values of the dim to the list
+            padding.append(np.round(begin_pad).astype(np.uint))
+            padding.append(np.round(end_pad).astype(np.uint))
+            # Add the slice of the dimension to take
+            cropping.append(begin_crop)
+            cropping.append(end_crop)
+        # Conversion for SITK compatibility
+        return np.asarray(padding).tolist(), np.asarray(cropping).tolist()
+
+    def apply_transform(self, sample: dict) -> dict:
+        padding_params, cropping_params = self.compute_crop_or_pad(sample)
+        sample = Pad(padding_params, padding_mode=self.padding_mode, fill=self.padding_fill)(sample)
+        sample = Crop(cropping_params)(sample)
+        return sample
+
+
+class CenterCropOrPad(CropOrPad):
+    """Crop and/or pad an image to a target shape.
+
+    Args:
+        target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
+            provided, then :math:`D = H = W = N`.
+        padding_mode: See :py:class:`~torchio.transforms.Pad`.
+        padding_fill: Same as :attr:`fill` in
+            :py:class:`~torchio.transforms.Pad`.
+
+    """
+
+    def __init__(
+        self,
+        target_shape: Union[int, Tuple[int, int, int]],
+        padding_mode: str = 'constant',
+        padding_fill: Optional[float] = None,
+    ):
+        super().__init__(target_shape=target_shape, padding_mode=padding_mode, padding_fill=padding_fill, mode="center")
