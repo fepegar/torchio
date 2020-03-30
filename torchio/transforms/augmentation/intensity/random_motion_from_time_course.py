@@ -408,6 +408,22 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         return fitpars
 
+    def _interpolate_space_timing_1D(self, fitpars):
+        n_phase= self.phase_encoding_shape[0]
+        nT = self.nT
+        # Time steps
+        mg_total = np.linspace(0,1,n_phase)
+        # Equidistant time spacing
+        teq = np.linspace(0, 1, nT)
+        # Actual interpolation
+        fitpars_interp = np.asarray([np.interp(mg_total, teq, params) for params in fitpars])
+        # Reshaping to phase encoding dimensions
+        self.fitpars_interp = fitpars_interp
+        # Add missing dimension
+        fitpars_interp = np.expand_dims(fitpars_interp, axis= [self.frequency_encoding_dim + 1,self.phase_encoding_dims[1] + 1])
+        print(fitpars_interp.shape)
+        return fitpars_interp
+
     def _interpolate_space_timing(self, fitpars):
         n_phase, n_slice = self.phase_encoding_shape[0], self.phase_encoding_shape[1]
         # Time steps
@@ -435,6 +451,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         target_shape = [6] + self.im_shape
         data_shape = params_to_reshape.shape
         tiles = np.floor_divide(target_shape, data_shape, dtype=int)
+        #print('tiles are {}'.format(tiles))
         return np.tile(params_to_reshape, reps=tiles)
 
     def _translate_freq_domain(self, freq_domain, inv_transfo=False):
@@ -466,11 +483,13 @@ class RandomMotionFromTimeCourse(RandomTransform):
 
         center = [math.ceil((x - 1) / 2) for x in self.im_shape]
 
-        [i1, i2, i3] = np.meshgrid(np.arange(self.im_shape[0]) - center[0],
-                                   np.arange(self.im_shape[1]) - center[1],
-                                   np.arange(self.im_shape[2]) - center[2], indexing='ij')
+        [i1, i2, i3] = np.meshgrid(2*(np.arange(self.im_shape[0]) - center[0])/self.im_shape[0],
+                                   2*(np.arange(self.im_shape[1]) - center[1])/self.im_shape[1],
+                                   2*(np.arange(self.im_shape[2]) - center[2])/self.im_shape[2], indexing='ij')
 
-        grid_coordinates = np.array([i1.T.flatten(), i2.T.flatten(), i3.T.flatten()])
+        #to rotate coordinate between -1 and 1 is not equivalent to compute it betawe -100 and 100 and divide by 100
+
+        grid_coordinates = np.array([i1.flatten('F'), i2.flatten('F'), i3.flatten('F')])
 
         #print('rotation size is {}'.format(self.rotations.shape))
 
@@ -501,10 +520,11 @@ class RandomMotionFromTimeCourse(RandomTransform):
         new_grid_coords = new_grid_coords.reshape([3, -1], order='F')
 
         # scale data between -pi and pi
-        max_vals = [abs(x) for x in grid_coordinates[:, 0]]
-        new_grid_coordinates_scaled = [(new_grid_coords[i, :] / max_vals[i]) * math.pi for i in
-                                       range(new_grid_coords.shape[0])]
-        new_grid_coordinates_scaled = [np.asfortranarray(i) for i in new_grid_coordinates_scaled]
+        max_vals = [1, 1, 1]
+        new_grid_coordinates_scaled = [(new_grid_coords[i, :] / max_vals[i]) * math.pi for i in [0, 1, 2]]
+#                                       range(new_grid_coords.shape[0])]
+        #new_grid_coordinates_scaled = [np.asfortranarray(i) for i in new_grid_coordinates_scaled]
+        #rrr why already flat ... ?
 
         #self.new_grid_coordinates_scaled = new_grid_coordinates_scaled
         #self.grid_coordinates = grid_coordinates
@@ -519,7 +539,6 @@ class RandomMotionFromTimeCourse(RandomTransform):
         :param eps: precision of nufft
         :return: nufft of freq_domain_data after applying self.rotations
         """
-
         if not finufft:
             raise ImportError('finufftpy not available')
 
