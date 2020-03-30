@@ -30,7 +30,7 @@ class RandomAffine(RandomTransform):
             `ITK <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
             and `Simple ITK <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
             docs on image interpolation.
-        seed:
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: Rotations are performed around the center of the image.
 
