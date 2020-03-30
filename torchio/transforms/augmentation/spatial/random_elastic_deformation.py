@@ -12,11 +12,12 @@ class RandomElasticDeformation(RandomTransform):
     """B-spline dense elastic deformation.
 
     Args:
-        num_control_points:
+        num_control_points: Number of control points along each dimension of
+            the coarse grid. Smaller numbers generate smoother deformations.
         deformation_std:
         proportion_to_augment:
         image_interpolation:
-        seed:
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
@@ -82,6 +83,8 @@ class RandomElasticDeformation(RandomTransform):
         mesh_shape = 3 * (num_control_points,)
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
         default_params = bspline_transform.GetParameters()
+        # The grid shape is
+        # (num_control_points+3, num_control_points+3, num_control_points+3, 3)
         bspline_params = torch.rand(len(default_params))  # [0, 1)
         bspline_params -= 0.5  # [-0.5, 0.5)
         bspline_params *= deformation_std  # [-std/2, std/2)
