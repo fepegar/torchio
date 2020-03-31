@@ -14,7 +14,7 @@ class RandomSpike(RandomTransform):
     Args:
         num_spikes_range:
         intensity_range:
-        proportion_to_augment:
+        proportion_to_augment: Probability that this transform will be applied.
         seed:
     """
     def __init__(

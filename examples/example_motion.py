@@ -21,7 +21,6 @@ transform = transforms.RandomMotion(
     degrees=10,
     translation=10,
     num_transforms=3,
-    proportion_to_augment=1,
 )
 transformed = transform(sample)
 

@@ -21,8 +21,9 @@ class Resample(Transform):
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
         antialiasing: (Not implemented yet).
         image_interpolation: Member of :py:class:`torchio.Interpolation`.
-            It must be :py:attr:`torchio.Interpolation.NEAREST`,
-            :py:attr:`torchio.Interpolation.LINEAR` or
+            Supported interpolation techniques for resampling are
+            :py:attr:`torchio.Interpolation.NEAREST`,
+            :py:attr:`torchio.Interpolation.LINEAR` and
             :py:attr:`torchio.Interpolation.BSPLINE`.
 
     .. note:: The resampling is performed using

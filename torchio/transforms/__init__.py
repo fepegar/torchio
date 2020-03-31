@@ -1,5 +1,5 @@
 from .transform import Transform
-from .interpolation import Interpolation
+from .interpolation import Interpolation, get_sitk_interpolator
 
 # Generic
 from .lambda_transform import Lambda

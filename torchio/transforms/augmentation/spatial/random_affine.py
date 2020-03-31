@@ -4,7 +4,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict, check_consistent_shape
 from ....torchio import LABEL, DATA, AFFINE, TYPE, TypeRangeFloat
-from .. import Interpolation
+from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
 
@@ -141,7 +141,7 @@ class RandomAffine(RandomTransform):
         transform.AddTransform(rotation_transform)
 
         resampler = sitk.ResampleImageFilter()
-        resampler.SetInterpolator(interpolation.value)
+        resampler.SetInterpolator(get_sitk_interpolator(interpolation))
         resampler.SetReferenceImage(reference)
         resampler.SetDefaultPixelValue(tensor.min().item())
         resampler.SetOutputPixelType(sitk.sitkFloat32)

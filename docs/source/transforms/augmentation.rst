@@ -1,8 +1,11 @@
 Augmentation
 ============
 
+Augmentation transforms generate different results every time they are called.
+The result can be made deterministic using the :py:attr:`seed` parameter.
+
 .. contents::
-   :local:
+    :local:
 
 .. currentmodule:: torchio.transforms.augmentation
 
