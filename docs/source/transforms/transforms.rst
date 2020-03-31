@@ -16,13 +16,46 @@ For example::
    >>> sample = dataset[0]
    >>> transformed_sample = affine_transform(sample)
 
+
+All transforms inherit from :py:class:`torchio.transforms.Transform`:
+
+
+.. currentmodule:: torchio.transforms
+
+.. autoclass:: Transform
+
+
+
+Command-line interface
+----------------------
+
 A transform can be quickly applied to an image file using the command-line
 tool ``torchio-transform``::
 
-   $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "num_transforms=4"
+   $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "num_transforms=4 --seed 42"
+
+For more information, run ``torchio-transform --help``.
 
 
-All transforms inherit from :py:class:`torchio.transforms.Transform`.
+Interpolation
+-------------
+
+Spatial transforms such as
+:py:class:`~torchio.transforms.RandomAffine` or
+:py:class:`~torchio.transforms.RandomElasticDeformation`
+need to interpolate values during resampling.
+
+
+.. autoclass:: Interpolation
+   :show-inheritance:
+   :members:
+   :undoc-members:
+
+
+
+
+Transforms API
+--------------
 
 .. toctree::
    :maxdepth: 3
@@ -30,11 +63,3 @@ All transforms inherit from :py:class:`torchio.transforms.Transform`.
    preprocessing.rst
    augmentation.rst
    others.rst
-
-
-.. currentmodule:: torchio.transforms
-
-:class:`Transform`
-------------------
-
-.. autoclass:: Transform

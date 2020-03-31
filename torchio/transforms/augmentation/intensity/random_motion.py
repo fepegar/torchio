@@ -16,19 +16,23 @@ import SimpleITK as sitk
 from scipy.linalg import logm, expm
 from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE
-from .. import Interpolation
+from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform):
     """Add random MRI motion artifact.
 
+    Custom implementation of `Shaw et al. 2019, MRI k-Space Motion Artefact
+    Augmentation: Model Robustness and Task-Specific
+    Uncertainty <http://proceedings.mlr.press/v102/shaw19a.html>`_.
+
     Args:
         degrees:
         translation:
         num_transforms:
         image_interpolation:
-        proportion_to_augment:
+        proportion_to_augment: Probability that this transform will be applied.
         seed:
 
     """
@@ -179,7 +183,7 @@ class RandomMotion(RandomTransform):
         images = [image]  # first is identity
         for transform in transforms:
             resampler = sitk.ResampleImageFilter()
-            resampler.SetInterpolator(interpolation.value)
+            resampler.SetInterpolator(get_sitk_interpolator(interpolation))
             resampler.SetReferenceImage(reference)
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampler.SetDefaultPixelValue(default_value)

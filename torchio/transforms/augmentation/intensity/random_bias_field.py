@@ -16,7 +16,7 @@ class RandomBiasField(RandomTransform):
             If only one number :math:`n` is specified, all the coefficients
             will be equal to :math:`n`.
         order: Order of the basis polynomial functions.
-        proportion_to_augment:
+        proportion_to_augment: Probability that this transform will be applied.
         seed:
 
     """

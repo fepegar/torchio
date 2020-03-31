@@ -11,7 +11,6 @@ class TestRandomMotion(TorchioTestCase):
     """Tests for `RandomMotion`."""
     def test_random_motion(self):
         transform = torchio.transforms.RandomMotion(
-            proportion_to_augment=1,
             seed=42,
         )
         transformed = transform(self.sample)
