@@ -19,7 +19,7 @@ Intensity
 .. currentmodule:: torchio.transforms
 
 :class:`RescaleIntensity`
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RescaleIntensity
     :show-inheritance:
