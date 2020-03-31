@@ -109,9 +109,9 @@ The bias field is modelled as a linear combination of
 polynomial basis functions, as in K. Van Leemput et al., 1999,
 *Automated model-based tissue classification of MR images of the brain*.
 
-It was implemented for NiftyNet by Carole Sudre and used in
-C. Sudre et al., 2017, *Longitudinal segmentation of age-related
-white matter hyperintensities*.
+It was implemented in NiftyNet by Carole Sudre and used in
+`Sudre et al., 2017, Longitudinal segmentation of age-related white matter
+hyperintensities <https://www.sciencedirect.com/science/article/pii/S1361841517300257?via%3Dihub>`_.
 
 .. image:: ../../images/random_bias_field.gif
    :alt: MRI bias field artifact

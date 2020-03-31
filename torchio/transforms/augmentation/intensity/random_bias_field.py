@@ -11,14 +11,12 @@ class RandomBiasField(RandomTransform):
     r"""Add random MRI bias field artifact.
 
     Args:
-        coefficients: Tuple of two floats :math:`(a, b)` to specify the
-            artifact magnitude of each coefficient.
-            If only one number :math:`n` is specified, all the coefficients
-            will be equal to :math:`n`.
+        coefficients: Magnitude :math:`n` of polynomial coefficients.
+            If a tuple :math:`(a, b)` is specified, then
+            :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
         proportion_to_augment: Probability that this transform will be applied.
-        seed:
-
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,

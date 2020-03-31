@@ -15,6 +15,9 @@ class RandomAffine(RandomTransform):
         scales: Tuple :math:`(a, b)` defining the scaling
             magnitude. The scaling values along each dimension are
             :math:`(s_1, s_2, s_3)`, where :math:`s_i \sim \mathcal{U}(a, b)`.
+            For example, using ``scales=(0.5, 0.5)`` will zoom out the image,
+            making the objects inside look twice as small while preserving
+            the physical size and position of the image.
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
             The rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
@@ -23,13 +26,7 @@ class RandomAffine(RandomTransform):
             :math:`\theta_i \sim \mathcal{U}(-d, d)`.
         isotropic: If ``True``, the scaling factor along all dimensions is the
             same, i.e. :math:`s_1 = s_2 = s_3`.
-        image_interpolation: Interpolation type to use for resampling.
-            The available interpolation strategies are enumerated in
-            :class:`torchio.transforms.interpolation.Interpolation`.
-            For more information, visit
-            `ITK <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
-            and `Simple ITK <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
-            docs on image interpolation.
+        image_interpolation: See :ref:`Interpolation`.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: Rotations are performed around the center of the image.

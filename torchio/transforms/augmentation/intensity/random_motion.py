@@ -21,20 +21,34 @@ from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform):
-    """Add random MRI motion artifact.
+    r"""Add random MRI motion artifact.
 
     Custom implementation of `Shaw et al. 2019, MRI k-Space Motion Artefact
     Augmentation: Model Robustness and Task-Specific
     Uncertainty <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
     Args:
-        degrees:
-        translation:
-        num_transforms:
-        image_interpolation:
+        degrees: Tuple :math:`(a, b)` defining the rotation range in degrees of
+            the simulated movements. The rotation angles around each axis are
+            :math:`(\theta_1, \theta_2, \theta_3)`,
+            where :math:`\theta_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\theta_i \sim \mathcal{U}(-d, d)`.
+            Larger values generate more distorted images.
+        translation: Tuple :math:`(a, b)` defining the translation in mm of
+            the simulated movements. The translations along each axis are
+            :math:`(t_1, t_2, t_3)`,
+            where :math:`t_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`t` is provided,
+            :math:`t_i \sim \mathcal{U}(-t, t)`.
+            Larger values generate more distorted images.
+        num_transforms: Number of simulated movements.
+            Larger values generate more distorted images.
+        image_interpolation: See :ref:`Interpolation`.
         proportion_to_augment: Probability that this transform will be applied.
-        seed:
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
+    .. warning:: Large numbers of movements lead to longer execution times.
     """
     def __init__(
             self,
@@ -118,9 +132,7 @@ class RandomMotion(RandomTransform):
             probability: float,
             perturbation: float = 0.3,
             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
-        """
-        If perturbation is 0, the intervals between movements are constant
-        """
+        # If perturbation is 0, time intervals between movements are constant
         degrees_params = get_params_array(
             degrees_range, num_transforms)
         translation_params = get_params_array(

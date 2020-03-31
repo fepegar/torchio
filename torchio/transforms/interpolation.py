@@ -6,12 +6,6 @@ import SimpleITK as sitk
 class Interpolation(enum.Enum):
     """Interpolation techniques available in ITK.
 
-    Documentation is imported from
-    `ITK docs <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_.
-
-    See `this SimpleITK example <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
-    for some interpolation results.
-
     Example:
         >>> from torchio.transforms import RandomAffine, Interpolation
         >>> transform = RandomAffine(image_interpolation=Interpolation.NEAREST)

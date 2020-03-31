@@ -46,11 +46,13 @@ class RandomElasticDeformation(RandomTransform):
             If ``2``, displacement of control points at the border of the image
             will also be set to ``0``.
         image_interpolation: Value in
-            :py:class:`torchio.transforms.interpolation.Interpolation`.
+            :py:class:`torchio.transforms.interpolation.Interpolation` (see
+            :ref:`Interpolation`).
             Note that this is the interpolation used to compute voxel
-            intensities when resampling using the displacement field.
-            The displacement at each voxel is always interpolated with cubic
-            B-splines from the coarse grid of control points.
+            intensities when resampling using the dense displacement field.
+            The value of the dense displacement at each voxel is always
+            interpolated with cubic B-splines from the values at the control
+            points of the coarse grid.
         proportion_to_augment: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 

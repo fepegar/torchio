@@ -37,13 +37,34 @@ tool ``torchio-transform``::
 For more information, run ``torchio-transform --help``.
 
 
+.. _Interpolation:
+
 Interpolation
 -------------
 
-Spatial transforms such as
+Some transforms such as
 :py:class:`~torchio.transforms.RandomAffine` or
-:py:class:`~torchio.transforms.RandomElasticDeformation`
-need to interpolate values during resampling.
+:py:class:`~torchio.transforms.RandomMotion`
+need to interpolate intensity values during resampling.
+
+The available interpolation strategies are enumerated in
+:class:`torchio.transforms.interpolation.Interpolation`.
+
+``Interpolation.NEAREST`` can be used for quick experimentation as it is very
+fast, but produces relatively poor results.
+
+``Interpolation.LINEAR``, defaut in TorchIO, is usually a good compromise
+between image quality and speed to be used for data augmentation during training.
+
+Methods such as ``Interpolation.BSPLINE`` or ``Interpolation.LANCZOS`` generate
+high-quality results, but are generally slower. They can be used to obtain
+optimal resampling results during offline data preprocessing.
+
+Visit the
+`ITK docs <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
+for more information and see
+`this SimpleITK example <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
+for some interpolation results on test images.
 
 
 .. autoclass:: Interpolation
