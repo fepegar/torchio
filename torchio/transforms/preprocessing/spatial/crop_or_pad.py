@@ -8,31 +8,34 @@ from ....utils import is_image_dict, check_consistent_shape
 
 
 class CropOrPad(BoundsTransform):
+    """Crop and/or pad an image to a target shape.
 
+    Args:
+        target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
+            provided, then :math:`D = H = W = N`.
+        padding_mode: See :py:class:`~torchio.transforms.Pad`.
+        padding_fill: Same as :attr:`fill` in
+            :py:class:`~torchio.transforms.Pad`.
+        mode: Whether to crop/pad using the center of the image or the
+            center of the bounding box with non-zero values of a given mask
+            with name :py:attr:`mask_key`.
+            Possible values are ``'center'`` or ``'mask'``.
+        mask_key: If :py:attr:`mode` is ``'mask'``, name of the mask to extract
+            the bounding box.
+    """
     def __init__(
-        self,
-        target_shape: Union[int, Tuple[int, int, int]],
-        padding_mode: str = 'constant',
-        padding_fill: Optional[float] = None,
-        mode: str = "center",
-        mask_key: str = None):
-        """Crop and/or pad an image to a target shape.
-
-            Args:
-                target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
-                    provided, then :math:`D = H = W = N`.
-                padding_mode: See :py:class:`~torchio.transforms.Pad`.
-                padding_fill: Same as :attr:`fill` in
-                    :py:class:`~torchio.transforms.Pad`.
-                mode: "center" or "mask". Whether to crop/pad using the center of the image or of a given mask in
-                      :attr:'mask_key'
-                mask_key: if the mode is "mask", key of the mask to use in the sample
-        """
+            self,
+            target_shape: Union[int, Tuple[int, int, int]],
+            padding_mode: str = 'constant',
+            padding_fill: Optional[float] = None,
+            mode: str = 'center',
+            mask_key: Optional[str] = None,
+            ):
         super().__init__(target_shape)
         self.mode = mode
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
-        if mode == "mask":
+        if mode == 'mask':
             self.mask_key = mask_key
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
         else:
@@ -40,21 +43,18 @@ class CropOrPad(BoundsTransform):
 
     @staticmethod
     def _bbox_mask(mask_volume: np.ndarray):
-        """
-        Taken from https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array
-        Returns 6 coordinates of a 3D bounding box from a given mask
-        :param mask_volume: 3D volume as a numpy array
-        :param margin: margin to add to the bounding box edges
-        :return : 6 coordinates of a 3D bounding box (rmin, rmax, cmin, xmax, zmin, zmax)
+        """Return 6 coordinates of a 3D bounding box from a given mask
+        Taken from `this SO question <https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array>`_.
+
+        Args:
+            mask_volume: 3D NumPy array.
         """
         r = np.any(mask_volume, axis=(1, 2))
         c = np.any(mask_volume, axis=(0, 2))
         z = np.any(mask_volume, axis=(0, 1))
-
         rmin, rmax = np.where(r)[0][[0, -1]]
         cmin, cmax = np.where(c)[0][[0, -1]]
         zmin, zmax = np.where(z)[0][[0, -1]]
-
         return rmin, rmax, cmin, cmax, zmin, zmax
 
     @staticmethod
@@ -115,22 +115,26 @@ class CropOrPad(BoundsTransform):
         mask = sample[self.mask_key][DATA].numpy()
         # Original sample shape (from mask shape)
         sample_shape = np.squeeze(mask).shape
-        # Calculate the bounding box of the brain
+        # Calculate bounding box of the mask center
         xmin, xmax, ymin, ymax, zmin, zmax = self._bbox_mask(np.squeeze(mask))
-        # Coordinates of the center of the brain
-        center_mask = ((xmax - xmin) / 2 + xmin, (ymax - ymin) / 2 + ymin, (zmax - zmin) / 2 + zmin)
+        # Coordinates of the mask center
+        center_x = (xmax - xmin) / 2 + xmin
+        center_y = (ymax - ymin) / 2 + ymin
+        center_z = (zmax - zmin) / 2 + zmin
+        center_mask = center_x, center_y, center_z
         # List of padding to do
         padding = []
         # Final cropping (after padding)
         cropping = []
         for dim, center_dim in enumerate(center_mask):
-            # Compute the coordinates of the target shape taken from the center of the mask
+            # Compute coordinates of the target shape taken from the center of
+            # the mask
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
             begin_pad = abs(np.minimum(begin, 0))
             end_pad = np.maximum(end - sample_shape[dim], 0)
-            # Check if cropping needed
+            # Check if cropping is needed
             begin_crop = abs(np.round(abs(np.maximum(begin, 0)))).astype(np.uint)
             end_crop = abs(np.round(np.minimum(end - sample_shape[dim], 0))).astype(np.uint)
             # Add padding values of the dim to the list
@@ -144,8 +148,8 @@ class CropOrPad(BoundsTransform):
 
     def apply_transform(self, sample: dict) -> dict:
         padding_params, cropping_params = self.compute_crop_or_pad(sample)
-        sample = Pad(padding_params, padding_mode=self.padding_mode, fill=self.padding_fill)(sample)
+        padding_kwargs = dict(
+            padding_mode=self.padding_mode, fill=self.padding_fill)
+        sample = Pad(padding_params, **padding_kwargs)(sample)
         sample = Crop(cropping_params)(sample)
         return sample
-
-
