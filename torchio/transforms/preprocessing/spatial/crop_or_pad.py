@@ -16,12 +16,12 @@ class CropOrPad(BoundsTransform):
         padding_mode: See :py:class:`~torchio.transforms.Pad`.
         padding_fill: Same as :attr:`fill` in
             :py:class:`~torchio.transforms.Pad`.
-        mode: Whether to crop/pad using the center of the image or the
-            center of the bounding box with non-zero values of a given mask
-            with name :py:attr:`mask_key`.
+        mode: Whether to crop/pad using the image center or the center of the
+            bounding box with non-zero values of a given mask with name
+            :py:attr:`mask_key`.
             Possible values are ``'center'`` or ``'mask'``.
-        mask_key: If :py:attr:`mode` is ``'mask'``, name of the mask to extract
-            the bounding box.
+        mask_key: If :py:attr:`mode` is ``'mask'``, name of the mask from which
+            to extract the bounding box.
     """
     def __init__(
             self,

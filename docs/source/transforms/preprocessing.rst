@@ -50,10 +50,10 @@ adapted from NiftyNet.
 Spatial
 -------
 
-:class:`CenterCropOrPad`
+:class:`CropOrPad`
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: CenterCropOrPad
+.. autoclass:: CropOrPad
     :show-inheritance:
     :members: _get_six_bounds_parameters
 
