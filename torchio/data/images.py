@@ -2,7 +2,16 @@ import typing
 import warnings
 import collections
 from pathlib import Path
-from typing import Union, Sequence, Optional, Any, TypeVar, Dict, List, Tuple
+from typing import (
+    Dict,
+    List,
+    Tuple,
+    Union,
+    TypeVar,
+    Sequence,
+    Optional,
+    Callable,
+)
 import torch
 from torch.utils.data import Dataset
 import numpy as np
@@ -70,7 +79,7 @@ class Subject(list):
     """Class to store information about the images corresponding to a subject.
 
     Args:
-        *images: Instances of :class:`~torchio.data.images.Image`.
+        *images: Instances of :py:class:`~torchio.data.images.Image`.
         name: Subject ID
     """
     def __init__(self, *images: Image, name: str = ''):
@@ -82,7 +91,7 @@ class Subject(list):
         return f'{__class__.__name__}("{self.name}", {len(self)} images)'
 
     @staticmethod
-    def _parse_images(images: Tuple[Image]) -> None:
+    def _parse_images(images: Tuple[Image, ...]) -> None:
         # Check that it's not empty
         if not images:
             raise ValueError('A subject without images cannot be created')
@@ -151,7 +160,11 @@ class ImagesDataset(Dataset):
             :class:`torchio.transforms.Transform` that is applied to each
             image after loading it.
         check_nans: If ``True``, issues a warning if NaNs are found
-            in the image
+            in the image.
+        load_image_data: If ``False``, image data and affine will not be loaded.
+            These fields will be set to ``None`` in the sample. This can be
+            used to quickly iterate over the samples to retrieve e.g. the
+            images paths. If ``True``, transform must be ``None``.
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
@@ -162,18 +175,17 @@ class ImagesDataset(Dataset):
     def __init__(
             self,
             subjects: Sequence[Subject],
-            transform: Optional[Any] = None,
+            transform: Optional[Callable] = None,
             check_nans: bool = True,
-            save_to_dir = None,
-            load_from_dir = None,
+            load_image_data: bool = True,
             ):
-        self.load_from_dir = load_from_dir
-        if not load_from_dir:
-            self._parse_subjects_list(subjects)
+        self._parse_subjects_list(subjects)
         self.subjects = subjects
-        self._transform = transform
+        self._transform: Optional[Callable]
+        self.set_transform(transform)
         self.check_nans = check_nans
-        self.save_to_dir = save_to_dir
+        self._load_image_data: bool
+        self.set_load_image_data(load_image_data)
 
     def __len__(self):
         return len(self.subjects)
@@ -181,47 +193,64 @@ class ImagesDataset(Dataset):
     def __getitem__(self, index: int) -> dict:
         if not isinstance(index, int):
             raise TypeError(f'Index "{index}" must be int, not {type(index)}')
-
-        if self.load_from_dir:
-            sample = torch.load(self.subjects[index])
-            return sample
-
         subject = self.subjects[index]
-        sample = {}
-        for image in subject:
-            tensor, affine = image.load(check_nans=self.check_nans)
-            image_dict = {
-                DATA: tensor,
-                AFFINE: affine,
-                TYPE: image.type,
-                PATH: str(image.path),
-                STEM: get_stem(image.path),
-                'index': index,
-            }
-            sample[image.name] = image_dict
+        sample = self.get_sample_dict_from_subject(subject)
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
             sample = self._transform(sample)
-
-        if self.save_to_dir is not None:
-            res_dir = self.save_to_dir
-            fname = res_dir + '/sample{:05d}'.format(index)
-            if 'image_orig' in sample: sample.pop('image_orig')
-            torch.save(sample, fname + '_sample.pt')
-
         return sample
 
-    def set_transform(self, transform: Any) -> None:
+    def get_sample_dict_from_subject(self, subject: Subject):
+        """Create a dictionary of dictionaries with subject information.
+
+        Args:
+            subject: Instance of :py:class:`~torchio.data.images.Subject`.
+        """
+        sample = {
+            image.name: self.get_image_dict_from_image(image)
+            for image in subject
+        }
+        return sample
+
+    def get_image_dict_from_image(self, image: Image):
+        """Create a dictionary with image information.
+
+        Args:
+            image: Instance of :py:class:`~torchio.data.images.Image`.
+
+        Return:
+            Dictionary with keys
+            :py:attr:`torchio.DATA`,
+            :py:attr:`torchio.AFFINE`,
+            :py:attr:`torchio.TYPE`,
+            :py:attr:`torchio.PATH` and
+            :py:attr:`torchio.STEM`.
+        """
+        if self._load_image_data:
+            tensor, affine = image.load(check_nans=self.check_nans)
+        else:
+            tensor = affine = None
+        image_dict = {
+            DATA: tensor,
+            AFFINE: affine,
+            TYPE: image.type,
+            PATH: str(image.path),
+            STEM: get_stem(image.path),
+        }
+        return image_dict
+
+    def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
 
         Args:
-            transform: An instance of :class:`torchio.transforms.Transform`
+            transform: An instance of :py:class:`torchio.transforms.Transform`
+                or :py:class:`torchvision.transforms.Compose`.
         """
+        if transform is not None and not callable(transform):
+            raise ValueError(
+                f'The transform must be a callable object, not {transform}')
         self._transform = transform
-
-    def get_transform(self) :
-        return self._transform
 
     @staticmethod
     def _parse_subjects_list(subjects_list: Sequence[Subject]) -> None:
@@ -248,3 +277,11 @@ class ImagesDataset(Dataset):
             tensor = sample[key][DATA][0]  # remove channels dim
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
+
+    def set_load_image_data(self, load_image_data: bool):
+        if not load_image_data and self._transform is not None:
+            message = (
+                'Load data cannot be set to False if transform is not None.'
+                f'Current transform is {self._transform}')
+            raise ValueError(message)
+        self._load_image_data = load_image_data

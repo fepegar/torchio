@@ -9,14 +9,15 @@ class RandomFlip(RandomTransform):
     """Reverse the order of elements in an image along the given axes.
 
     Args:
-        axes:
-        flip_probability:
-        seed:
+        axes: Axis or tuple of axes along which the image will be flipped.
+        flip_probability: Probability that the image will be flipped. This is
+            computed on a per-axis basis.
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
 
     def __init__(
             self,
-            axes: Union[int, Tuple[int]] = 0,
+            axes: Union[int, Tuple[int, ...]] = 0,
             flip_probability: float = 0.5,
             seed: Optional[int] = None,
             ):
@@ -45,7 +46,7 @@ class RandomFlip(RandomTransform):
         return sample
 
     @staticmethod
-    def get_params(axes: Tuple[int], probability: float) -> List[bool]:
+    def get_params(axes: Tuple[int, ...], probability: float) -> List[bool]:
         axes_hot = [False, False, False]
         for axis in axes:
             random_number = torch.rand(1)
@@ -54,9 +55,10 @@ class RandomFlip(RandomTransform):
         return axes_hot
 
     @staticmethod
-    def parse_axes(axes: Union[int, Tuple[int]]):
-        axes = to_tuple(axes)
-        for axis in axes:
-            if not (isinstance(axis, int) and 0 <= axis <= 2):
+    def parse_axes(axes: Union[int, Tuple[int, ...]]):
+        axes_tuple = to_tuple(axes)
+        for axis in axes_tuple:
+            is_int = isinstance(axis, int)
+            if not is_int or axis not in (0, 1, 2):
                 raise ValueError('All axes must be 0, 1 or 2')
-        return axes
+        return axes_tuple

@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Union, Tuple, Optional
 import torch
 import numpy as np
 import SimpleITK as sitk
@@ -8,19 +8,29 @@ from .. import RandomTransform
 
 
 class RandomBlur(RandomTransform):
-    """Blur an image using a random-sized Gaussian filter.
+    r"""Blur an image using a random-sized Gaussian filter.
 
     Args:
-        std_range:
-        seed:
+        std: Tuple :math:`(a, b)` to compute the standard deviations
+            :math:`(\sigma_1, \sigma_2, \sigma_3)` of the Gaussian kernels used
+            to blur the image along each axis,
+            where :math:`\sigma_i \sim \mathcal{U}(a, b)`.
+            If a single value :math:`n` is provided, then :math:`a = b = n`.
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
-            std_range: Tuple[float, float] = (0, 4),
+            std: Union[float, Tuple[float, float]] = (0, 4),
             seed: Optional[int] = None,
             ):
         super().__init__(seed=seed)
-        self.std_range = std_range
+        self.std_range = self.parse_range(std, 'std')
+        if any(np.array(self.std_range) < 0):
+            message = (
+                'Standard deviation std must greater or equal to zero,'
+                f' not "{self.std_range}"'
+            )
+            raise ValueError(message)
 
     def apply_transform(self, sample: dict) -> dict:
         std = self.get_params(self.std_range)

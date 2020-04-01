@@ -8,7 +8,7 @@ Here is a usage example:
 
 >>> import torchio
 >>> from torchio import ImagesDataset, Image, Subject
->>> from torchio.transforms import Rescale, RandomAffine
+>>> from torchio.transforms import RescaleIntensity, RandomAffine
 >>> from torchvision.transforms import Compose
 >>> subject_a = Subject([
 ...     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
@@ -21,7 +21,7 @@ Here is a usage example:
 ... )
 >>> subjects_list = [subject_a, subject_b]
 >>> transforms = [
-...     Rescale((0, 1)),
+...     RescaleIntensity((0, 1)),
 ...     RandomAffine(),
 ... ]
 >>> transform = Compose(transforms)

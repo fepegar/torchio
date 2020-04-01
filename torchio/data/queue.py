@@ -88,7 +88,6 @@ class Queue(Dataset):
         self.subjects_iterable = self.get_subjects_iterable()
         self.patches_list: List[dict] = []
         self.num_sampled_patches = 0
-        self.print('init queue with {}'.format(self.__repr__()))
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -98,11 +97,6 @@ class Queue(Dataset):
         if not self.patches_list:
             self.print('Patches list is empty.')
             self.fill()
-            one_element = self.patches_list[0]
-            first_key = next(iter(one_element))
-            #self.print('Patches:', [patch[first_key]['path'].split('_')[-1] for patch in self.patches_list])
-            self.print('Patches:', [patch[first_key]['path'] for patch in self.patches_list])
-
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
         return sample_patch
@@ -144,7 +138,6 @@ class Queue(Dataset):
                 ' not divisible by the number of'
                 f' patches per volume ({self.samples_per_volume})'
             )
-            print(message)
             warnings.warn(message)
 
         # If there are e.g. 4 subjects and 1 sample per volume and max_length

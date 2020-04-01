@@ -91,7 +91,7 @@ def _write_nibabel(
     """
     nii = nib.Nifti1Image(tensor.numpy(), affine)
     nii.header['qform_code'] = 1
-    nii.header['sform_code'] = 1
+    nii.header['sform_code'] = 0
     nii.to_filename(str(path))
 
 

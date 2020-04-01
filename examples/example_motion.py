@@ -8,28 +8,19 @@ $ torchio-transform ~/Dropbox/MRI/t1.nii.gz RandomMotion /tmp/t1_motion.nii.gz -
 from pprint import pprint
 from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 
-
-#subject = Subject(
-#    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
-#    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
-#)
 subject = Subject(
-    Image('t1', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
-    Image('label', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL),
+    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
+    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
 )
-
 subjects_list = [subject]
 
 dataset = ImagesDataset(subjects_list)
-
 sample = dataset[0]
 transform = transforms.RandomMotion(
-    seed=2,
-    degrees=0,
-    translation=100,
-    num_transforms=1,
-    verbose=True,
-    proportion_to_augment=1,
+    seed=42,
+    degrees=10,
+    translation=10,
+    num_transforms=3,
 )
 transformed = transform(sample)
 

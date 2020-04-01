@@ -9,7 +9,7 @@ from .. import RandomTransform
 
 
 class RandomGhosting(RandomTransform):
-    """Add random MRI ghosting artifact.
+    r"""Add random MRI ghosting artifact.
 
     Args:
         num_ghosts: Number of 'ghosts' :math:`n` in the image.
@@ -19,7 +19,7 @@ class RandomGhosting(RandomTransform):
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
         proportion_to_augment: Probability that this transform will be applied.
-        seed: Seed for the random number generator.
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -106,9 +106,11 @@ class RandomGhosting(RandomTransform):
             axis: int,
             ):
         array = sitk.GetArrayFromImage(image).transpose()
-        percentage_to_avoid = 0.05  # Leave first 5% of frequencies untouched
-        # If the image is in RAS orientation, this helps applying the ghosting
-        # in the desired axis intuitively
+        # Leave first 5% of frequencies untouched. If the image is in RAS
+        # orientation, this helps applying the ghosting in the desired axis
+        # intuitively
+        # [Why? I forgot]
+        percentage_to_avoid = 0.05
         if axis == 1:
             axis = 0
             size = array.shape[0]

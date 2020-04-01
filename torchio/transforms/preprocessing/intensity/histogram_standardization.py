@@ -206,8 +206,7 @@ def normalize(
         mask = np.ones_like(data, np.bool)
     mask = mask.reshape(-1)
 
-    #range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
-    range_to_use = range(0,len(mapping))  # use all points
+    range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
 
     quantiles_cutoff = _standardize_cutoff(cutoff_)
     percentiles_cutoff = 100 * np.array(quantiles_cutoff)

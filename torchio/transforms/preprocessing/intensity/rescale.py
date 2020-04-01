@@ -1,12 +1,16 @@
 import warnings
 from typing import Tuple, Union, Callable
+
 import torch
 import numpy as np
+from deprecated import deprecated
+
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
 
-class Rescale(NormalizationTransform):
+
+class RescaleIntensity(NormalizationTransform):
     """Rescale intensity values to a certain range.
 
     Args:
@@ -23,10 +27,9 @@ class Rescale(NormalizationTransform):
     """
     def __init__(
             self,
-            out_min_max: Tuple[float, float] = (0, 1),
-            percentiles: Tuple[int, int] = (1, 99),
+            out_min_max: Tuple[float, float],
+            percentiles: Tuple[int, int] = (0, 100),
             masking_method: Union[str, TypeCallable, None] = None,
-            verbose: bool = False,
             ):
         super().__init__(masking_method=masking_method)
         self.out_min, self.out_max = out_min_max
@@ -66,3 +69,8 @@ class Rescale(NormalizationTransform):
         array *= out_range  # [0, out_range]
         array += self.out_min  # [out_min, out_max]
         return torch.from_numpy(array)
+
+
+@deprecated('Rescale is deprecated. Use RescaleIntensity instead.')
+class Rescale(RescaleIntensity):
+    pass

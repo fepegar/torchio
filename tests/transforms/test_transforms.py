@@ -3,8 +3,7 @@
 import unittest
 import torch
 import numpy as np
-from torchio import INTENSITY, LABEL
-
+from torchio import INTENSITY
 from torchio.transforms import (
     Lambda,
     RandomFlip,
@@ -17,7 +16,7 @@ from torchio.transforms import (
     RandomMotion,
     RandomSpike,
     RandomGhosting,
-    Rescale,
+    RescaleIntensity,
     Resample,
     ZNormalization,
     HistogramStandardization,
@@ -26,41 +25,11 @@ from torchio.transforms import (
     ToCanonical,
     CenterCropOrPad,
 )
+from ..utils import TorchioTestCase
 
 
-class TestTransforms(unittest.TestCase):
+class TestTransforms(TorchioTestCase):
     """Tests for all transforms."""
-
-    def get_sample(self):
-        shape = 1, 10, 20, 30
-        np.random.seed(42)
-        affine = np.diag((1, -2, 3, 1))  # TODO: other orientations
-        affine[:3, 3] = 40, 50, 60
-        sample = {
-            't1': dict(
-                data=self.getRandomData(shape),
-                affine=affine,
-                type=INTENSITY,
-                stem='t1',
-            ),
-            't2': dict(
-                data=self.getRandomData(shape),
-                affine=affine,
-                type=INTENSITY,
-                stem='t2',
-            ),
-            'label': dict(
-                data=(self.getRandomData(shape) > 0.5).float(),
-                affine=affine,
-                type=LABEL,
-                stem='label',
-            ),
-        }
-        return sample
-
-    @staticmethod
-    def getRandomData(shape):
-        return torch.rand(*shape)
 
     def test_transforms(self):
         landmarks_dict = dict(
@@ -80,7 +49,7 @@ class TestTransforms(unittest.TestCase):
             RandomSwap(patch_size=2, num_iterations=5),
             Lambda(lambda x: 1.5 * x, types_to_apply=INTENSITY),
             RandomBiasField(),
-            Rescale((0, 1)),
+            RescaleIntensity((0, 1)),
             ZNormalization(masking_method='label'),
             HistogramStandardization(landmarks_dict=landmarks_dict),
             RandomElasticDeformation(proportion_to_augment=1),
@@ -88,6 +57,6 @@ class TestTransforms(unittest.TestCase):
             Pad((1, 2, 3, 0, 5, 6), padding_mode='constant', fill=3),
             Crop((3, 2, 8, 0, 1, 4)),
         )
-        transformed = self.get_sample()
+        transformed = self.sample
         for transform in transforms:
             transformed = transform(transformed)

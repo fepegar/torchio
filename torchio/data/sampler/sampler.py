@@ -19,8 +19,7 @@ class ImageSampler(IterableDataset):
             patches will be extracted.
         patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
             of size :math:`d \times h \times w`.
-            If a single number :math:`n` is provided,
-            :math:`d = h = w = n`.
+            If a single number :math:`n` is provided, :math:`d = h = w = n`.
     """
     def __init__(self, sample: dict, patch_size: Union[int, Sequence[int]]):
         self.sample = sample

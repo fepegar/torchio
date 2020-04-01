@@ -68,7 +68,6 @@ workers = range(mp.cpu_count() + 1)
 for num_workers in workers:
     print('Number of workers:', num_workers)
 
-
     # Define the dataset as a queue of patches
     queue_dataset = Queue(
         subjects_dataset,
@@ -77,9 +76,6 @@ for num_workers in workers:
         patch_size,
         ImageSampler,
         num_workers=num_workers,
-        shuffle_subjects=False,
-        shuffle_patches=False,
-        verbose=True
     )
     batch_loader = DataLoader(queue_dataset, batch_size=batch_size)
 

@@ -20,10 +20,8 @@ class RandomTransform(Transform):
     def __init__(
             self,
             seed: Optional[int] = None,
-            verbose: bool = False,
-            keep_original=False,
             ):
-        super().__init__(verbose=verbose, keep_original=keep_original)
+        super().__init__()
         self._seed = seed
 
     def __call__(self, sample: dict):

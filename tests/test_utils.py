@@ -12,9 +12,10 @@ from torchio.utils import (
     guess_type,
     check_consistent_shape,
 )
+from .utils import TorchioTestCase
 
 
-class TestUtils(unittest.TestCase):
+class TestUtils(TorchioTestCase):
     """Tests for `utils` module."""
 
     def get_sample(self, consistent):
@@ -68,8 +69,8 @@ class TestUtils(unittest.TestCase):
         assert isinstance(guess_type('test'), str)
 
     def test_check_consistent_shape(self):
-        good_sample = self.get_sample(consistent=True)
-        bad_sample = self.get_sample(consistent=False)
+        good_sample = self.sample
+        bad_sample = self.get_inconsistent_sample()
         check_consistent_shape(good_sample)
         with self.assertRaises(ValueError):
             check_consistent_shape(bad_sample)
