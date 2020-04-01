@@ -488,6 +488,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
                                    2*(np.arange(self.im_shape[2]) - center[2])/self.im_shape[2], indexing='ij')
 
         #to rotate coordinate between -1 and 1 is not equivalent to compute it betawe -100 and 100 and divide by 100
+        #special thanks to the matlab code from Gallichan  https://github.com/dgallichan/retroMoCoBox
 
         grid_coordinates = np.array([i1.flatten('F'), i2.flatten('F'), i3.flatten('F')])
 
