@@ -72,7 +72,11 @@ BibTeX:
    :alt: Google Colab notebook
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
+<<<<<<< HEAD
    :target: https://fepegar.github.io/torchio-docs/?badge=latest
+=======
+   :target: http://torchio.rtfd.io/?badge=latest
+>>>>>>> 935df0334c73cff2c7b19356d162b650826374cb
    :alt: Documentation status
 
 .. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
