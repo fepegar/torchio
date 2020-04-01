@@ -1,5 +1,6 @@
 from .spatial.pad import Pad
 from .spatial.crop import Crop
+from .spatial.cropOrPad import CropOrPad
 from .spatial.resample import Resample
 from .spatial.to_canonical import ToCanonical
 from .spatial.center_crop_pad import CenterCropOrPad
