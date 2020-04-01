@@ -10,12 +10,12 @@ import click
 @click.option(
     '--kwargs', '-k',
     type=str,
-    help='String of kwargs, e.g. "proportion_to_augment=1,num_transforms=3"',
+    help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
 )
 @click.option(
     '--seed', '-s',
     type=int,
-    help='Seed for PyTorch random number generator',
+    help='Seed for PyTorch random number generator.',
 )
 def apply_transform(
         input_path,
@@ -28,7 +28,7 @@ def apply_transform(
 
     \b
     Example:
-    $ torchio-transform input.nrrd RandomMotion output.nii --kwargs "proportion_to_augment=1 num_transforms=3"
+    $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
     """
     import torchio.transforms as transforms
     from torchio.transforms.augmentation import RandomTransform
@@ -36,13 +36,19 @@ def apply_transform(
 
     try:
         transform_class = getattr(transforms, transform_name)
-    except AttributeError:
-        raise AttributeError(f'"{transform_name}" class not found in torchio')
+    except AttributeError as error:
+        message = f'Transform "{transform_name}" not found in torchio'
+        raise ValueError(message) from error
 
     params_dict = {}
     if kwargs is not None:
         for substring in kwargs.split():
-            key, value_string = substring.split('=')
+            try:
+                key, value_string = substring.split('=')
+            except ValueError as error:
+                message = f'Arguments string "{kwargs}" not valid'
+                raise ValueError(message) from error
+
             value = guess_type(value_string)
             params_dict[key] = value
     if issubclass(transform_class, RandomTransform):

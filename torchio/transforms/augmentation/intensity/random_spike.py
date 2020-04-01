@@ -9,18 +9,26 @@ from .. import RandomTransform
 
 
 class RandomSpike(RandomTransform):
-    """Add random MRI spike artifacts.
+    r"""Add random MRI spike artifacts.
 
     Args:
-        num_spikes_range:
-        intensity_range:
-        proportion_to_augment:
-        seed:
+        num_spikes: Number of spikes :math:`n` presnet in k-space.
+            If a tuple :math:`(a, b)` is provided, then
+            :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.
+            Larger values generate more distorted images.
+        intensity: Ratio :math:`r` between the spike intensity and the maximum
+            of the spectrum.
+            Larger values generate more distorted images.
+        proportion_to_augment: Probability that this transform will be applied.
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+
+    .. note:: The execution time of this transform does not depend on the
+        number of spikes.
     """
     def __init__(
             self,
-            num_spikes_range: Union[int, Tuple[int, int]] = 1,
-            intensity_range: Union[float, Tuple[float, float]] = (0.1, 1),
+            num_spikes: Union[int, Tuple[int, int]] = 1,
+            intensity: Union[float, Tuple[float, float]] = (0.1, 1),
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
             ):
@@ -30,11 +38,11 @@ class RandomSpike(RandomTransform):
             'proportion_to_augment',
         )
         self.intensity_range = self.parse_range(
-            intensity_range, 'intensity_range')
-        if isinstance(num_spikes_range, int):
-            self.num_spikes_range = num_spikes_range, num_spikes_range
+            intensity, 'intensity_range')
+        if isinstance(num_spikes, int):
+            self.num_spikes_range = num_spikes, num_spikes
         else:
-            self.num_spikes_range = num_spikes_range
+            self.num_spikes_range = num_spikes
 
     def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
@@ -88,15 +96,15 @@ class RandomSpike(RandomTransform):
         ns_min, ns_max = num_spikes_range
         num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
         i_min, i_max = intensity_range
-        intensity_param = torch.rand(1).item() * (i_max - i_min) + i_min
+        intensity_param = torch.FloatTensor(1).uniform_(*intensity_range)
         do_it = torch.rand(1) < probability
-        return num_spikes_param, intensity_param, do_it
+        return num_spikes_param, intensity_param.item(), do_it
 
     def add_artifact(
             self,
             image: sitk.Image,
             num_spikes: int,
-            factor: float,
+            intensity_factor: float,
             ):
         array = sitk.GetArrayViewFromImage(image).transpose()
         spectrum = self.fourier_transform(array).ravel(order='F')

@@ -29,7 +29,7 @@ of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::
 
     import torchio
-    from torchio.transforms import Rescale, RandomAffine
+    from torchio.transforms import RescaleIntensity, RandomAffine
     from torchvision.transforms import Compose
     from torch.utils.data import DataLoader
 
@@ -49,7 +49,7 @@ in parallel::
 
     # Let's use one preprocessing transform and one augmentation transform
     transforms = [
-        Rescale((0, 1)),  # applied only to torchio.INTENSITY images
+        RescaleIntensity((0, 1)),  # applied only to torchio.INTENSITY images
         RandomAffine(),  # applied to all images in the sample
     ]
 

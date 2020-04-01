@@ -2,14 +2,10 @@
 
 """Tests for ImagesDataset."""
 
-import random
-import tempfile
-import unittest
 from pathlib import Path
-import numpy as np
 import nibabel as nib
 import torchio
-from torchio import INTENSITY, LABEL, DATA, Image
+from torchio import DATA, ImagesDataset
 from ..utils import TorchioTestCase
 
 
@@ -39,35 +35,12 @@ class TestImagesDataset(TorchioTestCase):
         with self.assertRaises(ValueError):
             self.iterate_dataset([{}])
 
-    def test_image_not_found(self):
-        with self.assertRaises(FileNotFoundError):
-            self.iterate_dataset([[Image('t1', 'nopath', INTENSITY)]])
-
-    def test_wrong_path_type(self):
-        with self.assertRaises(TypeError):
-            self.iterate_dataset([[Image('t1', 5, INTENSITY)]])
-
-    def test_duplicate_image_name(self):
-        with self.assertRaises(KeyError):
-            with tempfile.NamedTemporaryFile() as f:
-                images = [
-                    Image('t1', f.name, INTENSITY),
-                    Image('t1', f.name, INTENSITY),
-                ]
-            self.iterate_dataset([images])
-
-    def test_wrong_image_extension(self):
-        with self.assertRaises(RuntimeError):
-            path = self.dir / 'test.txt'
-            path.touch()
-            self.iterate_dataset([[Image('t1', path, INTENSITY)]])
-
     def test_wrong_index(self):
         with self.assertRaises(TypeError):
             self.dataset[:3]
 
-    def test_coverage(self):
-        dataset = torchio.ImagesDataset(
+    def test_save_sample(self):
+        dataset = ImagesDataset(
             self.subjects_list, transform=lambda x: x)
         _ = len(dataset)  # for coverage
         sample = dataset[0]
@@ -79,8 +52,33 @@ class TestImagesDataset(TorchioTestCase):
         ndims_sample = len(sample['t1'][DATA].shape)
         assert ndims_sample == ndims_output + 1
 
+    def test_no_load(self):
+        dataset = ImagesDataset(
+            self.subjects_list, load_image_data=False)
+        for sample in dataset:
+            pass
+
+    def test_no_load_transform(self):
+        with self.assertRaises(ValueError):
+            dataset = ImagesDataset(
+                self.subjects_list,
+                load_image_data=False,
+                transform=lambda x: x,
+            )
+
+    def test_wrong_transform_init(self):
+        with self.assertRaises(ValueError):
+            dataset = ImagesDataset(
+                self.subjects_list,
+                transform=dict(),
+            )
+
+    def test_wrong_transform_arg(self):
+        with self.assertRaises(ValueError):
+            self.dataset.set_transform(1)
+
     @staticmethod
     def iterate_dataset(subjects_list):
-        dataset = torchio.ImagesDataset(subjects_list)
+        dataset = ImagesDataset(subjects_list)
         for _ in dataset:
             pass

@@ -8,12 +8,14 @@ from .. import RandomTransform
 
 
 class RandomSwap(RandomTransform):
-    """Randomly swap patches within an image.
+    r"""Randomly swap patches within an image.
 
     Args:
-        patch_size:
-        num_iterations:
-        seed:
+        patch_size: Tuple of integers :math:`(d, h, w)` to swap patches
+            of size :math:`d \times h \times w`.
+            If a single number :math:`n` is provided, :math:`d = h = w = n`.
+        num_iterations: Number of times that two patches will be swapped.
+        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,

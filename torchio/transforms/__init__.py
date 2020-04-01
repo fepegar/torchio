@@ -1,5 +1,5 @@
 from .transform import Transform
-from .interpolation import Interpolation
+from .interpolation import Interpolation, get_sitk_interpolator
 
 # Generic
 from .lambda_transform import Lambda
@@ -22,13 +22,13 @@ from .augmentation.intensity import RandomBiasField
 # Preprocessing
 from .preprocessing import Pad
 from .preprocessing import Crop
-from .preprocessing import Rescale
 from .preprocessing import Resample
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import CenterCropOrPad
 from .preprocessing import CropOrPad
 from .preprocessing import HistogramStandardization
+from .preprocessing import Rescale, RescaleIntensity
 from .preprocessing.intensity.histogram_standardization import train as train_histogram
 from .preprocessing import HistogramEqualize
 from .preprocessing import HistogramRandomChange

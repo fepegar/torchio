@@ -1,13 +1,13 @@
-import unittest
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchio import IMAGE, LOCATION
 from torchio.data.inference import GridSampler, GridAggregator
+from ..utils import TorchioTestCase
 
 
-class TestInference(unittest.TestCase):
+class TestInference(TorchioTestCase):
     """Tests for `inference` module."""
     def test_inference(self):
         model = nn.Conv3d(1, 1, 3)

@@ -5,7 +5,7 @@ from .spatial.to_canonical import ToCanonical
 from .spatial.center_crop_pad import CenterCropOrPad
 from .spatial.center_crop_pad import CropOrPad
 
-from .intensity.rescale import Rescale
+from .intensity.rescale import Rescale, RescaleIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 

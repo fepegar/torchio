@@ -14,6 +14,7 @@ requirements = [
     'Click>=7.0',
     'nibabel',
     'numpy',
+    'Python-Deprecated',
     'scipy',
     'SimpleITK',
     'torch>=1.2',  # for IterableDataset
@@ -55,6 +56,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.13.23',
+    version='0.14.0',
     zip_safe=False,
 )

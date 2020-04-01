@@ -1,12 +1,16 @@
 import warnings
 from typing import Tuple, Union, Callable
+
 import torch
 import numpy as np
+from deprecated import deprecated
+
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
 
-class Rescale(NormalizationTransform):
+
+class RescaleIntensity(NormalizationTransform):
     """Rescale intensity values to a certain range.
 
     Args:
@@ -66,3 +70,8 @@ class Rescale(NormalizationTransform):
         array *= out_range  # [0, out_range]
         array += self.out_min  # [out_min, out_max]
         return torch.from_numpy(array)
+
+
+@deprecated('Rescale is deprecated. Use RescaleIntensity instead.')
+class Rescale(RescaleIntensity):
+    pass
