@@ -10,6 +10,9 @@ from ....utils import is_image_dict, check_consistent_shape
 class CropOrPad(BoundsTransform):
     """Crop and/or pad an image to a target shape.
 
+    This transform modifies the affine matrix associated to the volume so that
+    physical positions of the voxels are maintained.
+
     Args:
         target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
             provided, then :math:`D = H = W = N`.
@@ -18,10 +21,30 @@ class CropOrPad(BoundsTransform):
             :py:class:`~torchio.transforms.Pad`.
         mode: Whether to crop/pad using the image center or the center of the
             bounding box with non-zero values of a given mask with name
-            :py:attr:`mask_key`.
+            :py:attr:`mask_name`.
             Possible values are ``'center'`` or ``'mask'``.
-        mask_key: If :py:attr:`mode` is ``'mask'``, name of the mask from which
-            to extract the bounding box.
+        mask_name: If :py:attr:`mode` is ``'mask'``, name of the mask from
+            which to extract the bounding box.
+
+    Example:
+        >>> import torchio
+        >>> from torchio.tranforms import CropOrPad
+        >>> subject = torchio.Subject(
+        ...     torchio.Image('chest_ct', 'subject_a_ct.nii.gz', torchio.INTENSITY),
+        ...     torchio.Image('heart_mask', 'subject_a_heart_seg.nii.gz', torchio.LABEL),
+        ... )
+        >>> sample = torchio.ImagesDataset([subject])[0]
+        >>> sample['chest_ct'][torchio.DATA].shape
+        torch.Size([1, 512, 512, 289])
+        >>> transform = CropOrPad(
+        ...     (120, 80, 180),
+        ...     padding_mode='reflect',
+        ...     mode='mask',
+        ...     mask_name='heart_mask',
+        ... )
+        >>> transformed = transform(sample)
+        >>> transformed['chest_ct'][torchio.DATA].shape
+        torch.Size([1, 120, 80, 180])
     """
     def __init__(
             self,
@@ -29,21 +52,22 @@ class CropOrPad(BoundsTransform):
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
             mode: str = 'center',
-            mask_key: Optional[str] = None,
+            mask_name: Optional[str] = None,
             ):
         super().__init__(target_shape)
         self.mode = mode
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
         if mode == 'mask':
-            self.mask_key = mask_key
+            self.mask_name = mask_name
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
         else:
             self.compute_crop_or_pad = self._compute_center_crop_or_pad
 
     @staticmethod
     def _bbox_mask(mask_volume: np.ndarray):
-        """Return 6 coordinates of a 3D bounding box from a given mask
+        """Return 6 coordinates of a 3D bounding box from a given mask.
+
         Taken from `this SO question <https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array>`_.
 
         Args:
@@ -102,17 +126,21 @@ class CropOrPad(BoundsTransform):
         diff_shape = target_shape - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
-        #if cropping.any():
-        cropping_params = self._get_six_bounds_parameters(cropping) if cropping.any() else None
+        if cropping.any():
+            cropping_params = self._get_six_bounds_parameters(cropping)
+        else:
+            cropping_params = None
 
         padding = np.maximum(diff_shape, 0)
-        #if padding.any():
-        padding_params = self._get_six_bounds_parameters(padding) if padding.any() else None
+        if padding.any():
+            padding_params = self._get_six_bounds_parameters(padding)
+        else:
+            padding_params = None
 
         return padding_params, cropping_params
 
     def _compute_mask_center_crop_or_pad(self, sample: dict):
-        mask = sample[self.mask_key][DATA].numpy()
+        mask = sample[self.mask_name][DATA].numpy()
         # Original sample shape (from mask shape)
         sample_shape = np.squeeze(mask).shape
         # Calculate bounding box of the mask center
@@ -143,8 +171,10 @@ class CropOrPad(BoundsTransform):
             # Add the slice of the dimension to take
             cropping.append(begin_crop)
             cropping.append(end_crop)
-        # Conversion for SITK compatibility
-        return np.asarray(padding, dtype=np.uint).tolist(), np.asarray(cropping, dtype=np.uint).tolist()
+        # Conversion for SimpleITK compatibility
+        padding_params = np.asarray(padding, dtype=np.uint).tolist()
+        cropping_params = np.asarray(cropping, dtype=np.uint).tolist()
+        return padding_params, cropping_params
 
     def apply_transform(self, sample: dict) -> dict:
         padding_params, cropping_params = self.compute_crop_or_pad(sample)
