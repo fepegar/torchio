@@ -116,7 +116,6 @@ class RandomElasticDeformation(RandomTransform):
             image_interpolation: Interpolation = Interpolation.LINEAR,
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            deformation_std: Union[None, float, Tuple[float, float, float]] = None,
             ):
         super().__init__(seed=seed)
         self._bspline_transformation = None
@@ -139,13 +138,6 @@ class RandomElasticDeformation(RandomTransform):
             'proportion_to_augment',
         )
         self.interpolation = self.parse_interpolation(image_interpolation)
-        if deformation_std is not None:
-            message = (
-                'The argument "deformation_std" is deprecated.'
-                ' Use "max_displacement" instead'
-            )
-            warnings.warn(message, DeprecationWarning)
-            self.max_displacement = deformation_std
 
     def parse_control_points(
             self,
