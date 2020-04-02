@@ -14,7 +14,7 @@ SPLINE_ORDER = 3
 
 
 class RandomElasticDeformation(RandomTransform):
-    """Apply dense random elastic deformation.
+    r"""Apply dense random elastic deformation.
 
     A random displacement is assigned to a coarse grid of control points around
     and inside the image. The displacement at each voxel is interpolated from
@@ -211,10 +211,6 @@ class RandomElasticDeformation(RandomTransform):
             else:
                 interpolation = self.interpolation
             if bspline_params is None:
-                image = self.nib_to_sitk(
-                    image_dict[DATA][0],
-                    image_dict[AFFINE],
-                )
                 do_augmentation, bspline_params = self.get_params(
                     self.num_control_points,
                     self.max_displacement,
