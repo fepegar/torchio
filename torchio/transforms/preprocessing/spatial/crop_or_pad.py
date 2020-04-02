@@ -79,7 +79,7 @@ class CropOrPad(BoundsTransform):
         rmin, rmax = np.where(r)[0][[0, -1]]
         cmin, cmax = np.where(c)[0][[0, -1]]
         zmin, zmax = np.where(z)[0][[0, -1]]
-        return rmin, rmax, cmin, cmax, zmin, zmax
+        return np.array([rmin, cmin, zmin,]), np.array([cmax,rmax, zmax])
 
     @staticmethod
     def _get_sample_shape(sample: dict) -> Tuple[int]:
@@ -144,12 +144,9 @@ class CropOrPad(BoundsTransform):
         # Original sample shape (from mask shape)
         sample_shape = np.squeeze(mask).shape
         # Calculate bounding box of the mask center
-        xmin, xmax, ymin, ymax, zmin, zmax = self._bbox_mask(np.squeeze(mask))
+        bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
-        center_x = (xmax - xmin) / 2 + xmin
-        center_y = (ymax - ymin) / 2 + ymin
-        center_z = (zmax - zmin) / 2 + zmin
-        center_mask = center_x, center_y, center_z
+        center_mask = (bb_max - bb_min) / 2 + bb_min
         # List of padding to do
         padding = []
         # Final cropping (after padding)
