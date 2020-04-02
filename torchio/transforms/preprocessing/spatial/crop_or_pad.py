@@ -58,7 +58,13 @@ class CropOrPad(BoundsTransform):
         self.mode = mode
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
+        if mode not in {'center', 'mask'}:
+            message = f'Mode must be "center" or "mask", not "{mode}"'
+            raise ValueError(message)
         if mode == 'mask':
+            if mask_name is None:
+                message = 'If mode is "mask", mask_name cannot be None'
+                raise ValueError(message)
             self.mask_name = mask_name
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
         else:
@@ -140,6 +146,12 @@ class CropOrPad(BoundsTransform):
         return padding_params, cropping_params
 
     def _compute_mask_center_crop_or_pad(self, sample: dict):
+        if self.mask_name not in sample:
+            message = (
+                f'Mask name "{self.mask_name}"'
+                f' not found in sample keys: {tuple(sample.keys())}'
+            )
+            raise KeyError(message)
         mask = sample[self.mask_name][DATA].numpy()
         # Original sample shape (from mask shape)
         sample_shape = np.squeeze(mask).shape
