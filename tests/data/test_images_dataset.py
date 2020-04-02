@@ -32,11 +32,11 @@ class TestImagesDataset(TorchioTestCase):
             self.iterate_dataset([0])
 
     def test_wrong_subject_type_dict(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self.iterate_dataset([{}])
 
     def test_wrong_index(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             self.dataset[:3]
 
     def test_save_sample(self):
