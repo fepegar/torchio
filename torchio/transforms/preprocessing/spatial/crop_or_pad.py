@@ -85,7 +85,7 @@ class CropOrPad(BoundsTransform):
         rmin, rmax = np.where(r)[0][[0, -1]]
         cmin, cmax = np.where(c)[0][[0, -1]]
         zmin, zmax = np.where(z)[0][[0, -1]]
-        return np.array([rmin, cmin, zmin,]), np.array([cmax,rmax, zmax])
+        return np.array([rmin, cmin, zmin]), np.array([rmax, cmax, zmax])
 
     @staticmethod
     def _get_sample_shape(sample: dict) -> Tuple[int]:
