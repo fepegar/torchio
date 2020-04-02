@@ -124,10 +124,10 @@ def apply_transform_to_file(
         output_path: TypePath,
         type_: str = INTENSITY,
         ):
-    from . import Image, ImagesDataset
-    subject = [
+    from . import Image, ImagesDataset, Subject
+    subject = Subject(
         Image('image', input_path, type_),
-    ]
+    )
     dataset = ImagesDataset([subject], transform=transform)
     transformed = dataset[0]
     dataset.save_sample(transformed, dict(image=output_path))

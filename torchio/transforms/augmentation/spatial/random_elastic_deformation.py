@@ -65,7 +65,7 @@ class RandomElasticDeformation(RandomTransform):
     .. image:: https://www.slicer.org/w/img_auth.php/6/6f/RegLib_BSplineGridModel.png
         :alt: B-spline example from 3D Slicer documentation
 
-    To obtain a generate a similar grid of control points with TorchIO,
+    To generate a similar grid of control points with TorchIO,
     the transform can be instantiated as follows::
 
         >>> from torchio import RandomElasticDeformation
