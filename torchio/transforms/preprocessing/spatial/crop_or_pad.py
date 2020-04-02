@@ -102,12 +102,12 @@ class CropOrPad(BoundsTransform):
         diff_shape = target_shape - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
-        if cropping.any():
-            cropping_params = self._get_six_bounds_parameters(cropping)
+        #if cropping.any():
+        cropping_params = self._get_six_bounds_parameters(cropping) if cropping.any() else None
 
         padding = np.maximum(diff_shape, 0)
-        if padding.any():
-            padding_params = self._get_six_bounds_parameters(padding)
+        #if padding.any():
+        padding_params = self._get_six_bounds_parameters(padding) if padding.any() else None
 
         return padding_params, cropping_params
 
@@ -132,24 +132,32 @@ class CropOrPad(BoundsTransform):
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
-            begin_pad = abs(np.minimum(begin, 0))
-            end_pad = np.maximum(end - sample_shape[dim], 0)
+            print("Begin: {}\nmin: {}\nabs: {}\nround:{}".format(begin, min(begin, 0), abs(min(begin, 0)), round(abs(min(begin, 0)))
+                                                                 ))
+            print("End: {}\nmax: {}\nround:{}".format(end - sample_shape[dim], max(end - sample_shape[dim], 0),
+                                                                round(max(end - sample_shape[dim], 0))
+                                                                ))
+            begin_pad = round(abs(min(begin, 0)))
+            end_pad = round(max(end - sample_shape[dim], 0))
             # Check if cropping is needed
-            begin_crop = abs(np.round(abs(np.maximum(begin, 0)))).astype(np.uint)
-            end_crop = abs(np.round(np.minimum(end - sample_shape[dim], 0))).astype(np.uint)
+            begin_crop = round(max(begin, 0))
+            end_crop = abs(round(min(end - sample_shape[dim], 0)))
             # Add padding values of the dim to the list
-            padding.append(np.round(begin_pad).astype(np.uint))
-            padding.append(np.round(end_pad).astype(np.uint))
+            padding.append(begin_pad)
+            padding.append(end_pad)
             # Add the slice of the dimension to take
             cropping.append(begin_crop)
             cropping.append(end_crop)
         # Conversion for SITK compatibility
-        return np.asarray(padding).tolist(), np.asarray(cropping).tolist()
+        print("Padding: {}\nCropping: {}".format(padding, cropping))
+        return np.asarray(padding, dtype=np.uint).tolist(), np.asarray(cropping, dtype=np.uint).tolist()
 
     def apply_transform(self, sample: dict) -> dict:
         padding_params, cropping_params = self.compute_crop_or_pad(sample)
         padding_kwargs = dict(
             padding_mode=self.padding_mode, fill=self.padding_fill)
-        sample = Pad(padding_params, **padding_kwargs)(sample)
-        sample = Crop(cropping_params)(sample)
+        if padding_params is not None:
+            sample = Pad(padding_params, **padding_kwargs)(sample)
+        if cropping_params is not None:
+            sample = Crop(cropping_params)(sample)
         return sample
