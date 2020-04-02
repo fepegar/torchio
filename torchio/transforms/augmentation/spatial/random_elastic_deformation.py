@@ -76,7 +76,36 @@ class RandomElasticDeformation(RandomTransform):
 
     Note that control points outside the image bounds are not showed in the
     example image (they would also be red as we set :py:attr:`locked_borders`
-    to 2).
+    to ``2``).
+
+    .. warning:: Image folding may occur if the maximum displacement is larger
+        than half the coarse grid spacing. The grid spacing can be computed
+        using the image bounds in physical space [#]_ and the number of control
+        points::
+
+            >>> import numpy as np
+            >>> import SimpleITK as sitk
+            >>> image = sitk.ReadImage('my_image.nii.gz')
+            >>> image.GetSize()
+            (512, 512, 139)  # voxels
+            >>> image.GetSpacing()
+            (0.76, 0.76, 2.50)  # mm
+            >>> bounds = np.array(image.GetSize()) * np.array(image.GetSpacing())
+            array([390.0, 390.0, 347.5])  # mm
+            >>> num_control_points = np.array((7, 7, 6))
+            >>> grid_spacing = bounds / (num_control_points - 2)
+            >>> grid_spacing
+            array([78.0, 78.0, 86.9])  # mm
+            >>> potential_folding = grid_spacing / 2
+            >>> potential_folding
+            array([39.0, 39.0, 43.4])  # mm
+
+        Using a :py:attr:`max_displacement` larger than the computed
+        :py:attr:`potential_folding` will raise a :py:class:`RuntimeWarning`.
+
+        .. [#] Technically, :math:`2 \epsilon` should be added to the
+            image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
+            source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
     """
 
     def __init__(
@@ -195,7 +224,7 @@ class RandomElasticDeformation(RandomTransform):
                 ' occur. Choose fewer control points or a smaller'
                 ' maximum displacement'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
 
     def apply_transform(self, sample: dict) -> dict:
         check_consistent_shape(sample)

@@ -80,7 +80,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             num_control_points=(12, 5, 5),
             max_displacement=6,
         )
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             transformed = transform(self.sample)
 
     def test_num_control_points(self):
