@@ -21,10 +21,9 @@ from .augmentation.intensity import RandomBiasField
 from .preprocessing import Pad
 from .preprocessing import Crop
 from .preprocessing import Resample
-from .preprocessing import CropOrPad
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
-from .preprocessing import CenterCropOrPad
 from .preprocessing import HistogramStandardization
 from .preprocessing import Rescale, RescaleIntensity
+from .preprocessing import CropOrPad, CenterCropOrPad
 from .preprocessing.intensity.histogram_standardization import train as train_histogram

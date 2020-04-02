@@ -2,8 +2,7 @@ from .spatial.pad import Pad
 from .spatial.crop import Crop
 from .spatial.resample import Resample
 from .spatial.to_canonical import ToCanonical
-from .spatial.center_crop_pad import CropOrPad
-from .spatial.center_crop_pad import CenterCropOrPad
+from .spatial.crop_or_pad import CropOrPad, CenterCropOrPad
 
 from .intensity.rescale import Rescale, RescaleIntensity
 from .intensity.z_normalization import ZNormalization
