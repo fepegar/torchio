@@ -132,11 +132,6 @@ class CropOrPad(BoundsTransform):
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
-            print("Begin: {}\nmin: {}\nabs: {}\nround:{}".format(begin, min(begin, 0), abs(min(begin, 0)), round(abs(min(begin, 0)))
-                                                                 ))
-            print("End: {}\nmax: {}\nround:{}".format(end - sample_shape[dim], max(end - sample_shape[dim], 0),
-                                                                round(max(end - sample_shape[dim], 0))
-                                                                ))
             begin_pad = round(abs(min(begin, 0)))
             end_pad = round(max(end - sample_shape[dim], 0))
             # Check if cropping is needed
@@ -149,7 +144,6 @@ class CropOrPad(BoundsTransform):
             cropping.append(begin_crop)
             cropping.append(end_crop)
         # Conversion for SITK compatibility
-        print("Padding: {}\nCropping: {}".format(padding, cropping))
         return np.asarray(padding, dtype=np.uint).tolist(), np.asarray(cropping, dtype=np.uint).tolist()
 
     def apply_transform(self, sample: dict) -> dict:
