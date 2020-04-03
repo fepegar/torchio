@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Callable
+from typing import Callable
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform, TypeBounds
 
