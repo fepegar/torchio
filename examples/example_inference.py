@@ -24,7 +24,7 @@ grid_sampler = GridSampler(input_array, patch_size, patch_overlap)
 patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
 aggregator = GridAggregator(input_array, patch_overlap)
 
-model = nn.Module()  # some Pytorch model
+model = nn.Identity()  # some Pytorch model
 
 with torch.no_grad():
     for patches_batch in tqdm(patch_loader):
