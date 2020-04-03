@@ -41,10 +41,6 @@ class TestRandomElasticDeformation(TorchioTestCase):
         with self.assertRaises(TypeError):
             RandomElasticDeformation(image_interpolation='linear')
 
-    def test_deprecation(self):
-        with self.assertWarns(DeprecationWarning):
-            RandomElasticDeformation(deformation_std=15)
-
     def test_num_control_points_noint(self):
         with self.assertRaises(ValueError):
             RandomElasticDeformation(num_control_points=2.5)
@@ -80,7 +76,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             num_control_points=(12, 5, 5),
             max_displacement=6,
         )
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             transformed = transform(self.sample)
 
     def test_num_control_points(self):
@@ -90,10 +86,3 @@ class TestRandomElasticDeformation(TorchioTestCase):
     def test_max_displacement(self):
         RandomElasticDeformation(max_displacement=5)
         RandomElasticDeformation(max_displacement=(5, 6, 7))
-
-    def test_deformation_std(self):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            # This test is to be deleted with the parameter
-            RandomElasticDeformation(deformation_std=5)
-            RandomElasticDeformation(deformation_std=(5, 6, 7))

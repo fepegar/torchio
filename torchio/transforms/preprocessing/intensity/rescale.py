@@ -9,7 +9,6 @@ from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
 
-
 class RescaleIntensity(NormalizationTransform):
     """Rescale intensity values to a certain range.
 

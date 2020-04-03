@@ -79,8 +79,8 @@ class Pad(BoundsTransform):
             return padding_mode
         else:
             message = (
-                f'Padding mode "{self.padding_mode}" not valid.'
-                f' Valid options are {list(self.PADDING_FUNCTIONS.keys())}'
+                f'Padding mode "{padding_mode}" not valid.'
+                f' Valid options are {list(cls.PADDING_FUNCTIONS.keys())}'
             )
             raise KeyError(message)
 

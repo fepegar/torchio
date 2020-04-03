@@ -33,11 +33,15 @@ class Image:
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
             when resampling.
+        **kwargs: Items that will be added to image dictionary within the
+            subject sample.
     """
-    def __init__(self, name: str, path: TypePath, type_: str):
+
+    def __init__(self, name: str, path: TypePath, type_: str, **kwargs):
         self.name = name
         self.path = self._parse_path(path)
         self.type = type_
+        self.kwargs = kwargs
 
     def _parse_path(self, path: TypePath) -> Path:
         try:
@@ -80,12 +84,13 @@ class Subject(list):
 
     Args:
         *images: Instances of :py:class:`~torchio.data.images.Image`.
-        name: Subject ID
+        **kwargs: Items that will be added to the subject sample.
     """
-    def __init__(self, *images: Image, name: str = ''):
+
+    def __init__(self, *images: Image, **kwargs):
         self._parse_images(images)
         super().__init__(images)
-        self.name = name
+        self.kwargs = kwargs
 
     def __repr__(self):
         return f'{__class__.__name__}("{self.name}", {len(self)} images)'
@@ -172,6 +177,7 @@ class ImagesDataset(Dataset):
     .. _affine matrix: https://nipy.org/nibabel/coordinate_systems.html
 
     """
+
     def __init__(
             self,
             subjects: Sequence[Subject],
@@ -223,11 +229,12 @@ class ImagesDataset(Dataset):
         Args:
             subject: Instance of :py:class:`~torchio.data.images.Subject`.
         """
-        sample = {
+        subject_sample = {
             image.name: self.get_image_dict_from_image(image)
             for image in subject
         }
-        return sample
+        subject_sample.update(subject.kwargs)
+        return subject_sample
 
     def get_image_dict_from_image(self, image: Image):
         """Create a dictionary with image information.
@@ -254,6 +261,7 @@ class ImagesDataset(Dataset):
             PATH: str(image.path),
             STEM: get_stem(image.path),
         }
+        image_dict.update(image.kwargs)
         return image_dict
 
     def set_transform(self, transform: Optional[Callable]) -> None:
@@ -283,8 +291,13 @@ class ImagesDataset(Dataset):
             raise ValueError('Subjects list is empty')
 
         # Check each element
-        for subject_list in subjects_list:
-            Subject(*subject_list)
+        for subject in subjects_list:
+            if not isinstance(subject, Subject):
+                message = (
+                    'Subjects list must contain instances of torchio.Subject,'
+                    f' not "{type(subject)}"'
+                )
+                raise TypeError(message)
 
     @classmethod
     def save_sample(

@@ -145,7 +145,6 @@ class HistogramStandardization(NormalizationTransform):
         return mapping
 
 
-
 def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
     """Standardize the cutoff values given in the configuration.
 

@@ -14,7 +14,7 @@ SPLINE_ORDER = 3
 
 
 class RandomElasticDeformation(RandomTransform):
-    """Apply dense random elastic deformation.
+    r"""Apply dense random elastic deformation.
 
     A random displacement is assigned to a coarse grid of control points around
     and inside the image. The displacement at each voxel is interpolated from
@@ -76,7 +76,36 @@ class RandomElasticDeformation(RandomTransform):
 
     Note that control points outside the image bounds are not showed in the
     example image (they would also be red as we set :py:attr:`locked_borders`
-    to 2).
+    to ``2``).
+
+    .. warning:: Image folding may occur if the maximum displacement is larger
+        than half the coarse grid spacing. The grid spacing can be computed
+        using the image bounds in physical space [#]_ and the number of control
+        points::
+
+            >>> import numpy as np
+            >>> import SimpleITK as sitk
+            >>> image = sitk.ReadImage('my_image.nii.gz')
+            >>> image.GetSize()
+            (512, 512, 139)  # voxels
+            >>> image.GetSpacing()
+            (0.76, 0.76, 2.50)  # mm
+            >>> bounds = np.array(image.GetSize()) * np.array(image.GetSpacing())
+            array([390.0, 390.0, 347.5])  # mm
+            >>> num_control_points = np.array((7, 7, 6))
+            >>> grid_spacing = bounds / (num_control_points - 2)
+            >>> grid_spacing
+            array([78.0, 78.0, 86.9])  # mm
+            >>> potential_folding = grid_spacing / 2
+            >>> potential_folding
+            array([39.0, 39.0, 43.4])  # mm
+
+        Using a :py:attr:`max_displacement` larger than the computed
+        :py:attr:`potential_folding` will raise a :py:class:`RuntimeWarning`.
+
+        .. [#] Technically, :math:`2 \epsilon` should be added to the
+            image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
+            source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
     """
 
     def __init__(
@@ -87,7 +116,6 @@ class RandomElasticDeformation(RandomTransform):
             image_interpolation: Interpolation = Interpolation.LINEAR,
             proportion_to_augment: float = 1,
             seed: Optional[int] = None,
-            deformation_std: Union[None, float, Tuple[float, float, float]] = None,
             ):
         super().__init__(seed=seed)
         self._bspline_transformation = None
@@ -110,13 +138,6 @@ class RandomElasticDeformation(RandomTransform):
             'proportion_to_augment',
         )
         self.interpolation = self.parse_interpolation(image_interpolation)
-        if deformation_std is not None:
-            message = (
-                'The argument "deformation_std" is deprecated.'
-                ' Use "max_displacement" instead'
-            )
-            warnings.warn(message, DeprecationWarning)
-            self.max_displacement = deformation_std
 
     def parse_control_points(
             self,
@@ -195,7 +216,7 @@ class RandomElasticDeformation(RandomTransform):
                 ' occur. Choose fewer control points or a smaller'
                 ' maximum displacement'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
 
     def apply_transform(self, sample: dict) -> dict:
         check_consistent_shape(sample)
@@ -211,10 +232,6 @@ class RandomElasticDeformation(RandomTransform):
             else:
                 interpolation = self.interpolation
             if bspline_params is None:
-                image = self.nib_to_sitk(
-                    image_dict[DATA][0],
-                    image_dict[AFFINE],
-                )
                 do_augmentation, bspline_params = self.get_params(
                     self.num_control_points,
                     self.max_displacement,
