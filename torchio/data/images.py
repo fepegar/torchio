@@ -41,7 +41,7 @@ class Image:
         self.name = name
         self.path = self._parse_path(path)
         self.type = type_
-        self.kwargs = kwargs
+        self.__dict__.update(kwargs)
 
     def _parse_path(self, path: TypePath) -> Path:
         try:
@@ -87,10 +87,11 @@ class Subject(list):
         **kwargs: Items that will be added to the subject sample.
     """
 
-    def __init__(self, *images: Image, **kwargs):
+    def __init__(self, *images: Image, name: str = '', **kwargs):
         self._parse_images(images)
         super().__init__(images)
-        self.kwargs = kwargs
+        self.name = name
+        self.__dict__.update(kwargs)
 
     def __repr__(self):
         return f'{__class__.__name__}("{self.name}", {len(self)} images)'
