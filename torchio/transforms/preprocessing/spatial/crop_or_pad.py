@@ -128,11 +128,11 @@ class CropOrPad(BoundsTransform):
             result.extend([ini, fin])
         return tuple(result)
 
-    def _compute_center_crop_or_pad(self, sample: dict):
-        source_shape = self._get_sample_shape(sample)
-        # The parent class turns the 3-element shape tuple (d, h, w)
-        # into a 6-element bounds tuple (d, d, h, h, w, w)
-        target_shape = np.array(self.bounds_parameters[::2])
+    def _compute_cropping_padding_from_shapes(
+            self,
+            source_shape,
+            target_shape,
+            ):
         diff_shape = target_shape - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
@@ -147,6 +147,16 @@ class CropOrPad(BoundsTransform):
         else:
             padding_params = None
 
+        return padding_params, cropping_params
+
+    def _compute_center_crop_or_pad(self, sample: dict):
+        source_shape = self._get_sample_shape(sample)
+        # The parent class turns the 3-element shape tuple (d, h, w)
+        # into a 6-element bounds tuple (d, d, h, h, w, w)
+        target_shape = np.array(self.bounds_parameters[::2])
+        parameters = self._compute_cropping_padding_from_shapes(
+            source_shape, target_shape)
+        padding_params, cropping_params = parameters
         return padding_params, cropping_params
 
     def _compute_mask_center_crop_or_pad(self, sample: dict):
