@@ -41,10 +41,6 @@ class TestRandomElasticDeformation(TorchioTestCase):
         with self.assertRaises(TypeError):
             RandomElasticDeformation(image_interpolation='linear')
 
-    def test_deprecation(self):
-        with self.assertWarns(DeprecationWarning):
-            RandomElasticDeformation(deformation_std=15)
-
     def test_num_control_points_noint(self):
         with self.assertRaises(ValueError):
             RandomElasticDeformation(num_control_points=2.5)

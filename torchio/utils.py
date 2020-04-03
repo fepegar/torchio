@@ -3,7 +3,7 @@ import shutil
 import pprint
 import tempfile
 from pathlib import Path
-from typing import Union, Iterable, Tuple, Any, Optional
+from typing import Union, Iterable, Tuple, Any, Optional, List
 import torch
 import numpy as np
 import nibabel as nib
@@ -65,7 +65,7 @@ def create_dummy_dataset(
         force: bool = False,
         verbose: bool = False,
         ):
-    from .data import Image
+    from .data import Image, Subject
     output_dir = tempfile.gettempdir() if directory is None else directory
     output_dir = Path(output_dir)
     images_dir = output_dir / 'dummy_images'
@@ -75,16 +75,16 @@ def create_dummy_dataset(
         shutil.rmtree(images_dir)
         shutil.rmtree(labels_dir)
 
-    subjects = []
+    subjects: List[Subject] = []
     if images_dir.is_dir():
         for i in trange(num_images):
             image_path = images_dir / f'image_{i}{suffix}'
             label_path = labels_dir / f'label_{i}{suffix}'
-            subject_images = [
+            subject = Subject(
                 Image('one_modality', image_path, INTENSITY),
                 Image('segmentation', label_path, LABEL),
-            ]
-            subjects.append(subject_images)
+            )
+            subjects.append(subject)
     else:
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
@@ -110,11 +110,11 @@ def create_dummy_dataset(
             nii = nib.Nifti1Image(label.astype(np.uint8), affine)
             nii.to_filename(str(label_path))
 
-            subject_images = [
+            subject = Subject(
                 Image('one_modality', image_path, INTENSITY),
                 Image('segmentation', label_path, LABEL),
-            ]
-            subjects.append(subject_images)
+            )
+            subjects.append(subject)
     return subjects
 
 
