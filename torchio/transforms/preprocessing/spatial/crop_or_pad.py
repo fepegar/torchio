@@ -168,7 +168,7 @@ class CropOrPad(BoundsTransform):
             raise KeyError(message)
         mask = sample[self.mask_name][DATA].numpy()
         # Original sample shape (from mask shape)
-        sample_shape = np.squeeze(mask).shape
+        sample_shape = mask.shape[1:]  # remove channels dimension
         # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
