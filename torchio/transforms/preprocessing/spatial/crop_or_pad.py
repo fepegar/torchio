@@ -62,6 +62,9 @@ class CropOrPad(BoundsTransform):
         if mode not in {'center', 'mask'}:
             message = f'Mode must be "center" or "mask", not "{mode}"'
             raise ValueError(message)
+        if mask_name is not None and mode != 'mask':
+            message = 'If mask_name is not None, mode must be "mask"'
+            raise ValueError(message)
         if mode == 'mask':
             if mask_name is None:
                 message = 'If mode is "mask", mask_name cannot be None'
