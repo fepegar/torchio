@@ -21,6 +21,7 @@ due.cite(
     BibTeX(bibtex),
     description=title,
     path="torchio",
+    cite_module=True,
 )
 
 due.cite(
@@ -29,4 +30,5 @@ due.cite(
         "on PyTorch",
     path="torchio",
     tags=["implementation"],
+    cite_module=True,
 )
