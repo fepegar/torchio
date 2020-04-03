@@ -22,7 +22,6 @@ from torchio.transforms import (
     Crop,
     ToCanonical,
     CropOrPad,
-    CenterCropOrPad,
 )
 from ..utils import TorchioTestCase
 
@@ -36,8 +35,7 @@ class TestTransforms(TorchioTestCase):
             t2=np.linspace(0, 100, 13),
         )
         transforms = (
-            CropOrPad((11, 19, 31)),
-            CenterCropOrPad((9, 21, 30)),
+            CropOrPad((9, 21, 30)),
             ToCanonical(),
             Resample((1, 1.1, 1.25)),
             RandomFlip(axes=(0, 1, 2), flip_probability=1),
