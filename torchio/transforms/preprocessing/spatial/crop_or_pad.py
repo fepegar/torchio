@@ -20,12 +20,11 @@ class CropOrPad(BoundsTransform):
         padding_mode: See :py:class:`~torchio.transforms.Pad`.
         padding_fill: Same as :attr:`fill` in
             :py:class:`~torchio.transforms.Pad`.
-        mode: Whether to crop/pad using the image center or the center of the
-            bounding box with non-zero values of a given mask with name
+        mask_name: If ``None``, the centers of the input and output volumes
+            will be the same.
+            If a string is given, the output volume center will be the center
+            of the bounding box of non-zero values in the image named
             :py:attr:`mask_name`.
-            Possible values are ``'center'`` or ``'mask'``.
-        mask_name: If :py:attr:`mode` is ``'mask'``, name of the mask from
-            which to extract the bounding box.
 
     Example:
         >>> import torchio
@@ -39,8 +38,6 @@ class CropOrPad(BoundsTransform):
         torch.Size([1, 512, 512, 289])
         >>> transform = CropOrPad(
         ...     (120, 80, 180),
-        ...     padding_mode='reflect',
-        ...     mode='mask',
         ...     mask_name='heart_mask',
         ... )
         >>> transformed = transform(sample)
@@ -59,20 +56,23 @@ class CropOrPad(BoundsTransform):
         self.mode = mode
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
-        if mode not in {'center', 'mask'}:
-            message = f'Mode must be "center" or "mask", not "{mode}"'
+        if mask_name is not None and not isinstance(mask_name, str):
+            message = (
+                'If mask_name is not None, it must be a string,'
+                f' not {type(mask_name)}'
+            )
             raise ValueError(message)
-        if mask_name is not None and mode != 'mask':
-            message = 'If mask_name is not None, mode must be "mask"'
-            raise ValueError(message)
-        if mode == 'mask':
-            if mask_name is None:
-                message = 'If mode is "mask", mask_name cannot be None'
-                raise ValueError(message)
-            self.mask_name = mask_name
-            self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
-        else:
+        self.mask_name = mask_name
+        if self.mask_name is None:
             self.compute_crop_or_pad = self._compute_center_crop_or_pad
+        else:
+            if not isinstance(mask_name, str):
+                message = (
+                    'If mask_name is not None, it must be a string,'
+                    f' not {type(mask_name)}'
+                )
+                raise ValueError(message)
+            self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
 
     @staticmethod
     def _bbox_mask(mask_volume: np.ndarray):
