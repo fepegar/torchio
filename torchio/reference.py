@@ -20,6 +20,7 @@ title = (
 due.cite(
     BibTeX(bibtex),
     description=title,
+    path="torchio",
 )
 
 due.cite(
