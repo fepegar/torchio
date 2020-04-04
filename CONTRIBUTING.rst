@@ -90,7 +90,8 @@ is #55::
 
    To get ``flake8`` and ``tox``, just ``pip install`` them into your virtual environment.
 
-6. Commit your changes and push your branch to GitHub::
+6. Commit your changes and push your branch to GitHub (`here's some great
+advice to write good commit messages <https://chris.beams.io/posts/git-commit>`_)::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
