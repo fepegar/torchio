@@ -9,3 +9,4 @@ Sphinx
 twine
 Click
 sphinx_rtd_theme
+pytest
