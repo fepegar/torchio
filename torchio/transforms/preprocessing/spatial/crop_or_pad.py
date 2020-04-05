@@ -5,7 +5,7 @@ from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform
 from ....torchio import DATA
-from ....utils import is_image_dict, check_consistent_shape
+from ....utils import is_image_dict, check_consistent_shape, exact_round
 
 
 class CropOrPad(BoundsTransform):
@@ -177,9 +177,10 @@ class CropOrPad(BoundsTransform):
         padding = []
         # Final cropping (after padding)
         cropping = []
-        for dim, center_dim in enumerate(center_mask):
+        for dim, center_dimension in enumerate(center_mask):
             # Compute coordinates of the target shape taken from the center of
             # the mask
+            center_dim = exact_round(center_dimension)
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
