@@ -59,7 +59,12 @@ class TestCropOrPad(TorchioTestCase):
             CenterCropOrPad(1)
 
     def test_empty_mask(self):
-        pass
+        target_shape = 8, 22, 30
+        transform = CropOrPad(target_shape=target_shape, mode="mask", mask_name="label")
+        mask = self.sample['label'][DATA]
+        mask *= 0
+        with self.assertWarns(UserWarning):
+            transform(self.sample)
 
     def test_center_mask(self):
         """The mask bounding box and the input image have the same center"""

@@ -167,10 +167,19 @@ class CropOrPad(BoundsTransform):
                 f' not found in sample keys: {tuple(sample.keys())}'
                 f'. Using the center of the volume for cropping/padding instead'
             )
-            warnings.warn(message)
+            warnings.warn(message=message)
             return self._compute_center_crop_or_pad(sample=sample)
 
         mask = sample[self.mask_name][DATA].numpy()
+
+        if not np.any(mask):
+            message = (
+                f'All values found in the mask "{self.mask_name}"'
+                f' are zero. Using the center of the volume for cropping/padding instead'
+            )
+            warnings.warn(message=message)
+            return self._compute_center_crop_or_pad(sample=sample)
+
         # Original sample shape (from mask shape)
         sample_shape = mask.shape[1:]  # remove channels dimension
         # Calculate bounding box of the mask center
