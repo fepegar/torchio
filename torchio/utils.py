@@ -208,9 +208,9 @@ def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     return data, affine
 
 
-def exact_round(value):
+def round_up(value: float) -> float:
     """
-    Computes the exact round value of the argument
+    Computes the round half up value of the argument
     Args:
         value: the value to round
 

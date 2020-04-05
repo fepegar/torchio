@@ -47,8 +47,8 @@ class TestCropOrPad(TorchioTestCase):
         self.assertEqual((1, 1, 1), result_shape)
 
     def test_wrong_mask_name(self):
-        cop = torchio.transforms.CropOrPad(1, mask_name='wrong')
-        with self.assertRaises(KeyError):
+        cop = torchio.transforms.CropOrPad(1, mask_name='wrong', mode="mask")
+        with self.assertWarns(UserWarning):
             cop(self.sample)
 
     def test_deprecation(self):

@@ -1,11 +1,12 @@
 from typing import Union, Tuple, Optional
 import numpy as np
+import warnings
 from deprecated import deprecated
 from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform
 from ....torchio import DATA
-from ....utils import is_image_dict, check_consistent_shape, exact_round
+from ....utils import is_image_dict, check_consistent_shape, round_up
 
 
 class CropOrPad(BoundsTransform):
@@ -164,8 +165,11 @@ class CropOrPad(BoundsTransform):
             message = (
                 f'Mask name "{self.mask_name}"'
                 f' not found in sample keys: {tuple(sample.keys())}'
+                f'. Using the center of the volume for cropping/padding instead'
             )
-            raise KeyError(message)
+            warnings.warn(message)
+            return self._compute_center_crop_or_pad(sample=sample)
+
         mask = sample[self.mask_name][DATA].numpy()
         # Original sample shape (from mask shape)
         sample_shape = mask.shape[1:]  # remove channels dimension
@@ -180,7 +184,7 @@ class CropOrPad(BoundsTransform):
         for dim, center_dimension in enumerate(center_mask):
             # Compute coordinates of the target shape taken from the center of
             # the mask
-            center_dim = exact_round(center_dimension)
+            center_dim = round_up(center_dimension)
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
