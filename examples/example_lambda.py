@@ -2,8 +2,8 @@ from torchio.transforms import Lambda
 from torchio import Image, ImagesDataset, INTENSITY, LABEL, Subject
 
 subject = Subject(
-    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
-    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
+    label=Image('~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
+    t1=Image('~/Dropbox/MRI/t1.nii.gz', INTENSITY),
 )
 subjects_list = [subject]
 

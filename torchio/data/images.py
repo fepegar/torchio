@@ -24,8 +24,6 @@ class Image:
     r"""Class to store information about an image.
 
     Args:
-        name: String corresponding to the name of the image, e.g. ``t1``,
-            or ``segmentation``.
         path: Path to a file that can be read by
             :mod:`SimpleITK` or :mod:`nibabel` or to a directory containing
             DICOM files.
@@ -37,8 +35,7 @@ class Image:
             subject sample.
     """
 
-    def __init__(self, name: str, path: TypePath, type_: str, **kwargs):
-        self.name = name
+    def __init__(self, path: TypePath, type_: str, **kwargs):
         self.path = self._parse_path(path)
         self.type = type_
         self.__dict__.update(kwargs)
@@ -50,11 +47,7 @@ class Image:
             message = f'Conversion to path not possible for variable: {path}'
             raise TypeError(message)
         if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
-            message = (
-                f'File for image "{self.name}"'
-                f' not found: "{path}"'
-                )
-            raise FileNotFoundError(message)
+            raise FileNotFoundError(f'File not found: {path}')
         return path
 
     def load(self, check_nans: bool = True) -> Tuple[torch.Tensor, np.ndarray]:
@@ -79,46 +72,49 @@ class Image:
         return tensor, affine
 
 
-class Subject(list):
+class Subject(dict):
     """Class to store information about the images corresponding to a subject.
 
     Args:
-        *images: Instances of :py:class:`~torchio.data.images.Image`.
         **kwargs: Items that will be added to the subject sample.
+
+    Example:
+
+        >>> import torchio
+        >>> from torchio import Image, Subject
+        >>> subject = Subject(
+        ...     one_image=Image('path_to_image.nii.gz, torchio.INTENSITY),
+        ...     a_segmentation=Image('path_to_seg.nii.gz, torchio.LABEL),
+        ...     age=45,
+        ...     name='John Doe',
+        ...     hospital='Hospital Juan Negrín',
+        ... )
+        >>>
+
     """
 
-    def __init__(self, *images: Image, name: str = '', **kwargs):
-        self._parse_images(images)
-        super().__init__(images)
-        self.name = name
-        self.__dict__.update(kwargs)
+    def __init__(self, *args, **kwargs):
+        if args:
+            raise ValueError('Only keyword arguments are allowed for Subject')
+        super().__init__(**kwargs)
+        self.images = [
+            (k, v) for (k, v) in self.items()
+            if isinstance(v, Image)
+        ]
+        self._parse_images(self.images)
 
     def __repr__(self):
-        return f'{__class__.__name__}("{self.name}", {len(self)} images)'
+        string = (
+            f'{self.__class__.__name__}'
+            f'(Keys: {tuple(self.keys())}; images: {len(self.images)})'
+        )
+        return string
 
     @staticmethod
-    def _parse_images(images: Tuple[Image, ...]) -> None:
+    def _parse_images(images: List[Tuple[str, Image]]) -> None:
         # Check that it's not empty
         if not images:
             raise ValueError('A subject without images cannot be created')
-
-        # Check that there are only instances of Image
-        # and all images have different names
-        names: List[str] = []
-        for image in images:
-            if not isinstance(image, Image):
-                message = (
-                    'Subject list elements must be instances of'
-                    f' torchio.Image, not "{type(image)}"'
-                )
-                raise TypeError(message)
-            if image.name in names:
-                message = (
-                    f'More than one image with name "{image.name}"'
-                    ' found in images list'
-                )
-                raise KeyError(message)
-            names.append(image.name)
 
 
 class ImagesDataset(Dataset):
@@ -214,11 +210,12 @@ class ImagesDataset(Dataset):
         Args:
             subject: Instance of :py:class:`~torchio.data.images.Subject`.
         """
-        subject_sample = {
-            image.name: self.get_image_dict_from_image(image)
-            for image in subject
-        }
-        subject_sample.update(subject.kwargs)
+        subject_sample = {}
+        for (key, value) in subject.items():
+            if isinstance(value, Image):
+                subject_sample[key] = self.get_image_dict_from_image(value)
+            else:
+                subject_sample[key] = value
         return subject_sample
 
     def get_image_dict_from_image(self, image: Image):
@@ -246,7 +243,6 @@ class ImagesDataset(Dataset):
             PATH: str(image.path),
             STEM: get_stem(image.path),
         }
-        image_dict.update(image.kwargs)
         return image_dict
 
     def set_transform(self, transform: Optional[Callable]) -> None:

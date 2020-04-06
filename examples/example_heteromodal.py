@@ -29,15 +29,15 @@ batch_size = 2
 
 # Populate a list with images
 one_subject = Subject(
-    Image('T1', '../BRATS2018_crop_renamed/LGG75_T1.nii.gz', torchio.INTENSITY),
-    Image('T2', '../BRATS2018_crop_renamed/LGG75_T2.nii.gz', torchio.INTENSITY),
-    Image('label', '../BRATS2018_crop_renamed/LGG75_Label.nii.gz', torchio.LABEL),
+    T1=Image(../BRATS2018_crop_renamed/LGG75_T1.nii.gz', torchio.INTENSITY),
+    T2=Image('../BRATS2018_crop_renamed/LGG75_T2.nii.gz', torchio.INTENSITY),
+    label=Image('../BRATS2018_crop_renamed/LGG75_Label.nii.gz', torchio.LABEL),
 )
 
 # This subject doesn't have a T2 MRI!
 another_subject = Subject(
-    Image('T1', '../BRATS2018_crop_renamed/LGG74_T1.nii.gz', torchio.INTENSITY),
-    Image('label', '../BRATS2018_crop_renamed/LGG74_Label.nii.gz', torchio.LABEL),
+    T1=Image(../BRATS2018_crop_renamed/LGG74_T1.nii.gz', torchio.INTENSITY),
+    label=Image('../BRATS2018_crop_renamed/LGG74_Label.nii.gz', torchio.LABEL),
 )
 
 subjects = [

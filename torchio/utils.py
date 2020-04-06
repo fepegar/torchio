@@ -81,8 +81,8 @@ def create_dummy_dataset(
             image_path = images_dir / f'image_{i}{suffix}'
             label_path = labels_dir / f'label_{i}{suffix}'
             subject = Subject(
-                Image('one_modality', image_path, INTENSITY),
-                Image('segmentation', label_path, LABEL),
+                one_modality=Image(image_path, INTENSITY),
+                segmentation=Image(label_path, LABEL),
             )
             subjects.append(subject)
     else:
@@ -111,8 +111,8 @@ def create_dummy_dataset(
             nii.to_filename(str(label_path))
 
             subject = Subject(
-                Image('one_modality', image_path, INTENSITY),
-                Image('segmentation', label_path, LABEL),
+                one_modality=Image(image_path, INTENSITY),
+                segmentation=Image(label_path, LABEL),
             )
             subjects.append(subject)
     return subjects
@@ -125,9 +125,7 @@ def apply_transform_to_file(
         type_: str = INTENSITY,
         ):
     from . import Image, ImagesDataset, Subject
-    subject = Subject(
-        Image('image', input_path, type_),
-    )
+    subject = Subject(image=Image(input_path, type_))
     dataset = ImagesDataset([subject], transform=transform)
     transformed = dataset[0]
     dataset.save_sample(transformed, dict(image=output_path))
