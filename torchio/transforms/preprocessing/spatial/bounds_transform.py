@@ -6,10 +6,12 @@ from ....utils import is_image_dict
 from ... import Transform
 
 
+TypeShape = Tuple[int, int, int]
+TypeSixBounds = Tuple[int, int, int, int, int, int]
 TypeBounds = Union[
     int,
-    Tuple[int, int, int],
-    Tuple[int, int, int, int, int, int],
+    TypeShape,
+    TypeSixBounds,
 ]
 
 

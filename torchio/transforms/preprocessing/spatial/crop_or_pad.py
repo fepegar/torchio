@@ -4,7 +4,7 @@ import warnings
 from deprecated import deprecated
 from .pad import Pad
 from .crop import Crop
-from .bounds_transform import BoundsTransform
+from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
 from ....torchio import DATA
 from ....utils import is_image_dict, check_consistent_shape, round_up
 
@@ -47,7 +47,7 @@ class CropOrPad(BoundsTransform):
     """
     def __init__(
             self,
-            target_shape: Union[int, Tuple[int, int, int]],
+            target_shape: Union[int, TypeShape],
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
             mask_name: Optional[str] = None,
@@ -74,7 +74,9 @@ class CropOrPad(BoundsTransform):
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
 
     @staticmethod
-    def _bbox_mask(mask_volume: np.ndarray):
+    def _bbox_mask(
+            mask_volume: np.ndarray,
+            ) -> Tuple[np.ndarray, np.ndarray]:
         """Return 6 coordinates of a 3D bounding box from a given mask.
 
         Taken from `this SO question <https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array>`_.
@@ -91,7 +93,7 @@ class CropOrPad(BoundsTransform):
         return np.array([rmin, cmin, zmin]), np.array([rmax, cmax, zmax])
 
     @staticmethod
-    def _get_sample_shape(sample: dict) -> Tuple[int]:
+    def _get_sample_shape(sample: dict) -> TypeShape:
         """Return the shape of the first image in the sample."""
         check_consistent_shape(sample)
         for image_dict in sample.values():
@@ -102,7 +104,9 @@ class CropOrPad(BoundsTransform):
         return data
 
     @staticmethod
-    def _get_six_bounds_parameters(parameters: np.ndarray):
+    def _get_six_bounds_parameters(
+            parameters: np.ndarray,
+            ) -> TypeSixBounds:
         r"""Compute bounds parameters for ITK filters.
 
         Args:
@@ -129,9 +133,9 @@ class CropOrPad(BoundsTransform):
 
     def _compute_cropping_padding_from_shapes(
             self,
-            source_shape,
-            target_shape,
-            ):
+            source_shape: TypeShape,
+            target_shape: TypeShape,
+            ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         diff_shape = target_shape - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
@@ -148,7 +152,10 @@ class CropOrPad(BoundsTransform):
 
         return padding_params, cropping_params
 
-    def _compute_center_crop_or_pad(self, sample: dict):
+    def _compute_center_crop_or_pad(
+            self,
+            sample: dict,
+            ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = self._get_sample_shape(sample)
         # The parent class turns the 3-element shape tuple (d, h, w)
         # into a 6-element bounds tuple (d, d, h, h, w, w)
@@ -158,14 +165,17 @@ class CropOrPad(BoundsTransform):
         padding_params, cropping_params = parameters
         return padding_params, cropping_params
 
-    def _compute_mask_center_crop_or_pad(self, sample: dict):
+    def _compute_mask_center_crop_or_pad(
+            self,
+            sample: dict,
+            ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         if self.mask_name not in sample:
             message = (
                 f'Mask name "{self.mask_name}"'
-                f' not found in sample keys: {tuple(sample.keys())}'
-                f'. Using the center of the volume for cropping/padding instead'
+                f' not found in sample keys "{tuple(sample.keys())}".'
+                ' Using volume center instead'
             )
-            warnings.warn(message=message)
+            warnings.warn(message)
             return self._compute_center_crop_or_pad(sample=sample)
 
         mask = sample[self.mask_name][DATA].numpy()
@@ -173,9 +183,9 @@ class CropOrPad(BoundsTransform):
         if not np.any(mask):
             message = (
                 f'All values found in the mask "{self.mask_name}"'
-                f' are zero. Using the center of the volume for cropping/padding instead'
+                ' are zero. Using volume center instead'
             )
-            warnings.warn(message=message)
+            warnings.warn(message)
             return self._compute_center_crop_or_pad(sample=sample)
 
         # Original sample shape (from mask shape)
@@ -207,8 +217,8 @@ class CropOrPad(BoundsTransform):
             cropping.append(begin_crop)
             cropping.append(end_crop)
         # Conversion for SimpleITK compatibility
-        padding_params = np.asarray(padding, dtype=np.uint).tolist()
-        cropping_params = np.asarray(cropping, dtype=np.uint).tolist()
+        padding_params = np.asarray(padding, dtype=int).tolist()
+        cropping_params = np.asarray(cropping, dtype=int).tolist()
         return padding_params, cropping_params
 
     def apply_transform(self, sample: dict) -> dict:
