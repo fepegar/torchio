@@ -2,7 +2,6 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from torchio.transforms import CropOrPad, CenterCropOrPad
 from torchio import DATA, AFFINE
-from torchio.utils import nib_to_sitk
 from ...utils import TorchioTestCase
 
 
@@ -12,6 +11,16 @@ class TestCropOrPad(TorchioTestCase):
         sample_t1 = self.sample['t1']
         shape = sample_t1[DATA].shape[1:]
         transform = CropOrPad(shape)
+        transformed = transform(self.sample)
+        assert_array_equal(sample_t1[DATA], transformed['t1'][DATA])
+        assert_array_equal(sample_t1[AFFINE], transformed['t1'][AFFINE])
+
+    def test_no_changes_mask(self):
+        sample_t1 = self.sample['t1']
+        sample_mask = self.sample['label'][DATA]
+        sample_mask *= 0
+        shape = sample_t1[DATA].shape[1:]
+        transform = CropOrPad(shape, mask_name='label')
         transformed = transform(self.sample)
         assert_array_equal(sample_t1[DATA], transformed['t1'][DATA])
         assert_array_equal(sample_t1[AFFINE], transformed['t1'][AFFINE])
