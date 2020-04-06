@@ -217,8 +217,10 @@ class CropOrPad(BoundsTransform):
             cropping.append(begin_crop)
             cropping.append(end_crop)
         # Conversion for SimpleITK compatibility
-        padding_params = np.asarray(padding, dtype=int).tolist()
-        cropping_params = np.asarray(cropping, dtype=int).tolist()
+        padding = np.asarray(padding, dtype=int)
+        cropping = np.asarray(cropping, dtype=int)
+        padding_params = tuple(padding.tolist()) if padding.any() else None
+        cropping_params = tuple(cropping.tolist()) if padding.any() else None
         return padding_params, cropping_params
 
     def apply_transform(self, sample: dict) -> dict:
