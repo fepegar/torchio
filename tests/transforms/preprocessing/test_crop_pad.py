@@ -50,7 +50,7 @@ class TestCropOrPad(TorchioTestCase):
         self.assertEqual((1, 1, 1), result_shape)
 
     def test_wrong_mask_name(self):
-        cop = CropOrPad(1, mask_name='wrong', mode="mask")
+        cop = CropOrPad(1, mask_name='wrong')
         with self.assertWarns(UserWarning):
             cop(self.sample)
 
@@ -60,7 +60,7 @@ class TestCropOrPad(TorchioTestCase):
 
     def test_empty_mask(self):
         target_shape = 8, 22, 30
-        transform = CropOrPad(target_shape=target_shape, mode="mask", mask_name="label")
+        transform = CropOrPad(target_shape=target_shape, mask_name='label')
         mask = self.sample['label'][DATA]
         mask *= 0
         with self.assertWarns(UserWarning):

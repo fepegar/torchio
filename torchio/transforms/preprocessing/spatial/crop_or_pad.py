@@ -50,11 +50,9 @@ class CropOrPad(BoundsTransform):
             target_shape: Union[int, Tuple[int, int, int]],
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
-            mode: str = 'center',
             mask_name: Optional[str] = None,
             ):
         super().__init__(target_shape)
-        self.mode = mode
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
         if mask_name is not None and not isinstance(mask_name, str):
