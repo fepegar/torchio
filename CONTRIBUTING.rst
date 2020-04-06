@@ -15,11 +15,12 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/fepegar/torchio/issues.
+Report bugs
+`on GitHub <https://github.com/fepegar/torchio/issues/new?assignees=&labels=bug&template=bug_report.md&title=>`_.
 
 If you are reporting a bug, please include:
 
-* Your operating system name and version.
+* Your TorchIO version.
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
@@ -38,8 +39,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-torchio could always use more documentation, whether as part of the
-official torchio docs, in docstrings, or even on the web in blog posts,
+TorchIO could always use more documentation, whether as part of the
+official TorchIO docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -59,20 +60,24 @@ Get Started!
 
 Ready to contribute? Here's how to set up `torchio` for local development.
 
-1. Fork the `torchio` repo on GitHub.
-2. Clone your fork locally::
+1. Create an issue about it on the GitHub repo.
+2. Fork the `torchio` repo on GitHub.
+3. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/torchio.git
+    $ cd torchio
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+4. Install your local copy into a virtual environment.
+If you use ``conda``, this is how you can set up your fork for local development::
 
-    $ mkvirtualenv torchio
-    $ cd torchio/
+    $ conda create --name torchioenv python --yes
+    $ conda activate torchioenv
     $ python setup.py develop
 
-4. Create a branch for local development::
+5. Create a branch for local development using the issue number. If the issue
+is #55::
 
-    $ git checkout -b name-of-your-bugfix-or-feature
+    $ git checkout -b 55-name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
@@ -80,16 +85,19 @@ Ready to contribute? Here's how to set up `torchio` for local development.
    tests, including testing other Python versions with tox::
 
     $ flake8 torchio tests
-    $ python setup.py test or pytest
+    $ pytest
     $ tox
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   To get ``flake8`` and ``tox``, just ``pip install`` them into your virtual environment.
 
-6. Commit your changes and push your branch to GitHub::
+6. Commit your changes and push your branch to GitHub (`here's some great
+advice to write good commit
+messages <https://chris.beams.io/posts/git-commit>`_, and `here's some
+more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f98891114c4>`_)::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+    $ git push origin 55-name-of-your-bugfix-or-feature
 
 7. Submit a pull request through the GitHub website.
 
@@ -99,11 +107,10 @@ Pull Request Guidelines
 Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
-2. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
-3. The pull request should work for Python 3.6 and 3.7, and for PyPy. Check
-   https://travis-ci.org/fepegar/torchio/pull_requests
+2. If the pull request adds functionality, the docs should be updated. You can
+   put your new functionality into a function with a docstring.
+3. The pull request should work for Python 3.6 and 3.7. Check
+   https://travis-ci.org/fepegar/torchio/
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -113,16 +120,3 @@ To run a subset of tests::
 
 
     $ python -m unittest tests.test_torchio
-
-Deploying
----------
-
-A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.rst).
-Then run::
-
-$ bump2version patch # possible: major / minor / patch
-$ git push
-$ git push --tags
-
-Travis will then deploy to PyPI if tests pass.

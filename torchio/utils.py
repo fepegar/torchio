@@ -206,3 +206,19 @@ def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     affine[:3, :3] = RZS
     affine[:3, 3] = translation
     return data, affine
+
+
+def round_up(value: float) -> float:
+    """
+    Computes the round half up value of the argument
+    Args:
+        value: the value to round
+
+    Returns: the rounded value of :attr:`value`
+
+    """
+    decimals = value % 1
+    if decimals >= .5:
+        return int(value//1 + 1)
+    else:
+        return int(value)

@@ -122,7 +122,8 @@ def apply_conditions_on_dataset(dataset, conditions, min_index=None, max_index=N
 
 
 def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img_file", class_idx="noise",
-                                          conditions=None, duplicate_class1=None, shuffle_order = True):
+                                          conditions=None, duplicate_class1=None, shuffle_order = True,
+                                                      log = print):
     """
     :param data_param: same structure as for niftynet set script test/test_dataset.py
     :param fpath_idx: name of the collumn containing file path
@@ -139,23 +140,23 @@ def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img
         if 'csv_file' in vals:
             res = pd.read_csv(vals['csv_file'])
 
-            print('Reading {} line in {}'.format(len(res), vals['csv_file']))
-            print(' {} columns {}'.format(len(res.keys()), res.keys() ))
+            log('Reading {} line in {}'.format(len(res), vals['csv_file']))
+            log(' {} columns {}'.format(len(res.keys()), res.keys() ))
 
             if conditions is not None:
                 res = res[apply_conditions_on_dataset(res, conditions)]
                 nb_1, nb_0 = np.sum(res.loc[:, class_idx] == 1), np.sum(res.loc[:,class_idx] == 0)
                 res.index = range(0, len(res))
-                print('after condition %s / ok = %d / %d  = %f' % (class_idx, nb_1, nb_0, nb_0 / nb_1))
+                log('after condition %s / ok = %d / %d  = %f' % (class_idx, nb_1, nb_0, nb_0 / nb_1))
 
             if duplicate_class1 is not None:
                 ii = np.argwhere(res.loc[:, class_idx] == 1)
                 nbclass1 = len(ii)
-                print('found {} of classe 1'.format(nbclass1))
+                log('found {} of classe 1'.format(nbclass1))
                 for kkk in range(0, duplicate_class1):
                     res = res.append(res.iloc[ii[:,0],:])
                 nbclass1 = nbclass1 + nbclass1 * duplicate_class1
-                print('after {} duplication found {} of classe 1'.format(duplicate_class1,nbclass1))
+                log('after {} duplication found {} of classe 1'.format(duplicate_class1,nbclass1))
 
                 ii1 =  np.argwhere(res.loc[:, class_idx] == 1)
 
@@ -166,7 +167,7 @@ def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img
                 select_ind = np.vstack((ii1, ii0[select_class0])) #concatenate both class
                 res = res.iloc[select_ind[:, 0], :]
                 res.index = range(0, len(res))
-                print('selecting same number of class 0 so we get a final size of  {}'.format(res.shape))
+                log('selecting same number of class 0 so we get a final size of  {}'.format(res.shape))
 
             if 'type' in vals :
                 image_type = vals['type']
@@ -190,7 +191,7 @@ def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img
                     subjects_paths.append(paths_dict.copy())
 
         else :
-            print('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
+            log('key {} is not implemented (should be csv_file) '.fomat(vals.keys()))
 
     #shuffle the same way both subject_path_list and res
     if shuffle_order:

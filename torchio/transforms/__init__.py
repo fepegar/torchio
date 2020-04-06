@@ -14,7 +14,6 @@ from .augmentation.intensity import RandomBlur
 from .augmentation.intensity import RandomNoise
 from .augmentation.intensity import RandomSpike
 from .augmentation.intensity import RandomMotion
-from .augmentation.intensity import MotionSimTransform
 from .augmentation.intensity import RandomMotionFromTimeCourse
 from .augmentation.intensity import RandomGhosting
 from .augmentation.intensity import RandomBiasField
@@ -25,10 +24,7 @@ from .preprocessing import Crop
 from .preprocessing import Resample
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
-from .preprocessing import CenterCropOrPad
-from .preprocessing import CropOrPad
 from .preprocessing import HistogramStandardization
 from .preprocessing import Rescale, RescaleIntensity
+from .preprocessing import CropOrPad, CenterCropOrPad
 from .preprocessing.intensity.histogram_standardization import train as train_histogram
-from .preprocessing import HistogramEqualize
-from .preprocessing import HistogramRandomChange

@@ -6,10 +6,12 @@ from ....utils import is_image_dict
 from ... import Transform
 
 
+TypeShape = Tuple[int, int, int]
+TypeSixBounds = Tuple[int, int, int, int, int, int]
 TypeBounds = Union[
     int,
-    Tuple[int, int, int],
-    Tuple[int, int, int, int, int, int],
+    TypeShape,
+    TypeSixBounds,
 ]
 
 
@@ -33,6 +35,16 @@ class BoundsTransform(Transform):
             bounds_parameters = tuple(bounds_parameters)
         except TypeError:
             bounds_parameters = (bounds_parameters,)
+
+        # Check that numbers are integers
+        for n in bounds_parameters:
+            if not isinstance(n, int) or n < 0:
+                message = (
+                    'Bounds values must be integers greater or equal to zero,'
+                    f' not "{bounds_parameters}"'
+                )
+                raise ValueError(message)
+
         bounds_parameters_length = len(bounds_parameters)
         if bounds_parameters_length == 6:
             return bounds_parameters
