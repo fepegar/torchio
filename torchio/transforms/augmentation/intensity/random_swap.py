@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Optional
 import torch
 import numpy as np
 from ....utils import is_image_dict, to_tuple

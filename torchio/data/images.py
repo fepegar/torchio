@@ -38,7 +38,8 @@ class Image:
         self.type = type_
         self.__dict__.update(kwargs)
 
-    def _parse_path(self, path: TypePath) -> Path:
+    @staticmethod
+    def _parse_path(path: TypePath) -> Path:
         try:
             path = Path(path).expanduser()
         except TypeError:

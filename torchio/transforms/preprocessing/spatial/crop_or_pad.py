@@ -1,6 +1,6 @@
+import warnings
 from typing import Union, Tuple, Optional
 import numpy as np
-import warnings
 from deprecated import deprecated
 from .pad import Pad
 from .crop import Crop
@@ -84,13 +84,15 @@ class CropOrPad(BoundsTransform):
         Args:
             mask_volume: 3D NumPy array.
         """
-        r = np.any(mask_volume, axis=(1, 2))
-        c = np.any(mask_volume, axis=(0, 2))
-        z = np.any(mask_volume, axis=(0, 1))
-        rmin, rmax = np.where(r)[0][[0, -1]]
-        cmin, cmax = np.where(c)[0][[0, -1]]
-        zmin, zmax = np.where(z)[0][[0, -1]]
-        return np.array([rmin, cmin, zmin]), np.array([rmax, cmax, zmax])
+        i_any = np.any(mask_volume, axis=(1, 2))
+        j_any = np.any(mask_volume, axis=(0, 2))
+        k_any = np.any(mask_volume, axis=(0, 1))
+        i_min, i_max = np.where(i_any)[0][[0, -1]]
+        j_min, j_max = np.where(j_any)[0][[0, -1]]
+        k_min, k_max = np.where(k_any)[0][[0, -1]]
+        bb_min = np.array([i_min, j_min, k_min])
+        bb_max = np.array([i_max, j_max, k_max])
+        return bb_min, bb_max
 
     @staticmethod
     def _get_sample_shape(sample: dict) -> TypeShape:
@@ -126,8 +128,8 @@ class CropOrPad(BoundsTransform):
         """
         parameters = parameters / 2
         result = []
-        for n in parameters:
-            ini, fin = int(np.ceil(n)), int(np.floor(n))
+        for number in parameters:
+            ini, fin = int(np.ceil(number)), int(np.floor(number))
             result.extend([ini, fin])
         return tuple(result)
 
@@ -236,4 +238,4 @@ class CropOrPad(BoundsTransform):
 
 @deprecated('CenterCropOrPad is deprecated. Use CropOrPad instead.')
 class CenterCropOrPad(CropOrPad):
-    pass
+    """Crop or pad around image center."""

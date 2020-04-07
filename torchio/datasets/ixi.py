@@ -22,9 +22,9 @@ import shutil
 from pathlib import Path
 from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
+from torchvision.datasets.utils import download_and_extract_archive
 from ..transforms import Transform
 from .. import ImagesDataset, Subject, Image, INTENSITY, LABEL, TypePath
-from torchvision.datasets.utils import download_and_extract_archive
 
 
 class IXI(ImagesDataset):
@@ -78,7 +78,7 @@ class IXI(ImagesDataset):
             root: TypePath,
             transform: Optional[Transform] = None,
             download: bool = False,
-            modalities: Sequence[str] = ['T1', 'T2'],
+            modalities: Sequence[str] = ('T1', 'T2'),
             ):
         root = Path(root)
         for modality in modalities:
@@ -99,7 +99,8 @@ class IXI(ImagesDataset):
         subjects_list = self._get_subjects_list(root, modalities)
         super().__init__(subjects_list, transform=transform)
 
-    def _check_exists(self, root, modalities):
+    @staticmethod
+    def _check_exists(root, modalities):
         for modality in modalities:
             modality_dir = root / modality
             if not modality_dir.is_dir():
@@ -109,19 +110,12 @@ class IXI(ImagesDataset):
             exists = True
         return exists
 
-    def _get_subjects_list(self, root, modalities):
-        """
-        The number of files for each modality is not the same
-        E.g. 581 for T1, 578 for T2
-        Let's just use the first modality as reference for now
-        I.e. only subjects with all modalities will be included
-        """
-        def sglob(directory, pattern):
-            return sorted(list(Path(directory).glob(pattern)))
-
-        def get_subject_id(path):
-            return '-'.join(path.name.split('-')[:-1])
-
+    @staticmethod
+    def _get_subjects_list(root, modalities):
+        # The number of files for each modality is not the same
+        # E.g. 581 for T1, 578 for T2
+        # Let's just use the first modality as reference for now
+        # I.e. only subjects with all modalities will be included
         one_modality = modalities[0]
         paths = sglob(root / one_modality, '*.nii.gz')
         subjects = []
@@ -146,7 +140,7 @@ class IXI(ImagesDataset):
         return subjects
 
     def _download(self, root, modalities):
-        """Download the IXI data if it doesn't exist already."""
+        """Download the IXI data if it does not exist already."""
 
         for modality in modalities:
             modality_dir = root / modality
@@ -196,7 +190,7 @@ class IXITiny(ImagesDataset):
         root = Path(root)
         if download:
             self._download(root)
-        if not self._check_exists(root):
+        if not root.is_dir():
             message = (
                 'Dataset not found.'
                 ' You can use download=True to download it'
@@ -205,10 +199,8 @@ class IXITiny(ImagesDataset):
         subjects_list = self._get_subjects_list(root)
         super().__init__(subjects_list, transform=transform)
 
-    def _check_exists(self, root):
-        return root.is_dir()
-
-    def _get_subjects_list(self, root):
+    @staticmethod
+    def _get_subjects_list(root):
         image_paths = sglob(root / 'image', '*.nii.gz')
         label_paths = sglob(root / 'label', '*.nii.gz')
         assert image_paths and label_paths
@@ -225,12 +217,11 @@ class IXITiny(ImagesDataset):
 
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
-        if self._check_exists(root):  # assume it's been downloaded
+        if root.is_dir():  # assume it's been downloaded
             print('Root directory for IXITiny found:', root)
             return
-        else:
-            print('Root directory for IXITiny not found:', root)
-            print('Downloading...')
+        print('Root directory for IXITiny not found:', root)
+        print('Downloading...')
         with NamedTemporaryFile(suffix='.zip') as f:
             download_and_extract_archive(
                 self.url,

@@ -3,7 +3,7 @@
 # and calls this with duecredit (as in `python -m duecredit script.py`):
 from .external.due import due, Doi, BibTeX
 
-bibtex = r"""@misc{fern2020torchio,
+BIBTEX = r"""@misc{fern2020torchio,
    title={TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
    author={Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin},
    year={2020},
@@ -12,14 +12,14 @@ bibtex = r"""@misc{fern2020torchio,
    primaryClass={eess.IV}
 } """
 
-title = (
+TITLE = (
     'TorchIO: a Python library for efficient loading, preprocessing,'
     ' augmentation and patch-based sampling of medical images in deep learning'
 )
 
 due.cite(
-    BibTeX(bibtex),
-    description=title,
+    BibTeX(BIBTEX),
+    description=TITLE,
     path="torchio",
     cite_module=True,
 )

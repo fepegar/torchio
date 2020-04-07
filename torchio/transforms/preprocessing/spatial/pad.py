@@ -77,12 +77,11 @@ class Pad(BoundsTransform):
     def parse_padding_mode(cls, padding_mode):
         if padding_mode in cls.PADDING_FUNCTIONS:
             return padding_mode
-        else:
-            message = (
-                f'Padding mode "{padding_mode}" not valid.'
-                f' Valid options are {list(cls.PADDING_FUNCTIONS.keys())}'
-            )
-            raise KeyError(message)
+        message = (
+            f'Padding mode "{padding_mode}" not valid.'
+            f' Valid options are {list(cls.PADDING_FUNCTIONS.keys())}'
+        )
+        raise KeyError(message)
 
     @property
     def bounds_function(self) -> Callable:

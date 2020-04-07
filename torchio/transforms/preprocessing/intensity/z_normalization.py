@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Union
 import torch
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform

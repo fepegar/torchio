@@ -1,4 +1,4 @@
-from typing import Union, Tuple
+from typing import Tuple
 import torch
 import numpy as np
 from ...utils import to_tuple
@@ -33,7 +33,7 @@ class GridAggregator:
             ):
         data = torch.from_numpy(data) if isinstance(data, np.ndarray) else data
         self._output_tensor = torch.zeros_like(data)
-        self.patch_overlap = to_tuple(patch_overlap, n=3)
+        self.patch_overlap = to_tuple(patch_overlap, length=3)
 
     @staticmethod
     def _crop_batch(

@@ -1,6 +1,5 @@
-from typing import Union, Tuple
+from typing import Tuple
 import numpy as np
-import torch
 from torch.utils.data import Dataset
 from torchio import IMAGE, LOCATION, TypeTuple, TypeData
 from torchio.utils import to_tuple
@@ -31,8 +30,8 @@ class GridSampler(Dataset):
             patch_overlap: TypeTuple,
             ):
         self.array = data
-        patch_size = to_tuple(patch_size, n=3)
-        patch_overlap = to_tuple(patch_overlap, n=3)
+        patch_size = to_tuple(patch_size, length=3)
+        patch_overlap = to_tuple(patch_overlap, length=3)
         self.locations = self._grid_spatial_coordinates(
             self.array,
             patch_size,

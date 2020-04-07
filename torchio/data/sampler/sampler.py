@@ -23,7 +23,7 @@ class ImageSampler(IterableDataset):
     """
     def __init__(self, sample: dict, patch_size: Union[int, Sequence[int]]):
         self.sample = sample
-        self.patch_size = np.array(to_tuple(patch_size, n=3), dtype=np.uint16)
+        self.patch_size = np.array(to_tuple(patch_size, length=3), dtype=np.uint16)
 
     def __iter__(self):
         return self.get_stream(self.sample, self.patch_size)
@@ -63,8 +63,8 @@ class ImageSampler(IterableDataset):
         shape = np.array(first_image_array.shape[1:], dtype=np.uint16)
         return get_random_indices_from_shape(shape, patch_size)
 
+    @staticmethod
     def copy_and_crop(
-            self,
             sample: dict,
             index_ini: np.ndarray,
             index_fin: np.ndarray,

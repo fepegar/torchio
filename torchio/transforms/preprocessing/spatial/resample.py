@@ -79,8 +79,8 @@ class Resample(Transform):
             )
         return sample
 
+    @staticmethod
     def apply_resample(
-            self,
             tensor: torch.Tensor,
             affine: np.ndarray,
             target_spacing: Tuple[float, float, float],

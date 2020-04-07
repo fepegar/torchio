@@ -119,9 +119,9 @@ class RandomElasticDeformation(RandomTransform):
             ):
         super().__init__(seed=seed)
         self._bspline_transformation = None
-        self.num_control_points = to_tuple(num_control_points, n=3)
+        self.num_control_points = to_tuple(num_control_points, length=3)
         self.parse_control_points(self.num_control_points)
-        self.max_displacement = to_tuple(max_displacement, n=3)
+        self.max_displacement = to_tuple(max_displacement, length=3)
         self.parse_max_displacement(self.max_displacement)
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
@@ -139,28 +139,28 @@ class RandomElasticDeformation(RandomTransform):
         )
         self.interpolation = self.parse_interpolation(image_interpolation)
 
+    @staticmethod
     def parse_control_points(
-            self,
             num_control_points: Tuple[int, int, int],
             ) -> None:
-        for axis, n in enumerate(num_control_points):
-            if not isinstance(n, int) or n < 4:
+        for axis, number in enumerate(num_control_points):
+            if not isinstance(number, int) or number < 4:
                 message = (
                     f'The number of control points for axis {axis} must be'
-                    f' an integer larger than 3, not {n}'
+                    f' an integer greater than 3, not {number}'
                 )
                 raise ValueError(message)
 
+    @staticmethod
     def parse_max_displacement(
-            self,
             max_displacement: Tuple[float, float, float],
             ) -> None:
-        for axis, n in enumerate(max_displacement):
-            if not isinstance(n, Number) or n < 0:
+        for axis, number in enumerate(max_displacement):
+            if not isinstance(number, Number) or number < 0:
                 message = (
                     'The maximum displacement at each control point'
                     f' for axis {axis} must be'
-                    f' a number greater or equal to 0, not {n}'
+                    f' a number greater or equal to 0, not {number}'
                 )
                 raise ValueError(message)
 

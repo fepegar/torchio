@@ -1,4 +1,4 @@
-from typing import Callable, Sequence, Optional
+from typing import Sequence, Optional
 import torch
 from ..torchio import DATA, TYPE, TypeCallable
 from ..utils import is_image_dict

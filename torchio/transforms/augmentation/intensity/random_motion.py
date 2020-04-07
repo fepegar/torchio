@@ -11,9 +11,7 @@ import warnings
 from typing import Tuple, Optional, List
 import torch
 import numpy as np
-from tqdm import tqdm
 import SimpleITK as sitk
-from scipy.linalg import logm, expm
 from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE
 from .. import Interpolation, get_sitk_interpolator
@@ -88,8 +86,8 @@ class RandomMotion(RandomTransform):
                 'random_motion_translation',
                 'random_motion_do',
             )
-            for key, p in zip(keys, params):
-                sample[image_name][key] = p
+            for key, param in zip(keys, params):
+                sample[image_name][key] = param
             if not do_it:
                 return sample
             if (image_dict[DATA][0] < -0.1).any():
@@ -183,8 +181,8 @@ class RandomMotion(RandomTransform):
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
+    @staticmethod
     def resample_images(
-            self,
             image: sitk.Image,
             transforms: List[sitk.Euler3DTransform],
             interpolation: Interpolation,
