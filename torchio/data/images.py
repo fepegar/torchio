@@ -1,13 +1,11 @@
-import typing
 import warnings
 import collections
 from pathlib import Path
 from typing import (
+    Any,
     Dict,
     List,
     Tuple,
-    Union,
-    TypeVar,
     Sequence,
     Optional,
     Callable,
@@ -27,7 +25,7 @@ class Image:
         path: Path to a file that can be read by
             :mod:`SimpleITK` or :mod:`nibabel` or to a directory containing
             DICOM files.
-        type\_: Type of image, such as :attr:`torchio.INTENSITY` or
+        type_: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
             when resampling.
@@ -76,12 +74,14 @@ class Subject(dict):
     """Class to store information about the images corresponding to a subject.
 
     Args:
+        *args: If provided, a dictionary of items.
         **kwargs: Items that will be added to the subject sample.
 
     Example:
 
         >>> import torchio
         >>> from torchio import Image, Subject
+        >>> # One way:
         >>> subject = Subject(
         ...     one_image=Image('path_to_image.nii.gz, torchio.INTENSITY),
         ...     a_segmentation=Image('path_to_seg.nii.gz, torchio.LABEL),
@@ -89,13 +89,26 @@ class Subject(dict):
         ...     name='John Doe',
         ...     hospital='Hospital Juan Negrín',
         ... )
-        >>>
+        >>> # If you want to create the mapping before, or have spaces in the keys:
+        >>> subject_dict = {
+        ...     'one image': Image('path_to_image.nii.gz, torchio.INTENSITY),
+        ...     'a segmentation': Image('path_to_seg.nii.gz, torchio.LABEL),
+        ...     'age': 45,
+        ...     'name': 'John Doe',
+        ...     'hospital': 'Hospital Juan Negrín',
+        ... }
+        >>> Subject(subject_dict)
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs: Dict[str, Any]):
         if args:
-            raise ValueError('Only keyword arguments are allowed for Subject')
+            if len(args) == 1 and isinstance(args[0], dict):
+                kwargs.update(args[0])
+            else:
+                message = (
+                    'Only one dictionary as positional argument is allowed')
+                raise ValueError(message)
         super().__init__(**kwargs)
         self.images = [
             (k, v) for (k, v) in self.items()

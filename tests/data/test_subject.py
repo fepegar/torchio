@@ -17,4 +17,5 @@ class TestSubject(TorchioTestCase):
     def test_input_dict(self):
         with tempfile.NamedTemporaryFile() as f:
             input_dict = {'image': Image(f.name, INTENSITY)}
+            Subject(input_dict)
             Subject(**input_dict)
