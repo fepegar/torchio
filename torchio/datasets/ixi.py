@@ -127,14 +127,14 @@ class IXI(ImagesDataset):
         subjects = []
         for filepath in paths:
             subject_id = get_subject_id(filepath)
-            images = []
-            images.append(Image(one_modality, filepath, INTENSITY))
+            images_dict = dict(subject_id=subject_id)
+            images_dict[one_modality] = Image(filepath, INTENSITY)
             for modality in modalities[1:]:
                 globbed = sglob(
                     root / modality, f'{subject_id}-{modality}.nii.gz')
                 if globbed:
                     assert len(globbed) == 1
-                    images.append(Image(modality, globbed[0], INTENSITY))
+                    images_dict[modality] = Image(globbed[0], INTENSITY)
                 else:
                     skip_subject = True
                     break
@@ -142,7 +142,7 @@ class IXI(ImagesDataset):
                 skip_subject = False
             if skip_subject:
                 continue
-            subjects.append(Subject(*images, name=subject_id))
+            subjects.append(Subject(**images_dict))
         return subjects
 
     def _download(self, root, modalities):
@@ -216,10 +216,11 @@ class IXITiny(ImagesDataset):
         subjects = []
         for image_path, label_path in zip(image_paths, label_paths):
             subject_id = get_subject_id(image_path)
-            images = []
-            images.append(Image('image', image_path, INTENSITY))
-            images.append(Image('label', label_path, LABEL))
-            subjects.append(Subject(*images, name=subject_id))
+            subject_dict = {}
+            subject_dict['image'] = Image(image_path, INTENSITY)
+            subject_dict['label'] = Image(label_path, LABEL)
+            subject_dict['subject_id'] = subject_id
+            subjects.append(Subject(**subject_dict))
         return subjects
 
     def _download(self, root):

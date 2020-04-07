@@ -2,9 +2,7 @@
 
 """Tests for ImagesDataset."""
 
-from pathlib import Path
 import nibabel as nib
-import torchio
 from torchio import DATA, ImagesDataset
 from ..utils import TorchioTestCase
 
@@ -55,12 +53,12 @@ class TestImagesDataset(TorchioTestCase):
     def test_no_load(self):
         dataset = ImagesDataset(
             self.subjects_list, load_image_data=False)
-        for sample in dataset:
+        for _ in dataset:
             pass
 
     def test_no_load_transform(self):
         with self.assertRaises(ValueError):
-            dataset = ImagesDataset(
+            ImagesDataset(
                 self.subjects_list,
                 load_image_data=False,
                 transform=lambda x: x,
@@ -68,7 +66,7 @@ class TestImagesDataset(TorchioTestCase):
 
     def test_wrong_transform_init(self):
         with self.assertRaises(ValueError):
-            dataset = ImagesDataset(
+            ImagesDataset(
                 self.subjects_list,
                 transform=dict(),
             )
