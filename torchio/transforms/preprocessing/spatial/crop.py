@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Callable
+from typing import Callable
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform, TypeBounds
 
@@ -21,12 +21,6 @@ class Crop(BoundsTransform):
             :math:`d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n`.
 
     """
-    def __init__(
-            self,
-            cropping: TypeBounds,
-            ):
-        super().__init__(cropping)
-
     @property
     def bounds_function(self) -> Callable:
         return sitk.Crop

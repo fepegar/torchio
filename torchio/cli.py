@@ -30,9 +30,10 @@ def apply_transform(
     Example:
     $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
     """
+    # Imports are placed here so that the tool loads faster if not being run
     import torchio.transforms as transforms
     from torchio.transforms.augmentation import RandomTransform
-    from torchio.utils import apply_transform_to_file, guess_type
+    from torchio.utils import apply_transform_to_file
 
     try:
         transform_class = getattr(transforms, transform_name)
@@ -40,6 +41,20 @@ def apply_transform(
         message = f'Transform "{transform_name}" not found in torchio'
         raise ValueError(message) from error
 
+    params_dict = get_params_dict_from_kwargs(kwargs)
+    if issubclass(transform_class, RandomTransform):
+        params_dict['seed'] = seed
+    transform = transform_class(**params_dict)
+    apply_transform_to_file(
+        input_path,
+        transform,
+        output_path,
+    )
+    return 0
+
+
+def get_params_dict_from_kwargs(kwargs):
+    from torchio.utils import guess_type
     params_dict = {}
     if kwargs is not None:
         for substring in kwargs.split():
@@ -51,15 +66,7 @@ def apply_transform(
 
             value = guess_type(value_string)
             params_dict[key] = value
-    if issubclass(transform_class, RandomTransform):
-        params_dict['seed'] = seed
-    transform = transform_class(**params_dict)
-    apply_transform_to_file(
-        input_path,
-        transform,
-        output_path,
-    )
-    return 0
+    return params_dict
 
 
 if __name__ == "__main__":

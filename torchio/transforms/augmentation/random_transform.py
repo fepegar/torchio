@@ -4,7 +4,6 @@ This is the docstring of random transform module
 
 import numbers
 from typing import Optional, Tuple, Union
-from abc import abstractmethod
 import torch
 import numpy as np
 from .. import Transform, Interpolation
@@ -58,17 +57,17 @@ class RandomTransform(Transform):
                     f'If {name} is a single number,'
                     f' it must be positive, not {nums_range}')
             return (-nums_range, nums_range)
-        else:
-            if len(nums_range) != 2:
-                raise ValueError(
-                    f'If {name} is a sequence,'
-                    f' it must be of len 2, not {nums_range}')
-            min_degree, max_degree = nums_range
-            if min_degree > max_degree:
-                raise ValueError(
-                    f'If {name} is a sequence, the second value must be'
-                    f' equal or greater than the first, not {nums_range}')
-            return nums_range
+
+        if len(nums_range) != 2:
+            raise ValueError(
+                f'If {name} is a sequence,'
+                f' it must be of len 2, not {nums_range}')
+        min_degree, max_degree = nums_range
+        if min_degree > max_degree:
+            raise ValueError(
+                f'If {name} is a sequence, the second value must be'
+                f' equal or greater than the first, not {nums_range}')
+        return nums_range
 
     def parse_degrees(
             self,
@@ -83,10 +82,11 @@ class RandomTransform(Transform):
         return self.parse_range(translation, 'translation')
 
     @staticmethod
-    def parse_probability(p: float, name: str) -> float:
-        if not (isinstance(p, numbers.Number) and 0 <= p <= 1):
+    def parse_probability(probability: float, name: str) -> float:
+        is_number = isinstance(probability, numbers.Number)
+        if not (is_number and 0 <= probability <= 1):
             raise ValueError(f'{name} must be a number in [0, 1]')
-        return p
+        return probability
 
     @staticmethod
     def parse_interpolation(interpolation: Interpolation) -> Interpolation:

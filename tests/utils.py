@@ -5,9 +5,8 @@ import unittest
 from pathlib import Path
 import numpy as np
 import nibabel as nib
-import torchio
 from torchio.datasets import IXITiny
-from torchio import INTENSITY, LABEL, DATA, Image, ImagesDataset, Subject
+from torchio import INTENSITY, LABEL, Image, ImagesDataset, Subject
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -20,19 +19,19 @@ class TorchioTestCase(unittest.TestCase):
         np.random.seed(42)
 
         subject_a = Subject(
-            Image('t1', self.get_image_path('t1_a'), INTENSITY),
+            t1=Image(self.get_image_path('t1_a'), INTENSITY),
         )
         subject_b = Subject(
-            Image('t1', self.get_image_path('t1_b'), INTENSITY),
-            Image('label', self.get_image_path('label_b', binary=True), LABEL),
+            t1=Image(self.get_image_path('t1_b'), INTENSITY),
+            label=Image(self.get_image_path('label_b', binary=True), LABEL),
         )
         subject_c = Subject(
-            Image('label', self.get_image_path('label_c', binary=True), LABEL),
+            label=Image(self.get_image_path('label_c', binary=True), LABEL),
         )
         subject_d = Subject(
-            Image('t1', self.get_image_path('t1_d'), INTENSITY),
-            Image('t2', self.get_image_path('t2_d'), INTENSITY),
-            Image('label', self.get_image_path('label_d', binary=True), LABEL),
+            t1=Image(self.get_image_path('t1_d'), INTENSITY),
+            t2=Image(self.get_image_path('t2_d'), INTENSITY),
+            label=Image(self.get_image_path('label_d', binary=True), LABEL),
         )
         self.subjects_list = [
             subject_a,
@@ -46,12 +45,12 @@ class TorchioTestCase(unittest.TestCase):
     def get_inconsistent_sample(self):
         """Return a sample containing images of different shape."""
         subject = Subject(
-            Image('t1', self.get_image_path('t1_d'), INTENSITY),
-            Image('t2', self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
-            Image('label', self.get_image_path('label_d', binary=True), LABEL),
+            t1=Image(self.get_image_path('t1_d'), INTENSITY),
+            t2=Image(self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
+            label=Image(self.get_image_path('label_d', binary=True), LABEL),
         )
         subjects_list = [subject]
-        dataset = ImagesDataset([subject])
+        dataset = ImagesDataset(subjects_list)
         return dataset[0]
 
     def tearDown(self):

@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
-import numpy.ma as ma
 import nibabel as nib
 from tqdm import tqdm
 from ....torchio import DATA, TypePath, TypeCallable
@@ -117,7 +116,7 @@ class HistogramStandardization(NormalizationTransform):
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
         percentiles = _get_percentiles(percentiles_cutoff)
-        for index, image_file_path in enumerate(tqdm(images_paths)):
+        for image_file_path in tqdm(images_paths):
             tensor, _ = read_image(image_file_path)
             data = tensor.numpy()
             if masking_function is not None:

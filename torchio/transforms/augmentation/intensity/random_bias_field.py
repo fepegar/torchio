@@ -68,7 +68,7 @@ class RandomBiasField(RandomTransform):
         random_coefficients = []
         for x_order in range(0, order + 1):
             for y_order in range(0, order + 1 - x_order):
-                for z_order in range(0, order + 1 - (x_order + y_order)):
+                for _ in range(0, order + 1 - (x_order + y_order)):
                     number = torch.FloatTensor(1).uniform_(*coefficients_range)
                     random_coefficients.append(number.item())
         do_augmentation = torch.rand(1) < probability

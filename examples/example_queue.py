@@ -47,15 +47,15 @@ subjects_list = create_dummy_dataset(
 
 # Each element of subjects_list is an instance of torchio.Subject:
 # subject = Subject(
-#     torchio.Image('one_image', path_to_one_image, torchio.INTENSITY),
-#     torchio.Image('another_image', path_to_another_image, torchio.INTENSITY),
-#     torchio.Image('a_label', path_to_a_label, torchio.LABEL),
+#     one_image=torchio.Image(path_to_one_image, torchio.INTENSITY),
+#     another_image=torchio.Image(path_to_another_image, torchio.INTENSITY),
+#     a_label=torchio.Image(path_to_a_label, torchio.LABEL),
 # )
 
 # Define transforms for data normalization and augmentation
 transforms = (
     ZNormalization(),
-    RandomNoise(std_range=(0, 0.25)),
+    RandomNoise(std=(0, 0.25)),
     RandomAffine(scales=(0.9, 1.1), degrees=10),
     RandomFlip(axes=(0,)),
 )

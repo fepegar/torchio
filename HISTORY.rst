@@ -1,11 +1,26 @@
 History
 =======
 
+0.15.0 (07-04-2020)
+-------------------
+
+* Refactor ``RandomElasticDeformation`` transform
+* Make ``Subject`` inherit from ``dict``
+
+
+0.14.0 (31-03-2020)
+-------------------
+
+* Add ``datasets`` module
+* Add support for DICOM files
+* Add documentation
+* Add ``CropOrPad`` transform
+
 
 0.13.0 (24-02-2020)
 -------------------
 
-* Add Subject class
+* Add ``Subject`` class
 * Add random blur transform
 * Add lambda transform
 * Add random patches swapping transform

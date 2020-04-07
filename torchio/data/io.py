@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union, Tuple, TypeVar
+from typing import Tuple
 import torch
 import numpy as np
 import nibabel as nib

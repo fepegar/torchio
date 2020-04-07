@@ -1,5 +1,5 @@
 import warnings
-from typing import Tuple, Union, Callable
+from typing import Tuple, Union
 
 import torch
 import numpy as np

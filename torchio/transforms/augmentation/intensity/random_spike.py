@@ -95,7 +95,6 @@ class RandomSpike(RandomTransform):
             ) -> Tuple:
         ns_min, ns_max = num_spikes_range
         num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
-        i_min, i_max = intensity_range
         intensity_param = torch.FloatTensor(1).uniform_(*intensity_range)
         do_it = torch.rand(1) < probability
         return num_spikes_param, intensity_param.item(), do_it

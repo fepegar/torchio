@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Union
 import torch
 from ....utils import is_image_dict
 from ....torchio import DATA, TYPE, INTENSITY, TypeCallable

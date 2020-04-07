@@ -33,17 +33,19 @@ in parallel::
     from torchvision.transforms import Compose
     from torch.utils.data import DataLoader
 
-    # Each instance of torchio.Subject is passed an arbitrary number of
-    # instances of torchio.Image, whose name is also arbitrary
-    subject_a = torchio.Subject([
-        torchio.Image('t1', 'subject_a.nii.gz', torchio.INTENSITY),
-        torchio.Image('label', 'subject_a.nii', torchio.LABEL),
-    ])
+    # Each instance of torchio.Subject is passed arbitrary keyword arguments.
+    # Typically, these arguments will be instances of torchio.Image
+    subject_a = torchio.Subject(
+        t1=torchio.Image('subject_a.nii.gz', torchio.INTENSITY),
+        label=torchio.Image('subject_a.nii', torchio.LABEL),
+        diagnosis='positive',
+    )
 
     # Images can be in any format supported by SimpleITK or NiBabel, including DICOM
     subject_b = torchio.Subject(
-        torchio.Image('t1', 'subject_b_dicom_folder', torchio.INTENSITY),
-        torchio.Image('label', 'subject_b_seg.nrrd', torchio.LABEL),
+        t1=torchio.Image('subject_b_dicom_folder', torchio.INTENSITY),
+        label=torchio.Image('subject_b_seg.nrrd', torchio.LABEL),
+        diagnosis='negative',
     )
     subjects_list = [subject_a, subject_b]
 

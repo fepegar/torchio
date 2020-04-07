@@ -49,10 +49,10 @@ class TestUtils(TorchioTestCase):
     def test_to_tuple(self):
         assert to_tuple(1) == (1,)
         assert to_tuple((1,)) == (1,)
-        assert to_tuple(1, n=3) == (1, 1, 1)
+        assert to_tuple(1, length=3) == (1, 1, 1)
         assert to_tuple((1, 2)) == (1, 2)
-        assert to_tuple((1, 2), n=3) == (1, 2)
-        assert to_tuple([1, 2], n=3) == (1, 2)
+        assert to_tuple((1, 2), length=3) == (1, 2)
+        assert to_tuple([1, 2], length=3) == (1, 2)
 
     def test_get_stem(self):
         assert get_stem('/home/image.nii.gz') == 'image'

@@ -11,13 +11,13 @@ Here is a usage example:
 >>> from torchio.transforms import RescaleIntensity, RandomAffine
 >>> from torchvision.transforms import Compose
 >>> subject_a = Subject([
-...     Image('t1', '~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
-...     Image('label', '~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
+...     t1=Image('~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
+...     label=Image('~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),
 >>> ])
 >>> subject_b = Subject(
-...     Image('t1', '/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
-...     Image('t2', '/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
-...     Image('label', '/tmp/colin27_seg1.nii.gz', torchio.LABEL),
+...     t1=Image('/tmp/colin27_t1_tal_lin.nii.gz', torchio.INTENSITY),
+...     t2=Image('/tmp/colin27_t2_tal_lin.nii', torchio.INTENSITY),
+...     label=Image('/tmp/colin27_seg1.nii.gz', torchio.LABEL),
 ... )
 >>> subjects_list = [subject_a, subject_b]
 >>> transforms = [

@@ -1,6 +1,6 @@
 import random
 import warnings
-from typing import List, Iterable, Iterator
+from typing import List, Iterator
 from itertools import islice
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
@@ -161,8 +161,7 @@ class Queue(Dataset):
         for _ in iterable:
             subject_sample = self.get_next_subject_sample()
             sampler = self.sampler_class(subject_sample, self.patch_size)
-            samples = [s for s in islice(sampler, self.samples_per_volume)]
-            assert isinstance(samples, list)
+            samples = list(islice(sampler, self.samples_per_volume))
             self.patches_list.extend(samples)
         if self.shuffle_patches:
             random.shuffle(self.patches_list)

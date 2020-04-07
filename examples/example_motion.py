@@ -1,7 +1,7 @@
 """
 Another way of getting this result is by running the command-line tool:
 
-$ torchio-transform ~/Dropbox/MRI/t1.nii.gz RandomMotion /tmp/t1_motion.nii.gz --seed 42 --kwargs "degrees=10 translation=10 num_transforms=3 proportion_to_augment=1"
+$ torchio-transform ~/Dropbox/MRI/t1.nii.gz RandomMotion /tmp/t1_motion.nii.gz --seed 42 --kwargs "degrees=10 translation=10 num_transforms=3"
 
 """
 
@@ -14,9 +14,9 @@ from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 #    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
 #)
 subject = Subject(
-    Image('t1', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
-    Image('label', '/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL),
-)
+    t1 = Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
+    label = Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL),
+    )
 
 subjects_list = [subject]
 

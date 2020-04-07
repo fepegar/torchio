@@ -18,22 +18,22 @@ FLIP_XY = np.diag((-1, -1, 1))
 
 def to_tuple(
         value: Union[TypeNumber, Iterable[TypeNumber]],
-        n: int = 1,
+        length: int = 1,
         ) -> Tuple[TypeNumber, ...]:
     """
-    to_tuple(1, n=1) -> (1,)
-    to_tuple(1, n=3) -> (1, 1, 1)
+    to_tuple(1, length=1) -> (1,)
+    to_tuple(1, length=3) -> (1, 1, 1)
 
     If value is an iterable, n is ignored and tuple(value) is returned
-    to_tuple((1,), n=1) -> (1,)
-    to_tuple((1, 2), n=1) -> (1, 2)
-    to_tuple([1, 2], n=3) -> (1, 2)
+    to_tuple((1,), length=1) -> (1,)
+    to_tuple((1, 2), length=1) -> (1, 2)
+    to_tuple([1, 2], length=3) -> (1, 2)
     """
     try:
         iter(value)
         value = tuple(value)
     except TypeError:
-        value = n * (value,)
+        value = length * (value,)
     return value
 
 
@@ -81,8 +81,8 @@ def create_dummy_dataset(
             image_path = images_dir / f'image_{i}{suffix}'
             label_path = labels_dir / f'label_{i}{suffix}'
             subject = Subject(
-                Image('one_modality', image_path, INTENSITY),
-                Image('segmentation', label_path, LABEL),
+                one_modality=Image(image_path, INTENSITY),
+                segmentation=Image(label_path, LABEL),
             )
             subjects.append(subject)
     else:
@@ -111,8 +111,8 @@ def create_dummy_dataset(
             nii.to_filename(str(label_path))
 
             subject = Subject(
-                Image('one_modality', image_path, INTENSITY),
-                Image('segmentation', label_path, LABEL),
+                one_modality=Image(image_path, INTENSITY),
+                segmentation=Image(label_path, LABEL),
             )
             subjects.append(subject)
     return subjects
@@ -125,9 +125,7 @@ def apply_transform_to_file(
         type_: str = INTENSITY,
         ):
     from . import Image, ImagesDataset, Subject
-    subject = Subject(
-        Image('image', input_path, type_),
-    )
+    subject = Subject(image=Image(input_path, type_))
     dataset = ImagesDataset([subject], transform=transform)
     transformed = dataset[0]
     dataset.save_sample(transformed, dict(image=output_path))
@@ -176,18 +174,18 @@ def check_consistent_shape(sample: dict) -> None:
 def get_rotation_and_spacing_from_affine(
         affine: np.ndarray,
         ) -> Tuple[np.ndarray, np.ndarray]:
-    RZS = affine[:3, :3]
-    spacing = np.sqrt(np.sum(RZS * RZS, axis=0))
-    R = RZS / spacing
-    return R, spacing
+    rotation_zoom = affine[:3, :3]
+    spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
+    rotation = rotation_zoom / spacing
+    return rotation, spacing
 
 
 def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
     array = data.numpy() if isinstance(data, torch.Tensor) else data
     affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
     origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
-    R, spacing = get_rotation_and_spacing_from_affine(affine)
-    direction = np.dot(FLIP_XY, R).flatten()
+    rotation, spacing = get_rotation_and_spacing_from_affine(affine)
+    direction = np.dot(FLIP_XY, rotation).flatten()
     image = sitk.GetImageFromArray(array.transpose())
     image.SetOrigin(origin)
     image.SetSpacing(spacing)
@@ -198,27 +196,32 @@ def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
 def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     spacing = np.array(image.GetSpacing())
-    R = np.array(image.GetDirection()).reshape(3, 3)
-    R = np.dot(FLIP_XY, R)
-    RZS = R * spacing
+    rotation = np.array(image.GetDirection()).reshape(3, 3)
+    rotation = np.dot(FLIP_XY, rotation)
+    rotation_zoom = rotation * spacing
     translation = np.dot(FLIP_XY, image.GetOrigin())
     affine = np.eye(4)
-    affine[:3, :3] = RZS
+    affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation
     return data, affine
 
 
 def round_up(value: float) -> float:
-    """
-    Computes the round half up value of the argument
+    """Round half towards infinity.
+
     Args:
-        value: the value to round
+        value: The value to round.
 
-    Returns: the rounded value of :attr:`value`
+    Example:
+
+        >>> round(2.5)
+        2
+        >>> round(3.5)
+        4
+        >>> round_up(2.5)
+        3
+        >>> round_up(3.5)
+        4
 
     """
-    decimals = value % 1
-    if decimals >= .5:
-        return int(value//1 + 1)
-    else:
-        return int(value)
+    return np.floor(value + 0.5)

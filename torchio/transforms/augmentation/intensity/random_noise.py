@@ -2,7 +2,7 @@ from typing import Tuple, Optional
 import torch
 import numpy as np
 from ....utils import is_image_dict
-from ....torchio import DATA, TYPE, INTENSITY, TypeData
+from ....torchio import DATA, TYPE, INTENSITY
 from .. import RandomTransform
 
 

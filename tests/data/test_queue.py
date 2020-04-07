@@ -1,7 +1,3 @@
-import unittest
-import tempfile
-from pathlib import Path
-
 from torch.utils.data import DataLoader
 from torchio.data import ImageSampler
 from torchio import ImagesDataset, Queue, DATA
@@ -29,7 +25,7 @@ class TestQueue(TorchioTestCase):
             samples_per_volume=2,
             patch_size=10,
             sampler_class=ImageSampler,
-            num_workers=2,
+            num_workers=0,
             verbose=True,
         )
         _ = str(queue_dataset)
