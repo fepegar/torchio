@@ -191,7 +191,7 @@ class CropOrPad(BoundsTransform):
             return self._compute_center_crop_or_pad(sample=sample)
 
         # Original sample shape (from mask shape)
-        sample_shape = mask.shape[1:]  # remove channels dimension
+        sample_shape = self._get_sample_shape(sample)  # remove channels dimension
         # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
