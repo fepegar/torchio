@@ -222,7 +222,7 @@ class CropOrPad(BoundsTransform):
         padding = np.asarray(padding, dtype=int)
         cropping = np.asarray(cropping, dtype=int)
         padding_params = tuple(padding.tolist()) if padding.any() else None
-        cropping_params = tuple(cropping.tolist()) if padding.any() else None
+        cropping_params = tuple(cropping.tolist()) if cropping.any() else None
         return padding_params, cropping_params
 
     def apply_transform(self, sample: dict) -> dict:
