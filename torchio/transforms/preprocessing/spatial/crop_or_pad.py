@@ -191,7 +191,7 @@ class CropOrPad(BoundsTransform):
             return self._compute_center_crop_or_pad(sample=sample)
 
         # Original sample shape (from mask shape)
-        sample_shape = mask.shape[1:]  # remove channels dimension
+        sample_shape = self._get_sample_shape(sample)  # remove channels dimension
         # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
@@ -207,10 +207,10 @@ class CropOrPad(BoundsTransform):
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
-            begin_pad = round(abs(min(begin, 0)))
+            begin_pad = round_up(abs(min(begin, 0)))
             end_pad = round(max(end - sample_shape[dim], 0))
             # Check if cropping is needed
-            begin_crop = round(max(begin, 0))
+            begin_crop = round_up(max(begin, 0))
             end_crop = abs(round(min(end - sample_shape[dim], 0)))
             # Add padding values of the dim to the list
             padding.append(begin_pad)
