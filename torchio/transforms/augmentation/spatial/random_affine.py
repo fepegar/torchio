@@ -73,10 +73,10 @@ class RandomAffine(RandomTransform):
 
     @staticmethod
     def parse_default_value(value: Union[str, float]) -> Union[str, float]:
-        if isinstance(value, Number) or value in ('minimum', 'otsu'):
+        if isinstance(value, Number) or value in ('minimum', 'otsu', 'mean'):
             return value
         message = (
-            'Value for default_pad_value must be "minimum", "otsu"'
+            'Value for default_pad_value must be "minimum", "otsu", "mean"'
             ' or a number'
         )
         raise ValueError(message)
@@ -119,10 +119,8 @@ class RandomAffine(RandomTransform):
     def get_scaling_transform(
             scaling_params: List[float],
             ) -> sitk.ScaleTransform:
-        """
-        scaling_params are inverted so that they are more intuitive
-        For example, 1.5 means the objects look 1.5 times larger
-        """
+        # scaling_params are inverted so that they are more intuitive
+        # For example, 1.5 means the objects look 1.5 times larger
         transform = sitk.ScaleTransform(3)
         scaling_params = 1 / np.array(scaling_params)
         transform.SetScale(scaling_params)
@@ -159,8 +157,10 @@ class RandomAffine(RandomTransform):
 
         if self.default_pad_value == 'minimum':
             default_value = tensor.min().item()
+        elif self.default_pad_value == 'mean':
+            default_value = get_borders_otsu(image, filter_otsu=False)
         elif self.default_pad_value == 'otsu':
-            default_value = get_borders_otsu(image)
+            default_value = get_borders_otsu(image, filter_otsu=True)
         else:
             default_value = self.default_pad_value
 
@@ -178,7 +178,7 @@ class RandomAffine(RandomTransform):
         return tensor
 
 
-def get_borders_otsu(image):
+def get_borders_mean(image, filter_otsu=True):
     array = sitk.GetArrayViewFromImage(image)
     borders = np.array((
         array[0],
@@ -191,6 +191,8 @@ def get_borders_otsu(image):
         array[:, :, -1],
     ))
     borders = np.hstack([border.flatten() for border in borders])
+    if not filter_otsu:
+        return borders.mean()
     borders = borders.reshape(1, 1, -1)
     borders_image = sitk.GetImageFromArray(borders)
     otsu = sitk.OtsuThresholdImageFilter()
