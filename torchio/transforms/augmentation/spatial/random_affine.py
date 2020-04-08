@@ -30,6 +30,7 @@ class RandomAffine(RandomTransform):
         default_pad_value: As the image is rotated, some values near the
             borders will be undefined.
             If ``'minimum'``, the fill value will be the image minimum.
+            If ``'otsu'``, the fill value is the mean of the border values.
             If ``'otsu'``, the fill value is the mean of the values at the
             border that lie under an
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
