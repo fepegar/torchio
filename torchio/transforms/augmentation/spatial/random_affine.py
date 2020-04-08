@@ -30,7 +30,7 @@ class RandomAffine(RandomTransform):
         default_pad_value: As the image is rotated, some values near the
             borders will be undefined.
             If ``'minimum'``, the fill value will be the image minimum.
-            If ``'otsu'``, the fill value is the mean of the border values.
+            If ``'mean'``, the fill value is the mean of the border values.
             If ``'otsu'``, the fill value is the mean of the values at the
             border that lie under an
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
@@ -159,9 +159,9 @@ class RandomAffine(RandomTransform):
         if self.default_pad_value == 'minimum':
             default_value = tensor.min().item()
         elif self.default_pad_value == 'mean':
-            default_value = get_borders_otsu(image, filter_otsu=False)
+            default_value = get_borders_mean(image, filter_otsu=False)
         elif self.default_pad_value == 'otsu':
-            default_value = get_borders_otsu(image, filter_otsu=True)
+            default_value = get_borders_mean(image, filter_otsu=True)
         else:
             default_value = self.default_pad_value
 
