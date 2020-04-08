@@ -105,6 +105,13 @@ class TestCropOrPad(TorchioTestCase):
         mask *= 0
         mask [0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
+        shapes = []
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            shapes.append(result_shape)
+        set_shapes = set(shapes)
+        message = f'Images have different shapes: {set_shapes}'
+        assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key][DATA].shape[1:]
             self.assertEqual(target_shape, result_shape,
@@ -118,6 +125,13 @@ class TestCropOrPad(TorchioTestCase):
         mask *= 0
         mask [0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
+        shapes = []
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            shapes.append(result_shape)
+        set_shapes = set(shapes)
+        message = f'Images have different shapes: {set_shapes}'
+        assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key][DATA].shape[1:]
             self.assertEqual(target_shape, result_shape,
