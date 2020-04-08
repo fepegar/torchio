@@ -24,23 +24,43 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(shape, mask_name='label')
         with self.assertWarns(UserWarning):
             transformed = transform(self.sample)
-        assert_array_equal(sample_t1[DATA], transformed['t1'][DATA])
-        assert_array_equal(sample_t1[AFFINE], transformed['t1'][AFFINE])
+        for key in transformed:
+            image_dict = self.sample[key]
+            assert_array_equal(image_dict[DATA], transformed[key][DATA])
+            assert_array_equal(image_dict[AFFINE], transformed[key][AFFINE])
 
     def test_different_shape(self):
         shape = self.sample['t1'][DATA].shape[1:]
         target_shape = 9, 21, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        result_shape = transformed['t1'][DATA].shape[1:]
-        self.assertNotEqual(shape, result_shape)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertNotEqual(shape, result_shape)
 
     def test_shape_right(self):
         target_shape = 9, 21, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        result_shape = transformed['t1'][DATA].shape[1:]
-        self.assertEqual(target_shape, result_shape)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual(target_shape, result_shape)
+
+    def test_only_pad(self):
+        target_shape = 11, 22, 30
+        transform = CropOrPad(target_shape)
+        transformed = transform(self.sample)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual(target_shape, result_shape)
+
+    def test_only_crop(self):
+        target_shape = 9, 18, 30
+        transform = CropOrPad(target_shape)
+        transformed = transform(self.sample)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual(target_shape, result_shape)
 
     def test_shape_negative(self):
         with self.assertRaises(ValueError):
@@ -57,8 +77,9 @@ class TestCropOrPad(TorchioTestCase):
     def test_shape_one(self):
         transform = CropOrPad(1)
         transformed = transform(self.sample)
-        result_shape = transformed['t1'][DATA].shape[1:]
-        self.assertEqual((1, 1, 1), result_shape)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual((1, 1, 1), result_shape)
 
     def test_wrong_mask_name(self):
         cop = CropOrPad(1, mask_name='wrong')
@@ -71,11 +92,37 @@ class TestCropOrPad(TorchioTestCase):
 
     def test_empty_mask(self):
         target_shape = 8, 22, 30
-        transform = CropOrPad(target_shape=target_shape, mask_name='label')
+        transform = CropOrPad(target_shape, mask_name='label')
         mask = self.sample['label'][DATA]
         mask *= 0
         with self.assertWarns(UserWarning):
             transform(self.sample)
+
+    def test_mask_only_pad(self):
+        target_shape = 11, 22, 30
+        transform = CropOrPad(target_shape, mask_name='label')
+        mask = self.sample['label'][DATA]
+        mask *= 0
+        mask [0, 4:6, 5:8, 3:7] = 1
+        transformed = transform(self.sample)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual(target_shape, result_shape,
+                f'Wrong shape for image: {key}',
+            )
+
+    def test_mask_only_crop(self):
+        target_shape = 9, 18, 30
+        transform = CropOrPad(target_shape, mask_name='label')
+        mask = self.sample['label'][DATA]
+        mask *= 0
+        mask [0, 4:6, 5:8, 3:7] = 1
+        transformed = transform(self.sample)
+        for key in transformed:
+            result_shape = transformed[key][DATA].shape[1:]
+            self.assertEqual(target_shape, result_shape,
+                f'Wrong shape for image: {key}',
+            )
 
     def test_center_mask(self):
         """The mask bounding box and the input image have the same center"""
