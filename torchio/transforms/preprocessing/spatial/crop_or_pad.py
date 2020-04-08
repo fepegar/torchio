@@ -207,10 +207,10 @@ class CropOrPad(BoundsTransform):
             begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
-            begin_pad = round(abs(min(begin, 0)))
+            begin_pad = round_up(abs(min(begin, 0)))
             end_pad = round(max(end - sample_shape[dim], 0))
             # Check if cropping is needed
-            begin_crop = round(max(begin, 0))
+            begin_crop = round_up(max(begin, 0))
             end_crop = abs(round(min(end - sample_shape[dim], 0)))
             # Add padding values of the dim to the list
             padding.append(begin_pad)
