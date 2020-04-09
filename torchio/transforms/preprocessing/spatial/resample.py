@@ -14,7 +14,7 @@ TypeSpacing = Union[float, Tuple[float, float, float]]
 
 
 class Resample(Transform):
-    """Change voxel spacing keeping the field of view.
+    """Change voxel spacing by resampling.
 
     Args:
         target: Tuple :math:`(s_d, s_h, s_w)`. If only one value
