@@ -13,6 +13,10 @@ from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 #    Image('label', '~/Dropbox/MRI/t1_brain_seg.nii.gz', LABEL),
 #    Image('t1', '~/Dropbox/MRI/t1.nii.gz', INTENSITY),
 #)
+dic_suj = {'t1': Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
+           'label': Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL)}
+subject = Subject(dic_suj)
+
 subject = Subject(
     t1 = Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', INTENSITY),
     label = Image('/data/romain/HCPdata/suj_100307/T1w_1mm.nii.gz', LABEL),
