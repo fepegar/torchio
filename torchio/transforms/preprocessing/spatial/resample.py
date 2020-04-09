@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 import torch
 import numpy as np
 import nibabel as nib
@@ -17,34 +17,50 @@ class Resample(Transform):
     """Change voxel spacing keeping the field of view.
 
     Args:
-        target_spacing: Tuple :math:`(s_d, s_h, s_w)`. If only one value
+        target: Tuple :math:`(s_d, s_h, s_w)`. If only one value
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
+            If a string is given, all images will be resampled using the image
+            with that name as reference.
         antialiasing: (Not implemented yet).
         image_interpolation: Member of :py:class:`torchio.Interpolation`.
             Supported interpolation techniques for resampling are
             :py:attr:`torchio.Interpolation.NEAREST`,
             :py:attr:`torchio.Interpolation.LINEAR` and
             :py:attr:`torchio.Interpolation.BSPLINE`.
-        reference_spacing: Str name of the image to which all voxelgrids will be resampled
 
-    .. note:: The resampling is performed using
-        :py:meth:`nibabel.processing.resample_to_output` and
-        :py:meth:`nibabel.processing.resample_from_to`
+    .. note:: Resampling is performed using
+        :py:meth:`nibabel.processing.resample_to_output` or
+        :py:meth:`nibabel.processing.resample_from_to`, depending on whether
+        the target is a spacing or a reference image.
+
+    Example:
+        >>> from torchio.transforms import Resample
+        >>> transform = Resample(1)          # resample all images to 1mm iso
+        >>> transform = Resample((1, 1, 1))  # resample all images to 1mm iso
+        >>> transform = Resample('t1')       # resample all images to 't1' image space
 
     """
     def __init__(
             self,
-            target_spacing: TypeSpacing,
+            target: Union[TypeSpacing, str],
             antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
-            reference_image: str = None
             ):
         super().__init__()
-        self.target_spacing = self.parse_spacing(target_spacing)
+        self.target_spacing: Tuple[float, float, float]
+        self.reference_image: str
+        self.parse_target(target)
         self.antialiasing = antialiasing
         self.interpolation_order = self.parse_interpolation(
             image_interpolation)
-        self.reference_image = reference_image
+
+    def parse_target(self, target: Union[TypeSpacing, str]):
+        if isinstance(target, str):
+            self.reference_image = target
+            self.target_spacing = None
+        else:
+            self.reference_image = None
+            self.target_spacing = self.parse_spacing(target)
 
     @staticmethod
     def parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
@@ -52,8 +68,14 @@ class Resample(Transform):
             result = spacing
         elif isinstance(spacing, Number):
             result = 3 * (spacing,)
-        elif spacing is None:
-            result = None
+        else:
+            message = (
+                'Target must be a string, a positive number'
+                f' or a tuple of positive numbers, not {type(spacing)}'
+            )
+            raise ValueError(message)
+        if np.any(np.array(spacing) <= 0):
+            raise ValueError(f'Spacing must be positive, not "{spacing}"')
         return result
 
     @staticmethod
@@ -69,17 +91,6 @@ class Resample(Transform):
             raise NotImplementedError(message)
         return order
 
-    # @staticmethod
-    # def parse_reference_image(sample: dict, reference_image: str) -> str:
-    #     if reference_image is None:
-    #         result = reference_image
-    #     elif reference_image in sample.keys():
-    #         result = reference_image
-    #     else:
-    #         message = f'reference_image={reference_image} not present in Subject, only these images were found: {sample.keys()} '
-    #         raise ValueError(message)
-    #     return result
-
     @staticmethod
     def check_reference_image(reference_image: str, sample: dict):
         if not isinstance(reference_image, str):
@@ -90,50 +101,39 @@ class Resample(Transform):
             raise ValueError(message)
 
     def apply_transform(self, sample: dict) -> dict:
-        reference_image = self.reference_image
-        if reference_image is not None:
-            self.check_reference_image(reference_image, sample)
-            reference_dict = sample[reference_image]
-            # Only resample reference image if a target spacing is given
-            if self.target_spacing is not None:
-                if reference_dict[TYPE] == LABEL:
-                    interpolation_order = 0
-                else:
-                    interpolation_order = self.interpolation_order
-                reference_dict[DATA], reference_dict[AFFINE] = self.apply_resample(
-                        reference_dict[DATA],
-                        reference_dict[AFFINE],
-                        self.target_spacing,
-                        interpolation_order,
-                    )
+        use_reference = self.reference_image is not None
+        for image_name, image_dict in sample.items():
+            # Do not resample the reference image if there is one
+            if use_reference and image_name == self.reference_image:
+                continue
+            if not is_image_dict(image_dict):
+                continue
 
-            for key, image_dict in sample.items():
-                if not is_image_dict(image_dict):
-                    continue
-                if key in reference_image:
-                    continue
-                else:
-                    image_dict[DATA], image_dict[AFFINE] = self.apply_reference_spacing(
-                        image_dict[DATA],
-                        image_dict[AFFINE],
-                        reference_dict[DATA],
-                        reference_dict[AFFINE],
-                        interpolation_order,
+            # Choose interpolator
+            if image_dict[TYPE] == LABEL:
+                interpolation_order = 0  # nearest neighbor
+            else:
+                interpolation_order = self.interpolation_order
+
+            # Resample
+            args = image_dict[DATA], image_dict[AFFINE], interpolation_order
+            if use_reference:
+                try:
+                    ref_image_dict = sample[self.reference_image]
+                except KeyError as error:
+                    message = (
+                        f'Reference name "{self.reference_image}"'
+                        ' not found in sample'
                     )
-        else:
-            for image_dict in sample.values():
-                if not is_image_dict(image_dict):
-                    continue
-                if image_dict[TYPE] == LABEL:
-                    interpolation_order = 0  # nearest neighbor
-                else:
-                    interpolation_order = self.interpolation_order
-                image_dict[DATA], image_dict[AFFINE] = self.apply_resample(
-                    image_dict[DATA],
-                    image_dict[AFFINE],
-                    self.target_spacing,
-                    interpolation_order,
-                )
+                    raise ValueError(message) from error
+                reference = ref_image_dict[DATA], ref_image_dict[AFFINE]
+                kwargs = dict(reference=reference)
+            else:
+                kwargs = dict(target_spacing=self.target_spacing)
+            image_dict[DATA], image_dict[AFFINE] = self.apply_resample(
+                *args,
+                **kwargs,
+            )
         return sample
 
 
@@ -141,35 +141,25 @@ class Resample(Transform):
     def apply_resample(
             tensor: torch.Tensor,
             affine: np.ndarray,
-            target_spacing: Tuple[float, float, float],
             interpolation_order: int,
+            target_spacing: Optional[Tuple[float, float, float]] = None,
+            reference: Optional[Tuple[torch.Tensor, np.ndarray]] = None,
             ) -> Tuple[torch.Tensor, np.ndarray]:
         array = tensor.numpy()[0]
-        nii = resample_to_output(
-            nib.Nifti1Image(array, affine),
-            voxel_sizes=target_spacing,
-            order=interpolation_order,
-        )
+        if reference is None:
+            nii = resample_to_output(
+                nib.Nifti1Image(array, affine),
+                voxel_sizes=target_spacing,
+                order=interpolation_order,
+            )
+        else:
+            reference_tensor, reference_affine = reference
+            reference_array = reference_tensor.numpy()[0]
+            nii = resample_from_to(
+                nib.Nifti1Image(array, affine),
+                nib.Nifti1Image(reference_array, reference_affine),
+                order=interpolation_order,
+            )
         tensor = torch.from_numpy(nii.get_fdata(dtype=np.float32))
         tensor = tensor.unsqueeze(dim=0)
         return tensor, nii.affine
-
-    @staticmethod
-    def apply_reference_spacing(
-            tensor: torch.Tensor,
-            affine: np.ndarray,
-            reference_tensor: torch.Tensor,
-            reference_affine: np.ndarray,
-            interpolation_order: int,
-            ) -> Tuple[torch.Tensor, np.ndarray]:
-        array = tensor.numpy()[0]
-        reference_array = reference_tensor.numpy()[0]
-        nii = resample_from_to(
-            nib.Nifti1Image(array, affine),
-            nib.Nifti1Image(reference_array,reference_affine),
-            order=interpolation_order,
-        )
-        tensor = torch.from_numpy(nii.get_fdata(dtype=np.float32))
-        tensor = tensor.unsqueeze(dim=0)
-        return tensor, nii.affine
-
