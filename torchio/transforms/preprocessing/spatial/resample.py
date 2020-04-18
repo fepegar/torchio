@@ -25,6 +25,7 @@ class Resample(Transform):
             :py:attr:`torchio.Interpolation.NEAREST`,
             :py:attr:`torchio.Interpolation.LINEAR` and
             :py:attr:`torchio.Interpolation.BSPLINE`.
+        p: Probability that this transform will be applied.
 
     .. note:: The resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output`.
@@ -35,8 +36,9 @@ class Resample(Transform):
             target_spacing: TypeSpacing,
             antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
+            p: float = 1,
             ):
-        super().__init__()
+        super().__init__(p=p)
         self.target_spacing = self.parse_spacing(target_spacing)
         self.antialiasing = antialiasing
         self.interpolation_order = self.parse_interpolation(

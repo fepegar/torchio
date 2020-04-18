@@ -43,7 +43,7 @@ class RandomMotion(RandomTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
-        proportion_to_augment: Probability that this transform will be applied.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. warning:: Large numbers of movements lead to longer execution times.
@@ -54,18 +54,14 @@ class RandomMotion(RandomTransform):
             translation: float = 10,  # in mm
             num_transforms: int = 2,
             image_interpolation: Interpolation = Interpolation.LINEAR,
-            proportion_to_augment: float = 1,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
-        self.proportion_to_augment = self.parse_probability(
-            proportion_to_augment,
-            'proportion_to_augment',
-        )
 
     def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
@@ -77,19 +73,15 @@ class RandomMotion(RandomTransform):
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
-                self.proportion_to_augment
             )
-            times_params, degrees_params, translation_params, do_it = params
+            times_params, degrees_params, translation_params = params
             keys = (
                 'random_motion_times',
                 'random_motion_degrees',
                 'random_motion_translation',
-                'random_motion_do',
             )
             for key, param in zip(keys, params):
                 sample[image_name][key] = param
-            if not do_it:
-                return sample
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -127,7 +119,6 @@ class RandomMotion(RandomTransform):
             degrees_range: Tuple[float, float],
             translation_range: Tuple[float, float],
             num_transforms: int,
-            probability: float,
             perturbation: float = 0.3,
             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
         # If perturbation is 0, time intervals between movements are constant
@@ -141,8 +132,7 @@ class RandomMotion(RandomTransform):
         noise.uniform_(-step * perturbation, step * perturbation)
         times += noise
         times_params = times.numpy()
-        do_it = torch.rand(1) < probability
-        return times_params, degrees_params, translation_params, do_it
+        return times_params, degrees_params, translation_params
 
     def get_rigid_transforms(
             self,

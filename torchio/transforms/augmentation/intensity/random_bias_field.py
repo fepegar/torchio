@@ -15,24 +15,20 @@ class RandomBiasField(RandomTransform):
             If a tuple :math:`(a, b)` is specified, then
             :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
-        proportion_to_augment: Probability that this transform will be applied.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             coefficients: Union[float, Tuple[float, float]] = 0.5,
             order: int = 3,
-            proportion_to_augment: float = 1,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = order
-        self.proportion_to_augment = self.parse_probability(
-            proportion_to_augment,
-            'proportion_to_augment',
-        )
 
     def apply_transform(self, sample: dict) -> dict:
         for image_name, image_dict in sample.items():
@@ -40,15 +36,11 @@ class RandomBiasField(RandomTransform):
                 continue
             if image_dict[TYPE] != INTENSITY:
                 continue
-            do_augmentation, coefficients = self.get_params(
+            coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,
-                self.proportion_to_augment,
             )
             sample[image_name]['random_bias_coefficients'] = coefficients
-            sample[image_name]['random_bias_do_augmentation'] = do_augmentation
-            if not do_augmentation:
-                continue
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
@@ -59,20 +51,16 @@ class RandomBiasField(RandomTransform):
     def get_params(
             order: int,
             coefficients_range: Tuple[float, float],
-            probability: float,
             ) -> Tuple[bool, np.ndarray]:
-        """
-        Sampling of the appropriate number of coefficients for the creation
-        of the bias field map
-        """
+        # Sampling of the appropriate number of coefficients for the creation
+        # of the bias field map
         random_coefficients = []
         for x_order in range(0, order + 1):
             for y_order in range(0, order + 1 - x_order):
                 for _ in range(0, order + 1 - (x_order + y_order)):
                     number = torch.FloatTensor(1).uniform_(*coefficients_range)
                     random_coefficients.append(number.item())
-        do_augmentation = torch.rand(1) < probability
-        return do_augmentation, np.array(random_coefficients)
+        return np.array(random_coefficients)
 
     @staticmethod
     def generate_bias_field(
@@ -80,10 +68,8 @@ class RandomBiasField(RandomTransform):
             order: int,
             coefficients: TypeData,
             ) -> np.ndarray:
-        """
-        Create the bias field map using a linear combination of polynomial
-        functions and the coefficients previously sampled
-        """
+        # Create the bias field map using a linear combination of polynomial
+        # functions and the coefficients previously sampled
         shape = np.array(data.shape[1:])  # first axis is channels
         half_shape = shape / 2
 

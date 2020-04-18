@@ -15,7 +15,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             seed=42,
         )
         keys = ('t1', 't2', 'label')
-        fixtures = 2953.9197, 2989.769, 2975
+        fixtures = 2916.7192, 2955.1265, 2950
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
             sample_data = self.sample[key][torchio.DATA].numpy()
@@ -27,11 +27,11 @@ class TestRandomElasticDeformation(TorchioTestCase):
 
     def test_inputs_pta_gt_one(self):
         with self.assertRaises(ValueError):
-            RandomElasticDeformation(proportion_to_augment=1.5)
+            RandomElasticDeformation(p=1.5)
 
     def test_inputs_pta_lt_zero(self):
         with self.assertRaises(ValueError):
-            RandomElasticDeformation(proportion_to_augment=-1)
+            RandomElasticDeformation(p=-1)
 
     def test_inputs_interpolation_int(self):
         with self.assertRaises(TypeError):

@@ -20,6 +20,7 @@ class RescaleIntensity(NormalizationTransform):
             Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+        p: Probability that this transform will be applied.
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
     .. _nn-UNet paper: https://arxiv.org/abs/1809.10486
@@ -29,8 +30,9 @@ class RescaleIntensity(NormalizationTransform):
             out_min_max: Tuple[float, float],
             percentiles: Tuple[int, int] = (0, 100),
             masking_method: Union[str, TypeCallable, None] = None,
+            p: float = 1,
             ):
-        super().__init__(masking_method=masking_method)
+        super().__init__(masking_method=masking_method, p=p)
         self.out_min, self.out_max = out_min_max
         self.percentiles = percentiles
 

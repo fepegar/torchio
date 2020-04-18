@@ -26,6 +26,7 @@ class CropOrPad(BoundsTransform):
             If a string is given, the output volume center will be the center
             of the bounding box of non-zero values in the image named
             :py:attr:`mask_name`.
+        p: Probability that this transform will be applied.
 
     Example:
         >>> import torchio
@@ -51,8 +52,9 @@ class CropOrPad(BoundsTransform):
             padding_mode: str = 'constant',
             padding_fill: Optional[float] = None,
             mask_name: Optional[str] = None,
+            p: float = 1,
             ):
-        super().__init__(target_shape)
+        super().__init__(target_shape, p=p)
         self.padding_mode = padding_mode
         self.padding_fill = padding_fill
         if mask_name is not None and not isinstance(mask_name, str):
