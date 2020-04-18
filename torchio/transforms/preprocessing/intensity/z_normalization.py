@@ -10,9 +10,14 @@ class ZNormalization(NormalizationTransform):
     Args:
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+        p: Probability that this transform will be applied.
     """
-    def __init__(self, masking_method: Union[str, TypeCallable, None] = None):
-        super().__init__(masking_method=masking_method)
+    def __init__(
+            self,
+            masking_method: Union[str, TypeCallable, None] = None,
+            p: float = 1,
+            ):
+        super().__init__(masking_method=masking_method, p=p)
 
     def apply_normalization(
             self,

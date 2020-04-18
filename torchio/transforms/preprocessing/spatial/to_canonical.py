@@ -18,6 +18,9 @@ class ToCanonical(Transform):
 
     See `NiBabel docs about image orientation`_ for more information.
 
+    Args:
+        p: Probability that this transform will be applied.
+
     .. note:: The reorientation is performed using
         :py:meth:`nibabel.as_closest_canonical`.
 

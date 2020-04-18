@@ -16,14 +16,16 @@ class RandomBlur(RandomTransform):
             to blur the image along each axis,
             where :math:`\sigma_i \sim \mathcal{U}(a, b)`.
             If a single value :math:`n` is provided, then :math:`a = b = n`.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             std: Union[float, Tuple[float, float]] = (0, 4),
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.std_range = self.parse_range(std, 'std')
         if any(np.array(self.std_range) < 0):
             message = (

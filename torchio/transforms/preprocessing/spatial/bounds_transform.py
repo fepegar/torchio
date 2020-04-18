@@ -16,12 +16,19 @@ TypeBounds = Union[
 
 
 class BoundsTransform(Transform):
-    """Base class for transforms that change image bounds."""
+    """Base class for transforms that change image bounds.
+
+    Args:
+        bounds_parameters:
+        p: Probability that this transform will be applied.
+
+    """
     def __init__(
             self,
             bounds_parameters: TypeBounds,
+            p: float = 1,
             ):
-        super().__init__()
+        super().__init__(p=p)
         self.bounds_parameters = self.parse_bounds(bounds_parameters)
 
     @property

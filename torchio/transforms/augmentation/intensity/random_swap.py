@@ -15,15 +15,17 @@ class RandomSwap(RandomTransform):
             of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided, :math:`d = h = w = n`.
         num_iterations: Number of times that two patches will be swapped.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.patch_size = to_tuple(patch_size)
         self.num_iterations = num_iterations
 

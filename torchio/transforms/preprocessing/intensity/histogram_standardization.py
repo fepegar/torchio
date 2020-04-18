@@ -27,14 +27,15 @@ class HistogramStandardization(NormalizationTransform):
             with :py:meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
-
+        p: Probability that this transform will be applied.
     """
     def __init__(
             self,
             landmarks_dict: Dict[str, np.ndarray],
             masking_method: Union[str, TypeCallable, None] = None,
+            p: float = 1,
             ):
-        super().__init__(masking_method=masking_method)
+        super().__init__(masking_method=masking_method, p=p)
         self.landmarks_dict = landmarks_dict
 
     def apply_normalization(
