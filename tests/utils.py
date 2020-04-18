@@ -46,8 +46,16 @@ class TorchioTestCase(unittest.TestCase):
         """Return a sample containing images of different shape."""
         subject = Subject(
             t1=Image(self.get_image_path('t1_d'), INTENSITY),
-            t2=Image(self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
-            label=Image(self.get_image_path('label_d', binary=True), LABEL),
+            t2=Image(
+                self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
+            label=Image(
+                self.get_image_path(
+                    'label_d',
+                    shape=(8, 17, 25),
+                    binary=True,
+                ),
+                LABEL,
+            ),
         )
         subjects_list = [subject]
         dataset = ImagesDataset(subjects_list)
@@ -62,11 +70,17 @@ class TorchioTestCase(unittest.TestCase):
         root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'
         return IXITiny(root_dir, download=True)
 
-    def get_image_path(self, stem, binary=False, shape=(10, 20, 30)):
+    def get_image_path(
+            self,
+            stem,
+            binary=False,
+            shape=(10, 20, 30),
+            spacing=(1, 1, 1),
+            ):
         data = np.random.rand(*shape)
         if binary:
             data = (data > 0.5).astype(np.uint8)
-        affine = np.eye(4)
+        affine = np.diag((*spacing, 1))
         suffix = random.choice(('.nii.gz', '.nii'))
         path = self.dir / f'{stem}{suffix}'
         nib.Nifti1Image(data, affine).to_filename(str(path))
