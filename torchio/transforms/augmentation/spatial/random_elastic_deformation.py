@@ -53,7 +53,7 @@ class RandomElasticDeformation(RandomTransform):
             The value of the dense displacement at each voxel is always
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
-        proportion_to_augment: Probability that this transform will be applied.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
@@ -114,10 +114,10 @@ class RandomElasticDeformation(RandomTransform):
             max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
             locked_borders: int = 2,
             image_interpolation: Interpolation = Interpolation.LINEAR,
-            proportion_to_augment: float = 1,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
         self.parse_control_points(self.num_control_points)
@@ -133,10 +133,6 @@ class RandomElasticDeformation(RandomTransform):
                 ' or use more control points.'
             )
             raise ValueError(message)
-        self.proportion_to_augment = self.parse_probability(
-            proportion_to_augment,
-            'proportion_to_augment',
-        )
         self.interpolation = self.parse_interpolation(image_interpolation)
 
     @staticmethod
@@ -169,7 +165,6 @@ class RandomElasticDeformation(RandomTransform):
             num_control_points: Tuple[int, int, int],
             max_displacement: Tuple[float, float, float],
             num_locked_borders: int,
-            probability: float,
             ) -> Tuple:
         grid_shape = num_control_points
         num_dimensions = 3
@@ -187,8 +182,7 @@ class RandomElasticDeformation(RandomTransform):
             coarse_field[:, i] = 0
             coarse_field[:, -1 - i] = 0
 
-        do_augmentation = torch.rand(1) < probability
-        return do_augmentation, coarse_field.numpy()
+        return coarse_field.numpy()
 
     @staticmethod
     def get_bspline_transform(
@@ -232,16 +226,12 @@ class RandomElasticDeformation(RandomTransform):
             else:
                 interpolation = self.interpolation
             if bspline_params is None:
-                do_augmentation, bspline_params = self.get_params(
+                bspline_params = self.get_params(
                     self.num_control_points,
                     self.max_displacement,
                     self.num_locked_borders,
-                    self.proportion_to_augment,
                 )
                 params_dict['bspline_params'] = bspline_params
-                params_dict['do_augmentation'] = int(do_augmentation)
-                if not do_augmentation:
-                    return sample
             image_dict[DATA] = self.apply_bspline_transform(
                 image_dict[DATA],
                 image_dict[AFFINE],

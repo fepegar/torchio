@@ -14,14 +14,16 @@ class RandomNoise(RandomTransform):
             from which the noise is sampled.
             If two values :math:`(a, b)` are providede,
             then :math:`\sigma \sim \mathcal{U}(a, b)`.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             std: Tuple[float, float] = (0, 0.25),
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.std_range = self.parse_range(std, 'std')
         if any(np.array(self.std_range) < 0):
             message = (
