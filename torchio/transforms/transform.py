@@ -1,7 +1,11 @@
+import numbers
 import warnings
 from copy import deepcopy
 from abc import ABC, abstractmethod
+
+import torch
 import SimpleITK as sitk
+
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 from .. import TypeData, TYPE, INTENSITY
 import numpy as np
@@ -15,8 +19,12 @@ class Transform(ABC):
     All subclasses should overwrite
     :py:meth:`torchio.tranforms.Transform.apply_transform`,
     which takes a sample, applies some transformation and returns the result.
+
+    Args:
+        p: Probability that this transform will be applied.
     """
-    def __init__(self, verbose: bool = False, keep_original=False):
+    def __init__(self, p: float = 1, verbose: bool = False, keep_original=False):
+        self.probability = self.parse_probability(p)
         self.verbose = verbose
         self.keep_original = keep_original
 
@@ -35,6 +43,8 @@ class Transform(ABC):
             start = time.time()
         """Transform a sample and return the result."""
         self.parse_sample(sample)
+        if torch.rand(1).item() > self.probability:
+            return sample
         sample = deepcopy(sample)
         sample = self.apply_transform(sample)
         if self.verbose:
@@ -46,6 +56,17 @@ class Transform(ABC):
     @abstractmethod
     def apply_transform(self, sample: dict):
         raise NotImplementedError
+
+    @staticmethod
+    def parse_probability(probability: float) -> float:
+        is_number = isinstance(probability, numbers.Number)
+        if not (is_number and 0 <= probability <= 1):
+            message = (
+                'Probability must be a number in [0, 1],'
+                f' not {probability}'
+            )
+            raise ValueError(message)
+        return probability
 
     @staticmethod
     def parse_sample(sample: dict) -> None:

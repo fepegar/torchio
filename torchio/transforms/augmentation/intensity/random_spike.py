@@ -19,7 +19,7 @@ class RandomSpike(RandomTransform):
         intensity: Ratio :math:`r` between the spike intensity and the maximum
             of the spectrum.
             Larger values generate more distorted images.
-        proportion_to_augment: Probability that this transform will be applied.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: The execution time of this transform does not depend on the
@@ -29,14 +29,10 @@ class RandomSpike(RandomTransform):
             self,
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (0.1, 1),
-            proportion_to_augment: float = 1,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
-        self.proportion_to_augment = self.parse_probability(
-            proportion_to_augment,
-            'proportion_to_augment',
-        )
+        super().__init__(p=p, seed=seed)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
         if isinstance(num_spikes, int):
@@ -53,14 +49,10 @@ class RandomSpike(RandomTransform):
             params = self.get_params(
                 self.num_spikes_range,
                 self.intensity_range,
-                self.proportion_to_augment,
             )
-            num_spikes_param, intensity_param, do_it = params
+            num_spikes_param, intensity_param = params
             sample[image_name]['random_spike_intensity'] = intensity_param
             sample[image_name]['random_spike_num_spikes'] = num_spikes_param
-            sample[image_name]['random_spike_do'] = do_it
-            if not do_it:
-                return sample
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -91,13 +83,11 @@ class RandomSpike(RandomTransform):
     def get_params(
             num_spikes_range: Tuple[int, int],
             intensity_range: Tuple[float, float],
-            probability: float,
             ) -> Tuple:
         ns_min, ns_max = num_spikes_range
         num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
         intensity_param = torch.FloatTensor(1).uniform_(*intensity_range)
-        do_it = torch.rand(1) < probability
-        return num_spikes_param, intensity_param.item(), do_it
+        return num_spikes_param, intensity_param.item()
 
     def add_artifact(
             self,

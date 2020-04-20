@@ -14,15 +14,18 @@ class RandomTransform(Transform):
     """Base class for stochastic augmentation transforms.
 
     Args:
-        seed: Seed for :mod:`torch` random number generator.
+        p: Probability that this transform will be applied.
+        seed: Seed for :py:mod:`torch` random number generator.
     """
     def __init__(
             self,
+            p: float = 1,
             seed: Optional[int] = None,
             verbose: bool = False,
             keep_original=False,
             ):
-        super().__init__(verbose=verbose, keep_original=keep_original)
+
+        super().__init__(p=p, verbose=verbose, keep_original=keep_original)
         self._seed = seed
 
     def __call__(self, sample: dict):
@@ -80,13 +83,6 @@ class RandomTransform(Transform):
             translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(translation, 'translation')
-
-    @staticmethod
-    def parse_probability(probability: float, name: str) -> float:
-        is_number = isinstance(probability, numbers.Number)
-        if not (is_number and 0 <= probability <= 1):
-            raise ValueError(f'{name} must be a number in [0, 1]')
-        return probability
 
     @staticmethod
     def parse_interpolation(interpolation: Interpolation) -> Interpolation:
