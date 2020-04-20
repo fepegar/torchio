@@ -52,7 +52,7 @@ class TestTransforms(TorchioTestCase):
             RescaleIntensity((0, 1)),
             ZNormalization(masking_method='label'),
             HistogramStandardization(landmarks_dict=landmarks_dict),
-            RandomElasticDeformation(),
+            RandomElasticDeformation(max_displacement=1),
             RandomAffine(),
             OneOf({RandomAffine(): 3, RandomElasticDeformation(): 1}),
             Pad((1, 2, 3, 0, 5, 6), padding_mode='constant', fill=3),
