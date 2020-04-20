@@ -189,6 +189,8 @@ class RandomMotionFromTimeCourse(RandomTransform):
                 metrics['L1'] = lossL1(image_dict["data"].unsqueeze(0), sample[image_name+'_orig']['data'].unsqueeze(0)).numpy()
                 metrics['mean_DispP'] = calculate_mean_Disp_P(self.fitpars)
                 metrics['rmse_Disp'] = calculate_mean_RMSE_displacment(self.fitpars)
+                metrics['mean_DispP_iterp'] = calculate_mean_Disp_P(fitpars_interp)
+                metrics['rmse_Disp_iterp'] = calculate_mean_RMSE_displacment(fitpars_interp)
 
                 ff_interp, to_substract = self.demean_fitpar(fitpars_interp, original_image)
                 metrics['TFsubstract'] = to_substract
@@ -264,6 +266,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         if self.displacement_shift > 0:
             to_substract = fpars[:, int(round(self.nT / 2))]
             fpars = np.subtract(fpars, to_substract[..., np.newaxis])
+            #print('removing to fit_pars {}'.format(to_substract))
             self.displacement_substract = to_substract
 
         #print(fpars.shape)
@@ -288,7 +291,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         im_shape = list(im_shape)
         self.im_shape = im_shape.copy()
         im_shape.pop(self.frequency_encoding_dim)
-        self.phase_encoding_shape = im_shape
+        self.phase_encoding_shape = im_shape #[ im_shape[pp-1] for pp in pe_dims]
         self.num_phase_encoding_steps = self.phase_encoding_shape[0] * self.phase_encoding_shape[1]
         self.frequency_encoding_dim = len(self.im_shape) - 1 if self.frequency_encoding_dim == -1 \
             else self.frequency_encoding_dim
@@ -584,7 +587,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
             #xx = np.argwhere(ssi > (np.max(ssi) * 0.001)).reshape(-1)
             #to_substract[i] = np.sum(ffi[xx] * ssi[xx]) / np.sum(ssi[xx])
             to_substract[i] = np.sum(ffi * ssi) / np.sum(ssi)
-        #print('Removing {} '.format(to_substract))
+        #print('Removing TF mean {} '.format(to_substract))
 
         #print('Removing {} OR {}'.format(to_substract, (to_substract+self.displacement_substract)))
         to_substract_tile = np.tile(to_substract[..., np.newaxis, np.newaxis, np.newaxis],
@@ -639,7 +642,7 @@ def calculate_mean_Disp_P(motion_params):
     """
     translations = np.transpose(np.abs(motion_params[0:3, :]))
     rotations = np.transpose(np.abs(motion_params[3:6, :]))
-    fd = np.sum(translations, axis=1) + (50 * np.pi / 180) * np.sum(rotations, axis=1)
+    fd = np.mean(translations, axis=1) + (50 * np.pi / 180) * np.mean(rotations, axis=1)
 
     return np.mean(fd)
 
