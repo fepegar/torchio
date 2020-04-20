@@ -200,5 +200,8 @@ def get_borders_mean(image, filter_otsu=True):
     otsu.Execute(borders_image)
     threshold = otsu.GetThreshold()
     values = borders[borders < threshold]
-    default_value = values.mean()
+    if values.any():
+        default_value = values.mean()
+    else:
+        default_value = borders.mean()
     return default_value
