@@ -1,4 +1,3 @@
-from copy import deepcopy
 import torch
 from torchio.transforms import Lambda
 from ..utils import TorchioTestCase
