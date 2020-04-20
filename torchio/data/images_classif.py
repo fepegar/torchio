@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import random
-from .images import ImagesDataset, Image
+from .images import ImagesDataset, Image, Subject
 import torchio
 
 
@@ -205,9 +205,12 @@ def get_subject_list_and_csv_info_from_data_prameters(data_param, fpath_idx="img
     #now convert the dictionary list into a list of Image
     subjects_list = []
     for subjects in subjects_paths:
-        one_suj = []
+        one_suj = {}
         for key, val in subjects.items():
-            one_suj.append(Image(key, val['path'], val['type']))
-        subjects_list.append(one_suj.copy())
+            one_suj[key] = Image(val['path'], val['type'])
+        new_suj = one_suj.copy()
+        new_suj = Subject(new_suj)
+        subjects_list.append(new_suj)
 
     return subjects_list, res
+
