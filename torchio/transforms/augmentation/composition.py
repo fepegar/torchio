@@ -27,7 +27,6 @@ class Compose(Transform):
         return self.transform(sample)
 
 
-
 class OneOf(RandomTransform):
     """Apply only one of the given transforms.
 

@@ -138,7 +138,6 @@ class Resample(Transform):
             )
         return sample
 
-
     @staticmethod
     def apply_resample(
             tensor: torch.Tensor,
