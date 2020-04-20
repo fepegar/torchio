@@ -5,7 +5,6 @@ from tqdm import trange
 
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision.transforms import Compose
 
 from torchio import ImagesDataset, Queue, DATA
 from torchio.data.sampler import ImageSampler
@@ -15,6 +14,7 @@ from torchio.transforms import (
     RandomNoise,
     RandomFlip,
     RandomAffine,
+    Compose,
 )
 
 

@@ -46,7 +46,6 @@ class IXI(ImagesDataset):
     Example::
 
         >>> import torchio
-        >>> import torchvision
         >>> transforms = [
         ...     torchio.ToCanonical(),  # to RAS
         ...     torchio.Resample((1, 1, 1)),  # to 1 mm iso
@@ -54,7 +53,7 @@ class IXI(ImagesDataset):
         >>> ixi_dataset = torchio.datasets.IXI(
         ...     'path/to/ixi_root/',
         ...     modalities=('T1', 'T2'),
-        ...     transform=torchvision.transforms.Compose(transforms),
+        ...     transform=torchio.Compose(transforms),
         ...     download=True,
         ... )
         >>> print('Number of subjects in dataset:', len(ixi_dataset))  # 577

@@ -12,7 +12,7 @@ class Compose(Transform):
     """Compose several transforms together.
 
     Args:
-        transforms: list of instances of
+        transforms: Sequence of instances of
             :py:class:`~torchio.transforms.transform.Transform`.
         p: Probability that this transform will be applied.
 
@@ -49,7 +49,11 @@ class OneOf(RandomTransform):
         >>> transform = torchio.transforms.OneOf(transforms_dict)
 
     """
-    def __init__(self, transforms: Union[dict, Sequence], p: float = 1):
+    def __init__(
+            self,
+            transforms: Union[dict, Sequence[Transform]],
+            p: float = 1,
+            ):
         super().__init__(p=p)
         self.transforms_dict = self._get_transforms_dict(transforms)
 

@@ -1,6 +1,4 @@
 from torch.utils.data import DataLoader
-from torchvision.transforms import Compose
-from torchio.transforms import RandomElasticDeformation
 from ..utils import TorchioTestCase
 
 
