@@ -170,7 +170,7 @@ class RandomAffine(RandomTransform):
         resampler = sitk.ResampleImageFilter()
         resampler.SetInterpolator(get_sitk_interpolator(interpolation))
         resampler.SetReferenceImage(reference)
-        resampler.SetDefaultPixelValue(default_value)
+        resampler.SetDefaultPixelValue(float(default_value))
         resampler.SetOutputPixelType(sitk.sitkFloat32)
         resampler.SetTransform(transform)
         resampled = resampler.Execute(floating)
