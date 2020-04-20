@@ -1,5 +1,5 @@
 from pprint import pprint
-from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL
+from torchio import Image, ImagesDataset, transforms, INTENSITY, LABEL, Subject
 from torchvision.transforms import Compose
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,15 +15,9 @@ Comparing result with retromocoToolbox
 """
 from utils_file import gfile, get_parent_path
 import pandas as pd
+from doit_train import do_training
 
-from torchio.transforms import Interpolation
-suj = [[ Image('T1', '/data/romain/HCPdata/suj_150423/mT1w_1mm.nii', INTENSITY), ]]
-
-suj = [[ Image('T1', '/data/romain/data_exemple/suj_150423/mask_brain.nii', INTENSITY), ]]
-
-
-
-def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss'):
+def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss', mvt_axes=[1] ):
     fp = np.zeros((6, 200))
     x = np.arange(0,200)
     if method=='gauss':
@@ -37,8 +31,14 @@ def corrupt_data( x0, sigma= 5, amplitude=20, method='gauss'):
             y = np.hstack((np.zeros((1,(x0-sigma))),
                             np.linspace(0,-amplitude,2*sigma+1).reshape(1,-1),
                             np.ones((1,((200-x0)-sigma-1)))*-amplitude ))
-    fp[3,:] = y
-    fp[1,:] = y
+    elif method == 'sin':
+        fp = np.zeros((6, 182*218))
+        x = np.arange(0,182*218)
+        y = np.sin(x/x0 * 2 * np.pi)
+        #plt.plot(x,y)
+
+    for xx in mvt_axes:
+        fp[xx,:] = y
     return fp
 
 def corrupt_data_both( x0, sigma= 5, amplitude=20, method='gauss'):
@@ -48,28 +48,83 @@ def corrupt_data_both( x0, sigma= 5, amplitude=20, method='gauss'):
     return fp
 
 
-dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0, "correct_motion":True}
+dt = do_training('/tmp', 'toto')
+res, extra_info = pd.DataFrame(), dict()
+
+suj_type='suj'
+if suj_type=='suj':
+    suj = [ Subject(image=Image('/data/romain/data_exemple/suj_150423/mT1w_1mm.nii', INTENSITY)), ]
+else:
+    suj = [ Subject(image=Image('/data/romain/data_exemple/suj_150423/mask_brain.nii', INTENSITY)), ]
+
+dico_params = {    "fitpars": None,  "verbose": True, "displacement_shift":1 , "oversampling_pct":0,
+                    'keep_original':True, 'compare_to_original':True, "correct_motion":False,
+                   'freq_encoding_dim':[2]}
+
+disp_str =  'no_shift' # 'center_zero'  'no_shift' #'center_TF'
+disp_str_list = ['center_zero', 'no_shift', 'center_TF']
 
 x0=np.hstack((np.arange(90,102,2),np.arange(101,105,1))) #x0=[100]
 x0=np.hstack((np.arange(90,102,2))) #x0=[100]
-dirpath = ['/data/romain/data_exemple/motion_gauss']
+x0 = np.hstack((np.array([20, 50, 80, 90, 100])))
+x0 = np.array([218*2, 218*(2+1/3), 218*4])
+x0 = np.array([ 197, 218, 218*2, 218*(2+11/7), 218*4])
+x0 = np.array([ 145, 152, 152*2, 152*(2+11/7), 152*4])
+x0s = [ np.array([ 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 96, 97, 98, 99, 100]) ,
+        np.array([ 10, 20, 30, 40, 50, 60, 70, 80, 88, 90, 92, 94, 96, 98, 100]) ]
+mvt_types=['step', 'gauss']
+mvt_type, x0 =mvt_types[1], x0s[0]
+
+mvt_axe_str_list = ['transX', 'transY','transZ', 'rotX', 'rotY', 'rotZ']
+mvt_axes = [3]
+mvt_axe_str = mvt_axe_str_list[mvt_axes[0]]
+out_path = '/data/romain/data_exemple/motion_gaussX_sigma2_phaseX'
+if not os.path.exists(out_path): os.mkdir(out_path)
 #plt.ioff()
-#for s in :
-for s in [5]: #[2, 5, 10, 20]: #[1, 2, 3,  5, 7, 10, 12 , 15, 20 ] : # [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
-    for xx in x0:
-        fp = corrupt_data(xx, sigma=s,method='gauss',amplitude=20)
-        dico_params['fitpars'] = fp
-        t =  RandomMotionFromTimeCourse(**dico_params)
-        dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218,152)),t)))
-        #dataset = ImagesDataset(suj, transform=t)
-        sample = dataset[0]
-        fout = dirpath[0] + '/mask_mot_new_shift_s{:02d}_x{}'.format(s,xx)
-        fit_pars = t.fitpars
-        fig = plt.figure()
-        plt.plot(fit_pars.T)
-        plt.savefig(fout+'.png')
-        plt.close(fig)
-        dataset.save_sample(sample, dict(T1=fout+'.nii'))
+#for mvt_type, x0 in zip(mvt_types, x0s):
+for disp_str in disp_str_list:
+    for s in [2]: #[2, 5, 10, 20]: #[1, 2, 3,  5, 7, 10, 12 , 15, 20 ] : # [2,4,6] : #[1, 3 , 5 , 8, 10 , 12, 15, 20 , 25 ]:
+        for xx in x0:
+            if disp_str == 'center_TF': dico_params['displacement_shift'] = 2
+            if disp_str == 'center_zero': dico_params['displacement_shift'] = 1
+            if disp_str == 'no_shift': dico_params['displacement_shift'] = 0
+
+            fp = corrupt_data(xx, sigma=s, method=mvt_type, amplitude=20, mvt_axes=mvt_axes)
+            dico_params['fitpars'] = fp
+            dico_params['nT'] = fp.shape[1]
+            t =  RandomMotionFromTimeCourse(**dico_params)
+            #dataset = ImagesDataset(suj, transform=Compose((CenterCropOrPad(target_shape=(182, 218, 152)), t)))
+            dataset = ImagesDataset(suj, transform=t)
+            sample = dataset[0]
+            fout = out_path + '/{}_{}_{}_freq{}_{}'.format(suj_type, mvt_axe_str, mvt_type, xx, disp_str)
+            fit_pars = t.fitpars
+            fig = plt.figure()
+            plt.plot(fit_pars.T)
+            plt.savefig(fout+'.png')
+            plt.close(fig)
+            dataset.save_sample(sample, dict(image=fout+'.nii'))
+            extra_info['x0'], extra_info['mvt_type'], extra_info['mvt_axe']= xx, mvt_type, mvt_axe_str
+            extra_info['shift'] = disp_str
+            res = dt.add_motion_info(sample, res, extra_info=extra_info)
+fres = out_path+'/res_metrics_{}_{}.csv'.format(mvt_axe_str, disp_str)
+res.to_csv(fres)
+
+res = pd.read_csv('/data/romain/data_exemple/motion_gaussX/res_metrics_transX_center_TF.csv')
+#res = pd.read_csv('/data/romain/data_exemple/motion_gaussX_sigma2/res_metrics_transX_center_TF.csv')
+res = pd.read_csv('/data/romain/data_exemple/motion_stepX/res_metrics_transX_step.csv')
+isel = [range(0,15), range(15,30), range(30,45)]
+for ii in isel:
+    plt.figure('ssim')
+    plt.plot( res.loc[ii,'x0'], res.loc[ii,'ssim'])
+    plt.figure('displacement')
+    plt.plot(res.loc[ii, 'x0'], res.loc[ii, 'mean_DispP_iterp']) #mean_DispP_iterp  rmse_Disp_iterp
+
+plt.figure('ssim')
+plt.legend(disp_str_list)
+plt.grid(); plt.ylabel('ssim'); plt.xlabel('')
+plt.figure('displacement')
+plt.legend(disp_str_list)
+plt.grid(); plt.ylabel('displacement'); plt.xlabel('')
 
 
 fitpars  =t.fitpars_interp
