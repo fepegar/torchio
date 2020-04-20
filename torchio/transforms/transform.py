@@ -5,6 +5,7 @@ import SimpleITK as sitk
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 from .. import TypeData, TYPE, INTENSITY
 import numpy as np
+import time
 
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
@@ -36,6 +37,10 @@ class Transform(ABC):
         self.parse_sample(sample)
         sample = deepcopy(sample)
         sample = self.apply_transform(sample)
+        if self.verbose:
+            duration = time.time() - start
+            print(f'{self.__class__.__name__}: {duration:.3f} seconds')
+
         return sample
 
     @abstractmethod
