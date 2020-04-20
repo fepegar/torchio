@@ -35,6 +35,7 @@ class RandomAffine(RandomTransform):
             border that lie under an
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
         image_interpolation: See :ref:`Interpolation`.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: Rotations are performed around the center of the image.
@@ -63,9 +64,10 @@ class RandomAffine(RandomTransform):
             isotropic: bool = False,
             default_pad_value: Union[str, float] = 'otsu',
             image_interpolation: Interpolation = Interpolation.LINEAR,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
+        super().__init__(p=p, seed=seed)
         self.scales = scales
         self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic

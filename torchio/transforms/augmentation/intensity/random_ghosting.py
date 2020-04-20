@@ -18,7 +18,7 @@ class RandomGhosting(RandomTransform):
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
-        proportion_to_augment: Probability that this transform will be applied.
+        p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: The execution time of this transform does not depend on the
@@ -28,14 +28,10 @@ class RandomGhosting(RandomTransform):
             self,
             num_ghosts: Union[int, Tuple[int, int]] = (4, 10),
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
-            proportion_to_augment: float = 1,
+            p: float = 1,
             seed: Optional[int] = None,
             ):
-        super().__init__(seed=seed)
-        self.proportion_to_augment = self.parse_probability(
-            proportion_to_augment,
-            'proportion_to_augment',
-        )
+        super().__init__(p=p, seed=seed)
         if not isinstance(axes, tuple):
             axes = (axes,)
         self.axes = axes
@@ -53,14 +49,10 @@ class RandomGhosting(RandomTransform):
             params = self.get_params(
                 self.num_ghosts_range,
                 self.axes,
-                self.proportion_to_augment,
             )
-            num_ghosts_param, axis_param, do_it = params
+            num_ghosts_param, axis_param = params
             sample[image_name]['random_ghosting_axis'] = axis_param
             sample[image_name]['random_ghosting_num_ghosts'] = num_ghosts_param
-            sample[image_name]['random_ghosting_do'] = do_it
-            if not do_it:
-                return sample
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -91,13 +83,11 @@ class RandomGhosting(RandomTransform):
     def get_params(
             num_ghosts_range: Tuple[int, int],
             axes: Tuple[int, ...],
-            probability: float,
             ) -> Tuple:
         ng_min, ng_max = num_ghosts_range
         num_ghosts_param = torch.randint(ng_min, ng_max + 1, (1,)).item()
         axis_param = axes[torch.randint(0, len(axes), (1,))]
-        do_it = torch.rand(1) < probability
-        return num_ghosts_param, axis_param, do_it
+        return num_ghosts_param, axis_param
 
     def add_artifact(
             self,
