@@ -5,6 +5,9 @@ from .interpolation import Interpolation, get_sitk_interpolator
 from .lambda_transform import Lambda
 
 # Augmentation
+from .augmentation.composition import OneOf
+from .augmentation.composition import Compose
+
 from .augmentation.spatial import RandomFlip
 from .augmentation.spatial import RandomAffine
 from .augmentation.spatial import RandomElasticDeformation

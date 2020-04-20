@@ -22,6 +22,8 @@ from torchio.transforms import (
     Crop,
     ToCanonical,
     CropOrPad,
+    OneOf,
+    Compose,
 )
 from ..utils import TorchioTestCase
 
@@ -52,9 +54,9 @@ class TestTransforms(TorchioTestCase):
             HistogramStandardization(landmarks_dict=landmarks_dict),
             RandomElasticDeformation(),
             RandomAffine(),
+            OneOf({RandomAffine(): 3, RandomElasticDeformation(): 1}),
             Pad((1, 2, 3, 0, 5, 6), padding_mode='constant', fill=3),
             Crop((3, 2, 8, 0, 1, 4)),
         )
-        transformed = self.sample
-        for transform in transforms:
-            transformed = transform(transformed)
+        transform = Compose(transforms)
+        transformed = transform(self.sample)
