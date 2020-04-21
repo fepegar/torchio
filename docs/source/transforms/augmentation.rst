@@ -7,10 +7,15 @@ The result can be made deterministic using the :py:attr:`seed` parameter.
 .. contents::
     :local:
 
+
+Base class
+----------
+
+
 .. currentmodule:: torchio.transforms.augmentation
 
 :class:`RandomTransform`
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RandomTransform
     :members:
@@ -20,26 +25,44 @@ The result can be made deterministic using the :py:attr:`seed` parameter.
 .. currentmodule:: torchio.transforms
 
 
+Composition
+-----------
+
+
+:class:`Compose`
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: Compose
+    :show-inheritance:
+
+
+:class:`OneOf`
+^^^^^^^^^^^^^^
+
+.. autoclass:: OneOf
+    :show-inheritance:
+
+
 
 Spatial
 -------
 
 :class:`RandomFlip`
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RandomFlip
     :show-inheritance:
 
 
 :class:`RandomAffine`
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RandomAffine
     :show-inheritance:
 
 
 :class:`RandomElasticDeformation`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. image:: ../../images/random_elastic_deformation.gif
    :alt: Random elastic deformation
@@ -53,7 +76,7 @@ Intensity
 ---------
 
 :class:`RandomMotion`
-~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Magnetic resonance images suffer from motion artifacts when the subject moves
 during image acquisition. This transform follows
@@ -68,7 +91,7 @@ simulate motion artifacts for data augmentation.
 
 
 :class:`RandomGhosting`
-~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Discrete "ghost" artifacts may occur along the phase-encode direction whenever
 the position or signal intensity of imaged structures within the field-of-view
@@ -85,7 +108,7 @@ most important patient-related causes of ghost artifacts in clinical MR imaging
 
 
 :class:`RandomSpike`
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Also known as
 `Herringbone artifact <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
@@ -100,7 +123,7 @@ directions in image space due to spikes in k-space.
 
 
 :class:`RandomBiasField`
-~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 MRI magnetic field inhomogeneity creates intensity
 variations of very low frequency across the whole image.
@@ -121,18 +144,18 @@ hyperintensities <https://www.sciencedirect.com/science/article/pii/S13618415173
 
 
 :class:`RandomBlur`
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RandomBlur
     :show-inheritance:
 
 
 :class:`RandomNoise`
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Adds noise sampled from a normal distribution with mean 0 and standard
 deviation sampled from a uniform distribution in the range `std_range`.
-It is often used after :py:class:`~torchio.transforms.ZNormalization`,
+It is often used after :py:class:`^torchio.transforms.ZNormalization`,
 because its output has zero-mean.
 
 .. image:: ../../images/random_noise.gif
@@ -143,7 +166,7 @@ because its output has zero-mean.
 
 
 :class:`RandomSwap`
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 Randomly swaps patches in the image.
 This is typically used in

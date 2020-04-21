@@ -170,7 +170,7 @@ class RandomAffine(RandomTransform):
         resampler = sitk.ResampleImageFilter()
         resampler.SetInterpolator(get_sitk_interpolator(interpolation))
         resampler.SetReferenceImage(reference)
-        resampler.SetDefaultPixelValue(tensor.min().item())
+        resampler.SetDefaultPixelValue(float(default_value))
         resampler.SetOutputPixelType(sitk.sitkFloat32)
         resampler.SetTransform(transform)
         resampled = resampler.Execute(floating)
@@ -202,5 +202,8 @@ def get_borders_mean(image, filter_otsu=True):
     otsu.Execute(borders_image)
     threshold = otsu.GetThreshold()
     values = borders[borders < threshold]
-    default_value = values.mean()
+    if values.any():
+        default_value = values.mean()
+    else:
+        default_value = borders.mean()
     return default_value

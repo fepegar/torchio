@@ -172,9 +172,8 @@ class ImagesDataset(Dataset):
     Args:
         subjects: Sequence of instances of
             :class:`~torchio.data.images.Subject`.
-        transform: An instance of
-            :class:`torchio.transforms.Transform` that is applied to each
-            image after loading it.
+        transform: An instance of :py:class:`torchio.transforms.Transform`
+            that will be applied to each sample.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image.
         load_image_data: If ``False``, image data and affine will not be loaded.
@@ -279,8 +278,7 @@ class ImagesDataset(Dataset):
         """Set the :attr:`transform` attribute.
 
         Args:
-            transform: An instance of :py:class:`torchio.transforms.Transform`
-                or :py:class:`torchvision.transforms.Compose`.
+            transform: An instance of :py:class:`torchio.transforms.Transform`.
         """
         if transform is not None and not callable(transform):
             raise ValueError(

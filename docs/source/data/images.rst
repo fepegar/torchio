@@ -8,8 +8,7 @@ Here is a usage example:
 
 >>> import torchio
 >>> from torchio import ImagesDataset, Image, Subject
->>> from torchio.transforms import RescaleIntensity, RandomAffine
->>> from torchvision.transforms import Compose
+>>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
 >>> subject_a = Subject([
 ...     t1=Image('~/Dropbox/MRI/t1.nrrd', torchio.INTENSITY),
 ...     label=Image('~/Dropbox/MRI/t1_seg.nii.gz', torchio.LABEL),

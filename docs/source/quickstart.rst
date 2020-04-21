@@ -29,8 +29,12 @@ of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::
 
     import torchio
-    from torchio.transforms import RescaleIntensity, RandomAffine
-    from torchvision.transforms import Compose
+    from torchio.transforms import (
+        RescaleIntensity,
+        RandomAffine,
+        RandomElasticDeformation,
+        Compose,
+    )
     from torch.utils.data import DataLoader
 
     # Each instance of torchio.Subject is passed arbitrary keyword arguments.
@@ -50,12 +54,19 @@ in parallel::
     subjects_list = [subject_a, subject_b]
 
     # Let's use one preprocessing transform and one augmentation transform
-    transforms = [
-        RescaleIntensity((0, 1)),  # applied only to torchio.INTENSITY images
-        RandomAffine(),  # applied to all images in the sample
-    ]
+    # This transform will be applied only to torchio.INTENSITY images:
+    rescale = RescaleIntensity((0, 1))
+
+    # As RandomAffine is faster then RandomElasticDeformation, we choose to
+    # apply RandomAffine 80% of the times and RandomElasticDeformation the rest
+    # Also, there is a 25% chance that none of them will be applied
+    spatial = OneOf(
+        {RandomAffine(): 0.8, RandomElasticDeformation(): 0.2},
+        p=0.75,
+    )
 
     # Transforms can be composed as in torchvision.transforms
+    transforms = [rescale, spatial]
     transform = Compose(transforms)
 
     # ImagesDataset is a subclass of torch.data.utils.Dataset
