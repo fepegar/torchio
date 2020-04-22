@@ -1,3 +1,5 @@
+import copy
+import pprint
 import warnings
 import collections
 from pathlib import Path
@@ -18,7 +20,7 @@ from ..torchio import DATA, AFFINE, TYPE, PATH, STEM, TypePath
 from .io import read_image, write_image
 
 
-class Image:
+class Image(dict):
     r"""Class to store information about an image.
 
     Args:
@@ -33,10 +35,11 @@ class Image:
             subject sample.
     """
 
-    def __init__(self, path: TypePath, type_: str, **kwargs):
+    def __init__(self, path: TypePath, type_: str, **kwargs: Dict[str, Any]):
+        super().__init__(**kwargs)
         self.path = self._parse_path(path)
         self.type = type_
-        self.__dict__.update(kwargs)
+        self.is_sample = False
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
@@ -116,6 +119,7 @@ class Subject(dict):
             if isinstance(v, Image)
         ]
         self._parse_images(self.images)
+        self.is_sample = False  # set to True by ImagesDataset
 
     def __repr__(self):
         string = (
@@ -129,6 +133,20 @@ class Subject(dict):
         # Check that it's not empty
         if not images:
             raise ValueError('A subject without images cannot be created')
+
+    def check_consistent_shape(self) -> None:
+        shapes_dict = {}
+        for key, image in self.items():
+            if not isinstance(image, Image) or not image.is_sample:
+                continue
+            shapes_dict[key] = image[DATA].shape
+        num_unique_shapes = len(set(shapes_dict.values()))
+        if num_unique_shapes > 1:
+            message = (
+                'Images in sample have inconsistent shapes:'
+                f'\n{pprint.pformat(shapes_dict)}'
+            )
+            raise ValueError(message)
 
 
 class ImagesDataset(Dataset):
@@ -223,12 +241,13 @@ class ImagesDataset(Dataset):
         Args:
             subject: Instance of :py:class:`~torchio.data.images.Subject`.
         """
-        subject_sample = {}
+        subject_sample = copy.deepcopy(subject)
         for (key, value) in subject.items():
             if isinstance(value, Image):
                 subject_sample[key] = self.get_image_dict_from_image(value)
             else:
                 subject_sample[key] = value
+        subject_sample.is_sample = True
         return subject_sample
 
     def get_image_dict_from_image(self, image: Image):
@@ -256,7 +275,10 @@ class ImagesDataset(Dataset):
             PATH: str(image.path),
             STEM: get_stem(image.path),
         }
-        return image_dict
+        image = copy.deepcopy(image)
+        image.update(image_dict)
+        image.is_sample = True
+        return image
 
     def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
@@ -292,7 +314,7 @@ class ImagesDataset(Dataset):
     @classmethod
     def save_sample(
             cls,
-            sample: Dict[str, dict],
+            sample: Subject,
             output_paths_dict: Dict[str, TypePath],
             ) -> None:
         for key, output_path in output_paths_dict.items():

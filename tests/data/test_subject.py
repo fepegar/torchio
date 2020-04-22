@@ -3,7 +3,7 @@
 """Tests for Subject."""
 
 import tempfile
-from torchio import INTENSITY, Subject, Image
+from torchio import INTENSITY, Subject, Image, RandomFlip
 from ..utils import TorchioTestCase
 
 
@@ -19,3 +19,10 @@ class TestSubject(TorchioTestCase):
             input_dict = {'image': Image(f.name, INTENSITY)}
             Subject(input_dict)
             Subject(**input_dict)
+
+    def test_no_sample(self):
+        with tempfile.NamedTemporaryFile() as f:
+            input_dict = {'image': Image(f.name, INTENSITY)}
+            subject = Subject(input_dict)
+            with self.assertRaises(RuntimeError):
+                RandomFlip()(subject)

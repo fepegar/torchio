@@ -156,21 +156,6 @@ def guess_type(string: str) -> Any:
     return value
 
 
-def check_consistent_shape(sample: dict) -> None:
-    shapes_dict = {}
-    for image_name, image_dict in sample.items():
-        if not is_image_dict(image_dict):
-            continue
-        shapes_dict[image_name] = image_dict[DATA].shape
-    num_unique_shapes = len(set(shapes_dict.values()))
-    if num_unique_shapes > 1:
-        message = (
-            'Images in sample have inconsistent shapes:'
-            f'\n{pprint.pformat(shapes_dict)}'
-        )
-        raise ValueError(message)
-
-
 def get_rotation_and_spacing_from_affine(
         affine: np.ndarray,
         ) -> Tuple[np.ndarray, np.ndarray]:

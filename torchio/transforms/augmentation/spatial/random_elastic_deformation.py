@@ -4,7 +4,7 @@ from typing import Tuple, Optional, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict, check_consistent_shape, to_tuple
+from ....utils import is_image_dict, to_tuple
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
@@ -213,7 +213,7 @@ class RandomElasticDeformation(RandomTransform):
             warnings.warn(message, RuntimeWarning)
 
     def apply_transform(self, sample: dict) -> dict:
-        check_consistent_shape(sample)
+        sample.check_consistent_shape()
         bspline_params = None
         sample['random_elastic_deformation'] = {}
         params_dict = sample['random_elastic_deformation']

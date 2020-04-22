@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import IterableDataset
 
 from ...torchio import DATA
-from ...utils import to_tuple, is_image_dict, check_consistent_shape
+from ...utils import to_tuple, is_image_dict
 
 
 class ImageSampler(IterableDataset):
@@ -56,7 +56,7 @@ class ImageSampler(IterableDataset):
     @staticmethod
     def get_random_indices(sample: dict, patch_size: Tuple[int, int, int]):
         # Assume all images in sample have the same shape
-        check_consistent_shape(sample)
+        sample.check_consistent_shape()
         first_image_name = list(sample.keys())[0]
         first_image_array = sample[first_image_name][DATA]
         # first_image_array should have shape (1, H, W, D)
