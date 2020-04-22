@@ -55,6 +55,7 @@ class Subject(dict):
         ]
         self._parse_images(self.images)
         self.is_sample = False  # set to True by ImagesDataset
+        self.history = []
 
     def __repr__(self):
         string = (
@@ -82,3 +83,6 @@ class Subject(dict):
                 f'\n{pprint.pformat(shapes_dict)}'
             )
             raise ValueError(message)
+
+    def add_transform(self, transform, parameters_dict):
+        self.history.append((transform.name, parameters_dict))

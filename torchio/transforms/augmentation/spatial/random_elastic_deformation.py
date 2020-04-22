@@ -215,10 +215,12 @@ class RandomElasticDeformation(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         sample.check_consistent_shape()
-        bspline_params = None
-        sample['random_elastic_deformation'] = {}
-        params_dict = sample['random_elastic_deformation']
-
+        bspline_params = self.get_params(
+            self.num_control_points,
+            self.max_displacement,
+            self.num_locked_borders,
+        )
+        random_parameters_dict = {'coarse_grid': bspline_params}
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -226,19 +228,13 @@ class RandomElasticDeformation(RandomTransform):
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation
-            if bspline_params is None:
-                bspline_params = self.get_params(
-                    self.num_control_points,
-                    self.max_displacement,
-                    self.num_locked_borders,
-                )
-                params_dict['bspline_params'] = bspline_params
             image_dict[DATA] = self.apply_bspline_transform(
                 image_dict[DATA],
                 image_dict[AFFINE],
                 bspline_params,
                 interpolation,
             )
+        sample.add_transform(self, random_parameters_dict)
         return sample
 
     def apply_bspline_transform(

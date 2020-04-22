@@ -89,8 +89,10 @@ class RandomAffine(RandomTransform):
         sample.check_consistent_shape()
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
-        sample['random_scaling'] = scaling_params
-        sample['random_rotation'] = rotation_params
+        random_parameters_dict = {
+            'scaling': scaling_params,
+            'rotation': rotation_params,
+        }
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue
@@ -105,6 +107,7 @@ class RandomAffine(RandomTransform):
                 rotation_params,
                 interpolation,
             )
+        sample.add_transform(self, random_parameters_dict)
         return sample
 
     @staticmethod

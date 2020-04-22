@@ -34,14 +34,17 @@ class RandomNoise(RandomTransform):
             raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
-        std = self.get_params(self.std_range)
-        sample['random_noise'] = std
-        for image_dict in sample.values():
+        random_parameters_images_dict = {}
+        for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
             if image_dict[TYPE] != INTENSITY:
                 continue
+            std = self.get_params(self.std_range)
+            random_parameters_dict = {'std': std}
+            random_parameters_images_dict[image_name] = random_parameters_dict
             image_dict[DATA] = add_noise(image_dict[DATA], std)
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

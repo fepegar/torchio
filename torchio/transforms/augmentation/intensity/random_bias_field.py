@@ -32,6 +32,7 @@ class RandomBiasField(RandomTransform):
         self.order = order
 
     def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {}
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
@@ -41,11 +42,14 @@ class RandomBiasField(RandomTransform):
                 self.order,
                 self.coefficients_range,
             )
-            sample[image_name]['random_bias_coefficients'] = coefficients
+            random_parameters_dict = {'coefficients': coefficients}
+            random_parameters_images_dict[image_name] = random_parameters_dict
+
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
             image_dict[DATA] = image_with_bias
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

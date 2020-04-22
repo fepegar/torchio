@@ -66,3 +66,7 @@ class Transform(ABC):
     @staticmethod
     def sitk_to_nib(image: sitk.Image):
         return sitk_to_nib(image)
+
+    @property
+    def name(self):
+        return self.__class__.__name__

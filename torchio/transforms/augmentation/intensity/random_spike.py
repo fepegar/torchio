@@ -42,6 +42,7 @@ class RandomSpike(RandomTransform):
             self.num_spikes_range = num_spikes
 
     def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {}
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue
@@ -52,8 +53,11 @@ class RandomSpike(RandomTransform):
                 self.intensity_range,
             )
             num_spikes_param, intensity_param = params
-            sample[image_name]['random_spike_intensity'] = intensity_param
-            sample[image_name]['random_spike_num_spikes'] = num_spikes_param
+            random_parameters_dict = {
+                'intensity': intensity_param,
+                'num_spikes': num_spikes_param,
+            }
+            random_parameters_images_dict[image_name] = random_parameters_dict
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -78,6 +82,7 @@ class RandomSpike(RandomTransform):
             # Add channels dimension
             image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
             image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod
