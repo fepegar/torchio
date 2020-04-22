@@ -30,14 +30,10 @@ class Transform(ABC):
 
     def __call__(self, sample: Subject):
         if self.keep_original:
-            for image_name in list(sample):
-                image_dict = sample[image_name]
-                if not is_image_dict(image_dict):
-                    continue
-                if image_dict['type'] == INTENSITY:
-                    new_key = image_name +'_orig'
-                    if new_key not in sample:
-                        sample[new_key] = dict(data=image_dict['data'], type='original', affine=image_dict['affine'])
+            for image_name, image_dict in sample.get_images_dict().items():
+                new_key = image_name +'_orig'
+                if new_key not in sample:
+                    sample[new_key] = dict(data=image_dict['data'], type='original', affine=image_dict['affine'])
 
         if self.verbose:
             start = time.time()
