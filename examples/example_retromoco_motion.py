@@ -76,7 +76,7 @@ mvt_types=['step', 'gauss']
 mvt_type, x0 =mvt_types[1], x0s[0]
 
 mvt_axe_str_list = ['transX', 'transY','transZ', 'rotX', 'rotY', 'rotZ']
-mvt_axes = [3]
+mvt_axes = [1]
 mvt_axe_str = mvt_axe_str_list[mvt_axes[0]]
 out_path = '/data/romain/data_exemple/motion_gaussX_sigma2_phaseX'
 if not os.path.exists(out_path): os.mkdir(out_path)
