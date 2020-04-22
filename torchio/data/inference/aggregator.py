@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from ...utils import to_tuple
 from ...torchio import TypeData, TypeTuple
+from ..subject import Subject
 
 
 class GridAggregator:
@@ -22,17 +23,14 @@ class GridAggregator:
             overlap between patches. If a single number
             :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
 
-    .. note:: In the future, the :py:attr:`data` argument will be replaced by
-        :py:attr:`shape`.
-
     """
     def __init__(
             self,
-            data: TypeData,
+            sample: Subject,
             patch_overlap: TypeTuple,
+            output_channels: int = 1,
             ):
-        data = torch.from_numpy(data) if isinstance(data, np.ndarray) else data
-        self._output_tensor = torch.zeros_like(data)
+        self._output_tensor = torch.zeros(output_channels, *sample.shape)
         self.patch_overlap = to_tuple(patch_overlap, length=3)
 
     @staticmethod
@@ -78,9 +76,10 @@ class GridAggregator:
         _, locations = self._crop_batch(
             init_ones, location_init, self.patch_overlap)
         for patch, location in zip(patches, locations):
-            patch = patch[0]
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-            self._output_tensor[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch
+            channels = len(patch)
+            for channel in range(channels):
+                self._output_tensor[channel, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch[channel]
 
     def get_output_tensor(self) -> torch.Tensor:
         return self._output_tensor

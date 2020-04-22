@@ -1,8 +1,13 @@
+import copy
 from typing import Tuple
+
+import torch
 import numpy as np
 from torch.utils.data import Dataset
-from torchio import IMAGE, LOCATION, TypeTuple, TypeData
-from torchio.utils import to_tuple
+
+from ...utils import to_tuple
+from ...torchio import LOCATION, TypeTuple, DATA
+from ..subject import Subject
 
 
 class GridSampler(Dataset):
@@ -13,7 +18,8 @@ class GridSampler(Dataset):
     for more information.
 
     Args:
-        data: Tensor from which patches will be extracted.
+        sample: Instance of:py:class:`~torchio.data.subject.Subject`
+            from which patches will be extracted.
         patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
             of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided,
@@ -25,15 +31,15 @@ class GridSampler(Dataset):
     """
     def __init__(
             self,
-            data: TypeData,
+            sample: Subject,
             patch_size: TypeTuple,
             patch_overlap: TypeTuple,
             ):
-        self.array = data
+        self.sample = sample
         patch_size = to_tuple(patch_size, length=3)
         patch_overlap = to_tuple(patch_overlap, length=3)
         self.locations = self._grid_spatial_coordinates(
-            self.array,
+            self.sample.shape,
             patch_size,
             patch_overlap,
         )
@@ -44,11 +50,42 @@ class GridSampler(Dataset):
     def __getitem__(self, index):
         # Assume 3D
         location = self.locations[index]
-        i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-        window = self.array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
-        window = window[np.newaxis, ...]  # add channels dimension
-        sample = {IMAGE: window, LOCATION: location}
-        return sample
+        index_ini = location[:3]
+        index_fin = location[3:]
+        cropped_sample = self.extract_patch(self.sample, index_ini, index_fin)
+        cropped_sample[LOCATION] = location
+        return cropped_sample
+
+    def extract_patch(
+            self,
+            sample: Subject,
+            index_ini: Tuple[int, int, int],
+            index_fin: Tuple[int, int, int],
+            ) -> Subject:
+        cropped_sample = self.copy_and_crop(
+            sample,
+            index_ini,
+            index_fin,
+        )
+        return cropped_sample
+
+    @staticmethod
+    def copy_and_crop(
+            sample: Subject,
+            index_ini: np.ndarray,
+            index_fin: np.ndarray,
+            ) -> dict:
+        cropped_sample = {}
+        iterable = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            cropped_sample[image_name] = copy.deepcopy(image)
+            sample_image_dict = image
+            cropped_image_dict = cropped_sample[image_name]
+            cropped_image_dict[DATA] = crop(
+                sample_image_dict[DATA], index_ini, index_fin)
+        # torch doesn't like uint16
+        cropped_sample['index_ini'] = index_ini.astype(int)
+        return cropped_sample
 
     @staticmethod
     def _enumerate_step_points(
@@ -78,12 +115,11 @@ class GridSampler(Dataset):
 
     @staticmethod
     def _grid_spatial_coordinates(
-            array: np.ndarray,
-            window_shape: Tuple[int],
-            border: Tuple[int],
-            ):
-        shape = array.shape
-        num_dims = len(shape)
+            volume_shape: Tuple[int, int, int],
+            window_shape: Tuple[int, int, int],
+            border: Tuple[int, int, int],
+            ) -> np.ndarray:
+        num_dims = len(volume_shape)
         grid_size = [
             max(win_size - 2 * border, 0)
             for (win_size, border)
@@ -92,7 +128,7 @@ class GridSampler(Dataset):
         steps_along_each_dim = [
             GridSampler._enumerate_step_points(
                 starting=0,
-                ending=shape[i],
+                ending=volume_shape[i],
                 win_size=window_shape[i],
                 step_size=grid_size[i],
             )
@@ -110,7 +146,17 @@ class GridSampler(Dataset):
                 + window_shape[idx]
             )
         max_coordinates = np.max(spatial_coords, axis=0)[num_dims:]
-        assert np.all(max_coordinates <= shape[:num_dims]), \
+        assert np.all(max_coordinates <= volume_shape[:num_dims]), \
             "window size greater than the spatial coordinates {} : {}".format(
-                max_coordinates, shape)
+                max_coordinates, volume_shape)
         return spatial_coords
+
+
+def crop(
+        image: torch.Tensor,
+        index_ini: np.ndarray,
+        index_fin: np.ndarray,
+        ) -> torch.Tensor:
+    i_ini, j_ini, k_ini = index_ini
+    i_fin, j_fin, k_fin = index_fin
+    return image[..., i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]

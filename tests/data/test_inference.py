@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from torchio import IMAGE, LOCATION
+from torchio import LOCATION, DATA
 from torchio.data.inference import GridSampler, GridAggregator
 from ..utils import TorchioTestCase
 
@@ -16,19 +16,17 @@ class TestInference(TorchioTestCase):
         batch_size = 6
         CHANNELS_DIMENSION = 1
 
-        # Let's create a dummy volume
-        input_array = torch.rand((10, 20, 30)).numpy()
-        grid_sampler = GridSampler(input_array, patch_size, patch_overlap)
+        grid_sampler = GridSampler(self.sample, patch_size, patch_overlap)
         patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
-        aggregator = GridAggregator(input_array, patch_overlap)
+        aggregator = GridAggregator(self.sample, patch_overlap)
 
         with torch.no_grad():
             for patches_batch in tqdm(patch_loader):
-                input_tensor = patches_batch[IMAGE]
+                input_tensor = patches_batch['t1'][DATA]
                 locations = patches_batch[LOCATION]
                 logits = model(input_tensor)  # some model
                 labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
                 outputs = labels
                 aggregator.add_batch(outputs, locations)
 
-        output = aggregator.get_output_tensor()
+        aggregator.get_output_tensor()
