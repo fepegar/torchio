@@ -34,6 +34,9 @@ class RandomGhosting(RandomTransform):
         super().__init__(p=p, seed=seed)
         if not isinstance(axes, tuple):
             axes = (axes,)
+        for axis in axes:
+            if axis not in (0, 1, 2):
+                raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
         if isinstance(num_ghosts, int):
             self.num_ghosts_range = num_ghosts, num_ghosts
@@ -90,6 +93,33 @@ class RandomGhosting(RandomTransform):
         axis_param = axes[torch.randint(0, len(axes), (1,))]
         return num_ghosts_param, axis_param
 
+    @staticmethod
+    def get_axis_and_size(axis, array):
+        if axis == 1:
+            axis = 0
+            size = array.shape[0]
+        elif axis == 0:
+            axis = 1
+            size = array.shape[1]
+        elif axis == 2:  # we will also traverse in sagittal (if RAS)
+            size = array.shape[0]
+        else:
+            raise RuntimeError(f'Axis "{axis}" is not valid')
+        return axis, size
+
+    @staticmethod
+    def get_slice(axis, array, slice_idx):
+        # Comments apply if RAS
+        if axis == 0:  # sagittal (columns) - artifact AP
+            image_slice = array[slice_idx, ...]
+        elif axis == 1:  # coronal (columns) - artifact LR
+            image_slice = array[:, slice_idx, :]
+        elif axis == 2:  # sagittal (rows) - artifact IS
+            image_slice = array[slice_idx, ...].T
+        else:
+            raise RuntimeError(f'Axis "{axis}" is not valid')
+        return image_slice
+
     def add_artifact(
             self,
             image: sitk.Image,
@@ -102,24 +132,10 @@ class RandomGhosting(RandomTransform):
         # intuitively
         # [Why? I forgot]
         percentage_to_avoid = 0.05
-        if axis == 1:
-            axis = 0
-            size = array.shape[0]
-        elif axis == 0:
-            axis = 1
-            size = array.shape[1]
-        elif axis == 2:  # we will also traverse in sagittal (if RAS)
-            size = array.shape[0]
-
+        axis, size = self.get_axis_and_size(axis, array)
         for slice_idx in range(size):
-            # Comments apply if RAS
-            if axis == 0:  # sagittal (columns) - artifact AP
-                slice_ = array[slice_idx, ...]
-            elif axis == 1:  # coronal (columns) - artifact LR
-                slice_ = array[:, slice_idx, :]
-            elif axis == 2:  # sagittal (rows) - artifact IS
-                slice_ = array[slice_idx, ...].T
-            spectrum = self.fourier_transform(slice_)
+            image_slice = self.get_slice(axis, array, slice_idx)
+            spectrum = self.fourier_transform(image_slice)
             for row_idx, row in enumerate(spectrum):
                 if row_idx % num_ghosts:
                     continue
@@ -127,7 +143,6 @@ class RandomGhosting(RandomTransform):
                 if np.abs(progress - 0.5) < percentage_to_avoid / 2:
                     continue
                 row *= 0
-            slice_ *= 0
-            slice_ += self.inv_fourier_transform(spectrum)
-
+            image_slice *= 0
+            image_slice += self.inv_fourier_transform(spectrum)
         return array
