@@ -26,7 +26,7 @@ class Transform(ABC):
     def __init__(self, p: float = 1):
         self.probability = self.parse_probability(p)
 
-    def __call__(self, sample: dict):
+    def __call__(self, sample: Subject):
         """Transform a sample and return the result."""
         self.parse_sample(sample)
         if torch.rand(1).item() > self.probability:
@@ -36,7 +36,7 @@ class Transform(ABC):
         return sample
 
     @abstractmethod
-    def apply_transform(self, sample: dict):
+    def apply_transform(self, sample: Subject):
         raise NotImplementedError
 
     @staticmethod

@@ -5,6 +5,7 @@ import torch
 import numpy as np
 from deprecated import deprecated
 
+from ....data.images import Subject
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
@@ -38,7 +39,7 @@ class RescaleIntensity(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: dict,
+            sample: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:

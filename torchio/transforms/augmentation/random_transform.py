@@ -4,10 +4,13 @@ This is the docstring of random transform module
 
 import numbers
 from typing import Optional, Tuple, Union
+
 import torch
 import numpy as np
-from .. import Transform, Interpolation
+
+from ...data.images import Subject
 from ... import TypeNumber, TypeRangeFloat
+from .. import Transform, Interpolation
 
 
 class RandomTransform(Transform):
@@ -25,7 +28,7 @@ class RandomTransform(Transform):
         super().__init__(p=p)
         self._seed = seed
 
-    def __call__(self, sample: dict):
+    def __call__(self, sample: Subject):
         self.check_seed()
         return super().__call__(sample)
 

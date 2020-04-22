@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from ....torchio import INTENSITY, DATA, TYPE, TypeData
 from ....utils import is_image_dict
+from ....data.images import Subject
 from .. import RandomTransform
 
 
@@ -30,7 +31,7 @@ class RandomBiasField(RandomTransform):
             coefficients, 'coefficients_range')
         self.order = order
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue

@@ -3,6 +3,7 @@ from typing import Tuple, Optional, List, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
+from ....data.images import Subject
 from ....utils import is_image_dict
 from ....torchio import LABEL, DATA, AFFINE, TYPE, TypeRangeFloat
 from .. import Interpolation, get_sitk_interpolator
@@ -84,7 +85,7 @@ class RandomAffine(RandomTransform):
         )
         raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         sample.check_consistent_shape()
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)

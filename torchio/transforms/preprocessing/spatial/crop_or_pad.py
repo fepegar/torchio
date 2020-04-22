@@ -6,6 +6,7 @@ from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
 from ....torchio import DATA
+from ....data.images import Subject
 from ....utils import is_image_dict, round_up
 
 
@@ -97,7 +98,7 @@ class CropOrPad(BoundsTransform):
         return bb_min, bb_max
 
     @staticmethod
-    def _get_sample_shape(sample: dict) -> TypeShape:
+    def _get_sample_shape(sample: Subject) -> TypeShape:
         """Return the shape of the first image in the sample."""
         sample.check_consistent_shape()
         for image_dict in sample.values():
@@ -158,7 +159,7 @@ class CropOrPad(BoundsTransform):
 
     def _compute_center_crop_or_pad(
             self,
-            sample: dict,
+            sample: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = self._get_sample_shape(sample)
         # The parent class turns the 3-element shape tuple (d, h, w)
@@ -171,7 +172,7 @@ class CropOrPad(BoundsTransform):
 
     def _compute_mask_center_crop_or_pad(
             self,
-            sample: dict,
+            sample: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         if self.mask_name not in sample:
             message = (
@@ -227,7 +228,7 @@ class CropOrPad(BoundsTransform):
         cropping_params = tuple(cropping.tolist()) if cropping.any() else None
         return padding_params, cropping_params
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         padding_params, cropping_params = self.compute_crop_or_pad(sample)
         padding_kwargs = dict(
             padding_mode=self.padding_mode, fill=self.padding_fill)

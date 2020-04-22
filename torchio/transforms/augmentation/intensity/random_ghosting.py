@@ -5,6 +5,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE
+from ....data.images import Subject
 from .. import RandomTransform
 
 
@@ -40,7 +41,7 @@ class RandomGhosting(RandomTransform):
         elif isinstance(num_ghosts, tuple) and len(num_ghosts) == 2:
             self.num_ghosts_range = num_ghosts
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue

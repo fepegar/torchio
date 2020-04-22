@@ -14,6 +14,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE
+from ....data.images import Subject
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
@@ -63,7 +64,7 @@ class RandomMotion(RandomTransform):
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         for image_name, image_dict in sample.items():
             if not is_image_dict(image_dict):
                 continue

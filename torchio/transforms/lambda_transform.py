@@ -1,5 +1,6 @@
 from typing import Sequence, Optional
 import torch
+from ..data.images import Subject
 from ..torchio import DATA, TYPE, TypeCallable
 from ..utils import is_image_dict
 from .transform import Transform
@@ -35,7 +36,7 @@ class Lambda(Transform):
         self.function = function
         self.types_to_apply = types_to_apply
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         for image_dict in sample.values():
             if not is_image_dict(image_dict):
                 continue

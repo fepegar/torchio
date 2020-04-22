@@ -39,7 +39,7 @@ class Image(dict):
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
         self.type = type_
-        self.is_sample = False
+        self.is_sample = False  # set to True by ImagesDataset
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:

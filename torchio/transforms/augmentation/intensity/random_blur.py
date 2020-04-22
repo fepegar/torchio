@@ -4,6 +4,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict, nib_to_sitk, sitk_to_nib
 from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
+from ....data.images import Subject
 from .. import RandomTransform
 
 
@@ -34,7 +35,7 @@ class RandomBlur(RandomTransform):
             )
             raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         std = self.get_params(self.std_range)
         sample['random_blur'] = std
         for image_dict in sample.values():

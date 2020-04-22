@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from ....utils import is_image_dict
 from ....torchio import DATA, TYPE, INTENSITY
+from ....data.images import Subject
 from .. import RandomTransform
 
 
@@ -32,7 +33,7 @@ class RandomNoise(RandomTransform):
             )
             raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         std = self.get_params(self.std_range)
         sample['random_noise'] = std
         for image_dict in sample.values():

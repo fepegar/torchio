@@ -1,6 +1,7 @@
 from typing import Union, Tuple
 import torch
 import numpy as np
+from ....data.images import Subject
 from ....torchio import DATA, AFFINE
 from ....utils import is_image_dict
 from ... import Transform
@@ -64,7 +65,7 @@ class BoundsTransform(Transform):
         )
         raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
         for image_dict in sample.values():

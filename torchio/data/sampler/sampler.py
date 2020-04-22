@@ -8,7 +8,7 @@ from torch.utils.data import IterableDataset
 
 from ...torchio import DATA
 from ...utils import to_tuple, is_image_dict
-
+from ..images import Subject
 
 class ImageSampler(IterableDataset):
     r"""Extract random patches from a volume.
@@ -21,20 +21,20 @@ class ImageSampler(IterableDataset):
             of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided, :math:`d = h = w = n`.
     """
-    def __init__(self, sample: dict, patch_size: Union[int, Sequence[int]]):
+    def __init__(self, sample: Subject, patch_size: Union[int, Sequence[int]]):
         self.sample = sample
         self.patch_size = np.array(to_tuple(patch_size, length=3), dtype=np.uint16)
 
     def __iter__(self):
         return self.get_stream(self.sample, self.patch_size)
 
-    def get_stream(self, sample: dict, patch_size: Tuple[int, int, int]):
+    def get_stream(self, sample: Subject, patch_size: Tuple[int, int, int]):
         # Is cycle neccesary?
         return cycle(self.extract_patch_generator(sample, patch_size))
 
     def extract_patch_generator(
             self,
-            sample: dict,
+            sample: Subject,
             patch_size: Tuple[int, int, int],
             ) -> Generator[dict, None, None]:
         while True:
@@ -42,7 +42,7 @@ class ImageSampler(IterableDataset):
 
     def extract_patch(
             self,
-            sample: dict,
+            sample: Subject,
             patch_size: Tuple[int, int, int],
             ) -> dict:
         index_ini, index_fin = self.get_random_indices(sample, patch_size)
@@ -54,7 +54,7 @@ class ImageSampler(IterableDataset):
         return cropped_sample
 
     @staticmethod
-    def get_random_indices(sample: dict, patch_size: Tuple[int, int, int]):
+    def get_random_indices(sample: Subject, patch_size: Tuple[int, int, int]):
         # Assume all images in sample have the same shape
         sample.check_consistent_shape()
         first_image_name = list(sample.keys())[0]
@@ -65,7 +65,7 @@ class ImageSampler(IterableDataset):
 
     @staticmethod
     def copy_and_crop(
-            sample: dict,
+            sample: Subject,
             index_ini: np.ndarray,
             index_fin: np.ndarray,
             ) -> dict:

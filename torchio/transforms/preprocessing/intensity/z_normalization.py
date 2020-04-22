@@ -1,5 +1,6 @@
 from typing import Union
 import torch
+from ....data.images import Subject
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 
@@ -21,7 +22,7 @@ class ZNormalization(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: dict,
+            sample: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
