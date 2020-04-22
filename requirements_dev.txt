@@ -1,10 +1,13 @@
 bump2version
 Click
+codecov
 coverage
 flake8
+mypy
 pip
 pylint
 pytest
+pytest-cov
 Sphinx
 sphinx_rtd_theme
 tox
