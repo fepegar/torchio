@@ -12,7 +12,6 @@ except ImportError:
 
 from torchio import INTENSITY
 from .. import RandomTransform
-from ....utils import is_image_dict
 from ...metrics import ssim3D, th_pearsonr
 
 class RandomMotionFromTimeCourse(RandomTransform):
@@ -86,12 +85,7 @@ class RandomMotionFromTimeCourse(RandomTransform):
         self.nb_saved = 0
 
     def apply_transform(self, sample):
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                # Not an image
-                continue
-            if image_dict['type'] != INTENSITY:
-                continue
+        for image_name, image_dict in sample.get_images_dict().items():
 
             do_it = np.random.uniform() <= self.proba_to_augment
 
