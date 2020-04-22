@@ -10,7 +10,7 @@ import nibabel as nib
 from tqdm import tqdm
 from ....torchio import DATA, TypePath, TypeCallable
 from ....data.io import read_image
-from ....data.images import Subject
+from ....data.subject import Subject
 from . import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99

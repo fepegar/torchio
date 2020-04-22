@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from torchvision.transforms import Compose as PyTorchCompose
 
-from ...data.images import Subject
+from ...data.subject import Subject
 from .. import Transform
 from . import RandomTransform
 

@@ -5,7 +5,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....utils import is_image_dict
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE
-from ....data.images import Subject
+from ....data.subject import Subject
 from .. import RandomTransform
 
 

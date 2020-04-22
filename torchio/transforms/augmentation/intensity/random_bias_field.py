@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from ....torchio import INTENSITY, DATA, TYPE, TypeData
 from ....utils import is_image_dict
-from ....data.images import Subject
+from ....data.subject import Subject
 from .. import RandomTransform
 
 

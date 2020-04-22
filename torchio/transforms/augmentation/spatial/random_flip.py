@@ -1,7 +1,7 @@
 from typing import Union, Tuple, Optional, List
 import torch
 from ....torchio import DATA
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....utils import is_image_dict, to_tuple
 from .. import RandomTransform
 

@@ -1,6 +1,6 @@
 from typing import Union
 import torch
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 

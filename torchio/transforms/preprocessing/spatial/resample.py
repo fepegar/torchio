@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....utils import is_image_dict
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from ... import Interpolation

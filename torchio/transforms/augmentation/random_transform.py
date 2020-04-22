@@ -8,7 +8,7 @@ from typing import Optional, Tuple, Union
 import torch
 import numpy as np
 
-from ...data.images import Subject
+from ...data.subject import Subject
 from ... import TypeNumber, TypeRangeFloat
 from .. import Transform, Interpolation
 

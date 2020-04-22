@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import nibabel as nib
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....utils import is_image_dict
 from ....torchio import DATA, AFFINE
 from ... import Transform

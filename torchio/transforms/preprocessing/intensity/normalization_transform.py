@@ -1,7 +1,7 @@
 from typing import Union
 import torch
 from ....utils import is_image_dict
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....torchio import DATA, TYPE, INTENSITY, TypeCallable
 from ... import Transform
 

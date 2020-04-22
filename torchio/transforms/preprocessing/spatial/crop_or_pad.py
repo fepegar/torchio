@@ -6,7 +6,7 @@ from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
 from ....torchio import DATA
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....utils import is_image_dict, round_up
 
 

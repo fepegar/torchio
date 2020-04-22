@@ -7,7 +7,7 @@ import torch
 import SimpleITK as sitk
 
 from .. import TypeData, TYPE
-from ..data.images import Subject
+from ..data.subject import Subject
 from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
 
 

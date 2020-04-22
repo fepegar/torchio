@@ -1,7 +1,7 @@
 from typing import Optional
 import torch
 import numpy as np
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....utils import is_image_dict, to_tuple
 from ....torchio import DATA, TYPE, INTENSITY, TypeTuple, TypeData
 from ....data.sampler.sampler import get_random_indices_from_shape, crop

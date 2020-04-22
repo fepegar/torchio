@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from deprecated import deprecated
 
-from ....data.images import Subject
+from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
 from . import NormalizationTransform
 

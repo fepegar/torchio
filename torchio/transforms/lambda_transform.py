@@ -1,6 +1,6 @@
 from typing import Sequence, Optional
 import torch
-from ..data.images import Subject
+from ..data.subject import Subject
 from ..torchio import DATA, TYPE, TypeCallable
 from ..utils import is_image_dict
 from .transform import Transform
