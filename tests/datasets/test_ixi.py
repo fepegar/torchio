@@ -1,6 +1,3 @@
-import tempfile
-import unittest
-from pathlib import Path
 from torchio.datasets import IXI, IXITiny
 from ..utils import TorchioTestCase
 
