@@ -30,10 +30,9 @@ class RescaleIntensity(NormalizationTransform):
             out_min_max: Tuple[float, float] = (0, 1),
             percentiles: Tuple[int, int] = (1, 99),
             masking_method: Union[str, TypeCallable, None] = None,
-            verbose: bool = False,
             p: float = 1,
             ):
-        super().__init__(masking_method=masking_method, p=p, verbose=verbose)
+        super().__init__(masking_method=masking_method, p=p)
         self.out_min, self.out_max = out_min_max
         self.percentiles = percentiles
 
