@@ -78,6 +78,7 @@ class IXI(ImagesDataset):
             transform: Optional[Transform] = None,
             download: bool = False,
             modalities: Sequence[str] = ('T1', 'T2'),
+            **kwargs,
             ):
         root = Path(root)
         for modality in modalities:
@@ -96,7 +97,7 @@ class IXI(ImagesDataset):
             )
             raise RuntimeError(message)
         subjects_list = self._get_subjects_list(root, modalities)
-        super().__init__(subjects_list, transform=transform)
+        super().__init__(subjects_list, transform=transform, **kwargs)
 
     @staticmethod
     def _check_exists(root, modalities):
@@ -185,6 +186,7 @@ class IXITiny(ImagesDataset):
             root: TypePath,
             transform: Optional[Transform] = None,
             download: bool = False,
+            **kwargs,
             ):
         root = Path(root)
         if download:
@@ -196,7 +198,7 @@ class IXITiny(ImagesDataset):
             )
             raise RuntimeError(message)
         subjects_list = self._get_subjects_list(root)
-        super().__init__(subjects_list, transform=transform)
+        super().__init__(subjects_list, transform=transform, **kwargs)
 
     @staticmethod
     def _get_subjects_list(root):
