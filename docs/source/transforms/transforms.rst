@@ -17,24 +17,15 @@ For example::
    >>> transformed_sample = affine_transform(sample)
 
 
-All transforms inherit from :py:class:`torchio.transforms.Transform`:
+Transforms can be applied from the command line using :ref:`torchio-transform`.
 
+All transforms inherit from :py:class:`torchio.transforms.Transform`:
 
 .. currentmodule:: torchio.transforms
 
 .. autoclass:: Transform
 
 
-
-Command-line interface
-----------------------
-
-A transform can be quickly applied to an image file using the command-line
-tool ``torchio-transform``::
-
-   $ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs "num_transforms=4 --seed 42"
-
-For more information, run ``torchio-transform --help``.
 
 
 .. _Interpolation:
