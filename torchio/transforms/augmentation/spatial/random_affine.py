@@ -3,7 +3,7 @@ from typing import Tuple, Optional, List, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict, check_consistent_shape
+from ....data.subject import Subject
 from ....torchio import LABEL, DATA, AFFINE, TYPE, TypeRangeFloat
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
@@ -84,15 +84,15 @@ class RandomAffine(RandomTransform):
         )
         raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
-        check_consistent_shape(sample)
+    def apply_transform(self, sample: Subject) -> dict:
+        sample.check_consistent_shape()
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
-        sample['random_scaling'] = scaling_params
-        sample['random_rotation'] = rotation_params
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        random_parameters_dict = {
+            'scaling': scaling_params,
+            'rotation': rotation_params,
+        }
+        for image_dict in sample.get_images(intensity_only=False):
             if image_dict[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
@@ -104,6 +104,7 @@ class RandomAffine(RandomTransform):
                 rotation_params,
                 interpolation,
             )
+        sample.add_transform(self, random_parameters_dict)
         return sample
 
     @staticmethod

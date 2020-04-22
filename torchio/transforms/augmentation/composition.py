@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from torchvision.transforms import Compose as PyTorchCompose
 
+from ...data.subject import Subject
 from .. import Transform
 from . import RandomTransform
 
@@ -23,7 +24,7 @@ class Compose(Transform):
         super().__init__(p=p)
         self.transform = PyTorchCompose(transforms)
 
-    def apply_transform(self, sample: dict):
+    def apply_transform(self, sample: Subject):
         return self.transform(sample)
 
 
@@ -57,7 +58,7 @@ class OneOf(RandomTransform):
         super().__init__(p=p)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
-    def apply_transform(self, sample: dict):
+    def apply_transform(self, sample: Subject):
         weights = torch.Tensor(list(self.transforms_dict.values()))
         index = torch.multinomial(weights, 1)
         transforms = list(self.transforms_dict.keys())

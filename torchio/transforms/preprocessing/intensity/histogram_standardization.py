@@ -10,6 +10,7 @@ import nibabel as nib
 from tqdm import tqdm
 from ....torchio import DATA, TypePath, TypeCallable
 from ....data.io import read_image
+from ....data.subject import Subject
 from . import NormalizationTransform
 
 DEFAULT_CUTOFF = 0.01, 0.99
@@ -40,7 +41,7 @@ class HistogramStandardization(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: dict,
+            sample: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:

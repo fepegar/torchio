@@ -3,8 +3,8 @@ from typing import Tuple, Optional, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict
-from ....torchio import INTENSITY, DATA, AFFINE, TYPE
+from ....torchio import DATA, AFFINE
+from ....data.subject import Subject
 from .. import RandomTransform
 
 
@@ -40,19 +40,19 @@ class RandomGhosting(RandomTransform):
         elif isinstance(num_ghosts, tuple) and len(num_ghosts) == 2:
             self.num_ghosts_range = num_ghosts
 
-    def apply_transform(self, sample: dict) -> dict:
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+    def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {}
+        for image_name, image_dict in sample.get_images_dict().items():
             params = self.get_params(
                 self.num_ghosts_range,
                 self.axes,
             )
             num_ghosts_param, axis_param = params
-            sample[image_name]['random_ghosting_axis'] = axis_param
-            sample[image_name]['random_ghosting_num_ghosts'] = num_ghosts_param
+            random_parameters_dict = {
+                'axis': axis_param,
+                'num_ghosts': num_ghosts_param,
+            }
+            random_parameters_images_dict[image_name] = random_parameters_dict
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -77,6 +77,7 @@ class RandomGhosting(RandomTransform):
             # Add channels dimension
             image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
             image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

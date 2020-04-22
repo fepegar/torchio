@@ -12,8 +12,8 @@ from typing import Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict
-from ....torchio import INTENSITY, DATA, AFFINE, TYPE
+from ....torchio import DATA, AFFINE
+from ....data.subject import Subject
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
@@ -63,25 +63,21 @@ class RandomMotion(RandomTransform):
         self.num_transforms = num_transforms
         self.image_interpolation = image_interpolation
 
-    def apply_transform(self, sample: dict) -> dict:
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+    def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {}
+        for image_name, image_dict in sample.get_images_dict().items():
             params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
             )
             times_params, degrees_params, translation_params = params
-            keys = (
-                'random_motion_times',
-                'random_motion_degrees',
-                'random_motion_translation',
-            )
-            for key, param in zip(keys, params):
-                sample[image_name][key] = param
+            random_parameters_dict = {
+                'times': times_params,
+                'degrees': degrees_params,
+                'translation': translation_params,
+            }
+            random_parameters_images_dict[image_name] = random_parameters_dict
             if (image_dict[DATA][0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
@@ -112,6 +108,7 @@ class RandomMotion(RandomTransform):
             # Add channels dimension
             image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
             image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

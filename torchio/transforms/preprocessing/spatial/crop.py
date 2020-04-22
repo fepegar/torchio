@@ -1,6 +1,6 @@
 from typing import Callable
 import SimpleITK as sitk
-from .bounds_transform import BoundsTransform, TypeBounds
+from .bounds_transform import BoundsTransform
 
 
 class Crop(BoundsTransform):

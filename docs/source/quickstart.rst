@@ -23,7 +23,7 @@ Hello World
 ===========
 
 This example shows the basic usage of TorchIO, where an
-:py:class:`~torchio.data.images.ImagesDataset` is passed to
+:py:class:`~torchio.data.dataset.ImagesDataset` is passed to
 a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::

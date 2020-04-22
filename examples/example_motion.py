@@ -37,9 +37,11 @@ transform = transforms.RandomMotion(
 )
 transformed = transform(sample)
 
-pprint(transformed['t1']['random_motion_times'])
-pprint(transformed['t1']['random_motion_degrees'])
-pprint(transformed['t1']['random_motion_translation'])
+_, random_parameters = transformed.history[0]
+
+pprint(random_parameters['t1']['times'])
+pprint(random_parameters['t1']['degrees'])
+pprint(random_parameters['t1']['translation'])
 
 dataset.save_sample(transformed, dict(t1='/tmp/t1_motion.nii.gz'))
 dataset.save_sample(transformed, dict(label='/tmp/t1_brain_seg_motion.nii.gz'))

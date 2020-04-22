@@ -5,7 +5,7 @@ The :py:mod:`torchio.transforms` module should remind users of
 :py:mod:`torchvision.transforms`.
 
 TorchIO transforms take as input samples generated
-by an :py:class:`~torchio.data.image.ImagesDataset`.
+by an :py:class:`~torchio.data.dataset.ImagesDataset`.
 
 For example::
 

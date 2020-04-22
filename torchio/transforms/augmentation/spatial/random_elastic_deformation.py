@@ -4,7 +4,8 @@ from typing import Tuple, Optional, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict, check_consistent_shape, to_tuple
+from ....data.subject import Subject
+from ....utils import to_tuple
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
@@ -212,32 +213,26 @@ class RandomElasticDeformation(RandomTransform):
             )
             warnings.warn(message, RuntimeWarning)
 
-    def apply_transform(self, sample: dict) -> dict:
-        check_consistent_shape(sample)
-        bspline_params = None
-        sample['random_elastic_deformation'] = {}
-        params_dict = sample['random_elastic_deformation']
-
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+    def apply_transform(self, sample: Subject) -> dict:
+        sample.check_consistent_shape()
+        bspline_params = self.get_params(
+            self.num_control_points,
+            self.max_displacement,
+            self.num_locked_borders,
+        )
+        random_parameters_dict = {'coarse_grid': bspline_params}
+        for image_dict in sample.get_images(intensity_only=False):
             if image_dict[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation
-            if bspline_params is None:
-                bspline_params = self.get_params(
-                    self.num_control_points,
-                    self.max_displacement,
-                    self.num_locked_borders,
-                )
-                params_dict['bspline_params'] = bspline_params
             image_dict[DATA] = self.apply_bspline_transform(
                 image_dict[DATA],
                 image_dict[AFFINE],
                 bspline_params,
                 interpolation,
             )
+        sample.add_transform(self, random_parameters_dict)
         return sample
 
     def apply_bspline_transform(

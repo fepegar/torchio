@@ -1,6 +1,5 @@
 import ast
 import shutil
-import pprint
 import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List
@@ -10,7 +9,12 @@ import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
 from .torchio import (
-    INTENSITY, LABEL, DATA, AFFINE, TYPE, TypeData, TypeNumber, TypePath)
+    INTENSITY,
+    LABEL,
+    TypeData,
+    TypeNumber,
+    TypePath,
+)
 
 
 FLIP_XY = np.diag((-1, -1, 1))
@@ -43,18 +47,6 @@ def get_stem(path: TypePath) -> str:
     """
     path = Path(path)
     return path.name.split('.')[0]
-
-
-def is_image_dict(variable: Any) -> bool:
-    is_dict = isinstance(variable, dict)
-    if not is_dict:
-        return False
-    has_right_keys = (
-        TYPE in variable
-        and DATA in variable
-        and AFFINE in variable
-    )
-    return has_right_keys
 
 
 def create_dummy_dataset(
@@ -154,21 +146,6 @@ def guess_type(string: str) -> Any:
     except TypeError:
         value = None
     return value
-
-
-def check_consistent_shape(sample: dict) -> None:
-    shapes_dict = {}
-    for image_name, image_dict in sample.items():
-        if not is_image_dict(image_dict):
-            continue
-        shapes_dict[image_name] = image_dict[DATA].shape
-    num_unique_shapes = len(set(shapes_dict.values()))
-    if num_unique_shapes > 1:
-        message = (
-            'Images in sample have inconsistent shapes:'
-            f'\n{pprint.pformat(shapes_dict)}'
-        )
-        raise ValueError(message)
 
 
 def get_rotation_and_spacing_from_affine(

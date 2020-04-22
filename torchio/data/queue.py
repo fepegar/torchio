@@ -5,7 +5,7 @@ from itertools import islice
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 from .. import TypeTuple
-from .images import ImagesDataset
+from .dataset import ImagesDataset
 from .sampler import ImageSampler
 
 
@@ -14,7 +14,7 @@ class Queue(Dataset):
 
     Args:
         subjects_dataset: Instance of
-            :class:`~torchio.data.images.ImagesDataset`.
+            :class:`~torchio.data.dataset.ImagesDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more RAM is needed to store the patches.
@@ -25,7 +25,7 @@ class Queue(Dataset):
             of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided,
             :math:`d = h = w = n`.
-        sampler_class: An instance of :class:`~torchio.data.ImageSampler` used
+        sampler_class: An instance of :class:`~torchio.data.datasetampler` used
             to define the patches sampling strategy.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).

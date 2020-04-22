@@ -10,7 +10,6 @@ from torchio.utils import (
     to_tuple,
     get_stem,
     guess_type,
-    check_consistent_shape,
 )
 from .utils import TorchioTestCase
 
@@ -71,6 +70,6 @@ class TestUtils(TorchioTestCase):
     def test_check_consistent_shape(self):
         good_sample = self.sample
         bad_sample = self.get_inconsistent_sample()
-        check_consistent_shape(good_sample)
+        good_sample.check_consistent_shape()
         with self.assertRaises(ValueError):
-            check_consistent_shape(bad_sample)
+            bad_sample.check_consistent_shape()

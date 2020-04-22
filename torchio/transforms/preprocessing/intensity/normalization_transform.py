@@ -1,7 +1,7 @@
 from typing import Union
 import torch
-from ....utils import is_image_dict
-from ....torchio import DATA, TYPE, INTENSITY, TypeCallable
+from ....data.subject import Subject
+from ....torchio import DATA, TypeCallable
 from ... import Transform
 
 
@@ -53,25 +53,21 @@ class NormalizationTransform(Transform):
         elif isinstance(masking_method, str):
             self.mask_name = masking_method
 
-    def get_mask(self, sample: dict, tensor: torch.Tensor) -> torch.Tensor:
+    def get_mask(self, sample: Subject, tensor: torch.Tensor) -> torch.Tensor:
         if self.mask_name is None:
             return self.masking_method(tensor)
         else:
             return sample[self.mask_name][DATA].bool()
 
-    def apply_transform(self, sample: dict) -> dict:
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if not image_dict[TYPE] == INTENSITY:
-                continue
+    def apply_transform(self, sample: Subject) -> dict:
+        for image_name, image_dict in sample.get_images_dict().items():
             mask = self.get_mask(sample, image_dict[DATA])
             self.apply_normalization(sample, image_name, mask)
         return sample
 
     def apply_normalization(
             self,
-            sample: dict,
+            sample: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:

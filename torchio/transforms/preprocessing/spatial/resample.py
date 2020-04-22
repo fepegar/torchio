@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
-from ....utils import is_image_dict
+from ....data.subject import Subject
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from ... import Interpolation
 from ... import Transform
@@ -94,7 +94,7 @@ class Resample(Transform):
         return order
 
     @staticmethod
-    def check_reference_image(reference_image: str, sample: dict):
+    def check_reference_image(reference_image: str, sample: Subject):
         if not isinstance(reference_image, str):
             message = f'reference_image argument should be of type str, type {type(reference_image)} was given'
             raise TypeError(message)
@@ -102,13 +102,12 @@ class Resample(Transform):
             message = f'reference_image=\'{reference_image}\' not present in sample, only these keys were found: {sample.keys()}'
             raise ValueError(message)
 
-    def apply_transform(self, sample: dict) -> dict:
+    def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
-        for image_name, image_dict in sample.items():
+        iterable = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image_dict in iterable:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
-                continue
-            if not is_image_dict(image_dict):
                 continue
 
             # Choose interpolator

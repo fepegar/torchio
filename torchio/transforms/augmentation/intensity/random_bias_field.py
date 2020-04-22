@@ -2,8 +2,8 @@
 from typing import Union, Tuple, Optional
 import numpy as np
 import torch
-from ....torchio import INTENSITY, DATA, TYPE, TypeData
-from ....utils import is_image_dict
+from ....torchio import DATA, TypeData
+from ....data.subject import Subject
 from .. import RandomTransform
 
 
@@ -30,21 +30,21 @@ class RandomBiasField(RandomTransform):
             coefficients, 'coefficients_range')
         self.order = order
 
-    def apply_transform(self, sample: dict) -> dict:
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+    def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {}
+        for image_name, image_dict in sample.get_images_dict().items():
             coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,
             )
-            sample[image_name]['random_bias_coefficients'] = coefficients
+            random_parameters_dict = {'coefficients': coefficients}
+            random_parameters_images_dict[image_name] = random_parameters_dict
+
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
             image_dict[DATA] = image_with_bias
+        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod
