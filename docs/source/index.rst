@@ -5,7 +5,8 @@
    :maxdepth: 2
 
    quickstart.rst
-   data/data.rst
+   data/dataset.rst
+   data/patch_based.rst
    transforms/transforms.rst
    datasets.rst
    cli.rst
