@@ -10,27 +10,28 @@ class GridAggregator:
     r"""Aggregate patches for dense inference.
 
     This class is typically used to build a volume made of batches after
-    inference of patches coming from a
-    :py:class:`~torchio.data.inference.grid_sampler.GridSampler`.
-
-    Adapted from NiftyNet. See
-    `this NiftyNet tutorial <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_
-    for more information.
+    inference of patches extracted by a :py:class:`~torchio.data.GridSampler`.
 
     Args:
-        data: Tensor from which patches were extracted.
+        sample: Instance of:py:class:`~torchio.data.subject.Subject`
+            from which patches will be extracted (probably using a
+            :py:class:`~torchio.data.GridSampler`).
         patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the
             overlap between patches. If a single number
             :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
+        out_channels: Number of channels in the output tensor.
 
+    .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
+        <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
+        information.
     """
     def __init__(
             self,
             sample: Subject,
             patch_overlap: TypeTuple,
-            output_channels: int = 1,
+            out_channels: int = 1,
             ):
-        self._output_tensor = torch.zeros(output_channels, *sample.shape)
+        self._output_tensor = torch.zeros(out_channels, *sample.shape)
         self.patch_overlap = to_tuple(patch_overlap, length=3)
 
     @staticmethod

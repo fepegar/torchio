@@ -13,9 +13,9 @@ from ..subject import Subject
 class GridSampler(Dataset):
     r"""Extract patches across a whole volume.
 
-    Adapted from NiftyNet. See
-    `this NiftyNet tutorial <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_
-    for more information.
+    Grid samplers are useful to perform inference using all patches from a
+    volume. It is often used with a
+    :py:class:`~torchio.data.GridAggregator`.
 
     Args:
         sample: Instance of:py:class:`~torchio.data.subject.Subject`
@@ -28,6 +28,9 @@ class GridSampler(Dataset):
             overlap between patches for dense inference. If a single number
             :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
 
+    .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
+        <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
+        information.
     """
     def __init__(
             self,
