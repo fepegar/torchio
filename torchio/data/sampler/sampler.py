@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import IterableDataset
 
 from ...torchio import DATA
-from ...utils import to_tuple, is_image_dict
+from ...utils import to_tuple
 from ..subject import Subject
 
 class ImageSampler(IterableDataset):
@@ -70,13 +70,13 @@ class ImageSampler(IterableDataset):
             index_fin: np.ndarray,
             ) -> dict:
         cropped_sample = {}
-        for key, value in sample.items():
-            cropped_sample[key] = copy.copy(value)
-            if is_image_dict(value):
-                sample_image_dict = value
-                cropped_image_dict = cropped_sample[key]
-                cropped_image_dict[DATA] = crop(
-                    sample_image_dict[DATA], index_ini, index_fin)
+        iterable = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            cropped_sample[image_name] = copy.deepcopy(image)
+            sample_image_dict = image
+            cropped_image_dict = cropped_sample[image_name]
+            cropped_image_dict[DATA] = crop(
+                sample_image_dict[DATA], index_ini, index_fin)
         # torch doesn't like uint16
         cropped_sample['index_ini'] = index_ini.astype(int)
         return cropped_sample

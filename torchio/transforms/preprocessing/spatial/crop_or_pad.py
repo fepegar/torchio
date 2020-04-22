@@ -7,7 +7,7 @@ from .crop import Crop
 from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
 from ....torchio import DATA
 from ....data.subject import Subject
-from ....utils import is_image_dict, round_up
+from ....utils import round_up
 
 
 class CropOrPad(BoundsTransform):
@@ -101,9 +101,7 @@ class CropOrPad(BoundsTransform):
     def _get_sample_shape(sample: Subject) -> TypeShape:
         """Return the shape of the first image in the sample."""
         sample.check_consistent_shape()
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             data = image_dict[DATA].shape[1:]  # remove channels dimension
             break
         return data

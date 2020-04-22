@@ -1,6 +1,5 @@
 import ast
 import shutil
-import pprint
 import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List
@@ -10,7 +9,12 @@ import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
 from .torchio import (
-    INTENSITY, LABEL, DATA, AFFINE, TYPE, TypeData, TypeNumber, TypePath)
+    INTENSITY,
+    LABEL,
+    TypeData,
+    TypeNumber,
+    TypePath,
+)
 
 
 FLIP_XY = np.diag((-1, -1, 1))
@@ -43,18 +47,6 @@ def get_stem(path: TypePath) -> str:
     """
     path = Path(path)
     return path.name.split('.')[0]
-
-
-def is_image_dict(variable: Any) -> bool:
-    is_dict = isinstance(variable, dict)
-    if not is_dict:
-        return False
-    has_right_keys = (
-        TYPE in variable
-        and DATA in variable
-        and AFFINE in variable
-    )
-    return has_right_keys
 
 
 def create_dummy_dataset(

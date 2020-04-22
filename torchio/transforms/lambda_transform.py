@@ -2,7 +2,6 @@ from typing import Sequence, Optional
 import torch
 from ..data.subject import Subject
 from ..torchio import DATA, TYPE, TypeCallable
-from ..utils import is_image_dict
 from .transform import Transform
 
 
@@ -37,16 +36,14 @@ class Lambda(Transform):
         self.types_to_apply = types_to_apply
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image in sample.get_images():
 
-            image_type = image_dict[TYPE]
+            image_type = image[TYPE]
             if self.types_to_apply is not None:
                 if image_type not in self.types_to_apply:
                     continue
 
-            function_arg = image_dict[DATA][0]
+            function_arg = image[DATA][0]
             result = self.function(function_arg)
             if not isinstance(result, torch.Tensor):
                 message = (
@@ -66,5 +63,5 @@ class Lambda(Transform):
                     f' be {function_arg.ndim}, not {result.ndim}'
                 )
                 raise ValueError(message)
-            image_dict[DATA][0] = result
+            image[DATA][0] = result
         return sample

@@ -1,8 +1,7 @@
 from typing import Tuple, Optional
 import torch
 import numpy as np
-from ....utils import is_image_dict
-from ....torchio import DATA, TYPE, INTENSITY
+from ....torchio import DATA
 from ....data.subject import Subject
 from .. import RandomTransform
 
@@ -35,11 +34,7 @@ class RandomNoise(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+        for image_name, image_dict in sample.get_images_dict().items():
             std = self.get_params(self.std_range)
             random_parameters_dict = {'std': std}
             random_parameters_images_dict[image_name] = random_parameters_dict

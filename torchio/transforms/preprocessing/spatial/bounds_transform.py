@@ -3,7 +3,6 @@ import torch
 import numpy as np
 from ....data.subject import Subject
 from ....torchio import DATA, AFFINE
-from ....utils import is_image_dict
 from ... import Transform
 
 
@@ -68,9 +67,7 @@ class BoundsTransform(Transform):
     def apply_transform(self, sample: Subject) -> dict:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             image = self.nib_to_sitk(image_dict[DATA][0], image_dict[AFFINE])
             result = self.bounds_function(image, low, high)
             data, affine = self.sitk_to_nib(result)

@@ -2,8 +2,8 @@ from typing import Union, Tuple, Optional
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import is_image_dict, nib_to_sitk, sitk_to_nib
-from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
+from ....utils import nib_to_sitk, sitk_to_nib
+from ....torchio import DATA, AFFINE, TypeData
 from ....data.subject import Subject
 from .. import RandomTransform
 
@@ -15,7 +15,7 @@ class RandomBlur(RandomTransform):
         std: Tuple :math:`(a, b)` to compute the standard deviations
             :math:`(\sigma_1, \sigma_2, \sigma_3)` of the Gaussian kernels used
             to blur the image along each axis,
-            where :math:`\sigma_i \sim \mathcal{U}(a, b)`.
+            where :math:`\sigma_i \sim \mathcal{U}(a, b)` mm.
             If a single value :math:`n` is provided, then :math:`a = b = n`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
@@ -37,11 +37,7 @@ class RandomBlur(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+        for image_name, image_dict in sample.get_images_dict().items():
             std = self.get_params(self.std_range)
             random_parameters_dict = {'std': std}
             random_parameters_images_dict[image_name] = random_parameters_dict

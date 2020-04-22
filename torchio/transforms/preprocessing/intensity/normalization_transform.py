@@ -1,8 +1,7 @@
 from typing import Union
 import torch
-from ....utils import is_image_dict
 from ....data.subject import Subject
-from ....torchio import DATA, TYPE, INTENSITY, TypeCallable
+from ....torchio import DATA, TypeCallable
 from ... import Transform
 
 
@@ -61,11 +60,7 @@ class NormalizationTransform(Transform):
             return sample[self.mask_name][DATA].bool()
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_name, image_dict in sample.items():
-            if not is_image_dict(image_dict):
-                continue
-            if not image_dict[TYPE] == INTENSITY:
-                continue
+        for image_name, image_dict in sample.get_images_dict().items():
             mask = self.get_mask(sample, image_dict[DATA])
             self.apply_normalization(sample, image_name, mask)
         return sample

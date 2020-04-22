@@ -5,7 +5,6 @@ import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
 from ....data.subject import Subject
-from ....utils import is_image_dict
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from ... import Interpolation
 from ... import Transform
@@ -105,11 +104,10 @@ class Resample(Transform):
 
     def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
-        for image_name, image_dict in sample.items():
+        iterable = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image_dict in iterable:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
-                continue
-            if not is_image_dict(image_dict):
                 continue
 
             # Choose interpolator

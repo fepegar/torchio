@@ -5,7 +5,7 @@ from typing import (
     List,
     Tuple,
 )
-from ..torchio import DATA
+from ..torchio import DATA, TYPE, INTENSITY
 from .image import Image
 
 
@@ -70,12 +70,25 @@ class Subject(dict):
         if not images:
             raise ValueError('A subject without images cannot be created')
 
+    def get_images_dict(self, intensity_only=True):
+        images = {}
+        for image_name, image in self.items():
+            if not isinstance(image, Image):
+                continue
+            if intensity_only and not image[TYPE] == INTENSITY:
+                continue
+            images[image_name] = image
+        return images
+
+    def get_images(self, intensity_only=True):
+        images_dict = self.get_images_dict(intensity_only=intensity_only)
+        return list(images_dict.values())
+
     def check_consistent_shape(self) -> None:
         shapes_dict = {}
-        for key, image in self.items():
-            if not isinstance(image, Image) or not image.is_sample:
-                continue
-            shapes_dict[key] = image[DATA].shape
+        iterable = self.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            shapes_dict[image_name] = image[DATA].shape
         num_unique_shapes = len(set(shapes_dict.values()))
         if num_unique_shapes > 1:
             message = (
@@ -84,5 +97,9 @@ class Subject(dict):
             )
             raise ValueError(message)
 
-    def add_transform(self, transform, parameters_dict):
+    def add_transform(
+            self,
+            transform: 'Transform',
+            parameters_dict: dict,
+            ) -> None:
         self.history.append((transform.name, parameters_dict))

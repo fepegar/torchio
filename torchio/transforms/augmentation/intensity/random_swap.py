@@ -2,8 +2,8 @@ from typing import Optional
 import torch
 import numpy as np
 from ....data.subject import Subject
-from ....utils import is_image_dict, to_tuple
-from ....torchio import DATA, TYPE, INTENSITY, TypeTuple, TypeData
+from ....utils import to_tuple
+from ....torchio import DATA, TypeTuple, TypeData
 from ....data.sampler.sampler import get_random_indices_from_shape, crop
 from .. import RandomTransform
 
@@ -36,11 +36,7 @@ class RandomSwap(RandomTransform):
         return
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
-            if image_dict[TYPE] != INTENSITY:
-                continue
+        for image_dict in sample.get_images():
             swap(image_dict[DATA][0], self.patch_size, self.num_iterations)
         return sample
 

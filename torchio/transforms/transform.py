@@ -1,14 +1,13 @@
 import numbers
-import warnings
 from copy import deepcopy
 from abc import ABC, abstractmethod
 
 import torch
 import SimpleITK as sitk
 
-from .. import TypeData, TYPE
+from .. import TypeData
 from ..data.subject import Subject
-from ..utils import is_image_dict, nib_to_sitk, sitk_to_nib
+from ..utils import nib_to_sitk, sitk_to_nib
 
 
 class Transform(ABC):

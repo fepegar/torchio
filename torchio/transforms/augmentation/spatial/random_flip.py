@@ -2,7 +2,7 @@ from typing import Union, Tuple, Optional, List
 import torch
 from ....torchio import DATA
 from ....data.subject import Subject
-from ....utils import is_image_dict, to_tuple
+from ....utils import to_tuple
 from .. import RandomTransform
 
 
@@ -33,9 +33,7 @@ class RandomFlip(RandomTransform):
     def apply_transform(self, sample: Subject) -> dict:
         axes_to_flip_hot = self.get_params(self.axes, self.flip_probability)
         random_parameters_dict = {'axes': axes_to_flip_hot}
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             tensor = image_dict[DATA]
             dims = []
             for dim, flip_this in enumerate(axes_to_flip_hot):

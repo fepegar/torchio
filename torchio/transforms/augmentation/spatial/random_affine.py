@@ -4,7 +4,6 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import is_image_dict
 from ....torchio import LABEL, DATA, AFFINE, TYPE, TypeRangeFloat
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
@@ -93,9 +92,7 @@ class RandomAffine(RandomTransform):
             'scaling': scaling_params,
             'rotation': rotation_params,
         }
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             if image_dict[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:

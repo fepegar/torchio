@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import is_image_dict, to_tuple
+from ....utils import to_tuple
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
@@ -221,9 +221,7 @@ class RandomElasticDeformation(RandomTransform):
             self.num_locked_borders,
         )
         random_parameters_dict = {'coarse_grid': bspline_params}
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             if image_dict[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:

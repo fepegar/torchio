@@ -2,7 +2,6 @@ import torch
 import numpy as np
 import nibabel as nib
 from ....data.subject import Subject
-from ....utils import is_image_dict
 from ....torchio import DATA, AFFINE
 from ... import Transform
 
@@ -30,9 +29,7 @@ class ToCanonical(Transform):
     """
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_dict in sample.values():
-            if not is_image_dict(image_dict):
-                continue
+        for image_dict in sample.get_images(intensity_only=False):
             affine = image_dict[AFFINE]
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
