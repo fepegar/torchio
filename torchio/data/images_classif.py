@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import random
-from .images import ImagesDataset, Image, Subject
+from .image import Image
+from .subject import Subject
+from .dataset import ImagesDataset
+
 import torchio
 
 
