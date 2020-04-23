@@ -1,3 +1,4 @@
+import numpy as np
 from numpy.testing import assert_array_equal
 from torchio import DATA, AFFINE
 from torchio.transforms import Resample
@@ -26,6 +27,19 @@ class TestResample(TorchioTestCase):
             self.assertEqual(
                 ref_image_dict[DATA].shape, image_dict[DATA].shape)
             assert_array_equal(ref_image_dict[AFFINE], image_dict[AFFINE])
+
+    def test_coregistration(self):
+        spacing = 1
+        coregistration_name = 'coregistration'
+        transform = Resample(spacing, coregistration=coregistration_name)
+        transformed = transform(self.sample)
+        for image_dict in transformed.values():
+            if coregistration_name in image_dict.keys():
+                new_affine = np.eye(4)
+                new_affine[0, 3] = 10
+                assert_array_equal(image_dict[AFFINE], new_affine)
+            else:
+                assert_array_equal(image_dict[AFFINE], np.eye(4))
 
     def test_wrong_spacing_length(self):
         with self.assertRaises(ValueError):
