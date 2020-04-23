@@ -91,48 +91,22 @@ class GridSampler(Dataset):
         return cropped_sample
 
     @staticmethod
-    def _enumerate_step_points(
-            starting: int,
-            ending: int,
-            win_size: int,
-            step_size: int,
-            ) -> np.ndarray:
-        starting = max(int(starting), 0)
-        ending = max(int(ending), 0)
-        win_size = max(int(win_size), 1)
-        step_size = max(int(step_size), 1)
-        if starting > ending:
-            starting, ending = ending, starting
-        sampling_point_set = []
-        while (starting + win_size) <= ending:
-            sampling_point_set.append(starting)
-            starting = starting + step_size
-        additional_last_point = ending - win_size
-        sampling_point_set.append(max(additional_last_point, 0))
-        sampling_point_set = np.unique(sampling_point_set).flatten()
-        if len(sampling_point_set) == 2:
-            sampling_point_set = np.append(
-                sampling_point_set, np.round(np.mean(sampling_point_set)))
-        _, uniq_idx = np.unique(sampling_point_set, return_index=True)
-        return sampling_point_set[np.sort(uniq_idx)]
-
-    @staticmethod
     def _grid_spatial_coordinates(
             volume_shape: Tuple[int, int, int],
-            window_shape: Tuple[int, int, int],
+            patch_shape: Tuple[int, int, int],
             border: Tuple[int, int, int],
             ) -> np.ndarray:
+        volume_shape = np.array(volume_shape)
+        patch_shape = np.array(patch_shape)
+        border = np.array(border)
+        grid_size = np.maximum(patch_shape - 2 * border, 0)
         num_dims = len(volume_shape)
-        grid_size = [
-            max(win_size - 2 * border, 0)
-            for (win_size, border)
-            in zip(window_shape, border)
-        ]
+
         steps_along_each_dim = [
             GridSampler._enumerate_step_points(
                 starting=0,
                 ending=volume_shape[i],
-                win_size=window_shape[i],
+                patch_shape=patch_shape[i],
                 step_size=grid_size[i],
             )
             for i in range(num_dims)
@@ -140,19 +114,50 @@ class GridSampler(Dataset):
         starting_coords = np.asanyarray(np.meshgrid(*steps_along_each_dim))
         starting_coords = starting_coords.reshape((num_dims, -1)).T
         n_locations = starting_coords.shape[0]
-        # prepare the output coordinates matrix
         spatial_coords = np.zeros((n_locations, num_dims * 2), dtype=np.int32)
         spatial_coords[:, :num_dims] = starting_coords
         for idx in range(num_dims):
             spatial_coords[:, num_dims + idx] = (
                 starting_coords[:, idx]
-                + window_shape[idx]
+                + patch_shape[idx]
             )
         max_coordinates = np.max(spatial_coords, axis=0)[num_dims:]
-        assert np.all(max_coordinates <= volume_shape[:num_dims]), \
-            "window size greater than the spatial coordinates {} : {}".format(
-                max_coordinates, volume_shape)
+        if np.any(max_coordinates > volume_shape[:num_dims]):
+            message = (
+                f'Window size {tuple(patch_shape)}'
+                f' is larger than volume {tuple(volume_shape)}'
+            )
+            raise ValueError(message)
         return spatial_coords
+
+    @staticmethod
+    def _enumerate_step_points(
+            starting: Tuple[int, int, int],
+            ending: Tuple[int, int, int],
+            patch_shape: Tuple[int, int, int],
+            step_size: Tuple[int, int, int],
+            ) -> np.ndarray:
+
+        starting = np.maximum(starting, 0)
+        ending = np.maximum(ending, 0)
+        patch_shape = np.maximum(patch_shape, 1)
+        step_size = np.maximum(step_size, 1)
+
+        starting = np.minimum(starting, ending)
+        ending = np.maximum(starting, ending)
+
+        sampling_point_set = []
+        while (starting + patch_shape) <= ending:
+            sampling_point_set.append(starting)
+            starting = starting + step_size
+        additional_last_point = ending - patch_shape
+        sampling_point_set.append(np.maximum(additional_last_point, 0))
+        sampling_point_set = np.unique(sampling_point_set, axis=0)
+        if len(sampling_point_set) == 2:
+            mean = np.round(np.mean(sampling_point_set, axis=0))
+            sampling_point_set = np.append(sampling_point_set, mean)
+        _, uniq_idx = np.unique(sampling_point_set, return_index=True)
+        return sampling_point_set[np.sort(uniq_idx)]
 
 
 def crop(
