@@ -1,3 +1,4 @@
+import os
 import shutil
 import random
 import tempfile
@@ -13,7 +14,7 @@ class TorchioTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.gettempdir()) / '.torchio_tests'
+        self.dir = Path(os.path.join(tempfile.gettempdir(), os.urandom(24).hex()))
         self.dir.mkdir(exist_ok=True)
         random.seed(42)
         np.random.seed(42)
@@ -67,7 +68,7 @@ class TorchioTestCase(unittest.TestCase):
         shutil.rmtree(self.dir)
 
     def get_ixi_tiny(self):
-        root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'
+        root_dir = self.dir / 'ixi_tiny'
         return IXITiny(root_dir, download=True)
 
     def get_image_path(
