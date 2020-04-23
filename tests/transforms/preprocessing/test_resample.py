@@ -57,3 +57,8 @@ class TestResample(TorchioTestCase):
         transform = Resample('missing')
         with self.assertRaises(ValueError):
             transform(self.sample)
+
+    def test_missing_coregistration(self):
+        transform = Resample(1, coregistration='missing')
+        with self.assertRaises(ValueError):
+            transform(self.sample)

@@ -126,11 +126,20 @@ class Resample(Transform):
                 )
                 raise ValueError(message)
 
+    @staticmethod
+    def check_coregistration_key_presence(coregistration: str, images: iter):
+        for image_dict in images:
+            if coregistration in image_dict:
+                return
+        raise ValueError(f'coregistration key "{coregistration}" should be present in at least one of the sample\'s image ')
+
     def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
         use_coregistration = self.coregistration is not None
-        iterable = sample.get_images_dict(intensity_only=False).items()
-        for image_name, image_dict in iterable:
+        sample_images = sample.get_images_dict(intensity_only=False)
+        if use_coregistration:
+            self.check_coregistration_key_presence(self.coregistration, sample_images.values())
+        for image_name, image_dict in sample_images.items():
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
                 continue
