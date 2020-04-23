@@ -3,36 +3,35 @@ import torch
 import numpy as np
 from ...utils import to_tuple
 from ...torchio import TypeData, TypeTuple
+from ..subject import Subject
 
 
 class GridAggregator:
     r"""Aggregate patches for dense inference.
 
     This class is typically used to build a volume made of batches after
-    inference of patches coming from a
-    :py:class:`~torchio.data.inference.grid_sampler.GridSampler`.
-
-    Adapted from NiftyNet. See
-    `this NiftyNet tutorial <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_
-    for more information.
+    inference of patches extracted by a :py:class:`~torchio.data.GridSampler`.
 
     Args:
-        data: Tensor from which patches were extracted.
+        sample: Instance of:py:class:`~torchio.data.subject.Subject`
+            from which patches will be extracted (probably using a
+            :py:class:`~torchio.data.GridSampler`).
         patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the
             overlap between patches. If a single number
             :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
+        out_channels: Number of channels in the output tensor.
 
-    .. note:: In the future, the :py:attr:`data` argument will be replaced by
-        :py:attr:`shape`.
-
+    .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
+        <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
+        information.
     """
     def __init__(
             self,
-            data: TypeData,
+            sample: Subject,
             patch_overlap: TypeTuple,
+            out_channels: int = 1,
             ):
-        data = torch.from_numpy(data) if isinstance(data, np.ndarray) else data
-        self._output_tensor = torch.zeros_like(data)
+        self._output_tensor = torch.zeros(out_channels, *sample.shape)
         self.patch_overlap = to_tuple(patch_overlap, length=3)
 
     @staticmethod
@@ -78,9 +77,10 @@ class GridAggregator:
         _, locations = self._crop_batch(
             init_ones, location_init, self.patch_overlap)
         for patch, location in zip(patches, locations):
-            patch = patch[0]
             i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-            self._output_tensor[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch
+            channels = len(patch)
+            for channel in range(channels):
+                self._output_tensor[channel, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch[channel]
 
     def get_output_tensor(self) -> torch.Tensor:
         return self._output_tensor

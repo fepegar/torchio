@@ -70,6 +70,16 @@ class Subject(dict):
         if not images:
             raise ValueError('A subject without images cannot be created')
 
+    @property
+    def shape(self):
+        """Return spatial shape of first image in sample.
+
+        Consistency of shapes across images in the sample is checked first.
+        """
+        self.check_consistent_shape()
+        image = self.get_images(intensity_only=False)[0]
+        return image[DATA].shape[1:]
+
     def get_images_dict(self, intensity_only=True):
         images = {}
         for image_name, image in self.items():
