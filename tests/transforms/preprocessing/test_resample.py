@@ -28,18 +28,23 @@ class TestResample(TorchioTestCase):
                 ref_image_dict[DATA].shape, image_dict[DATA].shape)
             assert_array_equal(ref_image_dict[AFFINE], image_dict[AFFINE])
 
-    def test_coregistration(self):
+    def test_affine(self):
         spacing = 1
-        coregistration_name = 'coregistration'
-        transform = Resample(spacing, coregistration=coregistration_name)
+        affine_name = 'pre_affine'
+        transform = Resample(spacing, pre_affine_name=affine_name)
         transformed = transform(self.sample)
         for image_dict in transformed.values():
-            if coregistration_name in image_dict.keys():
+            if affine_name in image_dict.keys():
                 new_affine = np.eye(4)
                 new_affine[0, 3] = 10
                 assert_array_equal(image_dict[AFFINE], new_affine)
             else:
                 assert_array_equal(image_dict[AFFINE], np.eye(4))
+
+    def test_missing_affine(self):
+        transform = Resample(1, pre_affine_name='missing')
+        with self.assertRaises(ValueError):
+            transform(self.sample)
 
     def test_wrong_spacing_length(self):
         with self.assertRaises(ValueError):
@@ -55,10 +60,5 @@ class TestResample(TorchioTestCase):
 
     def test_missing_reference(self):
         transform = Resample('missing')
-        with self.assertRaises(ValueError):
-            transform(self.sample)
-
-    def test_missing_coregistration(self):
-        transform = Resample(1, coregistration='missing')
         with self.assertRaises(ValueError):
             transform(self.sample)
