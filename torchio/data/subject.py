@@ -22,16 +22,16 @@ class Subject(dict):
         >>> from torchio import Image, Subject
         >>> # One way:
         >>> subject = Subject(
-        ...     one_image=Image('path_to_image.nii.gz, torchio.INTENSITY),
-        ...     a_segmentation=Image('path_to_seg.nii.gz, torchio.LABEL),
+        ...     one_image=Image('path_to_image.nii.gz', torchio.INTENSITY),
+        ...     a_segmentation=Image('path_to_seg.nii.gz', torchio.LABEL),
         ...     age=45,
         ...     name='John Doe',
         ...     hospital='Hospital Juan Negrín',
         ... )
         >>> # If you want to create the mapping before, or have spaces in the keys:
         >>> subject_dict = {
-        ...     'one image': Image('path_to_image.nii.gz, torchio.INTENSITY),
-        ...     'a segmentation': Image('path_to_seg.nii.gz, torchio.LABEL),
+        ...     'one image': Image('path_to_image.nii.gz', torchio.INTENSITY),
+        ...     'a segmentation': Image('path_to_seg.nii.gz', torchio.LABEL),
         ...     'age': 45,
         ...     'name': 'John Doe',
         ...     'hospital': 'Hospital Juan Negrín',
