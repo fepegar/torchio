@@ -28,6 +28,9 @@ class Resample(Transform):
             :py:attr:`torchio.Interpolation.LINEAR` and
             :py:attr:`torchio.Interpolation.BSPLINE`.
         p: Probability that this transform will be applied.
+        coregistration: string. If not None, all affines will be multiplied using
+            the array with that name as reference before resampling, it is
+            expected that the coregistration matrix is stored as an image attribute.
 
     .. note:: Resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output` or
@@ -47,6 +50,7 @@ class Resample(Transform):
             antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
             p: float = 1,
+            coregistration: str = None,
             ):
         super().__init__(p=p)
         self.target_spacing: Tuple[float, float, float]
@@ -55,6 +59,7 @@ class Resample(Transform):
         self.antialiasing = antialiasing
         self.interpolation_order = self.parse_interpolation(
             image_interpolation)
+        self.coregistration = coregistration
 
     def parse_target(self, target: Union[TypeSpacing, str]):
         if isinstance(target, str):
@@ -102,8 +107,28 @@ class Resample(Transform):
             message = f'reference_image=\'{reference_image}\' not present in sample, only these keys were found: {sample.keys()}'
             raise ValueError(message)
 
+    @staticmethod
+    def check_coregistration(coregistration: str, image_dict: dict):
+        if not isinstance(coregistration, str):
+            message = f'coregistration argument should be of type str, type {type(coregistration)} was given'
+            raise TypeError(message)
+        if coregistration in image_dict.keys():
+            if not isinstance(image_dict[coregistration], np.ndarray):
+                message = (
+                    f'coregistration matrix={image_dict[coregistration]} should be of type np.ndarray,'
+                    f'type {type(image_dict[coregistration])} was found'
+                )
+                raise TypeError(message)
+            if image_dict[coregistration].shape != (4, 4):
+                message = (
+                    f'coregistration matrix={image_dict[coregistration]} should be of shape (4, 4),'
+                    f'shape {image_dict[coregistration].shape} was found'
+                )
+                raise ValueError(message)
+
     def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
+        use_coregistration = self.coregistration is not None
         iterable = sample.get_images_dict(intensity_only=False).items()
         for image_name, image_dict in iterable:
             # Do not resample the reference image if there is one
@@ -116,8 +141,15 @@ class Resample(Transform):
             else:
                 interpolation_order = self.interpolation_order
 
+            # Set coregistration_matrix, coregistration key does not have to be present in every image
+            coregistration_matrix = np.eye(4)
+            if use_coregistration:
+                self.check_coregistration(self.coregistration, image_dict)
+                if self.coregistration in image_dict.keys():
+                    coregistration_matrix = image_dict[self.coregistration]
+
             # Resample
-            args = image_dict[DATA], image_dict[AFFINE], interpolation_order
+            args = image_dict[DATA], np.dot(coregistration_matrix, image_dict[AFFINE]), interpolation_order
             if use_reference:
                 try:
                     ref_image_dict = sample[self.reference_image]
