@@ -9,7 +9,7 @@ from typing import (
 import torch
 import numpy as np
 
-from ..torchio import TypePath
+from ..torchio import TypePath, DATA, TYPE, AFFINE, PATH, STEM
 from .io import read_image
 
 
@@ -29,6 +29,10 @@ class Image(dict):
     """
 
     def __init__(self, path: TypePath, type_: str, **kwargs: Dict[str, Any]):
+        for key in (DATA, AFFINE, TYPE, PATH, STEM):
+            if key in kwargs:
+                raise ValueError(f'Key {key} is reserved. Use a different one')
+
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
         self.type = type_

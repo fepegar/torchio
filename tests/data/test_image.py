@@ -16,3 +16,7 @@ class TestImage(TorchioTestCase):
     def test_wrong_path_type(self):
         with self.assertRaises(TypeError):
             Image(5, INTENSITY)
+
+    def test_bad_key(self):
+        with self.assertRaises(ValueError):
+            Image(5, INTENSITY, affine=1)
