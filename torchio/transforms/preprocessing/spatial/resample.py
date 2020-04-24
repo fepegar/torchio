@@ -1,9 +1,11 @@
 from numbers import Number
 from typing import Union, Tuple, Optional
+
 import torch
 import numpy as np
 import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
+
 from ....data.subject import Subject
 from ....torchio import LABEL, DATA, AFFINE, TYPE
 from ... import Interpolation
@@ -21,7 +23,10 @@ class Resample(Transform):
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
             If a string is given, all images will be resampled using the image
             with that name as reference.
-        antialiasing: (Not implemented yet).
+        pre_affine_name: Name of the *image key* (not subject key) storing an
+            affine matrix that will be applied to the image header before
+            resampling. If ``None``, the image is resampled with an identity
+            transform. See usage in the example below.
         image_interpolation: Member of :py:class:`torchio.Interpolation`.
             Supported interpolation techniques for resampling are
             :py:attr:`torchio.Interpolation.NEAREST`,
@@ -29,40 +34,53 @@ class Resample(Transform):
             :py:attr:`torchio.Interpolation.BSPLINE`.
         p: Probability that this transform will be applied.
 
+
     .. note:: Resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output` or
         :py:meth:`nibabel.processing.resample_from_to`, depending on whether
         the target is a spacing or a reference image.
 
     Example:
+        >>> import torchio
         >>> from torchio.transforms import Resample
         >>> transform = Resample(1)          # resample all images to 1mm iso
         >>> transform = Resample((1, 1, 1))  # resample all images to 1mm iso
         >>> transform = Resample('t1')       # resample all images to 't1' image space
-
+        >>>
+        >>> # Affine matrices are added to each image
+        >>> matrix_to_mni = some_4_by_4_array  # e.g. result of registration to MNI space
+        >>> subject = torchio.Subject(
+        ...     t1=Image('t1.nii.gz', torchio.INTENSITY, to_mni=matrix_to_mni),
+        ...     mni=Image('mni_152_lin.nii.gz', torchio.INTENSITY),
+        ... )
+        >>> resample = Resample(
+        ...     'mni',  # this is subject key
+        ...     affine_name='to_mni',  # this is an image key
+        ... )
+        >>> dataset = torchio.ImagesDataset([subject], transform=resample)
+        >>> sample = dataset[0]  # sample['t1'] is now in MNI space
     """
     def __init__(
             self,
             target: Union[TypeSpacing, str],
-            antialiasing: bool = True,
             image_interpolation: Interpolation = Interpolation.LINEAR,
+            pre_affine_name: Optional[str] = None,
             p: float = 1,
             ):
         super().__init__(p=p)
-        self.target_spacing: Tuple[float, float, float]
-        self.reference_image: str
-        self.parse_target(target)
-        self.antialiasing = antialiasing
+        self.reference_image, self.target_spacing = self.parse_target(target)
         self.interpolation_order = self.parse_interpolation(
             image_interpolation)
+        self.affine_name = pre_affine_name
 
     def parse_target(self, target: Union[TypeSpacing, str]):
         if isinstance(target, str):
-            self.reference_image = target
-            self.target_spacing = None
+            reference_image = target
+            target_spacing = None
         else:
-            self.reference_image = None
-            self.target_spacing = self.parse_spacing(target)
+            reference_image = None
+            target_spacing = self.parse_spacing(target)
+        return reference_image, target_spacing
 
     @staticmethod
     def parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
@@ -94,18 +112,46 @@ class Resample(Transform):
         return order
 
     @staticmethod
-    def check_reference_image(reference_image: str, sample: Subject):
-        if not isinstance(reference_image, str):
-            message = f'reference_image argument should be of type str, type {type(reference_image)} was given'
+    def check_affine(affine_name: str, image_dict: dict):
+        if not isinstance(affine_name, str):
+            message = (
+                'Affine name argument must be a string,'
+                f' not {type(affine_name)}'
+            )
             raise TypeError(message)
-        if reference_image not in sample.keys():
-            message = f'reference_image=\'{reference_image}\' not present in sample, only these keys were found: {sample.keys()}'
-            raise ValueError(message)
+        if affine_name in image_dict:
+            matrix = image_dict[affine_name]
+            if not isinstance(matrix, np.ndarray):
+                message = (
+                    'The affine matrix must be a NumPy array,'
+                    f' not {type(matrix)}'
+                )
+                raise TypeError(message)
+            if matrix.shape != (4, 4):
+                message = (
+                    'The affine matrix shape must be (4, 4),'
+                    f' not {matrix.shape}'
+                )
+                raise ValueError(message)
+
+    @staticmethod
+    def check_affine_key_presence(affine_name: str, sample: Subject):
+        for image_dict in sample.get_images(intensity_only=False):
+            if affine_name in image_dict:
+                return
+        message = (
+            f'An affine name was given ("{affine_name}"), but it was not found'
+            ' in any image in the sample'
+        )
+        raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
-        iterable = sample.get_images_dict(intensity_only=False).items()
-        for image_name, image_dict in iterable:
+        use_pre_affine = self.affine_name is not None
+        if use_pre_affine:
+            self.check_affine_key_presence(self.affine_name, sample)
+        images_dict = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image_dict in images_dict:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
                 continue
@@ -115,6 +161,12 @@ class Resample(Transform):
                 interpolation_order = 0  # nearest neighbor
             else:
                 interpolation_order = self.interpolation_order
+
+            # Apply given affine matrix if found in image
+            if use_pre_affine and self.affine_name in image_dict:
+                self.check_affine(self.affine_name, image_dict)
+                matrix = image_dict[self.affine_name]
+                image_dict[AFFINE] = matrix @ image_dict[AFFINE]
 
             # Resample
             args = image_dict[DATA], image_dict[AFFINE], interpolation_order

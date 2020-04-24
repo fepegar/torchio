@@ -18,6 +18,13 @@ class TorchioTestCase(unittest.TestCase):
         random.seed(42)
         np.random.seed(42)
 
+        registration_matrix = np.array([
+            [1, 0, 0, 10],
+            [0, 1, 0, 0],
+            [0, 0, 1.2, 0],
+            [0, 0, 0, 1]
+        ])
+
         subject_a = Subject(
             t1=Image(self.get_image_path('t1_a'), INTENSITY),
         )
@@ -29,7 +36,11 @@ class TorchioTestCase(unittest.TestCase):
             label=Image(self.get_image_path('label_c', binary=True), LABEL),
         )
         subject_d = Subject(
-            t1=Image(self.get_image_path('t1_d'), INTENSITY),
+            t1=Image(
+                self.get_image_path('t1_d'),
+                INTENSITY,
+                pre_affine=registration_matrix,
+            ),
             t2=Image(self.get_image_path('t2_d'), INTENSITY),
             label=Image(self.get_image_path('label_d', binary=True), LABEL),
         )
