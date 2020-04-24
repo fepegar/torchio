@@ -23,10 +23,10 @@ class Resample(Transform):
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
             If a string is given, all images will be resampled using the image
             with that name as reference.
-        pre_affine_name: Name of the image key storing an affine matrix that
-            will be applied to the image header before resampling.
-            If ``None``, the image is resampled with an identity transform.
-            See usage in the example below.
+        pre_affine_name: Name of the *image key* (not subject key) storing an
+            affine matrix that will be applied to the image header before
+            resampling. If ``None``, the image is resampled with an identity
+            transform. See usage in the example below.
         image_interpolation: Member of :py:class:`torchio.Interpolation`.
             Supported interpolation techniques for resampling are
             :py:attr:`torchio.Interpolation.NEAREST`,
@@ -148,10 +148,10 @@ class Resample(Transform):
     def apply_transform(self, sample: Subject) -> dict:
         use_reference = self.reference_image is not None
         use_pre_affine = self.affine_name is not None
-        sample_images = sample.get_images_dict(intensity_only=False)
         if use_pre_affine:
             self.check_affine_key_presence(self.affine_name, sample)
-        for image_name, image_dict in sample_images.items():
+        images_dict = sample.get_images_dict(intensity_only=False).items()
+        for image_name, image_dict in images_dict:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
                 continue
