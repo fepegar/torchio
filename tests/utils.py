@@ -72,6 +72,12 @@ class TorchioTestCase(unittest.TestCase):
         dataset = ImagesDataset(subjects_list)
         return dataset[0]
 
+    def get_reference_image_and_path(self):
+        """Return a reference image and its path"""
+        path = self.get_image_path('ref', shape=(10, 20, 31))
+        image = Image(path, INTENSITY)
+        return image, path
+
     def tearDown(self):
         """Tear down test fixtures, if any."""
         print('Deleting', self.dir)

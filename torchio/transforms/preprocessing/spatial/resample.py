@@ -1,5 +1,6 @@
 from numbers import Number
 from typing import Union, Tuple, Optional
+from pathlib import Path
 
 import torch
 import numpy as np
@@ -7,7 +8,8 @@ import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
-from ....torchio import LABEL, DATA, AFFINE, TYPE
+from ....data.image import Image
+from ....torchio import LABEL, DATA, AFFINE, TYPE, INTENSITY
 from ... import Interpolation
 from ... import Transform
 
@@ -23,6 +25,8 @@ class Resample(Transform):
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
             If a string is given, all images will be resampled using the image
             with that name as reference.
+            If a path is given, all images will be resampled using the image at
+            that path as reference.
         pre_affine_name: Name of the *image key* (not subject key) storing an
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
@@ -43,9 +47,11 @@ class Resample(Transform):
     Example:
         >>> import torchio
         >>> from torchio.transforms import Resample
-        >>> transform = Resample(1)          # resample all images to 1mm iso
-        >>> transform = Resample((1, 1, 1))  # resample all images to 1mm iso
-        >>> transform = Resample('t1')       # resample all images to 't1' image space
+        >>> from pathlib import Path
+        >>> transform = Resample(1)             # resample all images to 1mm iso
+        >>> transform = Resample((1, 1, 1))     # resample all images to 1mm iso
+        >>> transform = Resample('t1')          # resample all images to 't1' image space
+        >>> transform = Resample(Path('path'))  # resample all images to image at path 'path' image space
         >>>
         >>> # Affine matrices are added to each image
         >>> matrix_to_mni = some_4_by_4_array  # e.g. result of registration to MNI space
@@ -62,7 +68,7 @@ class Resample(Transform):
     """
     def __init__(
             self,
-            target: Union[TypeSpacing, str],
+            target: Union[TypeSpacing, str, Path],
             image_interpolation: Interpolation = Interpolation.LINEAR,
             pre_affine_name: Optional[str] = None,
             p: float = 1,
@@ -76,6 +82,9 @@ class Resample(Transform):
     def parse_target(self, target: Union[TypeSpacing, str]):
         if isinstance(target, str):
             reference_image = target
+            target_spacing = None
+        elif isinstance(target, Path):
+            reference_image = Image(target, INTENSITY).load()
             target_spacing = None
         else:
             reference_image = None
@@ -171,15 +180,18 @@ class Resample(Transform):
             # Resample
             args = image_dict[DATA], image_dict[AFFINE], interpolation_order
             if use_reference:
-                try:
-                    ref_image_dict = sample[self.reference_image]
-                except KeyError as error:
-                    message = (
-                        f'Reference name "{self.reference_image}"'
-                        ' not found in sample'
-                    )
-                    raise ValueError(message) from error
-                reference = ref_image_dict[DATA], ref_image_dict[AFFINE]
+                if isinstance(self.reference_image, str):
+                    try:
+                        ref_image_dict = sample[self.reference_image]
+                    except KeyError as error:
+                        message = (
+                            f'Reference name "{self.reference_image}"'
+                            ' not found in sample'
+                        )
+                        raise ValueError(message) from error
+                    reference = ref_image_dict[DATA], ref_image_dict[AFFINE]
+                else:
+                    reference = self.reference_image
                 kwargs = dict(reference=reference)
             else:
                 kwargs = dict(target_spacing=self.target_spacing)
