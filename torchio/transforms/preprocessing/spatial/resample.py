@@ -1,3 +1,4 @@
+import os
 from numbers import Number
 from typing import Union, Tuple, Optional
 from pathlib import Path
@@ -23,10 +24,8 @@ class Resample(Transform):
     Args:
         target: Tuple :math:`(s_d, s_h, s_w)`. If only one value
             :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
-            If a string is given, all images will be resampled using the image
-            with that name as reference.
-            If a path is given, all images will be resampled using the image at
-            that path as reference.
+            If a string or Path is given, all images will be resampled using the image
+            with that name as reference or found at this path.
         pre_affine_name: Name of the *image key* (not subject key) storing an
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
@@ -48,10 +47,10 @@ class Resample(Transform):
         >>> import torchio
         >>> from torchio.transforms import Resample
         >>> from pathlib import Path
-        >>> transform = Resample(1)             # resample all images to 1mm iso
-        >>> transform = Resample((1, 1, 1))     # resample all images to 1mm iso
-        >>> transform = Resample('t1')          # resample all images to 't1' image space
-        >>> transform = Resample(Path('path'))  # resample all images to image at path 'path' image space
+        >>> transform = Resample(1)                 # resample all images to 1mm iso
+        >>> transform = Resample((1, 1, 1))         # resample all images to 1mm iso
+        >>> transform = Resample('t1')              # resample all images to 't1' image space
+        >>> transform = Resample('path.nii.gz')     # resample all images to image at path 'path.nii.gz' image space
         >>>
         >>> # Affine matrices are added to each image
         >>> matrix_to_mni = some_4_by_4_array  # e.g. result of registration to MNI space
@@ -80,11 +79,11 @@ class Resample(Transform):
         self.affine_name = pre_affine_name
 
     def parse_target(self, target: Union[TypeSpacing, str]):
-        if isinstance(target, str):
-            reference_image = target
-            target_spacing = None
-        elif isinstance(target, Path):
-            reference_image = Image(target, INTENSITY).load()
+        if isinstance(target, (str, Path)):
+            if os.path.exists(target):
+                reference_image = Image(target, INTENSITY).load()
+            else:
+                reference_image = target
             target_spacing = None
         else:
             reference_image = None
