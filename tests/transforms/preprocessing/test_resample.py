@@ -17,7 +17,7 @@ class TestResample(TorchioTestCase):
             image = nib_to_sitk(image_dict[DATA], image_dict[AFFINE])
             self.assertEqual(image.GetSpacing(), 3 * (spacing,))
 
-    def test_reference(self):
+    def test_reference_name(self):
         sample = self.get_inconsistent_sample()
         reference_name = 't1'
         transform = Resample(reference_name)
@@ -45,6 +45,16 @@ class TestResample(TorchioTestCase):
         transform = Resample(1, pre_affine_name='missing')
         with self.assertRaises(ValueError):
             transform(self.sample)
+
+    def test_reference_path(self):
+        reference_image, reference_path = self.get_reference_image_and_path()
+        transform = Resample(reference_path)
+        transformed = transform(self.sample)
+        ref_data, ref_affine = reference_image.load()
+        for image_dict in transformed.values():
+            self.assertEqual(
+                ref_data.shape, image_dict[DATA].shape)
+            assert_array_equal(ref_affine, image_dict[AFFINE])
 
     def test_wrong_spacing_length(self):
         with self.assertRaises(ValueError):
