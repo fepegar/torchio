@@ -16,7 +16,7 @@ class Image(dict):
         path: Path to a file that can be read by
             :mod:`SimpleITK` or :mod:`nibabel` or to a directory containing
             DICOM files.
-        type_: Type of image, such as :attr:`torchio.INTENSITY` or
+        type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
             when resampling.
@@ -34,7 +34,7 @@ class Image(dict):
     def __init__(
             self,
             path: Optional[TypePath] = None,
-            type_: str = INTENSITY,
+            type: str = INTENSITY,
             tensor: Optional[torch.Tensor] = None,
             affine: Optional[torch.Tensor] = None,
             **kwargs: Dict[str, Any],
@@ -55,7 +55,7 @@ class Image(dict):
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
-        self.type = type_
+        self.type = type
         self.is_sample = False  # set to True by ImagesDataset
 
     @staticmethod
