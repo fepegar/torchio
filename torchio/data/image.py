@@ -1,15 +1,11 @@
 import warnings
 from pathlib import Path
-from typing import (
-    Any,
-    Dict,
-    Tuple,
-)
+from typing import Any, Dict, Tuple, Optional
 
 import torch
 import numpy as np
 
-from ..torchio import TypePath, DATA, TYPE, AFFINE, PATH, STEM
+from ..torchio import TypePath, DATA, TYPE, AFFINE, PATH, STEM, INTENSITY
 from .io import read_image
 
 
@@ -24,11 +20,35 @@ class Image(dict):
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
             when resampling.
+        tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
+            :py:class:`torch.Tensor` with dimensions :math:`(C, D, H, W)`,
+            where :math:`C` is the number of channels and :math:`D, H, W`
+            are the spatial dimensions.
+        affine: If :attr:`path` is not given, :attr:`affine` must be a
+            :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
+            identity matrix.
         **kwargs: Items that will be added to image dictionary within the
             subject sample.
     """
 
-    def __init__(self, path: TypePath, type_: str, **kwargs: Dict[str, Any]):
+    def __init__(
+            self,
+            path: Optional[TypePath] = None,
+            type_: str = INTENSITY,
+            tensor: Optional[torch.Tensor] = None,
+            affine: Optional[torch.Tensor] = None,
+            **kwargs: Dict[str, Any],
+            ):
+        if path is None and tensor is None:
+            raise ValueError('A value for path or tensor must be given')
+        if path is not None:
+            if tensor is not None or affine is not None:
+                message = 'If a path is given, tensor and affine must be None'
+                raise ValueError(message)
+        self.tensor = self.parse_tensor(tensor)
+        self.affine = self.parse_affine(affine)
+        if self.affine is None:
+            self.affine = np.eye(4)
         for key in (DATA, AFFINE, TYPE, PATH, STEM):
             if key in kwargs:
                 raise ValueError(f'Key {key} is reserved. Use a different one')
@@ -40,6 +60,8 @@ class Image(dict):
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
+        if path is None:
+            return
         try:
             path = Path(path).expanduser()
         except TypeError:
@@ -48,6 +70,29 @@ class Image(dict):
         if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
             raise FileNotFoundError(f'File not found: {path}')
         return path
+
+    @staticmethod
+    def parse_tensor(tensor: torch.Tensor) -> torch.Tensor:
+        if tensor is None:
+            return None
+        num_dimensions = tensor.dim()
+        if num_dimensions != 4:
+            message = (
+                'The input tensor must have 4 dimensions (channels, i, j, k),'
+                f' but has only {num_dimensions}: {tensor.shape}'
+            )
+            raise RuntimeError(message)
+        return tensor
+
+    @staticmethod
+    def parse_affine(affine: np.ndarray) -> np.ndarray:
+        if affine is None:
+            return np.eye(4)
+        if not isinstance(affine, np.ndarray):
+            raise TypeError(f'Affine must be a NumPy array, not {type(affine)}')
+        if affine.shape != (4, 4):
+            raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
+        return affine
 
     def load(self, check_nans: bool = True) -> Tuple[torch.Tensor, np.ndarray]:
         r"""Load the image from disk.
@@ -64,6 +109,8 @@ class Image(dict):
             :math:`(1, D_{in}, H_{in}, W_{in})`
             and a 2D 4x4 affine matrix
         """
+        if self.path is None:
+            return self.tensor, self.affine
         tensor, affine = read_image(self.path)
         tensor = tensor.unsqueeze(0)  # add channels dimension
         if check_nans and torch.isnan(tensor).any():
