@@ -89,18 +89,13 @@ class Transform(ABC):
     @staticmethod
     def _get_subject_from_tensor(tensor: torch.Tensor) -> Subject:
         subject_dict = {}
-        affine = torch.eye(4)
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir = Path(tmpdir)
-            for i, channel_tensor in enumerate(tensor):
-                name = f'channel_{i}'
-                path = tmpdir / f'{name}.nii'
-                write_image(channel_tensor, affine, path)
-                image = Image(path, INTENSITY)
-                subject_dict[name] = image
-            subject = Subject(subject_dict)
-            dataset = ImagesDataset([subject])
-            sample = dataset[0]  # load the images
+        for channel_index, channel_tensor in enumerate(tensor):
+            name = f'channel_{channel_index}'
+            image = Image(tensor=channel_tensor, type=INTENSITY)
+            subject_dict[name] = image
+        subject = Subject(subject_dict)
+        dataset = ImagesDataset([subject])
+        sample = dataset[0]
         return sample
 
     @staticmethod
