@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import torch
 import numpy as np
 import torchio
 from ..utils import TorchioTestCase
@@ -8,11 +9,10 @@ from ..utils import TorchioTestCase
 class TestTransforms(TorchioTestCase):
     """Tests for all transforms."""
 
-    def test_transforms(self):
-        landmarks_dict = dict(
-            t1=np.linspace(0, 100, 13),
-            t2=np.linspace(0, 100, 13),
-        )
+    def get_transform(self, channels):
+        landmarks_dict = {
+            channel: np.linspace(0, 100, 13) for channel in channels
+        }
         elastic = torchio.RandomElasticDeformation(max_displacement=1)
         transforms = (
             torchio.CropOrPad((9, 21, 30)),
@@ -28,7 +28,7 @@ class TestTransforms(TorchioTestCase):
             torchio.Lambda(lambda x: 2 * x, types_to_apply=torchio.INTENSITY),
             torchio.RandomBiasField(),
             torchio.RescaleIntensity((0, 1)),
-            torchio.ZNormalization(masking_method='label'),
+            torchio.ZNormalization(),
             torchio.HistogramStandardization(landmarks_dict=landmarks_dict),
             elastic,
             torchio.RandomAffine(),
@@ -36,5 +36,13 @@ class TestTransforms(TorchioTestCase):
             torchio.Pad((1, 2, 3, 0, 5, 6), padding_mode='constant', fill=3),
             torchio.Crop((3, 2, 8, 0, 1, 4)),
         )
-        transform = torchio.Compose(transforms)
+        return torchio.Compose(transforms)
+
+    def test_transforms_sample(self):
+        transform = self.get_transform(channels=('t1', 't2'))
         transform(self.sample)
+
+    def test_transforms_tensor(self):
+        tensor = torch.rand(2, 4, 5, 8)
+        transform = self.get_transform(channels=('channel_0', 'channel_1'))
+        transform(tensor)
