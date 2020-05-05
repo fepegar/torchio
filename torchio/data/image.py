@@ -82,6 +82,7 @@ class Image(dict):
                 f' but has {num_dimensions}: {tensor.shape}'
             )
             raise RuntimeError(message)
+        tensor = tensor.unsqueeze(0)  # add channels dimension
         return tensor
 
     @staticmethod
