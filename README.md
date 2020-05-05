@@ -118,7 +118,7 @@ See the [Credits](#credits) section below for more information.
 
 
 TorchIO is a Python package containing a set of tools to efficiently
-read, sample and write 3D medical images in deep learning applications
+read, preprocess, sample, augment, and write 3D medical images in deep learning applications
 written in [PyTorch](https://pytorch.org/),
 including intensity and spatial transforms
 for data augmentation and preprocessing.
