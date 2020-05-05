@@ -114,10 +114,10 @@ def apply_transform_to_file(
         input_path: TypePath,
         transform,  # : Transform seems to create a circular import (TODO)
         output_path: TypePath,
-        type_: str = INTENSITY,
+        type: str = INTENSITY,
         ):
     from . import Image, ImagesDataset, Subject
-    subject = Subject(image=Image(input_path, type_))
+    subject = Subject(image=Image(input_path, type))
     dataset = ImagesDataset([subject], transform=transform)
     transformed = dataset[0]
     dataset.save_sample(transformed, dict(image=output_path))
