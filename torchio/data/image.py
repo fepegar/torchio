@@ -76,10 +76,10 @@ class Image(dict):
         if tensor is None:
             return None
         num_dimensions = tensor.dim()
-        if num_dimensions != 4:
+        if num_dimensions != 3:
             message = (
-                'The input tensor must have 4 dimensions (channels, i, j, k),'
-                f' but has only {num_dimensions}: {tensor.shape}'
+                'The input tensor must have 3 dimensions (D, H, W),'
+                f' but has {num_dimensions}: {tensor.shape}'
             )
             raise RuntimeError(message)
         return tensor
