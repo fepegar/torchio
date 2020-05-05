@@ -1,6 +1,4 @@
 import numbers
-import tempfile
-from pathlib import Path
 from typing import Union
 from copy import deepcopy
 from abc import ABC, abstractmethod
@@ -8,8 +6,7 @@ from abc import ABC, abstractmethod
 import torch
 import SimpleITK as sitk
 
-from .. import TypeData, INTENSITY
-from ..data.io import write_image
+from .. import TypeData, INTENSITY, DATA
 from ..data.image import Image
 from ..data.subject import Subject
 from ..data.dataset import ImagesDataset
@@ -39,18 +36,27 @@ class Transform(ABC):
                 :py:class:`torch.Tensor` with dimensions :math:`(C, D, H, W)`,
                 where :math:`C` is the number of channels and :math:`D, H, W`
                 are the spatial dimensions. If the input is a tensor, the affine
-                matrix is an identity.
+                matrix is an identity and a tensor will be also returned.
         """
         if isinstance(data, torch.Tensor):
+            is_tensor = True
             sample = self.parse_tensor(data)
         else:
+            is_tensor = False
             sample = data
         self.parse_sample(sample)
         if torch.rand(1).item() > self.probability:
             return sample
         sample = deepcopy(sample)
-        sample = self.apply_transform(sample)
-        return sample
+        transformed = self.apply_transform(sample)
+        if is_tensor:
+            num_channels = len(data)
+            images = [
+                transformed[f'channel_{i}'][DATA]
+                for i in range(num_channels)
+            ]
+            transformed = torch.cat(images)
+        return transformed
 
     @abstractmethod
     def apply_transform(self, sample: Subject):
