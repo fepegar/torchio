@@ -17,6 +17,6 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(TypeError):
             Image(5, INTENSITY)
 
-    def test_bad_key(self):
+    def test_incompatible_arguments(self):
         with self.assertRaises(ValueError):
             Image(5, INTENSITY, affine=1)

@@ -81,7 +81,7 @@ class Transform(ABC):
         if num_dimensions != 4:
             message = (
                 'The input tensor must have 4 dimensions (channels, i, j, k),'
-                f' but has only {num_dimensions}: {tensor.shape}'
+                f' but has {num_dimensions}: {tensor.shape}'
             )
             raise RuntimeError(message)
         return self._get_subject_from_tensor(tensor)
