@@ -54,7 +54,7 @@ class RandomAffine(RandomTransform):
 
     From the command line::
 
-        $ torchio-transform t1.nii.gz RandomAffine -k "degrees=30 default_pad_value=minimum" -s 42 affine_min.nii.gz
+        $ torchio-transform t1.nii.gz RandomAffine --kwargs "degrees=30 default_pad_value=minimum" --seed 42 affine_min.nii.gz
 
     """
     def __init__(
@@ -183,28 +183,27 @@ class RandomAffine(RandomTransform):
 
 
 def get_borders_mean(image, filter_otsu=True):
+    # pylint: disable=bad-whitespace
     array = sitk.GetArrayViewFromImage(image)
-    borders = np.array((
-        array[0],
-        array[-1],
-        array[0, :, :],
-        array[-1, :, :],
-        array[:, 0, :],
-        array[:, -1, :],
-        array[:, :, 0],
-        array[:, :, -1],
-    ))
-    borders = np.hstack([border.flatten() for border in borders])
+    borders_tuple = (
+        array[ 0,  :,  :],
+        array[-1,  :,  :],
+        array[ :,  0,  :],
+        array[ :, -1,  :],
+        array[ :,  :,  0],
+        array[ :,  :, -1],
+    )
+    borders_flat = np.hstack([border.ravel() for border in borders_tuple])
     if not filter_otsu:
-        return borders.mean()
-    borders = borders.reshape(1, 1, -1)
-    borders_image = sitk.GetImageFromArray(borders)
+        return borders_flat.mean()
+    borders_reshaped = borders_flat.reshape(1, 1, -1)
+    borders_image = sitk.GetImageFromArray(borders_reshaped)
     otsu = sitk.OtsuThresholdImageFilter()
     otsu.Execute(borders_image)
     threshold = otsu.GetThreshold()
-    values = borders[borders < threshold]
+    values = borders_flat[borders_flat < threshold]
     if values.any():
         default_value = values.mean()
     else:
-        default_value = borders.mean()
+        default_value = borders_flat.mean()
     return default_value
