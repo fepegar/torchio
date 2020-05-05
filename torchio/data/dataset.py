@@ -155,12 +155,14 @@ class ImagesDataset(Dataset):
             tensor, affine = image.load(check_nans=self.check_nans)
         else:
             tensor = affine = None
+        path = None if image.path is None else str(image.path)
+        stem = None if path is None else get_stem(image.path)
         image_dict = {
             DATA: tensor,
             AFFINE: affine,
             TYPE: image.type,
-            PATH: str(image.path),
-            STEM: get_stem(image.path),
+            PATH: path,
+            STEM: stem,
         }
         image = copy.deepcopy(image)
         image.update(image_dict)

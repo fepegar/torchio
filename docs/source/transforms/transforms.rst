@@ -5,7 +5,8 @@ The :py:mod:`torchio.transforms` module should remind users of
 :py:mod:`torchvision.transforms`.
 
 TorchIO transforms take as input samples generated
-by an :py:class:`~torchio.data.dataset.ImagesDataset`.
+by an :py:class:`~torchio.data.dataset.ImagesDataset`,
+or 4D tensors (see :py:class:`~torchio.transforms.Transform`).
 
 For example::
 
@@ -17,14 +18,17 @@ For example::
    >>> transformed_sample = affine_transform(sample)
 
 
-Transforms can be applied from the command line using :ref:`torchio-transform`.
+Transforms can also be applied from the command line using
+:ref:`torchio-transform`.
 
 All transforms inherit from :py:class:`torchio.transforms.Transform`:
 
 .. currentmodule:: torchio.transforms
 
 .. autoclass:: Transform
+   :members:
 
+   .. automethod:: __call__
 
 
 
