@@ -13,7 +13,7 @@
       "contributions": [
         "code"
       ]
-    }
+    },
     {
       "login": "GFabien",
       "name": "GFabien",
@@ -22,7 +22,7 @@
       "contributions": [
         "code"
       ]
-    },
+    }
   ],
   "contributorsPerLine": 7,
   "projectName": "torchio",
