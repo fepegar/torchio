@@ -23,6 +23,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "romainVala",
+      "name": "valabregue",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5611962?v=4",
+      "profile": "https://github.com/romainVala",
+      "contributions": [
+        "ideas",
+        "review",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
