@@ -1,6 +1,6 @@
 # [TorchIO](http://torchio.rtfd.io/)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![PyPI downloads](https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white)](https://pypi.org/project/torchio/)
@@ -192,9 +192,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/nwschurink"><img src="https://avatars3.githubusercontent.com/u/12720130?v=4" width="100px;" alt=""/><br /><sub><b>Niels Schurink</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=nwschurink" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/ibrhad/ "><img src="https://avatars3.githubusercontent.com/u/18015788?v=4" width="100px;" alt=""/><br /><sub><b>Ibrahim Hadzic</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aibro45" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/ReubenDo"><img src="https://avatars1.githubusercontent.com/u/17268715?v=4" width="100px;" alt=""/><br /><sub><b>ReubenDo</b></sub></a><br /><a href="#ideas-ReubenDo" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+  <tr>
     <td align="center"><a href="http://julianklug.com"><img src="https://avatars0.githubusercontent.com/u/8020367?v=4" width="100px;" alt=""/><br /><sub><b>Julian Klug</b></sub></a><br /><a href="#ideas-MonsieurWave" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/dvolgyes"><img src="https://avatars1.githubusercontent.com/u/425560?v=4" width="100px;" alt=""/><br /><sub><b>David Völgyes</b></sub></a><br /><a href="#ideas-dvolgyes" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/jfillionr/"><img src="https://avatars0.githubusercontent.com/u/219043?v=4" width="100px;" alt=""/><br /><sub><b>Jean-Christophe Fillion-Robin</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jcfr" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://surajpai.tech"><img src="https://avatars1.githubusercontent.com/u/10467804?v=4" width="100px;" alt=""/><br /><sub><b>Suraj Pai</b></sub></a><br /><a href="#ideas-surajpaib" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
