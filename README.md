@@ -115,7 +115,18 @@ See the [Credits](#credits) section below for more information.
     </tr>
 </table>
 
+---
 
+
+
+<a href="https://torchio.readthedocs.io/data/patch_based.html">
+    <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/queue.gif" alt="Queue">
+</a>
+
+([Queue](https://torchio.readthedocs.io/data/patch_training.html#queue)
+for [patch-based training](https://torchio.readthedocs.io/data/patch_based.html))
+
+---
 
 TorchIO is a Python package containing a set of tools to efficiently
 read, preprocess, sample, augment, and write 3D medical images in deep learning applications
