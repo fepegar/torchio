@@ -97,6 +97,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "surajpaib",
+      "name": "Suraj Pai",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/10467804?v=4",
+      "profile": "http://surajpai.tech",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
