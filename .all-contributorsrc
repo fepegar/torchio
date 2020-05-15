@@ -6,15 +6,6 @@
   "commit": false,
   "contributors": [
     {
-      "login": "GFabien",
-      "name": "GFabien",
-      "avatar_url": "https://avatars1.githubusercontent.com/u/39873986?v=4",
-      "profile": "https://github.com/GFabien",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
       "login": "fepegar",
       "name": "Fernando Pérez-García",
       "avatar_url": "https://avatars1.githubusercontent.com/u/12688084?v=4",
@@ -23,6 +14,15 @@
         "code"
       ]
     }
+    {
+      "login": "GFabien",
+      "name": "GFabien",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/39873986?v=4",
+      "profile": "https://github.com/GFabien",
+      "contributions": [
+        "code"
+      ]
+    },
   ],
   "contributorsPerLine": 7,
   "projectName": "torchio",
