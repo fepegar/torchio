@@ -1,6 +1,6 @@
 # [TorchIO](http://torchio.rtfd.io/)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![PyPI downloads](https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white)](https://pypi.org/project/torchio/)
@@ -187,6 +187,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/fepegar"><img src="https://avatars1.githubusercontent.com/u/12688084?v=4" width="100px;" alt=""/><br /><sub><b>Fernando Pérez-García</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=fepegar" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/GFabien"><img src="https://avatars1.githubusercontent.com/u/39873986?v=4" width="100px;" alt=""/><br /><sub><b>GFabien</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=GFabien" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/GReguig"><img src="https://avatars1.githubusercontent.com/u/11228281?v=4" width="100px;" alt=""/><br /><sub><b>G.Reguig</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=GReguig" title="Code">💻</a></td>
   </tr>
 </table>
 
