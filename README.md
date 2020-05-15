@@ -187,7 +187,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/fepegar"><img src="https://avatars1.githubusercontent.com/u/12688084?v=4" width="100px;" alt=""/><br /><sub><b>Fernando Pérez-García</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=fepegar" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/GFabien"><img src="https://avatars1.githubusercontent.com/u/39873986?v=4" width="100px;" alt=""/><br /><sub><b>GFabien</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=GFabien" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/romainVala"><img src="https://avatars1.githubusercontent.com/u/5611962?v=4" width="100px;" alt=""/><br /><sub><b>valabregue</b></sub></a><br /><a href="#ideas-romainVala" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3AromainVala" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/romainVala"><img src="https://avatars1.githubusercontent.com/u/5611962?v=4" width="100px;" alt=""/><br /><sub><b>valabregue</b></sub></a><br /><a href="#ideas-romainVala" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3AromainVala" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/fepegar/torchio/commits?author=romainVala" title="Code">💻</a></td>
   </tr>
 </table>
 
