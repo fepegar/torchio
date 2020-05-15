@@ -43,6 +43,60 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nwschurink",
+      "name": "Niels Schurink",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/12720130?v=4",
+      "profile": "https://github.com/nwschurink",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ibro45",
+      "name": "Ibrahim Hadzic",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/18015788?v=4",
+      "profile": "https://www.linkedin.com/in/ibrhad/ ",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "ReubenDo",
+      "name": "ReubenDo",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17268715?v=4",
+      "profile": "https://github.com/ReubenDo",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "MonsieurWave",
+      "name": "Julian Klug",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/8020367?v=4",
+      "profile": "http://julianklug.com",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "dvolgyes",
+      "name": "David Völgyes",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/425560?v=4",
+      "profile": "https://github.com/dvolgyes",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "jcfr",
+      "name": "Jean-Christophe Fillion-Robin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/219043?v=4",
+      "profile": "https://www.linkedin.com/in/jfillionr/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
