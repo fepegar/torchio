@@ -16,6 +16,17 @@
       ]
     },
     {
+      "login": "romainVala",
+      "name": "valabregue",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5611962?v=4",
+      "profile": "https://github.com/romainVala",
+      "contributions": [
+        "ideas",
+        "review",
+        "code"
+      ]
+    },
+    {
       "login": "GFabien",
       "name": "GFabien",
       "avatar_url": "https://avatars1.githubusercontent.com/u/39873986?v=4",
@@ -25,13 +36,11 @@
       ]
     },
     {
-      "login": "romainVala",
-      "name": "valabregue",
-      "avatar_url": "https://avatars1.githubusercontent.com/u/5611962?v=4",
-      "profile": "https://github.com/romainVala",
+      "login": "GReguig",
+      "name": "G.Reguig",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/11228281?v=4",
+      "profile": "https://github.com/GReguig",
       "contributions": [
-        "ideas",
-        "review",
         "code"
       ]
     }
