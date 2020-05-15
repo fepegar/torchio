@@ -22,6 +22,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ibro45",
+      "name": "Ibrahim Hadzic",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/18015788?v=4",
+      "profile": "https://www.linkedin.com/in/ibrhad/ ",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
