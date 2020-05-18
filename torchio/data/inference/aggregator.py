@@ -13,7 +13,7 @@ class GridAggregator:
     inference of patches extracted by a :py:class:`~torchio.data.GridSampler`.
 
     Args:
-        sample: Instance of:py:class:`~torchio.data.subject.Subject`
+        sample: Instance of :py:class:`~torchio.data.subject.Subject`
             from which patches will be extracted (probably using a
             :py:class:`~torchio.data.GridSampler`).
         patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the

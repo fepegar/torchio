@@ -18,7 +18,7 @@ class GridSampler(Dataset):
     :py:class:`~torchio.data.GridAggregator`.
 
     Args:
-        sample: Instance of:py:class:`~torchio.data.subject.Subject`
+        sample: Instance of :py:class:`~torchio.data.subject.Subject`
             from which patches will be extracted.
         patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
             of size :math:`d \times h \times w`.
