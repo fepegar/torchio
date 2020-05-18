@@ -43,7 +43,7 @@ class Queue(Dataset):
 
     Example:
 
-    >>> form torch.utils.data import DataLoader
+    >>> from torch.utils.data import DataLoader
     >>> import torchio
     >>> patches_queue = torchio.Queue(
     ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
