@@ -15,8 +15,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 [![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio)
 [![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master)
 [![Code maintainability](https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability)](https://codeclimate.com/github/fepegar/torchio/maintainability)
-[![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ---
@@ -148,7 +147,8 @@ simulation of intensity artifacts due to
 [MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
-This package has been greatly inspired by [NiftyNet](https://niftynet.io/).
+This package has been greatly inspired by NiftyNet,
+[which is not actively maintained anymore](https://github.com/NifTK/NiftyNet/commit/935bf4334cd00fa9f9d50f6a95ddcbfdde4031e0).
 
 
 ## [Documentation](http://torchio.rtfd.io/)
