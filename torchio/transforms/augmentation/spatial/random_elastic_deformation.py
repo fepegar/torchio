@@ -46,9 +46,7 @@ class RandomElasticDeformation(RandomTransform):
             border of the coarse grid will also be set to ``0``.
             If ``2``, displacement of control points at the border of the image
             will also be set to ``0``.
-        image_interpolation: Value in
-            :py:class:`torchio.transforms.interpolation.Interpolation` (see
-            :ref:`Interpolation`).
+        image_interpolation: See :ref:`Interpolation`.
             Note that this is the interpolation used to compute voxel
             intensities when resampling using the dense displacement field.
             The value of the dense displacement at each voxel is always
@@ -114,7 +112,7 @@ class RandomElasticDeformation(RandomTransform):
             num_control_points: Union[int, Tuple[int, int, int]] = 7,
             max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
             locked_borders: int = 2,
-            image_interpolation: Interpolation = Interpolation.LINEAR,
+            image_interpolation: str = 'linear',
             p: float = 1,
             seed: Optional[int] = None,
             ):

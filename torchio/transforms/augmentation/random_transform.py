@@ -4,6 +4,7 @@ This is the docstring of random transform module
 
 import numbers
 from typing import Optional, Tuple, Union
+import warnings
 
 import torch
 import numpy as np
@@ -85,12 +86,19 @@ class RandomTransform(Transform):
         return self.parse_range(translation, 'translation')
 
     @staticmethod
-    def parse_interpolation(interpolation: Interpolation) -> Interpolation:
-        if not isinstance(interpolation, Interpolation):
-            message = (
-                'image_interpolation must be'
-                ' a member of torchio.Interpolation'
-            )
+    def parse_interpolation(interpolation: str) -> Interpolation:
+        if isinstance(interpolation, Interpolation):
+            message = 'Interpolation of type torchio.Interpolation is deprecated, please use a String instead.'
+            warnings.warn(message, FutureWarning)
+        elif isinstance(interpolation, str):
+            supported_values = [key.name.lower() for key in Interpolation]
+            if interpolation in supported_values:
+                interpolation = getattr(Interpolation, interpolation.upper())
+            else:
+                message = f'Interpolation {interpolation} is not among torchio supported values: {supported_values}'
+                raise AttributeError(message)
+        else:
+            message = 'image_interpolation must be a String'
             raise TypeError(message)
         return interpolation
 

@@ -1,6 +1,6 @@
-import warnings
 import numpy as np
 import torchio
+from torchio import Interpolation
 from torchio.transforms import RandomElasticDeformation
 from ...utils import TorchioTestCase
 
@@ -37,9 +37,9 @@ class TestRandomElasticDeformation(TorchioTestCase):
         with self.assertRaises(TypeError):
             RandomElasticDeformation(image_interpolation=1)
 
-    def test_inputs_interpolation_string(self):
-        with self.assertRaises(TypeError):
-            RandomElasticDeformation(image_interpolation='linear')
+    def test_inputs_interpolation(self):
+        with self.assertWarns(FutureWarning):
+            RandomElasticDeformation(image_interpolation=Interpolation.LINEAR)
 
     def test_num_control_points_noint(self):
         with self.assertRaises(ValueError):

@@ -1,6 +1,7 @@
 from numbers import Number
 from typing import Union, Tuple, Optional
 from pathlib import Path
+import warnings
 
 import torch
 import numpy as np
@@ -34,11 +35,10 @@ class Resample(Transform):
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
             transform. See usage in the example below.
-        image_interpolation: Member of :py:class:`torchio.Interpolation`.
-            Supported interpolation techniques for resampling are
-            :py:attr:`torchio.Interpolation.NEAREST`,
-            :py:attr:`torchio.Interpolation.LINEAR` and
-            :py:attr:`torchio.Interpolation.BSPLINE`.
+        image_interpolation: String that defines the interpolation technique.
+            Supported interpolation techniques for resampling are 'nearest', 'linear' and 'bspline'.
+            Member of :py:class:`torchio.Interpolation` is still supported for compatibility reasons
+            but will be removed in a future version.
         p: Probability that this transform will be applied.
 
 
@@ -72,14 +72,13 @@ class Resample(Transform):
     def __init__(
             self,
             target: Union[TypeSpacing, str, Path],
-            image_interpolation: Interpolation = Interpolation.LINEAR,
+            image_interpolation: str = 'linear',
             pre_affine_name: Optional[str] = None,
             p: float = 1,
             ):
         super().__init__(p=p)
         self.reference_image, self.target_spacing = self.parse_target(target)
-        self.interpolation_order = self.parse_interpolation(
-            image_interpolation)
+        self.interpolation_order = self.parse_interpolation(image_interpolation)
         self.affine_name = pre_affine_name
 
     def parse_target(
@@ -114,7 +113,21 @@ class Resample(Transform):
         return result
 
     @staticmethod
-    def parse_interpolation(interpolation: Interpolation) -> int:
+    def parse_interpolation(interpolation: str) -> int:
+        if isinstance(interpolation, Interpolation):
+            message = 'Interpolation of type torchio.Interpolation is deprecated, please use a String instead.'
+            warnings.warn(message, FutureWarning)
+        elif isinstance(interpolation, str):
+            supported_values = [key.name.lower() for key in Interpolation]
+            if interpolation in supported_values:
+                interpolation = getattr(Interpolation, interpolation.upper())
+            else:
+                message = f'Interpolation {interpolation} is not among torchio supported values: {supported_values}'
+                raise AttributeError(message)
+        else:
+            message = 'image_interpolation must be a String'
+            raise TypeError(message)
+
         if interpolation == Interpolation.NEAREST:
             order = 0
         elif interpolation == Interpolation.LINEAR:

@@ -48,7 +48,7 @@ class RandomAffine(RandomTransform):
         ...     degrees=(10),
         ...     isotropic=False,
         ...     default_pad_value='otsu',
-        ...     image_interpolation=Interpolation.BSPLINE,
+        ...     image_interpolation='bspline',
         ... )
         >>> transformed = transform(sample)
 
@@ -63,7 +63,7 @@ class RandomAffine(RandomTransform):
             degrees: TypeRangeFloat = 10,
             isotropic: bool = False,
             default_pad_value: Union[str, float] = 'otsu',
-            image_interpolation: Interpolation = Interpolation.LINEAR,
+            image_interpolation: str = 'linear',
             p: float = 1,
             seed: Optional[int] = None,
             ):

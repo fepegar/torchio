@@ -7,8 +7,8 @@ class Interpolation(enum.Enum):
     """Interpolation techniques available in ITK.
 
     Example:
-        >>> from torchio.transforms import RandomAffine, Interpolation
-        >>> transform = RandomAffine(image_interpolation=Interpolation.NEAREST)
+        >>> from torchio.transforms import RandomAffine
+        >>> transform = RandomAffine(image_interpolation='nearest')
     """
     #: Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.
     NEAREST: str = 'sitkNearestNeighbor'
