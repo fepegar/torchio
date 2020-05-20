@@ -42,16 +42,16 @@ Some transforms such as
 :py:class:`~torchio.transforms.RandomMotion`
 need to interpolate intensity values during resampling.
 
-The available interpolation strategies are enumerated in
+The available interpolation strategies can be inferred from the elements of
 :class:`torchio.transforms.interpolation.Interpolation`.
 
-``Interpolation.NEAREST`` can be used for quick experimentation as it is very
+``'nearest'`` can be used for quick experimentation as it is very
 fast, but produces relatively poor results.
 
-``Interpolation.LINEAR``, defaut in TorchIO, is usually a good compromise
+``'linear'``, default in TorchIO, is usually a good compromise
 between image quality and speed to be used for data augmentation during training.
 
-Methods such as ``Interpolation.BSPLINE`` or ``Interpolation.LANCZOS`` generate
+Methods such as ``'bspline'`` or ``'lanczos'`` generate
 high-quality results, but are generally slower. They can be used to obtain
 optimal resampling results during offline data preprocessing.
 

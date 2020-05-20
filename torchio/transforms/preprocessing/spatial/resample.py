@@ -112,27 +112,14 @@ class Resample(Transform):
             raise ValueError(f'Spacing must be positive, not "{spacing}"')
         return result
 
-    @staticmethod
-    def parse_interpolation(interpolation: str) -> int:
-        if isinstance(interpolation, Interpolation):
-            message = 'Interpolation of type torchio.Interpolation is deprecated, please use a String instead.'
-            warnings.warn(message, FutureWarning)
-        elif isinstance(interpolation, str):
-            supported_values = [key.name.lower() for key in Interpolation]
-            if interpolation in supported_values:
-                interpolation = getattr(Interpolation, interpolation.upper())
-            else:
-                message = f'Interpolation {interpolation} is not among torchio supported values: {supported_values}'
-                raise AttributeError(message)
-        else:
-            message = 'image_interpolation must be a String'
-            raise TypeError(message)
+    def parse_interpolation(self, interpolation: str) -> int:
+        interpolation = super().parse_interpolation(interpolation)
 
-        if interpolation == Interpolation.NEAREST:
+        if interpolation in (Interpolation.NEAREST, 'nearest'):
             order = 0
-        elif interpolation == Interpolation.LINEAR:
+        elif interpolation in (Interpolation.LINEAR, 'linear'):
             order = 1
-        elif interpolation == Interpolation.BSPLINE:
+        elif interpolation in (Interpolation.BSPLINE, 'bspline'):
             order = 3
         else:
             message = f'Interpolation not implemented yet: {interpolation}'
