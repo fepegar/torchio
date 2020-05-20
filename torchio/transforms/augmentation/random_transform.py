@@ -10,7 +10,7 @@ import numpy as np
 
 from ...data.subject import Subject
 from ... import TypeNumber, TypeRangeFloat
-from .. import Transform, Interpolation
+from .. import Transform
 
 
 class RandomTransform(Transform):
@@ -83,16 +83,6 @@ class RandomTransform(Transform):
             translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(translation, 'translation')
-
-    @staticmethod
-    def parse_interpolation(interpolation: Interpolation) -> Interpolation:
-        if not isinstance(interpolation, Interpolation):
-            message = (
-                'image_interpolation must be'
-                ' a member of torchio.Interpolation'
-            )
-            raise TypeError(message)
-        return interpolation
 
     def check_seed(self) -> None:
         if self._seed is not None:

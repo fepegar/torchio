@@ -1,6 +1,7 @@
 from numbers import Number
 from typing import Union, Tuple, Optional
 from pathlib import Path
+import warnings
 
 import torch
 import numpy as np
@@ -34,11 +35,12 @@ class Resample(Transform):
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
             transform. See usage in the example below.
-        image_interpolation: Member of :py:class:`torchio.Interpolation`.
-            Supported interpolation techniques for resampling are
-            :py:attr:`torchio.Interpolation.NEAREST`,
-            :py:attr:`torchio.Interpolation.LINEAR` and
-            :py:attr:`torchio.Interpolation.BSPLINE`.
+        image_interpolation: String that defines the interpolation technique.
+            Supported interpolation techniques for resampling
+            are 'nearest','linear' and 'bspline'.
+            Using a member of :py:class:`torchio.Interpolation` is still
+            supported for backward compatibility,
+            but will be removed in a future version.
         p: Probability that this transform will be applied.
 
 
@@ -72,14 +74,13 @@ class Resample(Transform):
     def __init__(
             self,
             target: Union[TypeSpacing, str, Path],
-            image_interpolation: Interpolation = Interpolation.LINEAR,
+            image_interpolation: str = 'linear',
             pre_affine_name: Optional[str] = None,
             p: float = 1,
             ):
         super().__init__(p=p)
         self.reference_image, self.target_spacing = self.parse_target(target)
-        self.interpolation_order = self.parse_interpolation(
-            image_interpolation)
+        self.interpolation_order = self.parse_interpolation(image_interpolation)
         self.affine_name = pre_affine_name
 
     def parse_target(
@@ -113,13 +114,14 @@ class Resample(Transform):
             raise ValueError(f'Spacing must be positive, not "{spacing}"')
         return result
 
-    @staticmethod
-    def parse_interpolation(interpolation: Interpolation) -> int:
-        if interpolation == Interpolation.NEAREST:
+    def parse_interpolation(self, interpolation: str) -> int:
+        interpolation = super().parse_interpolation(interpolation)
+
+        if interpolation in (Interpolation.NEAREST, 'nearest'):
             order = 0
-        elif interpolation == Interpolation.LINEAR:
+        elif interpolation in (Interpolation.LINEAR, 'linear'):
             order = 1
-        elif interpolation == Interpolation.BSPLINE:
+        elif interpolation in (Interpolation.BSPLINE, 'bspline'):
             order = 3
         else:
             message = f'Interpolation not implemented yet: {interpolation}'

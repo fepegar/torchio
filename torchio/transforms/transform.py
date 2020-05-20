@@ -1,4 +1,5 @@
 import numbers
+import warnings
 from typing import Union
 from copy import deepcopy
 from abc import ABC, abstractmethod
@@ -11,6 +12,7 @@ from ..data.image import Image
 from ..data.subject import Subject
 from ..data.dataset import ImagesDataset
 from ..utils import nib_to_sitk, sitk_to_nib
+from .interpolation import Interpolation
 
 
 class Transform(ABC):
@@ -91,6 +93,33 @@ class Transform(ABC):
             )
             raise RuntimeError(message)
         return self._get_subject_from_tensor(tensor)
+
+    @staticmethod
+    def parse_interpolation(interpolation: str) -> Interpolation:
+        if isinstance(interpolation, Interpolation):
+            message = (
+                'Interpolation of type torchio.Interpolation'
+                ' is deprecated, please use a string instead'
+            )
+            warnings.warn(message, FutureWarning)
+        elif isinstance(interpolation, str):
+            interpolation = interpolation.lower()
+            supported_values = [key.name.lower() for key in Interpolation]
+            if interpolation in supported_values:
+                interpolation = getattr(Interpolation, interpolation.upper())
+            else:
+                message = (
+                    f'Interpolation "{interpolation}" is not among'
+                    f' the supported values: {supported_values}'
+                )
+                raise AttributeError(message)
+        else:
+            message = (
+                'image_interpolation must be a string,'
+                f' not {type(interpolation)}'
+            )
+            raise TypeError(message)
+        return interpolation
 
     @staticmethod
     def _get_subject_from_tensor(tensor: torch.Tensor) -> Subject:

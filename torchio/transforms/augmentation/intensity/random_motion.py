@@ -53,7 +53,7 @@ class RandomMotion(RandomTransform):
             degrees: float = 10,
             translation: float = 10,  # in mm
             num_transforms: int = 2,
-            image_interpolation: Interpolation = Interpolation.LINEAR,
+            image_interpolation: str = 'linear',
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -61,7 +61,7 @@ class RandomMotion(RandomTransform):
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
-        self.image_interpolation = image_interpolation
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
