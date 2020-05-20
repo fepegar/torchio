@@ -36,8 +36,10 @@ class Resample(Transform):
             resampling. If ``None``, the image is resampled with an identity
             transform. See usage in the example below.
         image_interpolation: String that defines the interpolation technique.
-            Supported interpolation techniques for resampling are 'nearest', 'linear' and 'bspline'.
-            Member of :py:class:`torchio.Interpolation` is still supported for compatibility reasons
+            Supported interpolation techniques for resampling
+            are 'nearest','linear' and 'bspline'.
+            Using a member of :py:class:`torchio.Interpolation` is still
+            supported for backward compatibility,
             but will be removed in a future version.
         p: Probability that this transform will be applied.
 
