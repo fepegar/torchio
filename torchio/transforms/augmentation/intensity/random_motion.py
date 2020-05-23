@@ -43,10 +43,13 @@ class RandomMotion(RandomTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
+        is_2d: If ``True``, the parameters will be optimized for 2D inputs,
+            i.e. images with shape :math:`(1, 1, H, W)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
-    .. warning:: Large numbers of movements lead to longer execution times.
+    .. warning:: Large numbers of movements lead to longer execution times for
+        3D images.
     """
     def __init__(
             self,
@@ -54,6 +57,7 @@ class RandomMotion(RandomTransform):
             translation: float = 10,  # in mm
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
+            is_2d: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -62,6 +66,7 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.is_2d = is_2d
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -70,6 +75,7 @@ class RandomMotion(RandomTransform):
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
+                is_2d=self.is_2d,
             )
             times_params, degrees_params, translation_params = params
             random_parameters_dict = {
@@ -117,12 +123,16 @@ class RandomMotion(RandomTransform):
             translation_range: Tuple[float, float],
             num_transforms: int,
             perturbation: float = 0.3,
+            is_2d: bool = False,
             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
         # If perturbation is 0, time intervals between movements are constant
         degrees_params = get_params_array(
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
+        if is_2d:
+            degrees_params[:-1] = 0  # rotate around z axis only
+            translation_params[-1] = 0  # translate in xy plane only
         step = 1 / (num_transforms + 1)
         times = torch.arange(0, 1, step)[1:]
         noise = torch.FloatTensor(num_transforms)

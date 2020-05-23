@@ -18,6 +18,8 @@ class RandomGhosting(RandomTransform):
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
+        is_2d: If ``True``, the parameters will be optimized for 2D inputs,
+            i.e. images with shape :math:`(1, 1, H, W)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
@@ -28,6 +30,7 @@ class RandomGhosting(RandomTransform):
             self,
             num_ghosts: Union[int, Tuple[int, int]] = (4, 10),
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
+            is_2d: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -37,6 +40,8 @@ class RandomGhosting(RandomTransform):
         for axis in axes:
             if axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
+        if is_2d:
+            axes = [axis for axis in axes if axis != 0]  # 0 doesn't word for 2D
         self.axes = axes
         if isinstance(num_ghosts, int):
             self.num_ghosts_range = num_ghosts, num_ghosts
