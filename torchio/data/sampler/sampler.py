@@ -97,15 +97,16 @@ def get_random_indices_from_shape(
         shape: Tuple[int, int, int],
         patch_size: Tuple[int, int, int],
         ) -> Tuple[np.ndarray, np.ndarray]:
-    shape_array = np.array(shape, dtype=np.uint16)
-    patch_size_array = np.array(patch_size, dtype=np.uint16)
+    shape_array = np.array(shape)
+    patch_size_array = np.array(patch_size)
     max_index_ini = shape_array - patch_size_array
     if (max_index_ini < 0).any():
         message = (
-            f'Patch size {patch_size_array} must not be'
-            f' larger than image size {tuple(shape_array)}'
+            f'Patch size {patch_size} must not be'
+            f' larger than image size {shape}'
         )
         raise ValueError(message)
+    max_index_ini = max_index_ini.astype(np.uint16)
     coordinates = []
     for max_coordinate in max_index_ini.tolist():
         if max_coordinate == 0:
