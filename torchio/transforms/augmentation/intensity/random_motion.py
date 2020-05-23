@@ -44,7 +44,7 @@ class RandomMotion(RandomTransform):
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
         is_2d: If ``True``, the parameters will be optimized for 2D inputs,
-            i.e. images with shape :math:`(1, 1, height, width)`
+            i.e. images with shape :math:`(1, 1, H, W)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
