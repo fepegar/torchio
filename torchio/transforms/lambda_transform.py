@@ -36,7 +36,7 @@ class Lambda(Transform):
         self.types_to_apply = types_to_apply
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image in sample.get_images():
+        for image in sample.get_images(intensity_only=False):
 
             image_type = image[TYPE]
             if self.types_to_apply is not None:
