@@ -18,8 +18,6 @@ class RandomGhosting(RandomTransform):
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
-        is_2d: If ``True``, the parameters will be optimized for 2D inputs,
-            i.e. images with shape :math:`(1, 1, H, W)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
@@ -30,7 +28,6 @@ class RandomGhosting(RandomTransform):
             self,
             num_ghosts: Union[int, Tuple[int, int]] = (4, 10),
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
-            is_2d: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -40,8 +37,6 @@ class RandomGhosting(RandomTransform):
         for axis in axes:
             if axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
-        if is_2d:
-            axes = [axis for axis in axes if axis != 0]  # 0 doesn't word for 2D
         self.axes = axes
         if isinstance(num_ghosts, int):
             self.num_ghosts_range = num_ghosts, num_ghosts
@@ -51,9 +46,12 @@ class RandomGhosting(RandomTransform):
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
+            data = image_dict[DATA]
+            is_2d = data.shape[-3] == 1
+            axes = [a for a in self.axes if a != 0] if is_2d else self.axes
             params = self.get_params(
                 self.num_ghosts_range,
-                self.axes,
+                axes,
             )
             num_ghosts_param, axis_param = params
             random_parameters_dict = {
@@ -61,7 +59,7 @@ class RandomGhosting(RandomTransform):
                 'num_ghosts': num_ghosts_param,
             }
             random_parameters_images_dict[image_name] = random_parameters_dict
-            if (image_dict[DATA][0] < -0.1).any():
+            if (data[0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
                 # There must be a better way of solving this
@@ -74,17 +72,17 @@ class RandomGhosting(RandomTransform):
                 )
                 warnings.warn(message)
             image = self.nib_to_sitk(
-                image_dict[DATA][0],
+                data[0],
                 image_dict[AFFINE],
             )
-            image_dict[DATA] = self.add_artifact(
+            data = self.add_artifact(
                 image,
                 num_ghosts_param,
                 axis_param,
             )
             # Add channels dimension
-            image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
-            image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+            data = data[np.newaxis, ...]
+            image_dict[DATA] = torch.from_numpy(data)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 

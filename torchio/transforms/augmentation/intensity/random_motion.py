@@ -43,8 +43,6 @@ class RandomMotion(RandomTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
-        is_2d: If ``True``, the parameters will be optimized for 2D inputs,
-            i.e. images with shape :math:`(1, 1, H, W)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
@@ -57,7 +55,6 @@ class RandomMotion(RandomTransform):
             translation: float = 10,  # in mm
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
-            is_2d: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -66,16 +63,17 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         self.num_transforms = num_transforms
         self.image_interpolation = self.parse_interpolation(image_interpolation)
-        self.is_2d = is_2d
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
+            data = image_dict[DATA]
+            is_2d = data.shape[-3] == 1
             params = self.get_params(
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
-                is_2d=self.is_2d,
+                is_2d=is_2d,
             )
             times_params, degrees_params, translation_params = params
             random_parameters_dict = {
@@ -84,7 +82,7 @@ class RandomMotion(RandomTransform):
                 'translation': translation_params,
             }
             random_parameters_images_dict[image_name] = random_parameters_dict
-            if (image_dict[DATA][0] < -0.1).any():
+            if (data[0] < -0.1).any():
                 # I use -0.1 instead of 0 because Python was warning me when
                 # a value in a voxel was -7.191084e-35
                 # There must be a better way of solving this
@@ -97,7 +95,7 @@ class RandomMotion(RandomTransform):
                 )
                 warnings.warn(message)
             image = self.nib_to_sitk(
-                image_dict[DATA][0],
+                data[0],
                 image_dict[AFFINE],
             )
             transforms = self.get_rigid_transforms(
@@ -105,15 +103,15 @@ class RandomMotion(RandomTransform):
                 translation_params,
                 image,
             )
-            image_dict[DATA] = self.add_artifact(
+            data = self.add_artifact(
                 image,
                 transforms,
                 times_params,
                 self.image_interpolation,
             )
             # Add channels dimension
-            image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
-            image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+            data = data[np.newaxis, ...]
+            image_dict[DATA] = torch.from_numpy(data)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
