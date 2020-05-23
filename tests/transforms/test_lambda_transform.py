@@ -1,5 +1,5 @@
 import torch
-from torchio import DATA
+from torchio import DATA, LABEL
 from torchio.transforms import Lambda
 from ..utils import TorchioTestCase
 
@@ -22,12 +22,22 @@ class TestLambda(TorchioTestCase):
         with self.assertRaises(ValueError):
             transform(self.sample)
 
-    def test_image_types(self):
+    def test_lambda(self):
         transform = Lambda(lambda x: x + 1)
         transformed = transform(self.sample)
         assert torch.all(torch.eq(
             transformed['t1'][DATA], self.sample['t1'][DATA] + 1))
         assert torch.all(torch.eq(
             transformed['t2'][DATA], self.sample['t2'][DATA] + 1))
+        assert torch.all(torch.eq(
+            transformed['label'][DATA], self.sample['label'][DATA] + 1))
+
+    def test_image_types(self):
+        transform = Lambda(lambda x: x + 1, types_to_apply=[LABEL])
+        transformed = transform(self.sample)
+        assert torch.all(torch.eq(
+            transformed['t1'][DATA], self.sample['t1'][DATA]))
+        assert torch.all(torch.eq(
+            transformed['t2'][DATA], self.sample['t2'][DATA]))
         assert torch.all(torch.eq(
             transformed['label'][DATA], self.sample['label'][DATA] + 1))
