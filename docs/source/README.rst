@@ -20,16 +20,6 @@ or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
 
 
-----
-
-🎉 News: the paper is out! 🎉
-*****************************
-
-See the Credits section below for more information.
-
-----
-
-
 Credits
 *******
 

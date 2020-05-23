@@ -20,12 +20,6 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
-### 🎉 News: the paper is out! 🎉
-
-See the [Credits](#credits) section below for more information.
-
----
-
 <table align="center">
     <tr>
         <td align="center">Original</td>
