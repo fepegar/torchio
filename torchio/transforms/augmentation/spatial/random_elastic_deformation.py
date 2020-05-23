@@ -218,18 +218,21 @@ class RandomElasticDeformation(RandomTransform):
             self.max_displacement,
             self.num_locked_borders,
         )
-        random_parameters_dict = {'coarse_grid': bspline_params}
         for image_dict in sample.get_images(intensity_only=False):
             if image_dict[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation
+            is_2d = image_dict[DATA].shape[-3] == 1
+            if is_2d:
+                bspline_params[..., -3] = 0  # no displacement in LR axis
             image_dict[DATA] = self.apply_bspline_transform(
                 image_dict[DATA],
                 image_dict[AFFINE],
                 bspline_params,
                 interpolation,
             )
+        random_parameters_dict = {'coarse_grid': bspline_params}
         sample.add_transform(self, random_parameters_dict)
         return sample
 
