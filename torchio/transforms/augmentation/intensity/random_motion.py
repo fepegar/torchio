@@ -128,9 +128,9 @@ class RandomMotion(RandomTransform):
             degrees_range, num_transforms)
         translation_params = get_params_array(
             translation_range, num_transforms)
-        if is_2d:
-            degrees_params[:-1] = 0  # rotate around z axis only
-            translation_params[-1] = 0  # translate in xy plane only
+        if is_2d:  # imagine sagittal (1, A, S)
+            degrees_params[:, -2:] = 0  # rotate around R axis only
+            translation_params[:, 0] = 0  # translate in AS plane only
         step = 1 / (num_transforms + 1)
         times = torch.arange(0, 1, step)[1:]
         noise = torch.FloatTensor(num_transforms)

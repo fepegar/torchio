@@ -98,8 +98,8 @@ class Image(dict):
     def load(self, check_nans: bool = True) -> Tuple[torch.Tensor, np.ndarray]:
         r"""Load the image from disk.
 
-        The file is expected to be monomodal and 3D. A channels dimension is
-        added to the tensor.
+        The file is expected to be monomodal/grayscale and 2D or 3D.
+        A channels dimension is added to the tensor.
 
         Args:
             check_nans: If ``True``, issues a warning if NaNs are found
@@ -113,6 +113,8 @@ class Image(dict):
         if self.path is None:
             return self.tensor, self.affine
         tensor, affine = read_image(self.path)
+        # https://github.com/pytorch/pytorch/issues/9410#issuecomment-404968513
+        tensor = tensor[(None,) * (3 - tensor.ndim)]  # force to be 3D
         tensor = tensor.unsqueeze(0)  # add channels dimension
         if check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{self.path}"')

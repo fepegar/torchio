@@ -17,7 +17,7 @@ from .torchio import (
 )
 
 
-FLIP_XY = np.diag((-1, -1, 1))
+FLIP_XY = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
 
 
 def to_tuple(
@@ -124,10 +124,8 @@ def apply_transform_to_file(
 
 
 def guess_type(string: str) -> Any:
-    """
-    Adapted from
-    https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
-    """
+    # Adapted from
+    # https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
     string = string.replace(' ', '')
     try:
         value = ast.literal_eval(string)
@@ -151,6 +149,7 @@ def guess_type(string: str) -> Any:
 def get_rotation_and_spacing_from_affine(
         affine: np.ndarray,
         ) -> Tuple[np.ndarray, np.ndarray]:
+    # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
     rotation_zoom = affine[:3, :3]
     spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
     rotation = rotation_zoom / spacing
@@ -162,21 +161,32 @@ def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
     affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
     origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
-    direction = np.dot(FLIP_XY, rotation).flatten()
+    direction = np.dot(FLIP_XY, rotation)
     image = sitk.GetImageFromArray(array.transpose())
+    if array.ndim == 2:  # ignore first dimension if 2D (1, 1, H, W)
+        direction = direction[1:3, 1:3]
     image.SetOrigin(origin)
     image.SetSpacing(spacing)
-    image.SetDirection(direction)
+    image.SetDirection(direction.flatten())
     return image
 
 
 def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     spacing = np.array(image.GetSpacing())
-    rotation = np.array(image.GetDirection()).reshape(3, 3)
+    direction = np.array(image.GetDirection())
+    origin = image.GetOrigin()
+    if len(direction) == 9:
+        rotation = direction.reshape(3, 3)
+    elif len(direction) == 4:  # ignore first dimension if 2D (1, 1, H, W)
+        rotation_2d = direction.reshape(2, 2)
+        rotation = np.eye(3)
+        rotation[1:3, 1:3] = rotation_2d
+        spacing = 1, *spacing
+        origin = 0, *origin
     rotation = np.dot(FLIP_XY, rotation)
     rotation_zoom = rotation * spacing
-    translation = np.dot(FLIP_XY, image.GetOrigin())
+    translation = np.dot(FLIP_XY, origin)
     affine = np.eye(4)
     affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation

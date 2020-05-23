@@ -1,3 +1,4 @@
+import copy
 import shutil
 import random
 import tempfile
@@ -6,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import nibabel as nib
 from torchio.datasets import IXITiny
-from torchio import INTENSITY, LABEL, Image, ImagesDataset, Subject
+from torchio import INTENSITY, LABEL, DATA, Image, ImagesDataset, Subject
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -52,6 +53,12 @@ class TorchioTestCase(unittest.TestCase):
         ]
         self.dataset = ImagesDataset(self.subjects_list)
         self.sample = self.dataset[-1]
+
+    def make_2d(self, sample):
+        sample = copy.deepcopy(sample)
+        for image in sample.get_images(intensity_only=False):
+            image[DATA] = image[DATA][:, 0:1, ...]
+        return sample
 
     def get_inconsistent_sample(self):
         """Return a sample containing images of different shape."""
