@@ -3,6 +3,7 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
+import pickle
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
@@ -23,21 +24,32 @@ class HistogramStandardization(NormalizationTransform):
     See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
 
     Args:
-        landmarks_dict: Dictionary in which keys are image names in the sample
-            and values are NumPy arrays defining the landmarks after training
-            with :py:meth:`torchio.transforms.HistogramStandardization.train`.
+        landmarks_dict: Dictionary are path to a dictionary in which keys are
+            image names in the sample and values are NumPy arrays or paths to
+            NumPy arrays defining the landmarks after training with
+            :py:meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
         p: Probability that this transform will be applied.
     """
     def __init__(
             self,
-            landmarks_dict: Dict[str, np.ndarray],
+            landmarks_dict: Union[Dict[str, Union[np.ndarray, str]], str],
             masking_method: Union[str, TypeCallable, None] = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
-        self.landmarks_dict = landmarks_dict
+        self.landmarks_dict = self.parse_landmarks_dict(landmarks_dict)
+
+    @staticmethod
+    def parse_landmarks_dict(landmarks_dict):
+        if isinstance(landmarks_dict, str):
+            with open(landmarks_dict, 'rb') as file:
+                landmarks_dict = pickle.load(file)
+        for key, value in landmarks_dict.items():
+            if isinstance(value, str):
+                landmarks_dict[key] = np.load(value)
+        return landmarks_dict
 
     def apply_normalization(
             self,
