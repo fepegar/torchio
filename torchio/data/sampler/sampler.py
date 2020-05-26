@@ -70,7 +70,7 @@ class ImageSampler(IterableDataset):
             index_ini: np.ndarray,
             index_fin: np.ndarray,
             ) -> dict:
-        cropped_sample = {}
+        cropped_sample = copy.deepcopy(sample)
         iterable = sample.get_images_dict(intensity_only=False).items()
         for image_name, image in iterable:
             cropped_sample[image_name] = copy.deepcopy(image)
