@@ -2,7 +2,7 @@ from typing import Union
 import torch
 from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
-from . import NormalizationTransform
+from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 
 class ZNormalization(NormalizationTransform):
@@ -15,7 +15,7 @@ class ZNormalization(NormalizationTransform):
     """
     def __init__(
             self,
-            masking_method: Union[str, TypeCallable, None] = None,
+            masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)

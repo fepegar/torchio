@@ -1,20 +1,17 @@
-"""
-Adapted from NiftyNet
-"""
-
 from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
 import nibabel as nib
 from tqdm import tqdm
-from ....torchio import DATA, TypePath, TypeCallable
+from ....torchio import DATA, TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
-from . import NormalizationTransform
+from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
+TypeLandmarks = Union[TypePath, Dict[str, Union[TypePath, np.ndarray]]]
 
 
 class HistogramStandardization(NormalizationTransform):
@@ -23,21 +20,45 @@ class HistogramStandardization(NormalizationTransform):
     See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
 
     Args:
-        landmarks_dict: Dictionary in which keys are image names in the sample
-            and values are NumPy arrays defining the landmarks after training
-            with :py:meth:`torchio.transforms.HistogramStandardization.train`.
+        landmarks_dict: Dictionary or path to a dictionary in which keys are
+            image names in the sample and values are NumPy arrays or paths to
+            NumPy arrays defining the landmarks after training with
+            :py:meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
         p: Probability that this transform will be applied.
+
+    Example:
+        >>> from pathlib import Path
+        >>> from torchio.transforms import HistogramStandardization
+        >>>
+        >>> landmarks_dict = {
+        ...     't1': Path('t1_landmarks.npy'),
+        ...     't2': Path('t2_landmarks.npy'),
+        ... }
+        >>>
+        >>> transform = HistogramStandardization(landmarks_dict)
+        >>> transform = HistogramStandardization('path_to_landmarks_dict.pth')
     """
     def __init__(
             self,
-            landmarks_dict: Dict[str, np.ndarray],
-            masking_method: Union[str, TypeCallable, None] = None,
+            landmarks_dict: TypeLandmarks,
+            masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
-        self.landmarks_dict = landmarks_dict
+        self.landmarks_dict = self.parse_landmarks_dict(landmarks_dict)
+
+    @staticmethod
+    def parse_landmarks_dict(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
+        if isinstance(landmarks, (str, Path)):
+            landmarks_dict = torch.load(landmarks_dict)
+        else:
+            landmarks_dict = landmarks
+        for key, value in landmarks_dict.items():
+            if isinstance(value, (str, Path)):
+                landmarks_dict[key] = np.load(value)
+        return landmarks_dict
 
     def apply_normalization(
             self,
@@ -97,12 +118,12 @@ class HistogramStandardization(NormalizationTransform):
             >>> t2_landmarks_path = Path('t2_landmarks.npy')
             >>>
             >>> t1_landmarks = (
-            ...     np.load(t1_landmarks_path)
+            ...     t1_landmarks_path
             ...     if t1_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t1_paths)
             ... )
             >>> t2_landmarks = (
-            ...     np.load(t2_landmarks_path)
+            ...     t2_landmarks_path
             ...     if t2_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t2_paths)
             ... )
