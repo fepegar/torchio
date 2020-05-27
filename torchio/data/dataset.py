@@ -131,9 +131,10 @@ class ImagesDataset(Dataset):
         subject_sample = copy.deepcopy(subject)
         for (key, value) in subject.items():
             if isinstance(value, Image):
-                subject_sample[key] = self._get_image_dict_from_image(value)
-            else:
-                subject_sample[key] = value
+                value = self._get_image_dict_from_image(value)
+            subject_sample[key] = value
+        # This allows me to do e.g. subject.t1
+        subject_sample.__dict__.update(subject_sample)
         subject_sample.is_sample = True
         return subject_sample
 
@@ -166,6 +167,7 @@ class ImagesDataset(Dataset):
         }
         image = copy.deepcopy(image)
         image.update(image_dict)
+        image.__dict__.update(image_dict)  # this allows me to do image.data
         image.is_sample = True
         return image
 
