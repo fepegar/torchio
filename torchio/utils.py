@@ -3,11 +3,16 @@ import shutil
 import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List
+
 import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
+from torchvision.datasets.utils import (
+    download_url,
+    download_and_extract_archive,
+)
 from .torchio import (
     INTENSITY,
     LABEL,
@@ -191,6 +196,53 @@ def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation
     return data, affine
+
+
+def get_torchio_cache_dir():
+    return Path('~/.cache/torchio').expanduser()
+
+
+def get_colin_subject():
+    from .data import Image, Subject
+    url = 'http://packages.bic.mni.mcgill.ca/mni-models/colin27/mni_colin27_1998_nifti.zip'
+    download_root = get_torchio_cache_dir() / 'colin27'
+    if download_root.is_dir():
+        print(f'Using cache found in {download_root}')
+    else:
+        filename = 'mni_colin27_1998_nifti.zip'
+        download_and_extract_archive(
+            url,
+            download_root=download_root,
+            filename=filename,
+        )
+    t1, head, mask = [
+        download_root / f'colin27_t1_tal_lin{suffix}.nii'
+        for suffix in ('', '_headmask', '_mask')
+    ]
+    subject = Subject(
+        t1=Image(t1),
+        head=Image(head, type=LABEL),
+        brain=Image(mask, type=LABEL),
+    )
+    return subject
+
+
+def get_slicer_mrhead_subject():
+    from .data import Image, Subject
+    slicer_data_url = 'https://github.com/Slicer/SlicerTestingData/releases/download/'
+    name = 'SHA256/cc211f0dfd9a05ca3841ce1141b292898b2dd2d3f08286affadf823a7e58df93'
+    url = slicer_data_url + name
+    download_root = get_torchio_cache_dir() / 'slicer'
+    filename = 'MRHead.nrrd'
+    download_url(
+        url,
+        download_root,
+        filename=filename,
+    )
+    subject = Subject(
+        t1=Image(download_root / filename),
+    )
+    return subject
 
 
 def round_up(value: float) -> float:
