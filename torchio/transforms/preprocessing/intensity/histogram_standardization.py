@@ -1,20 +1,17 @@
-"""
-Adapted from NiftyNet
-"""
-
 from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
 import nibabel as nib
 from tqdm import tqdm
-from ....torchio import DATA, TypePath, TypeCallable
+from ....torchio import DATA, TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
-from . import NormalizationTransform
+from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
+TypeLandmarks = Union[TypePath, Dict[str, Union[TypePath, np.ndarray]]]
 
 
 class HistogramStandardization(NormalizationTransform):
@@ -45,17 +42,19 @@ class HistogramStandardization(NormalizationTransform):
     """
     def __init__(
             self,
-            landmarks_dict: Union[Dict[str, Union[np.ndarray, str, Path]], str, Path],
-            masking_method: Union[str, TypeCallable, None] = None,
+            landmarks_dict: TypeLandmarks,
+            masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
         self.landmarks_dict = self.parse_landmarks_dict(landmarks_dict)
 
     @staticmethod
-    def parse_landmarks_dict(landmarks_dict):
-        if isinstance(landmarks_dict, (str, Path)):
+    def parse_landmarks_dict(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
+        if isinstance(landmarks, (str, Path)):
             landmarks_dict = torch.load(landmarks_dict)
+        else:
+            landmarks_dict = landmarks
         for key, value in landmarks_dict.items():
             if isinstance(value, (str, Path)):
                 landmarks_dict[key] = np.load(value)

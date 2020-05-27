@@ -5,6 +5,9 @@ from ....torchio import DATA, TypeCallable
 from ... import Transform
 
 
+TypeMaskingMethod = Union[str, TypeCallable, None]
+
+
 class NormalizationTransform(Transform):
     """Base class for intensity preprocessing transforms.
 
@@ -34,7 +37,7 @@ class NormalizationTransform(Transform):
     """
     def __init__(
             self,
-            masking_method: Union[str, TypeCallable, None] = None,
+            masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         """

@@ -7,7 +7,7 @@ from deprecated import deprecated
 
 from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
-from . import NormalizationTransform
+from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 
 class RescaleIntensity(NormalizationTransform):
@@ -30,7 +30,7 @@ class RescaleIntensity(NormalizationTransform):
             self,
             out_min_max: Tuple[float, float],
             percentiles: Tuple[int, int] = (0, 100),
-            masking_method: Union[str, TypeCallable, None] = None,
+            masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
