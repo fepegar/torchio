@@ -18,8 +18,8 @@ class TestRandomElasticDeformation(TorchioTestCase):
         fixtures = 2916.7192, 2955.1265, 2950
         transformed = transform(self.sample)
         for key, fixture in zip(keys, fixtures):
-            sample_data = self.sample[key][torchio.DATA].numpy()
-            transformed_data = transformed[key][torchio.DATA].numpy()
+            sample_data = self.sample[key].numpy()
+            transformed_data = transformed[key].numpy()
             transformed_total = transformed_data.sum()
             # Make sure that intensities have changed
             assert not np.array_equal(sample_data, transformed_data)

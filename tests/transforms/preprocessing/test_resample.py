@@ -25,7 +25,7 @@ class TestResample(TorchioTestCase):
         ref_image_dict = sample[reference_name]
         for image_dict in transformed.values():
             self.assertEqual(
-                ref_image_dict[DATA].shape, image_dict[DATA].shape)
+                ref_image_dict.shape, image_dict.shape)
             assert_array_equal(ref_image_dict[AFFINE], image_dict[AFFINE])
 
     def test_affine(self):
@@ -53,7 +53,7 @@ class TestResample(TorchioTestCase):
         ref_data, ref_affine = reference_image.load()
         for image_dict in transformed.values():
             self.assertEqual(
-                ref_data.shape, image_dict[DATA].shape)
+                ref_data.shape, image_dict.shape)
             assert_array_equal(ref_affine, image_dict[AFFINE])
 
     def test_wrong_spacing_length(self):

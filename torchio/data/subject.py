@@ -5,7 +5,7 @@ from typing import (
     List,
     Tuple,
 )
-from ..torchio import DATA, TYPE, INTENSITY
+from ..torchio import TYPE, INTENSITY
 from .image import Image
 
 
@@ -78,7 +78,7 @@ class Subject(dict):
         """
         self.check_consistent_shape()
         image = self.get_images(intensity_only=False)[0]
-        return image[DATA].shape[1:]
+        return image.spatial_shape
 
     def get_images_dict(self, intensity_only=True):
         images = {}
@@ -98,7 +98,7 @@ class Subject(dict):
         shapes_dict = {}
         iterable = self.get_images_dict(intensity_only=False).items()
         for image_name, image in iterable:
-            shapes_dict[image_name] = image[DATA].shape
+            shapes_dict[image_name] = image.shape
         num_unique_shapes = len(set(shapes_dict.values()))
         if num_unique_shapes > 1:
             message = (

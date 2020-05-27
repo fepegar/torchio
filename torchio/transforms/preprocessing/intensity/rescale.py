@@ -1,12 +1,12 @@
 import warnings
-from typing import Tuple, Union
+from typing import Tuple
 
 import torch
 import numpy as np
 from deprecated import deprecated
 
 from ....data.subject import Subject
-from ....torchio import DATA, TypeCallable
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 

@@ -47,7 +47,7 @@ class TestImagesDataset(TorchioTestCase):
         dataset.save_sample(sample, paths_dict)
         nii = nib.load(str(output_path))
         ndims_output = len(nii.shape)
-        ndims_sample = len(sample['t1'][DATA].shape)
+        ndims_sample = len(sample['t1'].shape)
         assert ndims_sample == ndims_output + 1
 
     def test_no_load(self):

@@ -59,8 +59,8 @@ class IXI(ImagesDataset):
         >>> print('Number of subjects in dataset:', len(ixi_dataset))  # 577
         >>> sample_subject = ixi_dataset[0]
         >>> print('Keys in subject sample:', tuple(sample_subject.keys()))  # ('T1', 'T2')
-        >>> print('Shape of T1 data:', sample_subject['T1'][torchio.DATA].shape)  # [1, 180, 268, 268]
-        >>> print('Shape of T2 data:', sample_subject['T2'][torchio.DATA].shape)  # [1, 241, 257, 188]
+        >>> print('Shape of T1 data:', sample_subject['T1']shape)  # [1, 180, 268, 268]
+        >>> print('Shape of T2 data:', sample_subject['T2']shape)  # [1, 241, 257, 188]
     """
 
     base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'

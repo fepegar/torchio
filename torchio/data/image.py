@@ -30,7 +30,6 @@ class Image(dict):
         **kwargs: Items that will be added to image dictionary within the
             subject sample.
     """
-
     def __init__(
             self,
             path: Optional[TypePath] = None,
@@ -58,10 +57,24 @@ class Image(dict):
         self.type = type
         self.is_sample = False  # set to True by ImagesDataset
 
+    @property
+    def shape(self):
+        return self[DATA].shape
+
+    @property
+    def spatial_shape(self):
+        return self.shape[1:]
+
+    def is_2d(self):
+        return self.shape[-3] == 1
+
+    def numpy(self):
+        return self[DATA].numpy()
+
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
         if path is None:
-            return
+            return None
         try:
             path = Path(path).expanduser()
         except TypeError:

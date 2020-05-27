@@ -1,7 +1,6 @@
 from numbers import Number
 from typing import Union, Tuple, Optional
 from pathlib import Path
-import warnings
 
 import torch
 import numpy as np

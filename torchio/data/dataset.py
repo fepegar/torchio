@@ -44,7 +44,7 @@ class ImagesDataset(Dataset):
         >>> sample.keys()
         dict_keys(['image', 'label'])
         >>> image_dict = sample['image']
-        >>> image_dict[torchio.DATA].shape
+        >>> image_dictshape
         torch.Size([1, 176, 256, 256])
         >>> image_dict[torchio.AFFINE]
         array([[   0.03,    1.13,   -0.08,  -88.54],

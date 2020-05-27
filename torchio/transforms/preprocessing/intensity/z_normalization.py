@@ -1,7 +1,6 @@
-from typing import Union
 import torch
 from ....data.subject import Subject
-from ....torchio import DATA, TypeCallable
+from ....torchio import DATA
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 

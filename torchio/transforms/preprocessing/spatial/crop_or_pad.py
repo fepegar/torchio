@@ -5,7 +5,6 @@ from deprecated import deprecated
 from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
-from ....torchio import DATA
 from ....data.subject import Subject
 from ....utils import round_up
 
@@ -37,14 +36,14 @@ class CropOrPad(BoundsTransform):
         ...     torchio.Image('heart_mask', 'subject_a_heart_seg.nii.gz', torchio.LABEL),
         ... )
         >>> sample = torchio.ImagesDataset([subject])[0]
-        >>> sample['chest_ct'][torchio.DATA].shape
+        >>> sample['chest_ct']shape
         torch.Size([1, 512, 512, 289])
         >>> transform = CropOrPad(
         ...     (120, 80, 180),
         ...     mask_name='heart_mask',
         ... )
         >>> transformed = transform(sample)
-        >>> transformed['chest_ct'][torchio.DATA].shape
+        >>> transformed['chest_ct']shape
         torch.Size([1, 120, 80, 180])
     """
     def __init__(
@@ -102,7 +101,7 @@ class CropOrPad(BoundsTransform):
         """Return the shape of the first image in the sample."""
         sample.check_consistent_shape()
         for image_dict in sample.get_images(intensity_only=False):
-            data = image_dict[DATA].shape[1:]  # remove channels dimension
+            data = image_dict.spatial_shape  # remove channels dimension
             break
         return data
 
@@ -181,7 +180,7 @@ class CropOrPad(BoundsTransform):
             warnings.warn(message)
             return self._compute_center_crop_or_pad(sample=sample)
 
-        mask = sample[self.mask_name][DATA].numpy()
+        mask = sample[self.mask_name].numpy()
 
         if not np.any(mask):
             message = (

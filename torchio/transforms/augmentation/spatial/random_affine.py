@@ -88,18 +88,17 @@ class RandomAffine(RandomTransform):
         sample.check_consistent_shape()
         scaling_params, rotation_params = self.get_params(
             self.scales, self.degrees, self.isotropic)
-        for image_dict in sample.get_images(intensity_only=False):
-            if image_dict[TYPE] == LABEL:
+        for image in sample.get_images(intensity_only=False):
+            if image[TYPE] == LABEL:
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation
-            is_2d = image_dict[DATA].shape[-3] == 1
-            if is_2d:
+            if image.is_2d():
                 scaling_params[0] = 1
                 rotation_params[-2:] = 0
-            image_dict[DATA] = self.apply_affine_transform(
-                image_dict[DATA],
-                image_dict[AFFINE],
+            image[DATA] = self.apply_affine_transform(
+                image[DATA],
+                image[AFFINE],
                 scaling_params.tolist(),
                 rotation_params.tolist(),
                 interpolation,

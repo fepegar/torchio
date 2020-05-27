@@ -10,7 +10,7 @@ class TestCropOrPad(TorchioTestCase):
     """Tests for `CropOrPad`."""
     def test_no_changes(self):
         sample_t1 = self.sample['t1']
-        shape = sample_t1[DATA].shape[1:]
+        shape = sample_t1.spatial_shape
         transform = CropOrPad(shape)
         transformed = transform(self.sample)
         assert_array_equal(sample_t1[DATA], transformed['t1'][DATA])
@@ -20,7 +20,7 @@ class TestCropOrPad(TorchioTestCase):
         sample_t1 = self.sample['t1']
         sample_mask = self.sample['label'][DATA]
         sample_mask *= 0
-        shape = sample_t1[DATA].shape[1:]
+        shape = sample_t1.spatial_shape
         transform = CropOrPad(shape, mask_name='label')
         with self.assertWarns(UserWarning):
             transformed = transform(self.sample)
@@ -30,12 +30,12 @@ class TestCropOrPad(TorchioTestCase):
             assert_array_equal(image_dict[AFFINE], transformed[key][AFFINE])
 
     def test_different_shape(self):
-        shape = self.sample['t1'][DATA].shape[1:]
+        shape = self.sample['t1'].spatial_shape
         target_shape = 9, 21, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertNotEqual(shape, result_shape)
 
     def test_shape_right(self):
@@ -43,7 +43,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_only_pad(self):
@@ -51,7 +51,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_only_crop(self):
@@ -59,7 +59,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_shape_negative(self):
@@ -78,7 +78,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(1)
         transformed = transform(self.sample)
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual((1, 1, 1), result_shape)
 
     def test_wrong_mask_name(self):
@@ -107,13 +107,13 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample)
         shapes = []
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             shapes.append(result_shape)
         set_shapes = set(shapes)
         message = f'Images have different shapes: {set_shapes}'
         assert len(set_shapes) == 1, message
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual(target_shape, result_shape,
                 f'Wrong shape for image: {key}',
             )
@@ -127,13 +127,13 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample)
         shapes = []
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             shapes.append(result_shape)
         set_shapes = set(shapes)
         message = f'Images have different shapes: {set_shapes}'
         assert len(set_shapes) == 1, message
         for key in transformed:
-            result_shape = transformed[key][DATA].shape[1:]
+            result_shape = transformed[key].spatial_shape
             self.assertEqual(target_shape, result_shape,
                 f'Wrong shape for image: {key}',
             )
