@@ -3,7 +3,6 @@ Adapted from NiftyNet
 """
 
 from pathlib import Path
-import pickle
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 import torch
 import numpy as np
@@ -24,17 +23,29 @@ class HistogramStandardization(NormalizationTransform):
     See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
 
     Args:
-        landmarks_dict: Dictionary are path to a dictionary in which keys are
+        landmarks_dict: Dictionary or path to a dictionary in which keys are
             image names in the sample and values are NumPy arrays or paths to
             NumPy arrays defining the landmarks after training with
             :py:meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
         p: Probability that this transform will be applied.
+
+    Example:
+        >>> from pathlib import Path
+        >>> from torchio.transforms import HistogramStandardization
+        >>>
+        >>> landmarks_dict = {
+        ...     't1': Path('t1_landmarks.npy'),
+        ...     't2': Path('t2_landmarks.npy'),
+        ... }
+        >>>
+        >>> transform = HistogramStandardization(landmarks_dict)
+        >>> transform = HistogramStandardization('path_to_landmarks_dict.pth')
     """
     def __init__(
             self,
-            landmarks_dict: Union[Dict[str, Union[np.ndarray, str]], str],
+            landmarks_dict: Union[Dict[str, Union[np.ndarray, str, Path]], str, Path],
             masking_method: Union[str, TypeCallable, None] = None,
             p: float = 1,
             ):
@@ -43,11 +54,10 @@ class HistogramStandardization(NormalizationTransform):
 
     @staticmethod
     def parse_landmarks_dict(landmarks_dict):
-        if isinstance(landmarks_dict, str):
-            with open(landmarks_dict, 'rb') as file:
-                landmarks_dict = pickle.load(file)
+        if isinstance(landmarks_dict, (str, Path)):
+            landmarks_dict = torch.load(landmarks_dict)
         for key, value in landmarks_dict.items():
-            if isinstance(value, str):
+            if isinstance(value, (str, Path)):
                 landmarks_dict[key] = np.load(value)
         return landmarks_dict
 
@@ -109,12 +119,12 @@ class HistogramStandardization(NormalizationTransform):
             >>> t2_landmarks_path = Path('t2_landmarks.npy')
             >>>
             >>> t1_landmarks = (
-            ...     np.load(t1_landmarks_path)
+            ...     t1_landmarks_path
             ...     if t1_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t1_paths)
             ... )
             >>> t2_landmarks = (
-            ...     np.load(t2_landmarks_path)
+            ...     t2_landmarks_path
             ...     if t2_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t2_paths)
             ... )
