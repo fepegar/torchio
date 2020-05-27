@@ -21,7 +21,9 @@ def format_age(n):
 
 
 class Pediatric(SubjectMNI):
-    """MNI pediatric atlases
+    """MNI pediatric atlases.
+
+    See `the website <http://nist.mni.mcgill.ca/?p=974>`_ for more information.
 
     Arguments:
         years: Tuple of 2 years. Possible values are: ``[(4.5, 18.5),
