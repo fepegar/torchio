@@ -20,7 +20,8 @@ class HistogramStandardization(NormalizationTransform):
     See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
 
     Args:
-        landmarks_dict: Dictionary or path to a dictionary in which keys are
+        landmarks: Dictionary (or path to a PyTorch file with ``.pt`` or ``.pth``
+            extension in which a dictionary has been saved) whose keys are
             image names in the sample and values are NumPy arrays or paths to
             NumPy arrays defining the landmarks after training with
             :py:meth:`torchio.transforms.HistogramStandardization.train`.
@@ -29,30 +30,39 @@ class HistogramStandardization(NormalizationTransform):
         p: Probability that this transform will be applied.
 
     Example:
+        >>> import torch
         >>> from pathlib import Path
         >>> from torchio.transforms import HistogramStandardization
         >>>
-        >>> landmarks_dict = {
-        ...     't1': Path('t1_landmarks.npy'),
-        ...     't2': Path('t2_landmarks.npy'),
+        >>> landmarks = {
+        ...     't1': 't1_landmarks.npy',
+        ...     't2': 't2_landmarks.npy',
         ... }
+        >>> transform = HistogramStandardization(landmarks)
         >>>
-        >>> transform = HistogramStandardization(landmarks_dict)
-        >>> transform = HistogramStandardization('path_to_landmarks_dict.pth')
+        >>> torch.save(landmarks, 'path_to_landmarks.pth')
+        >>> transform = HistogramStandardization('path_to_landmarks.pth')
     """
     def __init__(
             self,
-            landmarks_dict: TypeLandmarks,
+            landmarks: TypeLandmarks,
             masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
-        self.landmarks_dict = self.parse_landmarks_dict(landmarks_dict)
+        self.landmarks_dict = self.parse_landmarks(landmarks)
 
     @staticmethod
-    def parse_landmarks_dict(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
+    def parse_landmarks(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
         if isinstance(landmarks, (str, Path)):
-            landmarks_dict = torch.load(landmarks_dict)
+            path = Path(landmarks)
+            if not path.suffix in ('.pt', '.pth'):
+                message = (
+                    'The landmarks file must have extension .pt or .pth,'
+                    f' not "{path.suffix}"'
+                )
+                raise ValueError(message)
+            landmarks_dict = torch.load(path)
         else:
             landmarks_dict = landmarks
         for key, value in landmarks_dict.items():
@@ -107,8 +117,9 @@ class HistogramStandardization(NormalizationTransform):
 
         Example:
 
-            >>> from pathlib import Path
+            >>> import torch
             >>> import numpy as np
+            >>> from pathlib import Path
             >>> from torchio.transforms import HistogramStandardization
             >>>
             >>> t1_paths = ['subject_a_t1.nii', 'subject_b_t1.nii.gz']
@@ -122,11 +133,14 @@ class HistogramStandardization(NormalizationTransform):
             ...     if t1_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t1_paths)
             ... )
+            >>> torch.save(t1_landmarks, t1_landmarks_path)
+            >>>
             >>> t2_landmarks = (
             ...     t2_landmarks_path
             ...     if t2_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t2_paths)
             ... )
+            >>> torch.save(t2_landmarks, t2_landmarks_path)
             >>>
             >>> landmarks_dict = {
             ...     't1': t1_landmarks,
