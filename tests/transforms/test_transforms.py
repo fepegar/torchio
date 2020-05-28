@@ -35,7 +35,7 @@ class TestTransforms(TorchioTestCase):
             torchio.RandomBiasField(),
             torchio.RescaleIntensity((0, 1)),
             torchio.ZNormalization(),
-            torchio.HistogramStandardization(landmarks_dict=landmarks_dict),
+            torchio.HistogramStandardization(landmarks_dict),
             elastic,
             torchio.RandomAffine(),
             torchio.OneOf({
