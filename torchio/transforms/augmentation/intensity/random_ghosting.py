@@ -18,6 +18,10 @@ class RandomGhosting(RandomTransform):
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
+        intensity: Number between 0 and 1 representing the artifact strength
+            :math:`s`. If ``0``, the ghosts will not be visible. If a tuple
+            :math:`(a, b)`, is provided then
+            :math:`s \sim \mathcal{U}(a, b)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
@@ -28,6 +32,7 @@ class RandomGhosting(RandomTransform):
             self,
             num_ghosts: Union[int, Tuple[int, int]] = (4, 10),
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
+            intensity: Union[float, Tuple[float, float]] = (0.5, 1),
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -45,6 +50,12 @@ class RandomGhosting(RandomTransform):
             self.num_ghosts_range = num_ghosts, num_ghosts
         elif isinstance(num_ghosts, tuple) and len(num_ghosts) == 2:
             self.num_ghosts_range = num_ghosts
+        self.intensity_range = self.parse_range(intensity, 'intensity')
+        for n in self.intensity_range:
+            if not 0 <= n <= 1:
+                message = (
+                    'Intensity must be a number between 0 and 1, not {n}')
+                raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -55,11 +66,13 @@ class RandomGhosting(RandomTransform):
             params = self.get_params(
                 self.num_ghosts_range,
                 axes,
+                self.intensity_range,
             )
-            num_ghosts_param, axis_param = params
+            num_ghosts_param, axis_param, intensity_param = params
             random_parameters_dict = {
                 'axis': axis_param,
                 'num_ghosts': num_ghosts_param,
+                'intensity': intensity_param,
             }
             random_parameters_images_dict[image_name] = random_parameters_dict
             if (data[0] < -0.1).any():
@@ -82,6 +95,7 @@ class RandomGhosting(RandomTransform):
                 image,
                 num_ghosts_param,
                 axis_param,
+                intensity_param,
             )
             # Add channels dimension
             data = data[np.newaxis, ...]
@@ -93,11 +107,13 @@ class RandomGhosting(RandomTransform):
     def get_params(
             num_ghosts_range: Tuple[int, int],
             axes: Tuple[int, ...],
+            intensity_range: Tuple[float, float],
             ) -> Tuple:
         ng_min, ng_max = num_ghosts_range
-        num_ghosts_param = torch.randint(ng_min, ng_max + 1, (1,)).item()
-        axis_param = axes[torch.randint(0, len(axes), (1,))]
-        return num_ghosts_param, axis_param
+        num_ghosts = torch.randint(ng_min, ng_max + 1, (1,)).item()
+        axis = axes[torch.randint(0, len(axes), (1,))]
+        intensity = torch.FloatTensor(1).uniform_(*intensity_range).item()
+        return num_ghosts, axis, intensity
 
     @staticmethod
     def get_axis_and_size(axis, array):
@@ -131,6 +147,7 @@ class RandomGhosting(RandomTransform):
             image: sitk.Image,
             num_ghosts: int,
             axis: int,
+            intensity: float,
             ):
         array = sitk.GetArrayFromImage(image).transpose()
         # Leave first 5% of frequencies untouched. If the image is in RAS
@@ -148,7 +165,7 @@ class RandomGhosting(RandomTransform):
                 progress = row_idx / array.shape[0]
                 if np.abs(progress - 0.5) < percentage_to_avoid / 2:
                     continue
-                row *= 0
+                row *= 1 - intensity
             image_slice *= 0
             image_slice += self.inv_fourier_transform(spectrum)
         return array
