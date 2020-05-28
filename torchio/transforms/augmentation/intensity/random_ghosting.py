@@ -33,7 +33,10 @@ class RandomGhosting(RandomTransform):
             ):
         super().__init__(p=p, seed=seed)
         if not isinstance(axes, tuple):
-            axes = (axes,)
+            try:
+                axes = tuple(axes)
+            except TypeError:
+                axes = (axes,)
         for axis in axes:
             if axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
