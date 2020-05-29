@@ -72,13 +72,21 @@ class Subject(dict):
 
     @property
     def shape(self):
-        """Return spatial shape of first image in sample.
+        """Return shape of first image in sample.
 
         Consistency of shapes across images in the sample is checked first.
         """
         self.check_consistent_shape()
         image = self.get_images(intensity_only=False)[0]
-        return image.spatial_shape
+        return image.shape
+
+    @property
+    def spatial_shape(self):
+        """Return spatial shape of first image in sample.
+
+        Consistency of shapes across images in the sample is checked first.
+        """
+        return self.shape[1:]
 
     def get_images_dict(self, intensity_only=True):
         images = {}

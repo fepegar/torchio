@@ -31,7 +31,7 @@ class GridAggregator:
             patch_overlap: TypeTuple,
             out_channels: int = 1,
             ):
-        self._output_tensor = torch.zeros(out_channels, *sample.shape)
+        self._output_tensor = torch.zeros(out_channels, *sample.spatial_shape)
         self.patch_overlap = to_tuple(patch_overlap, length=3)
 
     @staticmethod

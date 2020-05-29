@@ -42,7 +42,7 @@ class GridSampler(Dataset):
         patch_size = to_tuple(patch_size, length=3)
         patch_overlap = to_tuple(patch_overlap, length=3)
         self.locations = self._grid_spatial_coordinates(
-            self.sample.shape,
+            self.sample.spatial_shape,
             patch_size,
             patch_overlap,
         )
