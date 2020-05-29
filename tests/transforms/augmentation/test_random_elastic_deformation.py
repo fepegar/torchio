@@ -1,5 +1,4 @@
 import numpy as np
-import torchio
 from torchio import Interpolation
 from torchio.transforms import RandomElasticDeformation
 from ...utils import TorchioTestCase
