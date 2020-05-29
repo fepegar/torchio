@@ -4,7 +4,14 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....torchio import LABEL, DATA, AFFINE, TYPE, TypeRangeFloat
+from ....torchio import (
+    LABEL,
+    DATA,
+    AFFINE,
+    TYPE,
+    TypeRangeFloat,
+    TypeTripletFloat,
+)
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
@@ -27,6 +34,9 @@ class RandomAffine(RandomTransform):
             :math:`\theta_i \sim \mathcal{U}(-d, d)`.
         isotropic: If ``True``, the scaling factor along all dimensions is the
             same, i.e. :math:`s_1 = s_2 = s_3`.
+        center: If ``'image'``, rotations and scaling will be performed around
+            the image center. If ``'origin'``, rotations and scaling will be
+            performed around the origin in world coordinates.
         default_pad_value: As the image is rotated, some values near the
             borders will be undefined.
             If ``'minimum'``, the fill value will be the image minimum.
@@ -37,8 +47,6 @@ class RandomAffine(RandomTransform):
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-
-    .. note:: Rotations are performed around the center of the image.
 
     Example:
         >>> from torchio.transforms import RandomAffine, Interpolation
@@ -62,6 +70,7 @@ class RandomAffine(RandomTransform):
             scales: Tuple[float, float] = (0.9, 1.1),
             degrees: TypeRangeFloat = 10,
             isotropic: bool = False,
+            center: str = 'image',
             default_pad_value: Union[str, float] = 'otsu',
             image_interpolation: str = 'linear',
             p: float = 1,
@@ -71,6 +80,13 @@ class RandomAffine(RandomTransform):
         self.scales = scales
         self.degrees = self.parse_degrees(degrees)
         self.isotropic = isotropic
+        if center not in ('image', 'origin'):
+            message = (
+                'Center argument must be "image" or "origin",'
+                f' not "{center}"'
+            )
+            raise ValueError(message)
+        self.use_image_center = center == 'image'
         self.default_pad_value = self.parse_default_value(default_pad_value)
         self.interpolation = self.parse_interpolation(image_interpolation)
 
@@ -83,32 +99,6 @@ class RandomAffine(RandomTransform):
             ' or a number'
         )
         raise ValueError(message)
-
-    def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_shape()
-        scaling_params, rotation_params = self.get_params(
-            self.scales, self.degrees, self.isotropic)
-        for image in sample.get_images(intensity_only=False):
-            if image[TYPE] == LABEL:
-                interpolation = Interpolation.NEAREST
-            else:
-                interpolation = self.interpolation
-            if image.is_2d():
-                scaling_params[0] = 1
-                rotation_params[-2:] = 0
-            image[DATA] = self.apply_affine_transform(
-                image[DATA],
-                image[AFFINE],
-                scaling_params.tolist(),
-                rotation_params.tolist(),
-                interpolation,
-            )
-        random_parameters_dict = {
-            'scaling': scaling_params,
-            'rotation': rotation_params,
-        }
-        sample.add_transform(self, random_parameters_dict)
-        return sample
 
     @staticmethod
     def get_params(
@@ -125,22 +115,62 @@ class RandomAffine(RandomTransform):
     @staticmethod
     def get_scaling_transform(
             scaling_params: List[float],
+            center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.ScaleTransform:
         # scaling_params are inverted so that they are more intuitive
         # For example, 1.5 means the objects look 1.5 times larger
         transform = sitk.ScaleTransform(3)
         scaling_params = 1 / np.array(scaling_params)
         transform.SetScale(scaling_params)
+        if center_lps is not None:
+            transform.SetCenter(center_lps)
         return transform
 
     @staticmethod
     def get_rotation_transform(
             degrees: List[float],
+            center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.Euler3DTransform:
         transform = sitk.Euler3DTransform()
         radians = np.radians(degrees)
         transform.SetRotation(*radians)
+        if center_lps is not None:
+            transform.SetCenter(center_lps)
         return transform
+
+    def apply_transform(self, sample: Subject) -> dict:
+        sample.check_consistent_shape()
+        scaling_params, rotation_params = self.get_params(
+            self.scales, self.degrees, self.isotropic)
+        for image in sample.get_images(intensity_only=False):
+            if image[TYPE] == LABEL:
+                interpolation = Interpolation.NEAREST
+            else:
+                interpolation = self.interpolation
+
+            if image.is_2d():
+                scaling_params[0] = 1
+                rotation_params[-2:] = 0
+
+            if self.use_image_center:
+                center = image.get_center(lps=True)
+            else:
+                center = None
+
+            image[DATA] = self.apply_affine_transform(
+                image[DATA],
+                image[AFFINE],
+                scaling_params.tolist(),
+                rotation_params.tolist(),
+                interpolation,
+                center_lps=center,
+            )
+        random_parameters_dict = {
+            'scaling': scaling_params,
+            'rotation': rotation_params,
+        }
+        sample.add_transform(self, random_parameters_dict)
+        return sample
 
     def apply_affine_transform(
             self,
@@ -149,6 +179,7 @@ class RandomAffine(RandomTransform):
             scaling_params: List[float],
             rotation_params: List[float],
             interpolation: Interpolation,
+            center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
         assert tensor.ndim == 4
         assert len(tensor) == 1
@@ -156,8 +187,14 @@ class RandomAffine(RandomTransform):
         image = self.nib_to_sitk(tensor[0], affine)
         floating = reference = image
 
-        scaling_transform = self.get_scaling_transform(scaling_params)
-        rotation_transform = self.get_rotation_transform(rotation_params)
+        scaling_transform = self.get_scaling_transform(
+            scaling_params,
+            center_lps=center_lps,
+        )
+        rotation_transform = self.get_rotation_transform(
+            rotation_params,
+            center_lps=center_lps,
+        )
         transform = sitk.Transform(3, sitk.sitkComposite)
         transform.AddTransform(scaling_transform)
         transform.AddTransform(rotation_transform)

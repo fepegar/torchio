@@ -5,25 +5,6 @@ from typing import Union, Tuple, Callable
 import torch
 import numpy as np
 
-__all__ = [
-    'INTENSITY',
-    'LABEL',
-    'SAMPLING_MAP',
-    'PATH',
-    'TYPE',
-    'STEM',
-    'DATA',
-    'AFFINE',
-    'IMAGE',
-    'LOCATION',
-    'TypePath',
-    'TypeNumber',
-    'TypeData',
-    'TypeTuple',
-    'TypeCallable',
-    'TypeRangeInt',
-    'TypeRangeFloat',
-]
 
 # Image types
 INTENSITY = 'intensity'
@@ -45,7 +26,9 @@ LOCATION = 'location'
 TypePath = Union[Path, str]
 TypeNumber = Union[int, float]
 TypeData = Union[torch.Tensor, np.ndarray]
-TypeTuple = Union[int, Tuple[int, int, int]]
+TypeTripletInt = Tuple[int, int, int]
+TypeTripletFloat = Tuple[float, float, float]
+TypeTuple = Union[int, TypeTripletInt]
 TypeRangeInt = Union[int, Tuple[int, int]]
 TypeRangeFloat = Union[float, Tuple[float, float]]
 TypeCallable = Callable[[torch.Tensor], torch.Tensor]

@@ -4,8 +4,20 @@ from typing import Any, Dict, Tuple, Optional
 
 import torch
 import numpy as np
+import SimpleITK as sitk
 
-from ..torchio import TypePath, DATA, TYPE, AFFINE, PATH, STEM, INTENSITY
+from ..utils import nib_to_sitk
+from ..torchio import (
+    TypePath,
+    TypeTripletInt,
+    TypeTripletFloat,
+    DATA,
+    TYPE,
+    AFFINE,
+    PATH,
+    STEM,
+    INTENSITY,
+)
 from .io import read_image
 
 
@@ -58,18 +70,12 @@ class Image(dict):
         self.is_sample = False  # set to True by ImagesDataset
 
     @property
-    def shape(self):
+    def shape(self) -> Tuple[int, int, int, int]:
         return self[DATA].shape
 
     @property
-    def spatial_shape(self):
+    def spatial_shape(self) -> TypeTripletInt:
         return self.shape[1:]
-
-    def is_2d(self):
-        return self.shape[-3] == 1
-
-    def numpy(self):
-        return self[DATA].numpy()
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
@@ -132,3 +138,23 @@ class Image(dict):
         if check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{self.path}"')
         return tensor, affine
+
+    def is_2d(self) -> bool:
+        return self.shape[-3] == 1
+
+    def numpy(self) -> np.ndarray:
+        return self[DATA].numpy()
+
+    def as_sitk(self) -> sitk.Image:
+        return nib_to_sitk(self.data, self.affine)
+
+    def get_center(self, lps: bool = False) -> TypeTripletFloat:
+        """Get image center in RAS (default) or LPS coordinates."""
+        image = self.as_sitk()
+        size = np.array(image.GetSize())
+        center_index = (size - 1) / 2
+        l, p, s = image.TransformContinuousIndexToPhysicalPoint(center_index)
+        if lps:
+            return (l, p, s)
+        else:
+            return (-l, -p, s)
