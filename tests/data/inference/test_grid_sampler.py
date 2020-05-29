@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from ..utils import TorchioTestCase
 from torchio.data import GridSampler
+from ...utils import TorchioTestCase
+
 
 class TestGridSampler(TorchioTestCase):
     """Tests for `GridSampler`."""

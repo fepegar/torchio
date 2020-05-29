@@ -5,7 +5,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
 from ....torchio import (
-    LABEL,
+    INTENSITY,
     DATA,
     AFFINE,
     TYPE,
@@ -160,7 +160,7 @@ class RandomAffine(RandomTransform):
         )
         scaling_params, rotation_params, translation_params = params
         for image in sample.get_images(intensity_only=False):
-            if image[TYPE] == LABEL:
+            if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation

@@ -6,7 +6,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ....torchio import LABEL, DATA, AFFINE, TYPE
+from ....torchio import INTENSITY, DATA, AFFINE, TYPE
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
@@ -219,7 +219,7 @@ class RandomElasticDeformation(RandomTransform):
             self.num_locked_borders,
         )
         for image in sample.get_images(intensity_only=False):
-            if image[TYPE] == LABEL:
+            if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:
                 interpolation = self.interpolation

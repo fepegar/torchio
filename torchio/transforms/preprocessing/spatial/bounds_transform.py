@@ -19,7 +19,8 @@ class BoundsTransform(Transform):
     """Base class for transforms that change image bounds.
 
     Args:
-        bounds_parameters:
+        bounds_parameters: The meaning of this argument varies according to the
+            child class.
         p: Probability that this transform will be applied.
 
     """
@@ -47,7 +48,7 @@ class BoundsTransform(Transform):
             if not isinstance(number, int) or number < 0:
                 message = (
                     'Bounds values must be integers greater or equal to zero,'
-                    f' not "{bounds_parameters}"'
+                    f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
 
