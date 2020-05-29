@@ -1,5 +1,4 @@
 import copy
-from itertools import cycle
 from typing import Union, Sequence, Generator, Tuple
 
 import numpy as np
@@ -9,6 +8,7 @@ from torch.utils.data import IterableDataset
 from ...torchio import DATA
 from ...utils import to_tuple
 from ..subject import Subject
+
 
 class ImageSampler(IterableDataset):
     r"""Extract random patches from a volume.
@@ -26,29 +26,15 @@ class ImageSampler(IterableDataset):
         patch_size = to_tuple(patch_size, length=3)
         self.patch_size = np.array(patch_size, dtype=np.uint16)
 
-    def __iter__(self):
-        return self.get_stream(self.sample, self.patch_size)
-
-    def get_stream(self, sample: Subject, patch_size: Tuple[int, int, int]):
-        # Is cycle neccesary?
-        return cycle(self.extract_patch_generator(sample, patch_size))
-
-    def extract_patch_generator(
-            self,
-            sample: Subject,
-            patch_size: Tuple[int, int, int],
-            ) -> Generator[dict, None, None]:
+    def __iter__(self) -> Generator[Subject, None, None]:
         while True:
-            yield self.extract_patch(sample, patch_size)
+            yield self.extract_patch()
 
-    def extract_patch(
-            self,
-            sample: Subject,
-            patch_size: Tuple[int, int, int],
-            ) -> Subject:
-        index_ini, index_fin = self.get_random_indices(sample, patch_size)
+    def extract_patch(self) -> Subject:
+        index_ini, index_fin = self.get_random_indices(
+            self.sample, self.patch_size)
         cropped_sample = self.copy_and_crop(
-            sample,
+            self.sample,
             index_ini,
             index_fin,
         )

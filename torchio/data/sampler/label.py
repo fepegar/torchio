@@ -1,4 +1,3 @@
-from typing import Generator
 from .sampler import ImageSampler, crop
 from ... import DATA, LABEL, TYPE
 from ..subject import Subject
@@ -26,15 +25,6 @@ class LabelSampler(ImageSampler):
         brute force to look for foreground voxels. It the number of
         non-background voxels is very small, this sampler will be slow.
     """
-    # pylint: disable=abstract-method
-    def extract_patch_generator(
-            self,
-            sample: Subject,
-            patch_size,
-            ) -> Generator[dict, None, None]:
-        while True:
-            yield self.extract_patch(sample, patch_size)
-
     @staticmethod
     def get_first_label_image_dict(sample: Subject):
         for image_dict in sample.get_images(intensity_only=False):
@@ -45,15 +35,16 @@ class LabelSampler(ImageSampler):
             raise ValueError('No images of type torchio.LABEL found in sample')
         return label_image_dict
 
-    def extract_patch(self, sample: Subject, patch_size):
+    def extract_patch(self):
         has_label = False
-        label_image_data = self.get_first_label_image_dict(sample)[DATA]
+        label_image_data = self.get_first_label_image_dict(self.sample)[DATA]
         while not has_label:
-            index_ini, index_fin = self.get_random_indices(sample, patch_size)
+            index_ini, index_fin = self.get_random_indices(
+                self.sample, self.patch_size)
             patch_label = crop(label_image_data, index_ini, index_fin)
             has_label = patch_label.sum() > 0
         cropped_sample = self.copy_and_crop(
-            sample,
+            self.sample,
             index_ini,
             index_fin,
         )
