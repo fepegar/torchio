@@ -81,7 +81,7 @@ class Image(dict):
 
     @property
     def orientation(self):
-        return nib.aff2axcodes(self.affine)
+        return nib.aff2axcodes(self[AFFINE])
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
