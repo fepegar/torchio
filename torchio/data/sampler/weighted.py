@@ -28,6 +28,9 @@ class WeightedSampler(PatchSampler):
         probability_map: Name of the image in the sample that will be used
             as a probability map.
 
+    Raises:
+        RuntimeError: If the probability map is empty.
+
     Example:
         >>> import torchio
         >>> subject = torchio.Subject(
@@ -106,11 +109,15 @@ class WeightedSampler(PatchSampler):
         # Using float32 can create cdf with maximum very far from 1, e.g. 0.92!
         data = probability_map[0].numpy().astype(np.float64)
         assert data.ndim == 3
-        if data.sum() == 0:  # although it should not be empty
-            data += 1  # make uniform
-        data /= data.sum()  # normalize probabilities
         self.clear_probability_borders(data, self.patch_size)
-        assert data.sum() > 0
+        total = data.sum()
+        if total == 0:
+            message = (
+                'Empty probability map found'
+                f' ({self.probability_map_name})'
+            )
+            raise RuntimeError(message)
+        data /= total  # normalize probabilities
         return data
 
     @staticmethod
@@ -166,14 +173,12 @@ class WeightedSampler(PatchSampler):
         The cumulative distribution function (CDF) is computed as follows:
 
         1. Flatten probability map
-        2. Normalize it
-        3. Compute sorting indices
-        4. Sort flattened map
-        5. Compute cumulative sum
+        2. Compute sorting indices
+        3. Sort flattened map
+        4. Compute cumulative sum
 
         For example,
-        if the probability map is [0, 0, 1, 2, 5, 1, 1, 0],
-        the normalized version is [0.0, 0.0, 0.1, 0.2, 0.5, 0.1, 0.1, 0.0],
+        if the probability map is [0.0, 0.0, 0.1, 0.2, 0.5, 0.1, 0.1, 0.0],
         the sorting indices are [0, 1, 7, 2, 5, 6, 3, 4],
         the sorted map is [0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 0.2, 0.5],
         and the CDF is [0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.5, 1.0].
