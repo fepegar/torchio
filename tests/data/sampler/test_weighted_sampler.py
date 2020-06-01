@@ -7,7 +7,7 @@ from ...utils import TorchioTestCase
 class TestWeightedSampler(TorchioTestCase):
     """Tests for `WeightedSampler` class."""
 
-    def test_label_sampler(self):
+    def test_weighted_sampler(self):
         sample = self.get_sample((7, 7, 7))
         sampler = WeightedSampler(5, 'prob')
         patch = next(iter(sampler(sample)))
