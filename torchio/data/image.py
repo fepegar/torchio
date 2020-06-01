@@ -4,6 +4,7 @@ from typing import Any, Dict, Tuple, Optional
 
 import torch
 import numpy as np
+import nibabel as nib
 import SimpleITK as sitk
 
 from ..utils import nib_to_sitk
@@ -19,6 +20,7 @@ from ..torchio import (
     INTENSITY,
 )
 from .io import read_image
+from .orientation import name_dimensions
 
 
 class Image(dict):
@@ -77,6 +79,10 @@ class Image(dict):
     def spatial_shape(self) -> TypeTripletInt:
         return self.shape[1:]
 
+    @property
+    def orientation(self):
+        return nib.aff2axcodes(self[AFFINE])
+
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
         if path is None:
@@ -134,7 +140,13 @@ class Image(dict):
         tensor, affine = read_image(self.path)
         # https://github.com/pytorch/pytorch/issues/9410#issuecomment-404968513
         tensor = tensor[(None,) * (3 - tensor.ndim)]  # force to be 3D
+        # Remove next line and uncomment the two following ones once/if this issue
+        # gets fixed:
+        # https://github.com/pytorch/pytorch/issues/29010
+        # See also https://discuss.pytorch.org/t/collating-named-tensors/78650/4
         tensor = tensor.unsqueeze(0)  # add channels dimension
+        # name_dimensions(tensor, affine)
+        # tensor = tensor.align_to('channels', ...)
         if check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{self.path}"')
         return tensor, affine
