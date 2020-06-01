@@ -54,7 +54,7 @@ class RandomGhosting(RandomTransform):
         for n in self.intensity_range:
             if not 0 <= n <= 1:
                 message = (
-                    'Intensity must be a number between 0 and 1, not {n}')
+                    f'Intensity must be a number between 0 and 1, not {n}')
                 raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
