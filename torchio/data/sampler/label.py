@@ -1,6 +1,9 @@
+from typing import Dict, Optional
+
 import torch
+
 from ...data.subject import Subject
-from ...torchio import TypePatchSize
+from ...torchio import TypePatchSize, DATA
 from .weighted import WeightedSampler
 
 
@@ -14,6 +17,13 @@ class LabelSampler(WeightedSampler):
         patch_size: See :py:class:`~torchio.data.PatchSampler`.
         label_name: Name of the label image in the sample that will be used to
             generate the sampling probability map.
+        label_probabilities: Dictionary containing the probability that each
+            class will be sampled. Probabilities do not need to be normalized.
+            For example, a value of ``{0: 0, 1: 2, 2: 1, 3: 1}`` will create a
+            sampler whose patches centers will have 50% probability of being
+            labeled as ``1``, 25% of being ``2`` and 25% of being ``3``.
+            If ``None``, the label map is binarized and the value is set to
+            ``{0: 0, 1: 1}``.
 
     Example:
         >>> import torchio
@@ -33,17 +43,45 @@ class LabelSampler(WeightedSampler):
         ...     print(patch.shape)
 
     """
-    def __init__(self, patch_size: TypePatchSize, label_name: str):
+    def __init__(
+            self,
+            patch_size: TypePatchSize,
+            label_name: str,
+            label_probabilities: Optional[Dict[int, float]] = None,
+        ):
         super().__init__(patch_size, probability_map=label_name)
+        self.label_probabilities_dict = label_probabilities
 
     def get_probability_map(self, sample: Subject) -> torch.Tensor:
-        """Return binarized image for sampling."""
-        if self.probability_map_name in sample:
-            data = sample[self.probability_map_name].data > 0.5
-        else:
+        if self.probability_map_name not in sample:
             message = (
                 f'Image "{self.probability_map_name}"'
                 f' not found in subject sample: {sample}'
             )
             raise KeyError(message)
-        return data
+        label_map_tensor = sample[self.probability_map_name][DATA]
+        if self.label_probabilities_dict is None:
+            return label_map_tensor > 0
+        probability_map = self.get_probabilities_from_label_map(
+            label_map_tensor,
+            self.label_probabilities_dict,
+        )
+        return probability_map
+
+    @staticmethod
+    def get_probabilities_from_label_map(
+            label_map: torch.Tensor,
+            label_probabilities_dict: Dict[int, float],
+            ) -> torch.Tensor:
+        """Create probability map according to label map probabilities."""
+        probability_map = torch.zeros_like(label_map)
+        label_probs = torch.Tensor(list(label_probabilities_dict.values()))
+        normalized_probs = label_probs / label_probs.sum()
+        iterable = zip(label_probabilities_dict, normalized_probs)
+        for label, label_probability in iterable:
+            mask = label_map == label
+            label_size = mask.sum()
+            if not label_size: continue
+            prob_voxels = label_probability / label_size
+            probability_map[mask] = prob_voxels
+        return probability_map
