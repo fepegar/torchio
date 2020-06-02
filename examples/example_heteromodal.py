@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 
 import torchio
 from torchio import Image, Subject, ImagesDataset, Queue
-from torchio.data import ImageSampler
+from torchio.data import UniformSampler
 
 def main():
     # Define training and patches sampling parameters
@@ -45,8 +45,7 @@ def main():
         subjects_dataset,
         queue_length,
         samples_per_volume,
-        patch_size,
-        ImageSampler,
+        UniformSampler(patch_size),
     )
 
     # This collate_fn is needed in the case of missing modalities

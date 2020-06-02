@@ -9,7 +9,7 @@ from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
 from ....data.image import Image
-from ....torchio import LABEL, DATA, AFFINE, TYPE, INTENSITY
+from ....torchio import DATA, AFFINE, TYPE, INTENSITY
 from ... import Interpolation
 from ... import Transform
 
@@ -173,7 +173,7 @@ class Resample(Transform):
                 continue
 
             # Choose interpolator
-            if image_dict[TYPE] == LABEL:
+            if image_dict[TYPE] != INTENSITY:
                 interpolation_order = 0  # nearest neighbor
             else:
                 interpolation_order = self.interpolation_order

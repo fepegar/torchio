@@ -10,7 +10,7 @@ volumes for training and testing.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    patch_training.rst
    patch_inference.rst
