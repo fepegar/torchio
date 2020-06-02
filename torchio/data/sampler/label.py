@@ -3,7 +3,7 @@ from typing import Dict, Optional
 import torch
 
 from ...data.subject import Subject
-from ...torchio import TypePatchSize, DATA
+from ...torchio import TypePatchSize, DATA, TYPE, LABEL
 from .weighted import WeightedSampler
 
 
@@ -16,7 +16,9 @@ class LabelSampler(WeightedSampler):
     Args:
         patch_size: See :py:class:`~torchio.data.PatchSampler`.
         label_name: Name of the label image in the sample that will be used to
-            generate the sampling probability map.
+            generate the sampling probability map. If ``None``, the first image
+            of type :py:attr:`torchio.LABEL` found in the subject sample will be
+            used.
         label_probabilities: Dictionary containing the probability that each
             class will be sampled. Probabilities do not need to be normalized.
             For example, a value of ``{0: 0, 1: 2, 2: 1, 3: 1}`` will create a
@@ -46,20 +48,26 @@ class LabelSampler(WeightedSampler):
     def __init__(
             self,
             patch_size: TypePatchSize,
-            label_name: str,
+            label_name: Optional[str] = None,
             label_probabilities: Optional[Dict[int, float]] = None,
         ):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
 
     def get_probability_map(self, sample: Subject) -> torch.Tensor:
-        if self.probability_map_name not in sample:
+        if self.probability_map_name is None:
+            for image in sample.get_images(intensity_only=False):
+                if image[TYPE] == LABEL:
+                    label_map_tensor = image[DATA]
+                    break
+        elif self.probability_map_name in sample:
+            label_map_tensor = sample[self.probability_map_name][DATA]
+        else:
             message = (
                 f'Image "{self.probability_map_name}"'
                 f' not found in subject sample: {sample}'
             )
             raise KeyError(message)
-        label_map_tensor = sample[self.probability_map_name][DATA]
         if self.label_probabilities_dict is None:
             return label_map_tensor > 0
         probability_map = self.get_probabilities_from_label_map(

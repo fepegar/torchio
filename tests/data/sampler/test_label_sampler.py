@@ -8,7 +8,7 @@ class TestLabelSampler(TorchioTestCase):
     """Tests for `LabelSampler` class."""
 
     def test_label_sampler(self):
-        sampler = LabelSampler(5, 'label')
+        sampler = LabelSampler(5)
         for patch in sampler(self.sample, num_patches=10):
             patch_center = patch['label'][torchio.DATA][0, 2, 2, 2]
             self.assertEqual(patch_center, 1)
