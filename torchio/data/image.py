@@ -20,7 +20,6 @@ from ..torchio import (
     INTENSITY,
 )
 from .io import read_image
-from .orientation import name_dimensions
 
 
 class Image(dict):
@@ -58,10 +57,10 @@ class Image(dict):
             if tensor is not None or affine is not None:
                 message = 'If a path is given, tensor and affine must be None'
                 raise ValueError(message)
-        self.tensor = self.parse_tensor(tensor)
-        self.affine = self.parse_affine(affine)
-        if self.affine is None:
-            self.affine = np.eye(4)
+        self._tensor = self.parse_tensor(tensor)
+        self._affine = self.parse_affine(affine)
+        if self._affine is None:
+            self._affine = np.eye(4)
         for key in (DATA, AFFINE, TYPE, PATH, STEM):
             if key in kwargs:
                 raise ValueError(f'Key {key} is reserved. Use a different one')
@@ -70,6 +69,14 @@ class Image(dict):
         self.path = self._parse_path(path)
         self.type = type
         self.is_sample = False  # set to True by ImagesDataset
+
+    @property
+    def data(self):
+        return self[DATA]
+
+    @property
+    def affine(self):
+        return self[AFFINE]
 
     @property
     def shape(self) -> Tuple[int, int, int, int]:
@@ -136,7 +143,7 @@ class Image(dict):
             and a 2D 4x4 affine matrix
         """
         if self.path is None:
-            return self.tensor, self.affine
+            return self._tensor, self._affine
         tensor, affine = read_image(self.path)
         # https://github.com/pytorch/pytorch/issues/9410#issuecomment-404968513
         tensor = tensor[(None,) * (3 - tensor.ndim)]  # force to be 3D
@@ -158,7 +165,7 @@ class Image(dict):
         return self[DATA].numpy()
 
     def as_sitk(self) -> sitk.Image:
-        return nib_to_sitk(self.data, self.affine)
+        return nib_to_sitk(self[DATA], self[AFFINE])
 
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS (default) or LPS coordinates."""

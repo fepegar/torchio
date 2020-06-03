@@ -172,7 +172,6 @@ class ImagesDataset(Dataset):
         }
         image = copy.deepcopy(image)
         image.update(image_dict)
-        image.__dict__.update(image_dict)  # this allows me to do image.data
         image.is_sample = True
         return image
 
