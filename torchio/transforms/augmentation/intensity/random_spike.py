@@ -99,7 +99,7 @@ class RandomSpike(RandomTransform):
             ):
         array = sitk.GetArrayViewFromImage(image).transpose()
         spectrum = self.fourier_transform(array).ravel()
-        indices = (spikes_positions * len(spectrum)).round().astype(int)
+        indices = np.floor(spikes_positions * len(spectrum)).astype(int)
         for index in indices:
             spectrum[index] = spectrum.max() * intensity_factor
         spectrum = spectrum.reshape(array.shape)
