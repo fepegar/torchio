@@ -7,7 +7,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 
-from ..utils import nib_to_sitk
+from ..utils import nib_to_sitk, get_rotation_and_spacing_from_affine
 from ..torchio import (
     TypePath,
     TypeTripletInt,
@@ -89,6 +89,11 @@ class Image(dict):
     @property
     def orientation(self):
         return nib.aff2axcodes(self[AFFINE])
+
+    @property
+    def spacing(self):
+        _, spacing = get_rotation_and_spacing_from_affine(self.affine)
+        return tuple(spacing)
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
