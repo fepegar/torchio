@@ -70,6 +70,16 @@ class Image(dict):
         self.type = type
         self.is_sample = False  # set to True by ImagesDataset
 
+    def __repr__(self):
+        properties = [
+            f'shape: {self.shape}',
+            f'spacing: {self.spacing}',
+            f'orientation: {"".join(self.orientation)}+',
+        ]
+        properties = '; '.join(properties)
+        string = f'{self.__class__.__name__}({properties})'
+        return string
+
     @property
     def data(self):
         return self[DATA]
@@ -80,7 +90,7 @@ class Image(dict):
 
     @property
     def shape(self) -> Tuple[int, int, int, int]:
-        return self[DATA].shape
+        return tuple(self[DATA].shape)
 
     @property
     def spatial_shape(self) -> TypeTripletInt:
