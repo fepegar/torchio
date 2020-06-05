@@ -8,7 +8,6 @@ inference across a 3D volume using image patches::
     >>> import torch
     >>> import torch.nn as nn
     >>> import torchio
-    >>> CHANNELS_DIMENSION = 1
     >>> patch_overlap = 4
     >>> patch_size = 128
     >>> grid_sampler = torchio.inference.GridSampler(
@@ -29,7 +28,7 @@ inference across a 3D volume using image patches::
     ...         input_tensor = patches_batch[torchio.IMAGE].to(device)
     ...         locations = patches_batch[torchio.LOCATION]
     ...         logits = model(input_tensor)
-    ...         labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
+    ...         labels = logits.argmax(dim=torchio.CHANNELS_DIMENSION, keepdim=True)
     ...         outputs = labels
     ...         aggregator.add_batch(outputs, locations)
     >>> output_tensor = aggregator.get_output_tensor()

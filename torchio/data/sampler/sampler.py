@@ -25,6 +25,36 @@ class PatchSampler:
             raise ValueError(message)
         self.patch_size = patch_size_array.astype(np.uint16)
 
+    def extract_patch(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def get_crop_transform(
+            image_size,
+            index_ini,
+            patch_size: TypePatchSize,
+            ):
+        from ...transforms.preprocessing.spatial.crop import Crop
+        image_size = np.array(image_size, dtype=np.uint16)
+        index_ini = np.array(index_ini, dtype=np.uint16)
+        patch_size = np.array(patch_size, dtype=np.uint16)
+        index_fin = index_ini + patch_size
+        crop_ini = index_ini.tolist()
+        crop_fin = (image_size - index_fin).tolist()
+        TypeBounds = Tuple[int, int, int, int, int, int]
+        start = ()
+        cropping: TypeBounds = sum(zip(crop_ini, crop_fin), start)
+        return Crop(cropping)
+
+
+class RandomSampler(PatchSampler):
+    r"""Base class for TorchIO samplers.
+
+    Args:
+        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
+            of size :math:`d \times h \times w`.
+            If a single number :math:`n` is provided, :math:`d = h = w = n`.
+    """
     def __call__(
             self,
             sample: Subject,
@@ -34,24 +64,3 @@ class PatchSampler:
 
     def get_probability_map(self, sample: Subject):
         raise NotImplementedError
-
-    def extract_patch(self):
-        raise NotImplementedError
-
-    @staticmethod
-    def get_crop_transform(
-            sample,
-            index_ini,
-            patch_size: TypePatchSize,
-            ):
-        from ...transforms.preprocessing.spatial.crop import Crop
-        shape = np.array(sample.spatial_shape, dtype=np.uint16)
-        index_ini = np.array(index_ini, dtype=np.uint16)
-        patch_size = np.array(patch_size, dtype=np.uint16)
-        index_fin = index_ini + patch_size
-        crop_ini = index_ini.tolist()
-        crop_fin = (shape - index_fin).tolist()
-        TypeBounds = Tuple[int, int, int, int, int, int]
-        start = ()
-        cropping: TypeBounds = sum(zip(crop_ini, crop_fin), start)
-        return Crop(cropping)

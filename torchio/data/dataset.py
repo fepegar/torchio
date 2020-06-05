@@ -161,8 +161,8 @@ class ImagesDataset(Dataset):
             tensor, affine = image.load(check_nans=self.check_nans)
         else:
             tensor = affine = None
-        path = None if image.path is None else str(image.path)
-        stem = None if path is None else get_stem(image.path)
+        path = '' if image.path is None else str(image.path)
+        stem = '' if image.path is None else get_stem(image.path)
         image_dict = {
             DATA: tensor,
             AFFINE: affine,

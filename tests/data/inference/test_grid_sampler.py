@@ -8,23 +8,31 @@ class TestGridSampler(TorchioTestCase):
     """Tests for `GridSampler`."""
 
     def test_locations(self):
-        sampler = GridSampler(self.sample, (5, 20, 20), (1, 2, 3))
+        patch_size = 5, 20, 20
+        patch_overlap = 2, 4, 6
+        sampler = GridSampler(self.sample, patch_size, patch_overlap)
         fixture = [
             [0, 0, 0, 5, 20, 20],
             [0, 0, 10, 5, 20, 30],
-            [0, 0, 5, 5, 20, 25],
             [3, 0, 0, 8, 20, 20],
             [3, 0, 10, 8, 20, 30],
-            [3, 0, 5, 8, 20, 25],
             [5, 0, 0, 10, 20, 20],
             [5, 0, 10, 10, 20, 30],
-            [5, 0, 5, 10, 20, 25],
         ]
-        self.assertEqual(sampler.locations.tolist(), fixture)
+        locations = sampler.locations.tolist()
+        self.assertEqual(locations, fixture)
 
-    def test_large_window(self):
+    def test_large_patch(self):
         with self.assertRaises(ValueError):
-            GridSampler(self.sample, (5, 21, 5), (1, 2, 3))
+            GridSampler(self.sample, (5, 21, 5), (0, 2, 0))
+
+    def test_large_overlap(self):
+        with self.assertRaises(ValueError):
+            GridSampler(self.sample, (5, 20, 5), (2, 4, 6))
+
+    def test_odd_overlap(self):
+        with self.assertRaises(ValueError):
+            GridSampler(self.sample, (5, 20, 5), (2, 4, 3))
 
     def test_single_location(self):
         sampler = GridSampler(self.sample, (10, 20, 30), 0)

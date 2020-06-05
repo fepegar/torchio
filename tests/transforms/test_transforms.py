@@ -42,7 +42,7 @@ class TestTransforms(TorchioTestCase):
                 torchio.RandomAffine(): 3,
                 elastic: 1,
             }),
-            torchio.Pad(pad_args, padding_mode='constant', fill=3),
+            torchio.Pad(pad_args, padding_mode=3),
             torchio.Crop(crop_args),
         )
         return torchio.Compose(transforms)

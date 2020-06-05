@@ -18,8 +18,7 @@ class CropOrPad(BoundsTransform):
     Args:
         target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
             provided, then :math:`D = H = W = N`.
-        padding_mode: See :py:class:`~torchio.transforms.Pad`.
-        padding_fill: Same as :attr:`fill` in
+        padding_mode: Same as :attr:`padding_mode` in
             :py:class:`~torchio.transforms.Pad`.
         mask_name: If ``None``, the centers of the input and output volumes
             will be the same.
@@ -49,14 +48,12 @@ class CropOrPad(BoundsTransform):
     def __init__(
             self,
             target_shape: Union[int, TypeShape],
-            padding_mode: str = 'constant',
-            padding_fill: Optional[float] = None,
+            padding_mode: Union[str, float] = 0,
             mask_name: Optional[str] = None,
             p: float = 1,
             ):
         super().__init__(target_shape, p=p)
         self.padding_mode = padding_mode
-        self.padding_fill = padding_fill
         if mask_name is not None and not isinstance(mask_name, str):
             message = (
                 'If mask_name is not None, it must be a string,'
@@ -228,7 +225,7 @@ class CropOrPad(BoundsTransform):
     def apply_transform(self, sample: Subject) -> dict:
         padding_params, cropping_params = self.compute_crop_or_pad(sample)
         padding_kwargs = dict(
-            padding_mode=self.padding_mode, fill=self.padding_fill)
+            padding_mode=self.padding_mode)
         if padding_params is not None:
             sample = Pad(padding_params, **padding_kwargs)(sample)
         if cropping_params is not None:
