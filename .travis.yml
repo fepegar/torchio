@@ -11,11 +11,6 @@ install:
 
 script:
   - tox
-  - coverage run --source . -m pytest
-  - coverage report -m
-
-after_success:
-  - coveralls
 
 deploy:
   provider: pypi
