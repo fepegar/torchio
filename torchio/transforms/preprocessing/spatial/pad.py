@@ -1,4 +1,5 @@
-from typing import Callable
+from numbers import Number
+from typing import Callable, Union
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform, TypeBounds
 
@@ -20,31 +21,27 @@ class Pad(BoundsTransform):
             If only one value :math:`n` is provided, then
             :math:`d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n`.
         padding_mode:
-            Type of padding. Default is ``constant``. Should be one of:
+            Type of padding. Should be one of:
 
-            - ``constant`` Pads with a constant value (specified in :attr:`padding_fill`).
+            - A number. Pad with a constant value.
 
-            - ``reflect`` Pads with reflection of image without repeating the last value on the edge.
+            - ``reflect`` Pad with reflection of image without repeating the last value on the edge.
 
             - ``mirror`` Same as ``reflect``.
 
-            - ``edge`` Pads with the last value at the edge of the image.
+            - ``edge`` Pad with the last value at the edge of the image.
 
             - ``replicate`` Same as ``edge``.
 
-            - ``circular`` Pads with the wrap of the vector along the axis. The first values are used to pad the end and the end values are used to pad the beginning.
+            - ``circular`` Pad with the wrap of the vector along the axis. The first values are used to pad the end and the end values are used to pad the beginning.
 
             - ``wrap`` Same as ``circular``.
 
-
-        fill: Value for constant fill. Default is ``0``. This value is only
-            used when :attr:`padding_mode` is ``constant``.
         p: Probability that this transform will be applied.
 
     """
 
     PADDING_FUNCTIONS = {
-        'constant': sitk.ConstantPad,
         'reflect': sitk.MirrorPad,
         'mirror': sitk.MirrorPad,
         'edge': sitk.ZeroFluxNeumannPad,
@@ -56,8 +53,7 @@ class Pad(BoundsTransform):
     def __init__(
             self,
             padding: TypeBounds,
-            padding_mode: str = 'constant',
-            fill: float = None,
+            padding_mode: Union[str, float] = 0,
             p: float = 1,
             ):
         """
@@ -66,24 +62,22 @@ class Pad(BoundsTransform):
         information about this transform.
         """
         super().__init__(padding, p=p)
-        if fill is not None and padding_mode != 'constant':
-            message = (
-                'If the value of "fill" is not None,'
-                'the value of "padding_mode" must be "constant"'
-            )
-            raise ValueError(message)
-        self.padding_mode = self.parse_padding_mode(padding_mode)
-        self.fill = fill
+        self.padding_mode, self.fill = self.parse_padding_mode(padding_mode)
 
     @classmethod
     def parse_padding_mode(cls, padding_mode):
         if padding_mode in cls.PADDING_FUNCTIONS:
-            return padding_mode
-        message = (
-            f'Padding mode "{padding_mode}" not valid.'
-            f' Valid options are {list(cls.PADDING_FUNCTIONS.keys())}'
-        )
-        raise KeyError(message)
+            fill = None
+        elif isinstance(padding_mode, Number):
+            fill = padding_mode
+            padding_mode = 'constant'
+        else:
+            message = (
+                f'Padding mode "{padding_mode}" not valid. Valid options are'
+                f' {list(cls.PADDING_FUNCTIONS.keys())} or a number'
+            )
+            raise KeyError(message)
+        return padding_mode, fill
 
     @property
     def bounds_function(self) -> Callable:

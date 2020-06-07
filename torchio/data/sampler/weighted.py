@@ -6,11 +6,11 @@ import torch
 
 from ...torchio import TypePatchSize
 from ..subject import Subject
-from .sampler import PatchSampler
+from .sampler import RandomSampler
 
 
 
-class WeightedSampler(PatchSampler):
+class WeightedSampler(RandomSampler):
     r"""Randomly extract patches from a volume given a probability map.
 
     The probability of sampling a patch centered on a specific voxel is the
@@ -200,7 +200,7 @@ class WeightedSampler(PatchSampler):
             ) -> Subject:
         index_ini = self.get_random_index_ini(probability_map, cdf, sort_indices)
         crop = self.get_crop_transform(
-            sample,
+            sample.spatial_shape,
             index_ini,
             self.patch_size,
         )

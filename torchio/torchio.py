@@ -22,6 +22,9 @@ AFFINE = 'affine'
 IMAGE = 'image'
 LOCATION = 'location'
 
+# In PyTorch convention
+CHANNELS_DIMENSION = 1
+
 # For typing hints
 TypePath = Union[Path, str]
 TypeNumber = Union[int, float]

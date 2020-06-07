@@ -45,13 +45,13 @@ class BoundsTransform(Transform):
 
         # Check that numbers are integers
         for number in bounds_parameters:
-            if not isinstance(number, int) or number < 0:
+            if not isinstance(number, (int, np.integer)) or number < 0:
                 message = (
                     'Bounds values must be integers greater or equal to zero,'
                     f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
-
+        bounds_parameters = tuple(int(n) for n in bounds_parameters)
         bounds_parameters_length = len(bounds_parameters)
         if bounds_parameters_length == 6:
             return bounds_parameters
