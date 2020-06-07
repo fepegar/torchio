@@ -28,9 +28,9 @@ class GridSampler(PatchSampler, Dataset):
         padding_mode: Same as :attr:`padding_mode` in
             :py:class:`~torchio.transforms.Pad`. If ``None``, the volume will
             not be padded before sampling and patches at the border will not be
-            cropped by the aggregator. Otherwise, the volume will be padded
-            with :math:`(\frac{d_o}{2}, \frac{h_o}{2}, \frac{w_o}{2})` at each
-            side before sampling. If the sampler is passed to a
+            cropped by the aggregator. Otherwise, the volume will be padded with
+            :math:`\left(\frac{d_o}{2}, \frac{h_o}{2}, \frac{w_o}{2}\right)`
+            on each side before sampling. If the sampler is passed to a
             :py:class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
 
