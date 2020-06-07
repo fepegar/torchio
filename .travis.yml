@@ -1,14 +1,22 @@
 language: python
+
 python:
-- 3.8
-- 3.7
-- 3.6
+  - 3.8
+  - 3.7
+  - 3.6
+
 install:
-  - pip install -U tox-travis
-  - pip install coveralls
-script: tox
+  - pip install --upgrade tox-travis
+  - pip install -r requirements_dev.txt
+
+script:
+  - tox
+  - coverage run --source . -m pytest
+  - coverage report -m
+
 after_success:
   - coveralls
+
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel

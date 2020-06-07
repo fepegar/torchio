@@ -2,6 +2,7 @@ bump2version
 Click
 codecov
 coverage
+coveralls
 flake8
 mypy
 pip
