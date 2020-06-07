@@ -9,8 +9,8 @@ from .grid_sampler import GridSampler
 class GridAggregator:
     r"""Aggregate patches for dense inference.
 
-    This class is typically used to build a volume made of batches after
-    inference of patches extracted by a :py:class:`~torchio.data.GridSampler`.
+    This class is typically used to build a volume made of patches after
+    inference of batches extracted by a :py:class:`~torchio.data.GridSampler`.
 
     Args:
         sampler: Instance of :py:class:`~torchio.data.GridSampler` used to
