@@ -7,20 +7,90 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
-| Docs | Build | Coverage | Code | Package | Notebooks | Social |
-| --- | --- | --- | --- | --- | --- | --- |
-| [![Documentation status](https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs)](http://torchio.rtfd.io/?badge=latest) | [![Build status](https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis)](https://travis-ci.org/fepegar/torchio) | [![Coverage status](https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg)](https://codecov.io/github/fepegar/torchio) | [![Code quality](https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer)](https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master) | [![PyPI downloads](https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white)](https://pypi.org/project/torchio/) | [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i) | [![Slack](https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack)](https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE) |
-|  |  |  | [![Code maintainability](https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability)](https://codeclimate.com/github/fepegar/torchio/maintainability) | [![PyPI version](https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white)](https://pypi.org/project/torchio/) |  |  |
-| | | | | <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END --> | | |
-
-
-
-
-
-
-
-
-
+<table align="center">
+    <tr>
+        <td align="left">
+            <b>Package</b>
+        </td>
+        <td align="center">
+            <a href="https://pypi.org/project/torchio/">
+                <img src="https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white" alt="PyPI downloads">
+            </a>
+            <a href="https://pypi.org/project/torchio/">
+                <img src="https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white" alt="PyPI version">
+            </a>
+            <a href="https://github.com/fepegar/torchio#contributors-">
+                <img src="https://img.shields.io/badge/All_contributors-12-orange.svg" alt="All Contributors">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Docs</b>
+        </td>
+        <td align="center">
+            <a href="http://torchio.rtfd.io/?badge=latest">
+                <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Build</b>
+        </td>
+        <td align="center">
+            <a href="https://travis-ci.org/fepegar/torchio">
+                <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Coverage</b>
+        </td>
+        <td align="center">
+            <a href="https://codecov.io/github/fepegar/torchio">
+                <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
+            </a>
+            <a href='https://coveralls.io/github/fepegar/torchio?branch=master'>
+                <img src='https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master' alt='Coverage Status' />
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Code</b>
+        </td>
+        <td align="center">
+            <a href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master">
+                <img src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer" alt="Code quality">
+            </a>
+            <a href="https://codeclimate.com/github/fepegar/torchio/maintainability">
+                <img src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" alt="Code maintainability">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Notebook</b>
+        </td>
+        <td align="center">
+            <a href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">
+                <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Google Colab">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>Social</b>
+        </td>
+        <td align="center">
+            <a href="https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE">
+                <img src="https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack" alt="Slack">
+            </a>
+        </td>
+    </tr>
+</table>
 
 ---
 
