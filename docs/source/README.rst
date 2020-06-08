@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status| |Build-status|
-|Coverage-status| |Code-Quality| |Code-Maintainability| |Slack|
+|Coverage-codecov| |Coverage-coveralls| |Code-Quality| |Code-Maintainability| |Slack|
 
 
 TorchIO is a Python library for efficient loading, preprocessing, augmentation
@@ -69,8 +69,12 @@ BibTeX:
    :target: https://travis-ci.org/fepegar/torchio
    :alt: Build status
 
-.. |Coverage-status| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
+.. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
+   :alt: Coverage status
+
+.. |Coverage-coveralls| image:: https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master
+   :target: https://coveralls.io/github/fepegar/torchio?branch=master
    :alt: Coverage status
 
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer
@@ -78,7 +82,7 @@ BibTeX:
    :alt: Code quality
 
 .. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack
-   :target: https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE
+   :target: https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg
    :alt: Slack
 
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
