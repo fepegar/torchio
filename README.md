@@ -254,13 +254,14 @@ example and a comprehensive Jupyter notebook tutorial on
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).
 
-Please [create a new issue](https://github.com/fepegar/torchio/issues/new)
+Please
+[open a new issue](https://github.com/fepegar/torchio/issues/new/choose)
 if you think something is missing.
 
 
-## Contributors ✨
+## Contributors
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -288,4 +289,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors)
+specification. Contributions of any kind welcome!
