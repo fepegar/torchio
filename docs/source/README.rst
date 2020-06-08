@@ -19,6 +19,8 @@ or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
 
+See `Getting started`_ to try TorchIO.
+
 
 Credits
 *******
