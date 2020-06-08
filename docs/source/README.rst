@@ -30,8 +30,6 @@ If you use this library for your research, please cite the paper: |paper-url|_.
 
 .. _paper-url: https://arxiv.org/abs/2003.04696
 
-This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
-
 .. |paper-url| replace:: Pérez-García et al., 2020, *TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning*
 
 
@@ -47,6 +45,8 @@ BibTeX:
       archivePrefix={arXiv},
       primaryClass={eess.IV}
    }
+
+This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
