@@ -7,7 +7,7 @@ medical image informatics, image processing,
 and three-dimensional visualization.
 
 .. The TorchIO extension can be installed using the
-..`Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
+.. `Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
 
 The code and installation instructions are available on
 `GitHub <https://github.com/fepegar/SlicerTorchIO>`_.
