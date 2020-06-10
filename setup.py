@@ -15,7 +15,6 @@ requirements = [
     'nibabel',
     'numpy',
     'Python-Deprecated',
-    'scipy',
     'SimpleITK',
     'torch>=1.2',  # for IterableDataset
     'torchvision',

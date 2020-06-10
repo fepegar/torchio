@@ -2,7 +2,6 @@ Click>=7.0
 nibabel
 numpy
 Python-deprecated
-scipy
 SimpleITK
 torch>=1.2
 torchvision
