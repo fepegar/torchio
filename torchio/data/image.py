@@ -73,7 +73,7 @@ class Image(dict):
     def __repr__(self):
         properties = [
             f'shape: {self.shape}',
-            f'spacing: {self.spacing}',
+            f'spacing: {self.get_spacing_string()}',
             f'orientation: {"".join(self.orientation)}+',
         ]
         properties = '; '.join(properties)
@@ -104,6 +104,11 @@ class Image(dict):
     def spacing(self):
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
         return tuple(spacing)
+
+    def get_spacing_string(self):
+        strings = [f'{n:.2f}' for n in self.spacing]
+        string = f'({", ".join(strings)})'
+        return string
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
