@@ -54,6 +54,37 @@ MNI
     :show-inheritance:
 
 
+ITK-SNAP
+--------
+
+.. automodule:: torchio.datasets.itk_snap
+.. currentmodule:: torchio.datasets.itk_snap
+
+
+:class:`BrainTumor`
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: BrainTumor
+    :members:
+    :show-inheritance:
+
+
+:class:`T1T2`
+~~~~~~~~~~~~~
+
+.. autoclass:: T1T2
+    :members:
+    :show-inheritance:
+
+
+:class:`AorticValve`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: AorticValve
+    :members:
+    :show-inheritance:
+
+
 3D Slicer
 ---------
 
@@ -61,7 +92,7 @@ MNI
 .. currentmodule:: torchio.datasets.slicer
 
 :class:`Slicer`
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. autoclass:: Slicer
     :members:
