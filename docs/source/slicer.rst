@@ -6,6 +6,9 @@
 medical image informatics, image processing,
 and three-dimensional visualization.
 
+TorchIO provides a 3D Slicer extension for quick experimentation and
+visualization of the package features.
+
 .. The TorchIO extension can be installed using the
 .. `Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
 
