@@ -11,6 +11,7 @@
    transforms/transforms.rst
    datasets.rst
    cli.rst
+   slicer.rst
 
 
 See also
