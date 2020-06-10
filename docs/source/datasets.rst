@@ -46,6 +46,14 @@ MNI
     :show-inheritance:
 
 
+:class:`Sheep`
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Sheep
+    :members:
+    :show-inheritance:
+
+
 3D Slicer
 ---------
 
