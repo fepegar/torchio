@@ -52,9 +52,9 @@ MNI
 .. automodule:: torchio.datasets.slicer
 .. currentmodule:: torchio.datasets.slicer
 
-:class:`SubjectSlicer`
+:class:`Slicer`
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: SubjectSlicer
+.. autoclass:: Slicer
     :members:
     :show-inheritance:
