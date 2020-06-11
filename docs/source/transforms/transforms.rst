@@ -6,16 +6,16 @@ The :py:mod:`torchio.transforms` module should remind users of
 
 TorchIO transforms take as input samples generated
 by an :py:class:`~torchio.data.dataset.ImagesDataset`,
-or 4D tensors (see :py:class:`~torchio.transforms.Transform`).
+4D PyTorch tensors
+or 4D NumPy arrays (see :py:class:`~torchio.transforms.Transform`).
 
 For example::
 
+   >>> import torch
    >>> from torchio.transforms import RandomAffine
-   >>> from torchio.datasets import IXITiny
    >>> affine_transform = RandomAffine()
-   >>> dataset = IXITiny('ixi', download=True)
-   >>> sample = dataset[0]
-   >>> transformed_sample = affine_transform(sample)
+   >>> tensor = torch.rand(1, 256, 256, 159)
+   >>> transformed_sample = affine_transform(tensor)
 
 
 Transforms can also be applied from the command line using

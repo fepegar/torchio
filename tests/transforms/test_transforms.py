@@ -52,6 +52,11 @@ class TestTransforms(TorchioTestCase):
         transform = self.get_transform(channels=('channel_0', 'channel_1'))
         transform(tensor)
 
+    def test_transforms_array(self):
+        tensor = torch.rand(2, 4, 5, 8).numpy()
+        transform = self.get_transform(channels=('channel_0', 'channel_1'))
+        transform(tensor)
+
     def test_transforms_sample_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
         transform(self.sample)

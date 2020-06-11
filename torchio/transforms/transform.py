@@ -5,6 +5,7 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 
 import torch
+import numpy as np
 import SimpleITK as sitk
 
 from .. import TypeData, INTENSITY, DATA
@@ -34,17 +35,19 @@ class Transform(ABC):
         """Transform a sample and return the result.
 
         Args:
-            data: Instance of :py:class:`~torchio.Subject` or 4D
-                :py:class:`torch.Tensor` with dimensions :math:`(C, D, H, W)`,
-                where :math:`C` is the number of channels and :math:`D, H, W`
-                are the spatial dimensions. If the input is a tensor, the affine
-                matrix is an identity and a tensor will be also returned.
+            data: Instance of :py:class:`~torchio.Subject`, or 4D
+                :py:class:`torch.Tensor` or NumPy array with dimensions
+                :math:`(C, D, H, W)`, where :math:`C` is the number of channels
+                and :math:`D, H, W` are the spatial dimensions. If the input is
+                a tensor, the affine matrix is an identity and a tensor will be
+                also returned.
         """
-        if isinstance(data, torch.Tensor):
+        if isinstance(data, (np.ndarray, torch.Tensor)):
+            is_array = isinstance(data, np.ndarray)
             is_tensor = True
             sample = self.parse_tensor(data)
         else:
-            is_tensor = False
+            is_tensor = is_array = False
             sample = data
         self.parse_sample(sample)
         if torch.rand(1).item() > self.probability:
@@ -58,6 +61,8 @@ class Transform(ABC):
                 for i in range(num_channels)
             ]
             transformed = torch.cat(images)
+        if is_array:
+            transformed = transformed.numpy()
         return transformed
 
     @abstractmethod
@@ -85,7 +90,12 @@ class Transform(ABC):
             )
             raise RuntimeError(message)
 
-    def parse_tensor(self, tensor: torch.Tensor) -> Subject:
+    def parse_tensor(self, data: TypeData) -> Subject:
+        if isinstance(data, np.ndarray):
+            tensor = torch.from_numpy(data)
+        else:
+            tensor = data
+        tensor = tensor.float()  # does nothing if already float
         num_dimensions = tensor.dim()
         if num_dimensions != 4:
             message = (
