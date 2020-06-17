@@ -36,7 +36,7 @@ class Resample(Transform):
             transform. See usage in the example below.
         image_interpolation: String that defines the interpolation technique.
             Supported interpolation techniques for resampling
-            are 'nearest','linear' and 'bspline'.
+            are ``'nearest'``, ``'linear'`` and ``'bspline'``.
             Using a member of :py:class:`torchio.Interpolation` is still
             supported for backward compatibility,
             but will be removed in a future version.
