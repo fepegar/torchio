@@ -53,7 +53,10 @@ class Transform(ABC):
         if torch.rand(1).item() > self.probability:
             return sample
         sample = deepcopy(sample)
-        transformed = self.apply_transform(sample)
+
+        with np.errstate(all='raise'):
+            transformed = self.apply_transform(sample)
+
         if is_tensor:
             num_channels = len(data)
             images = [
