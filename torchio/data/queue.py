@@ -155,14 +155,12 @@ class Queue(Dataset):
         else:
             iterable = range(num_subjects_for_queue)
         for _ in iterable:
-            subject_sample = self.get_next_subject_sample()
-            iterable = self.sampler(subject_sample)
-            patches = list(islice(iterable, self.samples_per_volume))
+            patches = self.get_patches_from_dataset()
             self.patches_list.extend(patches)
         if self.shuffle_patches:
             random.shuffle(self.patches_list)
 
-    def get_next_subject_sample(self) -> dict:
+    def get_patches_from_dataset(self) -> dict:
         # A StopIteration exception is expected when the queue is empty
         try:
             subject_sample = next(self.subjects_iterable)
@@ -173,6 +171,9 @@ class Queue(Dataset):
         return subject_sample
 
     def get_subjects_iterable(self) -> Iterator:
+        def collate_fn(subjects_list):
+            generator = self.sampler(subjects_list[0])
+            return list(islice(generator, self.samples_per_volume))
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
         self.print(
@@ -180,7 +181,7 @@ class Queue(Dataset):
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,
-            collate_fn=lambda x: x[0],
+            collate_fn=collate_fn,
             shuffle=self.shuffle_subjects,
         )
         return iter(subjects_loader)
