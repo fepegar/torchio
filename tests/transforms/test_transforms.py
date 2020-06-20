@@ -50,18 +50,30 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
         transform = self.get_transform(channels=('channel_0', 'channel_1'))
-        transform(tensor)
+        transformed = transform(tensor)
+        self.assertIsInstance(transformed, torch.Tensor)
 
     def test_transforms_array(self):
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transform = self.get_transform(channels=('channel_0', 'channel_1'))
-        transform(tensor)
+        transformed = transform(tensor)
+        self.assertIsInstance(transformed, np.ndarray)
 
     def test_transforms_sample_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
-        transform(self.sample)
+        transformed = transform(self.sample)
+        self.assertIsInstance(transformed, torchio.Subject)
 
     def test_transforms_sample_2d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=False)
         sample = self.make_2d(self.sample)
-        transform(sample)
+        transformed = transform(sample)
+        self.assertIsInstance(transformed, torchio.Subject)
+
+    def test_transform_noop(self):
+        transform = torchio.RandomMotion(p=0)
+        transformed = transform(self.sample)
+        self.assertIs(transformed, self.sample)
+        tensor = torch.rand(2, 4, 5, 8).numpy()
+        transformed = transform(tensor)
+        self.assertIs(transformed, tensor)
