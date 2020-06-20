@@ -17,7 +17,7 @@ requirements = [
     'Python-Deprecated',
     'scipy',
     'SimpleITK',
-    'torch>=1.1',  # for IterableDataset
+    'torch>=1.1',
     'torchvision',
     'tqdm',
 ]
