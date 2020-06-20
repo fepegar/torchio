@@ -52,7 +52,11 @@ class Transform(ABC):
             is_tensor = is_array = False
             sample = data
         self.parse_sample(sample)
-        sample = deepcopy(sample)
+
+        # If the input is a tensor, it will be deepcopied when calling
+        # ImagesDataset.__getitem__
+        if not is_tensor:
+            sample = deepcopy(sample)
 
         with np.errstate(all='raise'):
             transformed = self.apply_transform(sample)
