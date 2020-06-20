@@ -42,6 +42,8 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
+        if torch.rand(1).item() > self.probability:
+            return data
         if isinstance(data, (np.ndarray, torch.Tensor)):
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
@@ -50,8 +52,6 @@ class Transform(ABC):
             is_tensor = is_array = False
             sample = data
         self.parse_sample(sample)
-        if torch.rand(1).item() > self.probability:
-            return data
         sample = deepcopy(sample)
 
         with np.errstate(all='raise'):
