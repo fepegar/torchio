@@ -11,7 +11,7 @@ URLS_DICT = {
 
 
 class Slicer(Subject):
-    """Sample data provided by 3D Slicer.
+    """Sample data provided by `3D Slicer <https://www.slicer.org/>`_.
 
     See `the website <https://www.slicer.org/wiki/SampleData>`_
     for more information.
