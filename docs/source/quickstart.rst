@@ -24,7 +24,7 @@ To upgrade to the latest published version, use::
 Hello, World!
 =============
 
-This example shows the basic usage of TorchIO, where an
+This example shows the basic usage of TorchIO, where an instance of
 :py:class:`~torchio.data.dataset.ImagesDataset` is passed to
 a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
@@ -42,15 +42,15 @@ in parallel::
     # Each instance of torchio.Subject is passed arbitrary keyword arguments.
     # Typically, these arguments will be instances of torchio.Image
     subject_a = torchio.Subject(
-        t1=torchio.Image('subject_a.nii.gz', torchio.INTENSITY),
-        label=torchio.Image('subject_a.nii', torchio.LABEL),
+        t1=torchio.Image('subject_a.nii.gz', type=torchio.INTENSITY),
+        label=torchio.Image('subject_a.nii', type=torchio.LABEL),
         diagnosis='positive',
     )
 
     # Images can be in any format supported by SimpleITK or NiBabel, including DICOM
     subject_b = torchio.Subject(
-        t1=torchio.Image('subject_b_dicom_folder', torchio.INTENSITY),
-        label=torchio.Image('subject_b_seg.nrrd', torchio.LABEL),
+        t1=torchio.Image('subject_b_dicom_folder', type=torchio.INTENSITY),
+        label=torchio.Image('subject_b_seg.nrrd', type=torchio.LABEL),
         diagnosis='negative',
     )
     subjects_list = [subject_a, subject_b]

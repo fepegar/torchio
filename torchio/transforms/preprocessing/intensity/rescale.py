@@ -73,6 +73,6 @@ class RescaleIntensity(NormalizationTransform):
         return torch.from_numpy(array)
 
 
-@deprecated('Rescale is deprecated. Use RescaleIntensity instead.')
+@deprecated('Rescale is deprecated. Use RescaleIntensity instead')
 class Rescale(RescaleIntensity):
     pass

@@ -68,7 +68,7 @@ class Resample(Transform):
         ...     affine_name='to_mni',  # this is an image key
         ... )
         >>> dataset = torchio.ImagesDataset([subject], transform=resample)
-        >>> sample = dataset[0]  # sample['t1'] is now in MNI space
+        >>> transformed = resample(subject)  # subject['t1'] is now in MNI space
     """
     def __init__(
             self,
@@ -88,7 +88,9 @@ class Resample(Transform):
             ) -> TypeTarget:
         if isinstance(target, (str, Path)):
             if Path(target).is_file():
-                reference_image = Image(target, INTENSITY).load()
+                path = target
+                image = Image(path)
+                reference_image = image.data, image.affine
             else:
                 reference_image = target
             target_spacing = None

@@ -68,11 +68,11 @@ class BoundsTransform(Transform):
     def apply_transform(self, sample: Subject) -> dict:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
-        for image_dict in sample.get_images(intensity_only=False):
-            image = self.nib_to_sitk(image_dict[DATA][0], image_dict[AFFINE])
-            result = self.bounds_function(image, low, high)
+        for image in sample.get_images(intensity_only=False):
+            itk_image = image.as_sitk()
+            result = self.bounds_function(itk_image, low, high)
             data, affine = self.sitk_to_nib(result)
             tensor = torch.from_numpy(data).unsqueeze(0)
-            image_dict[DATA] = tensor
-            image_dict[AFFINE] = affine
+            image[DATA] = tensor
+            image[AFFINE] = affine
         return sample

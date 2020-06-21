@@ -8,8 +8,9 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 
-from ..utils import nib_to_sitk, get_rotation_and_spacing_from_affine
+from ..utils import nib_to_sitk, get_rotation_and_spacing_from_affine, get_stem
 from ..torchio import (
+    TypeData,
     TypePath,
     TypeTripletInt,
     TypeTripletFloat,
@@ -20,11 +21,27 @@ from ..torchio import (
     STEM,
     INTENSITY,
 )
-from .io import read_image
+from .io import read_image, write_image
 
 
 class Image(dict):
-    r"""Class to store information about an image.
+    r"""TorchIO image.
+
+    TorchIO images are `lazy loaders`_, i.e. the data is only loaded from disk
+    when needed.
+
+    Example:
+        >>> import torchio
+        >>> image = torchio.Image('t1.nii.gz', type=torchio.INTENSITY)
+        >>> image  # not loaded yet
+        Image(path: t1.nii.gz; type: intensity)
+        >>> times_two = 2 * image.data  # data is loaded and cached here
+        >>> image
+        Image(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
+        >>> image.save('doubled_image.nii.gz')
+
+    For information about medical image orientation, check out `NiBabel docs`_,
+    the `3D Slicer wiki`_, `Graham Wideman's website`_ or the `FSL docs`_.
 
     Args:
         path: Path to a file that can be read by
@@ -33,30 +50,58 @@ class Image(dict):
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
-            when resampling. For example,
-            `preprocessing <https://torchio.readthedocs.io/transforms/preprocessing.html#intensity>`_
-            and
-            `augmentation <https://torchio.readthedocs.io/transforms/augmentation.html#intensity>`_
+            when resampling. For example, `preprocessing`_ and `augmentation`_
             intensity transforms will only be applied to images with type
             :attr:`torchio.INTENSITY`. Spatial transforms will be applied to
             all types, and nearest neighbor interpolation is always used to
             resample images with type :attr:`torchio.LABEL`.
-        tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
-            :py:class:`torch.Tensor` with dimensions :math:`(C, D, H, W)`,
-            where :math:`C` is the number of channels and :math:`D, H, W`
-            are the spatial dimensions.
+            The type :attr:`torchio.SAMPLING_MAP` may be used with instances of
+            :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
+        tensor: If :attr:`path` is not given, :attr:`tensor` must be a 3D
+            :py:class:`torch.Tensor` or NumPy array with dimensions
+            :math:`(D, H, W)`.
         affine: If :attr:`path` is not given, :attr:`affine` must be a
             :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
             identity matrix.
+        check_nans: If ``True``, issues a warning if NaNs are found
+            in the image.
         **kwargs: Items that will be added to image dictionary within the
             subject sample.
+
+    Example:
+        >>> import torch
+        >>> import torchio
+        >>> # Loading from a file
+        >>> image = torchio.Image('t1.nii.gz', type=torchio.INTENSITY)
+        >>> image = torchio.Image('t1_seg.nii.gz', type=torchio.LABEL)
+        >>> image = torchio.Image(tensor=torch.rand(3, 4, 5))
+        >>> image = torchio.Image('safe_image.nrrd', check_nans=False)
+        >>> data, affine = image.data, image.affine
+        >>> affine.shape
+        (4, 4)
+        >>> image.data is image[torchio.DATA]
+        True
+        >>> image.data is image.tensor
+        True
+        >>> type(image.data)
+        torch.Tensor
+
+    .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading
+    .. _preprocessing: https://torchio.readthedocs.io/transforms/preprocessing.html#intensity
+    .. _augmentation: https://torchio.readthedocs.io/transforms/augmentation.html#intensity
+    .. _NiBabel docs: https://nipy.org/nibabel/image_orientation.html
+    .. _3D Slicer wiki: https://www.slicer.org/wiki/Coordinate_systems
+    .. _FSL docs: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained
+    .. _Graham Wideman's website: http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm
+
     """
     def __init__(
             self,
             path: Optional[TypePath] = None,
             type: str = INTENSITY,
-            tensor: Optional[torch.Tensor] = None,
-            affine: Optional[torch.Tensor] = None,
+            tensor: Optional[TypeData] = None,
+            affine: Optional[TypeData] = None,
+            check_nans: bool = True,
             **kwargs: Dict[str, Any],
             ):
         if path is None and tensor is None:
@@ -65,10 +110,15 @@ class Image(dict):
             if tensor is not None or affine is not None:
                 message = 'If a path is given, tensor and affine must be None'
                 raise ValueError(message)
-        self._tensor = self.parse_tensor(tensor)
-        self._affine = self.parse_affine(affine)
-        if self._affine is None:
-            self._affine = np.eye(4)
+        self._loaded = False
+        tensor = self.parse_tensor(tensor)
+        affine = self.parse_affine(affine)
+        if tensor is not None:
+            if affine is None:
+                affine = np.eye(4)
+            self[DATA] = tensor
+            self[AFFINE] = affine
+            self._loaded = True
         for key in (DATA, AFFINE, TYPE, PATH, STEM):
             if key in kwargs:
                 message = f'Key "{key}" is reserved. Use a different one'
@@ -76,31 +126,53 @@ class Image(dict):
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
-        self.type = type
+        self[PATH] = '' if self.path is None else str(self.path)
+        self[STEM] = '' if self.path is None else get_stem(self.path)
+        self[TYPE] = type
         self.is_sample = False  # set to True by ImagesDataset
+        self.check_nans = check_nans
 
     def __repr__(self):
-        properties = [
-            f'shape: {self.shape}',
-            f'spacing: {self.get_spacing_string()}',
-            f'orientation: {"".join(self.orientation)}+',
-            f'memory: {humanize.naturalsize(self.memory, binary=True)}',
-        ]
+        properties = []
+        if self._loaded:
+            properties.extend([
+                f'shape: {self.shape}',
+                f'spacing: {self.get_spacing_string()}',
+                f'orientation: {"".join(self.orientation)}+',
+                f'memory: {humanize.naturalsize(self.memory, binary=True)}',
+            ])
+        else:
+            properties.append(f'path: {self.path}')
+        properties.append(f'type: {self.type}')
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
         return string
+
+    def __getitem__(self, item):
+        if item in (DATA, AFFINE):
+            if item not in self:
+                self.load()
+        return super().__getitem__(item)
 
     @property
     def data(self):
         return self[DATA]
 
     @property
+    def tensor(self):
+        return self.data
+
+    @property
     def affine(self):
         return self[AFFINE]
 
     @property
+    def type(self):
+        return self[TYPE]
+
+    @property
     def shape(self) -> Tuple[int, int, int, int]:
-        return tuple(self[DATA].shape)
+        return tuple(self.data.shape)
 
     @property
     def spatial_shape(self) -> TypeTripletInt:
@@ -108,7 +180,7 @@ class Image(dict):
 
     @property
     def orientation(self):
-        return nib.aff2axcodes(self[AFFINE])
+        return nib.aff2axcodes(self.affine)
 
     @property
     def spacing(self):
@@ -138,9 +210,11 @@ class Image(dict):
         return path
 
     @staticmethod
-    def parse_tensor(tensor: torch.Tensor) -> torch.Tensor:
+    def parse_tensor(tensor: TypeData) -> torch.Tensor:
         if tensor is None:
             return None
+        if isinstance(tensor, np.ndarray):
+            tensor = torch.from_numpy(tensor)
         num_dimensions = tensor.dim()
         if num_dimensions != 3:
             message = (
@@ -149,6 +223,7 @@ class Image(dict):
             )
             raise RuntimeError(message)
         tensor = tensor.unsqueeze(0)  # add channels dimension
+        tensor = tensor.float()
         return tensor
 
     @staticmethod
@@ -161,15 +236,11 @@ class Image(dict):
             raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
         return affine
 
-    def load(self, check_nans: bool = True) -> Tuple[torch.Tensor, np.ndarray]:
+    def load(self) -> Tuple[torch.Tensor, np.ndarray]:
         r"""Load the image from disk.
 
         The file is expected to be monomodal/grayscale and 2D or 3D.
         A channels dimension is added to the tensor.
-
-        Args:
-            check_nans: If ``True``, issues a warning if NaNs are found
-                in the image
 
         Returns:
             Tuple containing a 4D data tensor of size
@@ -177,7 +248,7 @@ class Image(dict):
             and a 2D 4x4 affine matrix
         """
         if self.path is None:
-            return self._tensor, self._affine
+            raise RuntimeError('No path provided for instance of Image')
         tensor, affine = read_image(self.path)
         # https://github.com/pytorch/pytorch/issues/9410#issuecomment-404968513
         tensor = tensor[(None,) * (3 - tensor.ndim)]  # force to be 3D
@@ -188,9 +259,21 @@ class Image(dict):
         tensor = tensor.unsqueeze(0)  # add channels dimension
         # name_dimensions(tensor, affine)
         # tensor = tensor.align_to('channels', ...)
-        if check_nans and torch.isnan(tensor).any():
+        if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{self.path}"')
-        return tensor, affine
+        self[DATA] = tensor
+        self[AFFINE] = affine
+        self._loaded = True
+
+    def save(self, path):
+        """Save image to disk.
+
+        Args:
+            path: String or instance of :py:class:`pathlib.Path`.
+        """
+        tensor = self[DATA].squeeze()  # assume 2D if (1, 1, H, W)
+        affine = self[AFFINE]
+        write_image(tensor, affine, path)
 
     def is_2d(self) -> bool:
         return self.shape[-3] == 1
@@ -199,7 +282,7 @@ class Image(dict):
         return self[DATA].numpy()
 
     def as_sitk(self) -> sitk.Image:
-        return nib_to_sitk(self[DATA], self[AFFINE])
+        return nib_to_sitk(self[DATA][0], self[AFFINE])
 
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS (default) or LPS coordinates."""
@@ -211,3 +294,6 @@ class Image(dict):
             return (l, p, s)
         else:
             return (-l, -p, s)
+
+    def set_check_nans(self, check_nans):
+        self.check_nans = check_nans

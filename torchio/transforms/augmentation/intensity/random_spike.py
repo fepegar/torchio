@@ -65,12 +65,8 @@ class RandomSpike(RandomTransform):
                     ' of an inverse Fourier transform'
                 )
                 warnings.warn(message)
-            image = self.nib_to_sitk(
-                image_dict[DATA][0],
-                image_dict[AFFINE],
-            )
             image_dict[DATA] = self.add_artifact(
-                image,
+                image_dict.as_sitk(),
                 spikes_positions_param,
                 intensity_param,
             )
