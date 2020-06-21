@@ -1,4 +1,5 @@
 Click>=7.0
+humanize
 nibabel
 numpy
 Python-deprecated

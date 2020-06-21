@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, Tuple, Optional
 
 import torch
+import humanize
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
@@ -70,7 +71,8 @@ class Image(dict):
             self._affine = np.eye(4)
         for key in (DATA, AFFINE, TYPE, PATH, STEM):
             if key in kwargs:
-                raise ValueError(f'Key {key} is reserved. Use a different one')
+                message = f'Key "{key}" is reserved. Use a different one'
+                raise ValueError(message)
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
@@ -82,6 +84,7 @@ class Image(dict):
             f'shape: {self.shape}',
             f'spacing: {self.get_spacing_string()}',
             f'orientation: {"".join(self.orientation)}+',
+            f'memory: {humanize.naturalsize(self.memory, binary=True)}',
         ]
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
@@ -111,6 +114,10 @@ class Image(dict):
     def spacing(self):
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
         return tuple(spacing)
+
+    @property
+    def memory(self):
+        return np.prod(self.shape) * 4  # float32, i.e. 4 bytes per voxel
 
     def get_spacing_string(self):
         strings = [f'{n:.2f}' for n in self.spacing]
