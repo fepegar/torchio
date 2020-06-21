@@ -32,7 +32,14 @@ class Image(dict):
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
-            when resampling.
+            when resampling. For example,
+            `preprocessing <https://torchio.readthedocs.io/transforms/preprocessing.html#intensity>`_
+            and
+            `augmentation <https://torchio.readthedocs.io/transforms/augmentation.html#intensity>`_
+            intensity transforms will only be applied to images with type
+            :attr:`torchio.INTENSITY`. Spatial transforms will be applied to
+            all types, and nearest neighbor interpolation is always used to
+            resample images with type :attr:`torchio.LABEL`.
         tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` with dimensions :math:`(C, D, H, W)`,
             where :math:`C` is the number of channels and :math:`D, H, W`
