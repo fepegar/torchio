@@ -21,15 +21,14 @@ class NormalizationTransform(Transform):
             - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`
 
     Example:
-        >>> from torchio.datasets import IXITiny
+        >>> import torchio
         >>> from torchio.transforms import ZNormalization
-        >>> dataset = IXITiny('ixi_root', download=True)
-        >>> sample = dataset[0]
-        >>> sample.keys()  # image is the MRI, label is a brain segmentation
-        dict_keys(['image', 'label'])
+        >>> subject = torchio.datasets.Colin27()
+        >>> subject
+        Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform
         >>> transformed = transform(sample)  # use all values to compute mean and std
-        >>> transform = ZNormalization(masking_method='label')
+        >>> transform = ZNormalization(masking_method='brain')
         >>> transformed = transform(sample)  # use only values within the brain
         >>> transform = ZNormalization(masking_method=lambda x: x > x.mean())
         >>> transformed = transform(sample)  # use values above the image mean

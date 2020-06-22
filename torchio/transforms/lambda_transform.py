@@ -9,7 +9,7 @@ class Lambda(Transform):
     """Applies a user-defined function as transform.
 
     Args:
-        function: Callable that receives and returns a
+        function: Callable that receives and returns a 3D
             :py:class:`torch.Tensor`.
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform

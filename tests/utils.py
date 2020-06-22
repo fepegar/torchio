@@ -63,12 +63,12 @@ class TorchioTestCase(unittest.TestCase):
     def get_inconsistent_sample(self):
         """Return a sample containing images of different shape."""
         subject = Subject(
-            t1=Image(self.get_image_path('t1_d'), INTENSITY),
+            t1=Image(self.get_image_path('t1_inc'), INTENSITY),
             t2=Image(
-                self.get_image_path('t2_d', shape=(10, 20, 31)), INTENSITY),
+                self.get_image_path('t2_inc', shape=(10, 20, 31)), INTENSITY),
             label=Image(
                 self.get_image_path(
-                    'label_d',
+                    'label_inc',
                     shape=(8, 17, 25),
                     binary=True,
                 ),
@@ -81,7 +81,7 @@ class TorchioTestCase(unittest.TestCase):
 
     def get_reference_image_and_path(self):
         """Return a reference image and its path"""
-        path = self.get_image_path('ref', shape=(10, 20, 31))
+        path = self.get_image_path('ref', shape=(10, 20, 31), spacing=(1, 1, 2))
         image = Image(path, INTENSITY)
         return image, path
 

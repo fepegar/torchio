@@ -44,25 +44,12 @@ class TestImagesDataset(TorchioTestCase):
         sample = dataset[0]
         output_path = self.dir / 'test.nii.gz'
         paths_dict = {'t1': output_path}
-        dataset.save_sample(sample, paths_dict)
+        with self.assertWarns(DeprecationWarning):
+            dataset.save_sample(sample, paths_dict)
         nii = nib.load(str(output_path))
         ndims_output = len(nii.shape)
         ndims_sample = len(sample['t1'].shape)
         assert ndims_sample == ndims_output + 1
-
-    def test_no_load(self):
-        dataset = ImagesDataset(
-            self.subjects_list, load_image_data=False)
-        for _ in dataset:
-            pass
-
-    def test_no_load_transform(self):
-        with self.assertRaises(ValueError):
-            ImagesDataset(
-                self.subjects_list,
-                load_image_data=False,
-                transform=lambda x: x,
-            )
 
     def test_wrong_transform_init(self):
         with self.assertRaises(ValueError):

@@ -55,16 +55,16 @@ class RandomAffine(RandomTransform):
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     Example:
-        >>> from torchio.transforms import RandomAffine, Interpolation
-        >>> sample = images_dataset[0]  # instance of torchio.ImagesDataset
-        >>> transform = RandomAffine(
+        >>> import torchio
+        >>> subject = torchio.datasets.Colin27()
+        >>> transform = torchio.RandomAffine(
         ...     scales=(0.9, 1.2),
         ...     degrees=(10),
         ...     isotropic=False,
         ...     default_pad_value='otsu',
         ...     image_interpolation='bspline',
         ... )
-        >>> transformed = transform(sample)
+        >>> transformed = transform(subject)
 
     From the command line::
 

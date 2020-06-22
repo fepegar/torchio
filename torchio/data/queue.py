@@ -51,23 +51,26 @@ class Queue(Dataset):
 
     >>> from torch.utils.data import DataLoader
     >>> import torchio
+    >>> patch_size = 96
+    >>> queue_length = 300
+    >>> samples_per_volume = 10
+    >>> sample = torchio.data.UniformSampler(patch_size)
     >>> patches_queue = torchio.Queue(
-    ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset
-    ...     max_length=300,
-    ...     samples_per_volume=10,
-    ...     patch_size=96,
-    ...     sampler=,
+    ...     subjects_dataset,  # instance of torchio.ImagesDataset
+    ...     queue_length,
+    ...     samples_per_volume,
+    ...     sampler,
     ...     num_workers=4,
     ...     shuffle_subjects=True,
     ...     shuffle_patches=True,
     ... )
-    >>> patches_loader = DataLoader(patches_queue, batch_size=4)
+    >>> patches_loader = DataLoader(patches_queue, batch_size=16)
     >>> num_epochs = 20
     >>> for epoch_index in range(num_epochs):
     ...     for patches_batch in patches_loader:
     ...         inputs = patches_batch['image_name'][torchio.DATA]
     ...         targets = patches_batch['targets_name'][torchio.DATA]
-    ...         logits = model(inputs)  # model is some torch.nn.Module
+    ...         logits = model(inputs)  # model being an instance of torch.nn.Module
 
     """
     def __init__(
