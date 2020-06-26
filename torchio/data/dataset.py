@@ -102,6 +102,7 @@ class ImagesDataset(Dataset):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
         sample = copy.deepcopy(subject)
+        sample.load()
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
