@@ -248,7 +248,7 @@ class Image(dict):
             and a 2D 4x4 affine matrix
         """
         if self.path is None:
-            raise RuntimeError('No path provided for instance of Image')
+            return
         tensor, affine = read_image(self.path)
         # https://github.com/pytorch/pytorch/issues/9410#issuecomment-404968513
         tensor = tensor[(None,) * (3 - tensor.ndim)]  # force to be 3D

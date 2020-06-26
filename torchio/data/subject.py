@@ -122,3 +122,7 @@ class Subject(dict):
             parameters_dict: dict,
             ) -> None:
         self.history.append((transform.name, parameters_dict))
+
+    def load(self):
+        for image in self.get_images(intensity_only=False):
+            image.load()

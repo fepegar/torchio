@@ -3,6 +3,7 @@
 """Tests for ImagesDataset."""
 
 import nibabel as nib
+import torchio
 from torchio import DATA, ImagesDataset
 from ..utils import TorchioTestCase
 
@@ -67,3 +68,12 @@ class TestImagesDataset(TorchioTestCase):
         dataset = ImagesDataset(subjects_list)
         for _ in dataset:
             pass
+
+    def test_data_loader(self):
+        from torch.utils.data import DataLoader
+        subj_list = [torchio.datasets.Colin27()]
+        dataset = ImagesDataset(subj_list)
+        loader = DataLoader(dataset, batch_size=1, shuffle=True)
+        for batch in loader:
+            batch['t1'][DATA]
+            batch['brain'][DATA]
