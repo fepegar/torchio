@@ -1,4 +1,3 @@
-import warnings
 from typing import Tuple, Optional, Union
 import torch
 import numpy as np
@@ -28,7 +27,7 @@ class RandomSpike(RandomTransform):
     def __init__(
             self,
             num_spikes: Union[int, Tuple[int, int]] = 1,
-            intensity: Union[float, Tuple[float, float]] = (0.1, 1),
+            intensity: Union[float, Tuple[float, float]] = (1, 3),
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -53,18 +52,6 @@ class RandomSpike(RandomTransform):
                 'spikes_positions': spikes_positions_param,
             }
             random_parameters_images_dict[image_name] = random_parameters_dict
-            if (image_dict[DATA][0] < -0.1).any():
-                # I use -0.1 instead of 0 because Python was warning me when
-                # a value in a voxel was -7.191084e-35
-                # There must be a better way of solving this
-                message = (
-                    f'Image "{image_name}" from "{image_dict["stem"]}"'
-                    ' has negative values.'
-                    ' Results can be unexpected because the transformed sample'
-                    ' is computed as the absolute values'
-                    ' of an inverse Fourier transform'
-                )
-                warnings.warn(message)
             image_dict[DATA] = self.add_artifact(
                 image_dict.as_sitk(),
                 spikes_positions_param,
@@ -84,7 +71,7 @@ class RandomSpike(RandomTransform):
         ns_min, ns_max = num_spikes_range
         num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
         intensity_param = torch.FloatTensor(1).uniform_(*intensity_range)
-        spikes_positions = torch.rand(num_spikes_param).numpy()
+        spikes_positions = torch.rand(num_spikes_param, 3).numpy()
         return spikes_positions, intensity_param.item()
 
     def add_artifact(
@@ -94,10 +81,19 @@ class RandomSpike(RandomTransform):
             intensity_factor: float,
             ):
         array = sitk.GetArrayViewFromImage(image).transpose()
-        spectrum = self.fourier_transform(array).ravel()
-        indices = np.floor(spikes_positions * len(spectrum)).astype(int)
+        spectrum = self.fourier_transform(array)
+        shape = np.array(spectrum.shape)
+        mid_shape = shape // 2
+        indices = np.floor(spikes_positions * shape).astype(int)
         for index in indices:
-            spectrum[index] = spectrum.max() * intensity_factor
-        spectrum = spectrum.reshape(array.shape)
-        result = self.inv_fourier_transform(spectrum)
+            diff = index - mid_shape
+            i, j, k = mid_shape + diff
+            spectrum[i, j, k] = spectrum.max() * intensity_factor
+            # If we wanted to add a pure cosine, we should add spikes to both
+            # sides of k-space. However, having only one is a better
+            # representation og the actual cause of the artifact in real
+            # scans.
+            #i, j, k = mid_shape - diff
+            #spectrum[i, j, k] = spectrum.max() * intensity_factor
+        result = np.real(self.inv_fourier_transform(spectrum))
         return result.astype(np.float32)

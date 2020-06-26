@@ -98,4 +98,4 @@ class RandomTransform(Transform):
     def inv_fourier_transform(fshift: np.ndarray):
         f_ishift = np.fft.ifftshift(fshift)
         img_back = np.fft.ifftn(f_ishift)
-        return np.abs(img_back)
+        return img_back

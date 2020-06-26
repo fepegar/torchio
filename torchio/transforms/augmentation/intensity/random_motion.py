@@ -7,7 +7,6 @@ Custom implementation of
 
 """
 
-import warnings
 from typing import Tuple, Optional, List
 import torch
 import numpy as np
@@ -61,6 +60,12 @@ class RandomMotion(RandomTransform):
         super().__init__(p=p, seed=seed)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
+        if not 0 < num_transforms or not isinstance(num_transforms, int):
+            message = (
+                'Number of transforms must be a natural number,'
+                f' not {num_transforms}'
+            )
+            raise ValueError(message)
         self.num_transforms = num_transforms
         self.image_interpolation = self.parse_interpolation(image_interpolation)
 
@@ -82,18 +87,6 @@ class RandomMotion(RandomTransform):
                 'translation': translation_params,
             }
             random_parameters_images_dict[image_name] = random_parameters_dict
-            if (data[0] < -0.1).any():
-                # I use -0.1 instead of 0 because Python was warning me when
-                # a value in a voxel was -7.191084e-35
-                # There must be a better way of solving this
-                message = (
-                    f'Image "{image_name}" from "{image_dict["stem"]}"'
-                    ' has negative values.'
-                    ' Results can be unexpected because the transformed sample'
-                    ' is computed as the absolute values'
-                    ' of an inverse Fourier transform'
-                )
-                warnings.warn(message)
             image = self.nib_to_sitk(
                 data[0],
                 image_dict[AFFINE],
@@ -227,7 +220,7 @@ class RandomMotion(RandomTransform):
         for spectrum, fin in zip(spectra, indices):
             result_spectrum[..., ini:fin] = spectrum[..., ini:fin]
             ini = fin
-        result_image = self.inv_fourier_transform(result_spectrum)
+        result_image = np.real(self.inv_fourier_transform(result_spectrum))
         return result_image.astype(np.float32)
 
 
