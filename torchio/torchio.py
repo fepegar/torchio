@@ -36,3 +36,6 @@ TypeRangeInt = Union[int, Tuple[int, int]]
 TypePatchSize = Union[int, Tuple[int, int, int]]
 TypeRangeFloat = Union[float, Tuple[float, float]]
 TypeCallable = Callable[[torch.Tensor], torch.Tensor]
+
+# Data repository
+DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/master/data/'
