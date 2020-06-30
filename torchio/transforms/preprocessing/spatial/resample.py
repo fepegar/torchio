@@ -1,6 +1,6 @@
+from pathlib import Path
 from numbers import Number
 from typing import Union, Tuple, Optional
-from pathlib import Path
 
 import torch
 import numpy as np
@@ -9,9 +9,9 @@ from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
 from ....data.image import Image
-from ....torchio import DATA, AFFINE, TYPE, INTENSITY
-from ... import Interpolation
-from ... import Transform
+from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
+from ... import Transform, Interpolation
+
 
 
 TypeSpacing = Union[float, Tuple[float, float, float]]
@@ -42,7 +42,6 @@ class Resample(Transform):
             but will be removed in a future version.
         p: Probability that this transform will be applied.
 
-
     .. note:: Resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output` or
         :py:meth:`nibabel.processing.resample_from_to`, depending on whether
@@ -50,25 +49,16 @@ class Resample(Transform):
 
     Example:
         >>> import torchio
-        >>> from torchio.transforms import Resample
-        >>> from pathlib import Path
+        >>> from torchio import Resample
+        >>> from torchio.datasets import Colin27, FPG
         >>> transform = Resample(1)                     # resample all images to 1mm iso
-        >>> transform = Resample((1, 1, 1))             # resample all images to 1mm iso
+        >>> transform = Resample((2, 2, 2))             # resample all images to 2mm iso
         >>> transform = Resample('t1')                  # resample all images to 't1' image space
-        >>> transform = Resample('path/to/ref.nii.gz')  # resample all images to space of image at this path
-        >>>
-        >>> # Affine matrices are added to each image
-        >>> matrix_to_mni = some_4_by_4_array  # e.g. result of registration to MNI space
-        >>> subject = torchio.Subject(
-        ...     t1=Image('t1.nii.gz', torchio.INTENSITY, to_mni=matrix_to_mni),
-        ...     mni=Image('mni_152_lin.nii.gz', torchio.INTENSITY),
-        ... )
-        >>> resample = Resample(
-        ...     'mni',  # this is a subject key
-        ...     affine_name='to_mni',  # this is an image key
-        ... )
-        >>> dataset = torchio.ImagesDataset([subject], transform=resample)
-        >>> transformed = resample(subject)  # subject['t1'] is now in MNI space
+        >>> colin = Colin27()  # this images are in the MNI space
+        >>> fpg = FPG()  # matrices to the MNI space are included here
+        >>> # Resample all images into the MNI space
+        >>> transform = Resample(colin.t1.path, pre_affine_name='affine_matrix')
+        >>> transformed = transform(fpg)  # images in fpg are now in MNI space
     """
     def __init__(
             self,
@@ -139,9 +129,9 @@ class Resample(Transform):
             raise TypeError(message)
         if affine_name in image_dict:
             matrix = image_dict[affine_name]
-            if not isinstance(matrix, np.ndarray):
+            if not isinstance(matrix, (np.ndarray, torch.Tensor)):
                 message = (
-                    'The affine matrix must be a NumPy array,'
+                    'The affine matrix must be a NumPy array or PyTorch tensor,'
                     f' not {type(matrix)}'
                 )
                 raise TypeError(message)
@@ -184,6 +174,8 @@ class Resample(Transform):
             if use_pre_affine and self.affine_name in image_dict:
                 self.check_affine(self.affine_name, image_dict)
                 matrix = image_dict[self.affine_name]
+                if isinstance(matrix, torch.Tensor):
+                    matrix = matrix.numpy()
                 image_dict[AFFINE] = matrix @ image_dict[AFFINE]
 
             # Resample
