@@ -178,7 +178,7 @@ class IXITiny(ImagesDataset):
 
     .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
     """
-    url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
+    url = 'https://github.com/fepegar/torchio-data/blob/master/data/ixi_tiny/ixi_tiny.zip?raw=true'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
     def __init__(
@@ -204,7 +204,12 @@ class IXITiny(ImagesDataset):
     def _get_subjects_list(root):
         image_paths = sglob(root / 'image', '*.nii.gz')
         label_paths = sglob(root / 'label', '*.nii.gz')
-        assert image_paths and label_paths
+        if not (image_paths and label_paths):
+            message = (
+                f'Images not found. Remove the root directory ({root})'
+                ' and try again'
+            )
+            raise FileNotFoundError(message)
 
         subjects = []
         for image_path, label_path in zip(image_paths, label_paths):

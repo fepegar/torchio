@@ -56,16 +56,16 @@ class ImagesDataset(Dataset):
         >>> from torchio import ImagesDataset, Image, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
         >>> subject_a = Subject([
-        ...     t1=Image('~/Dropbox/MRI/t1.nrrd', type=torchio.INTENSITY),
-        ...     t2=Image('~/Dropbox/MRI/t2.mha', type=torchio.INTENSITY),
-        ...     label=Image('~/Dropbox/MRI/t1_seg.nii.gz', type=torchio.LABEL),
+        ...     t1=Image('t1.nrrd', type=torchio.INTENSITY),
+        ...     t2=Image('t2.mha', type=torchio.INTENSITY),
+        ...     label=Image('t1_seg.nii.gz', type=torchio.LABEL),
         ...     age=31,
         ...     name='Fernando Perez',
         >>> ])
         >>> subject_b = Subject(
-        ...     t1=Image('/tmp/colin27_t1_tal_lin.minc', type=torchio.INTENSITY),
-        ...     t2=Image('/tmp/colin27_t2_tal_lin_dicom', type=torchio.INTENSITY),
-        ...     label=Image('/tmp/colin27_seg1.nii.gz', type=torchio.LABEL),
+        ...     t1=Image('colin27_t1_tal_lin.minc', type=torchio.INTENSITY),
+        ...     t2=Image('colin27_t2_tal_lin_dicom', type=torchio.INTENSITY),
+        ...     label=Image('colin27_seg1.nii.gz', type=torchio.LABEL),
         ...     age=56,
         ...     name='Colin Holmes',
         ... )
