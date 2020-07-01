@@ -1,10 +1,6 @@
+import copy
 import pprint
-from typing import (
-    Any,
-    Dict,
-    List,
-    Tuple,
-)
+from typing import Any, Dict, List, Tuple
 from ..torchio import TYPE, INTENSITY
 from .image import Image
 
@@ -125,3 +121,14 @@ class Subject(dict):
     def load(self):
         for image in self.get_images(intensity_only=False):
             image.load()
+
+    def crop(self, index_ini, index_fin):
+        result_dict = {}
+        for key, value in self.items():
+            if isinstance(value, Image):
+                # patch.clone() is much faster than copy.deepcopy(patch)
+                value = value.crop(index_ini, index_fin)
+            else:
+                value = copy.deepcopy(value)
+            result_dict[key] = value
+        return Subject(result_dict)
