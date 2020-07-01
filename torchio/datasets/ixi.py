@@ -178,7 +178,7 @@ class IXITiny(ImagesDataset):
 
     .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
     """
-    url = 'https://github.com/fepegar/torchio-data/blob/master/data/ixi_tiny/ixi_tiny.zip?raw=true'
+    url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
     def __init__(
