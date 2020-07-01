@@ -69,7 +69,7 @@ class GridSampler(PatchSampler, Dataset):
         location = self.locations[index]
         index_ini = location[:3]
         index_fin = location[3:]
-        cropped_sample = self.extract_patch(self.sample, index_ini, index_fin)
+        cropped_sample = self.sample.crop(index_ini, index_fin)
         cropped_sample[LOCATION] = location
         return cropped_sample
 
@@ -100,20 +100,6 @@ class GridSampler(PatchSampler, Dataset):
                 f' not {tuple(patch_overlap)}'
             )
             raise ValueError(message)
-
-    def extract_patch(
-            self,
-            sample: Subject,
-            index_ini: TypeTripletInt,
-            index_fin: TypeTripletInt,
-            ) -> Subject:
-        crop = self.get_crop_transform(
-            sample.spatial_shape,
-            index_ini,
-            index_fin - index_ini,
-        )
-        cropped_sample = crop(sample)
-        return cropped_sample
 
     @staticmethod
     def get_patches_locations(

@@ -129,7 +129,6 @@ class Image(dict):
         self[PATH] = '' if self.path is None else str(self.path)
         self[STEM] = '' if self.path is None else get_stem(self.path)
         self[TYPE] = type
-        self.is_sample = False  # set to True by ImagesDataset
         self.check_nans = check_nans
 
     def __repr__(self):
@@ -297,3 +296,12 @@ class Image(dict):
 
     def set_check_nans(self, check_nans):
         self.check_nans = check_nans
+
+    def crop(self, index_ini, index_fin):
+        new_origin = nib.affines.apply_affine(self.affine, index_ini)
+        new_affine = self.affine.copy()
+        new_affine[:3, 3] = new_origin
+        i0, j0, k0 = index_ini
+        i1, j1, k1 = index_fin
+        patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
+        return Image(tensor=patch, affine=new_affine, type=self.type)
