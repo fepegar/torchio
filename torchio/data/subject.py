@@ -55,7 +55,6 @@ class Subject(dict):
         ]
         self._parse_images(self.images)
         self.__dict__.update(self)  # this allows me to do e.g. subject.t1
-        self.is_sample = False  # set to True by ImagesDataset
         self.history = []
 
     def __repr__(self):

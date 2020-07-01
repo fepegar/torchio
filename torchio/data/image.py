@@ -129,7 +129,6 @@ class Image(dict):
         self[PATH] = '' if self.path is None else str(self.path)
         self[STEM] = '' if self.path is None else get_stem(self.path)
         self[TYPE] = type
-        self.is_sample = False  # set to True by ImagesDataset
         self.check_nans = check_nans
 
     def __repr__(self):
