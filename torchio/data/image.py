@@ -296,3 +296,10 @@ class Image(dict):
 
     def set_check_nans(self, check_nans):
         self.check_nans = check_nans
+
+    def crop(self, index_ini, index_fin):
+        # TODO: handle affine
+        i0, j0, k0 = index_ini
+        i1, j1, k1 = index_fin
+        patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
+        return Image(tensor=patch, affine=self.affine, type=self.type)

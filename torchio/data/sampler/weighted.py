@@ -191,17 +191,6 @@ class WeightedSampler(RandomSampler):
         cdf = np.cumsum(flat_map_normalized_sorted)
         return cdf, sort_indices
 
-    @staticmethod
-    def crop_sample(sample, index_ini, patch_size):
-        # Ignore affine for now
-        import copy
-        sample = copy.deepcopy(sample)
-        for image in sample.get_images(intensity_only=False):
-            i0, j0, k0 = index_ini
-            i1, j1, k1 = np.array(index_ini) + np.array(patch_size)
-            image['data'] = image['data'][:, i0:i1, j0:j1, k0:k1]
-        return sample
-
     def extract_patch(
             self,
             sample: Subject,
@@ -210,7 +199,8 @@ class WeightedSampler(RandomSampler):
             sort_indices: np.ndarray,
             ) -> Subject:
         index_ini = self.get_random_index_ini(probability_map, cdf, sort_indices)
-        cropped_sample = self.crop_sample(sample, index_ini, self.patch_size)
+        index_fin = index_ini + self.patch_size
+        cropped_sample = sample.crop(index_ini, index_fin)
         cropped_sample['index_ini'] = index_ini.astype(int)
         return cropped_sample
 
