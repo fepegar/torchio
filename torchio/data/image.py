@@ -278,13 +278,21 @@ class Image(dict):
         return self.shape[-3] == 1
 
     def numpy(self) -> np.ndarray:
+        """Get a NumPy array containing the image data."""
         return self[DATA].numpy()
 
     def as_sitk(self) -> sitk.Image:
+        """Get the image as an instance of :py:class:`sitk.Image`."""
         return nib_to_sitk(self[DATA][0], self[AFFINE])
 
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
-        """Get image center in RAS (default) or LPS coordinates."""
+        """Get image center in RAS+ or LPS+ coordinates.
+
+        Args:
+            lps: If ``True``, the coordinates will be in LPS+ orientation, i.e.
+                the first dimension grows towards the left, etc. Otherwise, the
+                coordinates will be in RAS+ orientation.
+        """
         image = self.as_sitk()
         size = np.array(image.GetSize())
         center_index = (size - 1) / 2
@@ -298,6 +306,7 @@ class Image(dict):
         self.check_nans = check_nans
 
     def crop(self, index_ini, index_fin):
+        # TODO: add the rest of kwargs
         new_origin = nib.affines.apply_affine(self.affine, index_ini)
         new_affine = self.affine.copy()
         new_affine[:3, 3] = new_origin
