@@ -59,5 +59,5 @@ class Pediatric(SubjectMNI):
             t1=Image(download_root / f'nihpd_{file_id}_t1w.nii'),
             t2=Image(download_root / f'nihpd_{file_id}_t2w.nii'),
             pd=Image(download_root / f'nihpd_{file_id}_pdw.nii'),
-            mask=Image(download_root / f'nihpd_{file_id}_pdw.nii', type=LABEL),
+            mask=Image(download_root / f'nihpd_{file_id}_mask.nii', type=LABEL),
         )
