@@ -10,6 +10,7 @@ from .augmentation.composition import Compose
 
 from .augmentation.spatial import RandomFlip
 from .augmentation.spatial import RandomAffine
+from .augmentation.spatial import RandomDownsample
 from .augmentation.spatial import RandomElasticDeformation
 
 from .augmentation.intensity import RandomSwap
@@ -19,6 +20,7 @@ from .augmentation.intensity import RandomSpike
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import RandomGhosting
 from .augmentation.intensity import RandomBiasField
+from .augmentation.intensity import RandomLabelsToImage
 
 # Preprocessing
 from .preprocessing import Pad

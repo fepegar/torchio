@@ -101,7 +101,7 @@ class ImagesDataset(Dataset):
         if not isinstance(index, int):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
-        sample = copy.deepcopy(subject)
+        sample = copy.deepcopy(subject)  # cheap since images not loaded yet
         sample.load()
 
         # Apply transform (this is usually the bottleneck)

@@ -27,9 +27,11 @@ class Transform(ABC):
 
     Args:
         p: Probability that this transform will be applied.
+        copy: Make a deep copy of the input before applying the transform.
     """
-    def __init__(self, p: float = 1):
+    def __init__(self, p: float = 1, copy: bool = True):
         self.probability = self.parse_probability(p)
+        self.copy = copy
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
         """Transform a sample and return the result.
@@ -53,9 +55,7 @@ class Transform(ABC):
             sample = data
         self.parse_sample(sample)
 
-        # If the input is a tensor, it will be deepcopied when calling
-        # ImagesDataset.__getitem__
-        if not is_tensor:
+        if self.copy:
             sample = deepcopy(sample)
 
         with np.errstate(all='raise'):
@@ -147,9 +147,7 @@ class Transform(ABC):
             image = Image(tensor=channel_tensor, type=INTENSITY)
             subject_dict[name] = image
         subject = Subject(subject_dict)
-        dataset = ImagesDataset([subject])
-        sample = dataset[0]
-        return sample
+        return subject
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData):

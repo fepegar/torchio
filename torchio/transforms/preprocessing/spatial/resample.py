@@ -66,8 +66,9 @@ class Resample(Transform):
             image_interpolation: str = 'linear',
             pre_affine_name: Optional[str] = None,
             p: float = 1,
+            copy: bool = True,
             ):
-        super().__init__(p=p)
+        super().__init__(p=p, copy=copy)
         self.reference_image, self.target_spacing = self.parse_target(target)
         self.interpolation_order = self.parse_interpolation(image_interpolation)
         self.affine_name = pre_affine_name
