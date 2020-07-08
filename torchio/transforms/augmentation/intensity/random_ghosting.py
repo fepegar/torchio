@@ -50,21 +50,39 @@ class RandomGhosting(RandomTransform):
             if axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
-        if isinstance(num_ghosts, int):
-            self.num_ghosts_range = num_ghosts, num_ghosts
-        elif isinstance(num_ghosts, tuple) and len(num_ghosts) == 2:
-            self.num_ghosts_range = num_ghosts
-        self.intensity_range = self.parse_range(intensity, 'intensity')
-        for n in self.intensity_range:
-            if n < 0:
-                message = (
-                    f'Intensity must be a positive number, not {n}')
-                raise ValueError(message)
+        self.num_ghosts_range = self.parse_num_ghosts(num_ghosts)
+        self.intensity_range = self.parse_intensity(intensity)
         if not 0 <= restore < 1:
             message = (
                 f'Restore must be a number between 0 and 1, not {restore}')
             raise ValueError(message)
         self.restore = restore
+
+    @staticmethod
+    def parse_num_ghosts(num_ghosts):
+        try:
+            iter(num_ghosts)
+        except TypeError:
+            num_ghosts = num_ghosts, num_ghosts
+        for n in num_ghosts:
+            if not isinstance(n, int) or n < 0:
+                message = (
+                    f'Number of ghosts must be a natural number, not {n}')
+                raise ValueError(message)
+        return num_ghosts
+
+    @staticmethod
+    def parse_intensity(intensity):
+        try:
+            iter(intensity)
+        except TypeError:
+            intensity = intensity, intensity
+        for n in intensity:
+            if n < 0:
+                message = (
+                    f'Intensity must be a positive number, not {n}')
+                raise ValueError(message)
+        return intensity
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
