@@ -14,8 +14,8 @@ macOS, using `Homebrew <https://docs.brew.sh/>`_:
 TorchIO provides a 3D Slicer extension for quick experimentation and
 visualization of the package features without any coding.
 
-.. The TorchIO extension can be installed using the
-.. `Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
+The TorchIO extension can be easily installed using the
+`Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
 
 The code and installation instructions are available on
 `GitHub <https://github.com/fepegar/SlicerTorchIO>`_.
