@@ -37,6 +37,12 @@ class Colin27(SubjectMNI):
                 download_root=download_root,
                 filename=self.filename,
             )
+            # Fix label map (https://github.com/fepegar/torchio/issues/220)
+            if version == 2008:
+                path = download_root / 'colin27_cls_tal_hires.nii'
+                cls_image = Image(path, type=LABEL)
+                cls_image[DATA] = cls_image[DATA].round().byte()
+                cls_image.save(path)
 
         if version == 1998:
             t1, head, mask = [
@@ -53,10 +59,6 @@ class Colin27(SubjectMNI):
                 download_root / f'colin27_{name}_tal_hires.nii'
                 for name in ('t1', 't2', 'pd', 'cls')
             ]
-            # Labels do not seem to be encoded correctly in this file
-            # See https://github.com/fepegar/torchio/issues/220
-            cls_image = Image(label, type=LABEL)
-            cls_image[DATA] = cls_image[DATA].round()
             super().__init__(
                 t1=Image(t1),
                 t2=Image(t2),
