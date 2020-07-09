@@ -1,15 +1,25 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import Image, LABEL
+from ... import Image, LABEL, DATA
 from .mni import SubjectMNI
 
 
 class Colin27(SubjectMNI):
-    """Colin27 MNI template.
+    r"""Colin27 MNI template.
+
+    More information can be found in the website of the
+    `1998 <http://nist.mni.mcgill.ca/?p=935>`_ and
+    `2008 <http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres>`_
+    versions.
 
     Arguments:
-        version: Template year. It can ``1998`` or ``2008``.
+        version: Template year. It can be ``1998`` or ``2008``.
+
+    .. warning:: The resolution of the ``2008`` version is quite high. The
+        subject instance will contain four images of size
+        :math:`362 \times 434 \times 362`, therefore applying a transform to
+        it might take longer than expected.
     """
     def __init__(self, version=1998):
         if version not in (1998, 2008):
@@ -27,6 +37,12 @@ class Colin27(SubjectMNI):
                 download_root=download_root,
                 filename=self.filename,
             )
+            # Fix label map (https://github.com/fepegar/torchio/issues/220)
+            if version == 2008:
+                path = download_root / 'colin27_cls_tal_hires.nii'
+                cls_image = Image(path, type=LABEL)
+                cls_image[DATA] = cls_image[DATA].round().byte()
+                cls_image.save(path)
 
         if version == 1998:
             t1, head, mask = [
