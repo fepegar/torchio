@@ -63,5 +63,5 @@ class Colin27(SubjectMNI):
                 t1=Image(t1),
                 t2=Image(t2),
                 pd=Image(pd),
-                cls=cls_image,
+                cls=Image(label, type=LABEL),
             )
