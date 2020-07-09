@@ -5,6 +5,21 @@ from ... import Image, LABEL, DATA
 from .mni import SubjectMNI
 
 
+TISSUES_2008 = {
+    1: 'Cerebro-spinal fluid',
+    2: 'Gray Matter',
+    3: 'White Matter',
+    4: 'Fat',
+    5: 'Muscles',
+    6: 'Skin and Muscles',
+    7: 'Skull',
+    9: 'Fat 2',
+    10: 'Dura',
+    11: 'Marrow',
+    12: 'Vessels',
+}
+
+
 class Colin27(SubjectMNI):
     r"""Colin27 MNI template.
 
@@ -13,6 +28,9 @@ class Colin27(SubjectMNI):
     `2008 <http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres>`_
     versions.
 
+    .. image:: http://www.bic.mni.mcgill.ca/uploads/ServicesAtlases/mni_colin27_2008.jpg
+        :alt: MNI Colin 27 2008 version
+
     Arguments:
         version: Template year. It can be ``1998`` or ``2008``.
 
@@ -20,6 +38,23 @@ class Colin27(SubjectMNI):
         subject instance will contain four images of size
         :math:`362 \times 434 \times 362`, therefore applying a transform to
         it might take longer than expected.
+
+    Example:
+        >>> import torchio
+        >>> colin_1998 = torchio.datasets.Colin27(version=1998)
+        >>> colin_1998
+        Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
+        >>> colin_1998.load()
+        >>> colin_1998.t1
+        Image(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)
+        >>>
+        >>> colin_2008 = torchio.datasets.Colin27(version=2008)
+        >>> colin_2008
+        Colin27(Keys: ('t1', 't2', 'pd', 'cls'); images: 4)
+        >>> colin_2008.load()
+        >>> colin_2008.t1
+        Image(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
+
     """
     def __init__(self, version=1998):
         if version not in (1998, 2008):
@@ -63,5 +98,5 @@ class Colin27(SubjectMNI):
                 t1=Image(t1),
                 t2=Image(t2),
                 pd=Image(pd),
-                cls=Image(label, type=LABEL),
+                cls=Image(label, type=LABEL, labels=TISSUES_2008),
             )
