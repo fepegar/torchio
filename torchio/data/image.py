@@ -246,6 +246,8 @@ class Image(dict):
             :math:`(1, D_{in}, H_{in}, W_{in})`
             and a 2D 4x4 affine matrix
         """
+        if self._loaded:
+            return
         if self.path is None:
             return
         tensor, affine = read_image(self.path)
