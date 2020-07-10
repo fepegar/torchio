@@ -105,9 +105,10 @@ class TorchioTestCase(unittest.TestCase):
         if binary:
             data = (data > 0.5).astype(np.uint8)
         affine = np.diag((*spacing, 1))
-        suffix = random.choice(('.nii.gz', '.nii'))
+        suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.minc', '.img'))
         path = self.dir / f'{stem}{suffix}'
-        nib.Nifti1Image(data, affine).to_filename(str(path))
         if np.random.rand() > 0.5:
             path = str(path)
+        image = Image(tensor=data, affine=affine)
+        image.save(path)
         return path
