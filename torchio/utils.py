@@ -116,13 +116,14 @@ def apply_transform_to_file(
         transform,  # : Transform seems to create a circular import (TODO)
         output_path: TypePath,
         type: str = INTENSITY,
+        verbose: bool = False,
         ):
     from . import Image, ImagesDataset, Subject
     subject = Subject(image=Image(input_path, type))
-    dataset = ImagesDataset([subject], transform=transform)
-    transformed = dataset[0]
-    dataset.save_sample(transformed, dict(image=output_path))
-
+    transformed = transform(subject)
+    transformed.image.save(output_path)
+    if verbose and transformed.history:
+        print(transformed.history[0])
 
 def guess_type(string: str) -> Any:
     # Adapted from
