@@ -75,6 +75,7 @@ class RandomDownsample(RandomTransform):
         transform = Resample(
             tuple(target_spacing),
             image_interpolation='nearest',
+            copy=False,  # already copied in super().__init__
         )
         sample = transform(sample)
         sample.add_transform(self, random_parameters_dict)
