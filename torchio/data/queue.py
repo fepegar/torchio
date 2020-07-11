@@ -54,7 +54,7 @@ class Queue(Dataset):
     >>> patch_size = 96
     >>> queue_length = 300
     >>> samples_per_volume = 10
-    >>> sample = torchio.data.UniformSampler(patch_size)
+    >>> sampler = torchio.data.UniformSampler(patch_size)
     >>> patches_queue = torchio.Queue(
     ...     subjects_dataset,  # instance of torchio.ImagesDataset
     ...     queue_length,

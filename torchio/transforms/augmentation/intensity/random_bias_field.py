@@ -16,35 +16,28 @@ class RandomBiasField(RandomTransform):
             :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             coefficients: Union[float, Tuple[float, float]] = 0.5,
             order: int = 3,
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = order
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,
             )
-            random_parameters_dict = {'coefficients': coefficients}
-            random_parameters_images_dict[image_name] = random_parameters_dict
-
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
             image_dict[DATA] = image_with_bias
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

@@ -43,7 +43,6 @@ class RandomMotion(RandomTransform):
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -55,9 +54,8 @@ class RandomMotion(RandomTransform):
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         if not 0 < num_transforms or not isinstance(num_transforms, int):
@@ -70,7 +68,6 @@ class RandomMotion(RandomTransform):
         self.image_interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             data = image_dict[DATA]
             is_2d = data.shape[-3] == 1
@@ -86,7 +83,6 @@ class RandomMotion(RandomTransform):
                 'degrees': degrees_params,
                 'translation': translation_params,
             }
-            random_parameters_images_dict[image_name] = random_parameters_dict
             image = self.nib_to_sitk(
                 data[0],
                 image_dict[AFFINE],
@@ -105,7 +101,6 @@ class RandomMotion(RandomTransform):
             # Add channels dimension
             data = data[np.newaxis, ...]
             image_dict[DATA] = torch.from_numpy(data)
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

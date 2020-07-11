@@ -53,7 +53,6 @@ class RandomElasticDeformation(RandomTransform):
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
     can also be used to better understand the meaning of the parameters.
@@ -114,9 +113,8 @@ class RandomElasticDeformation(RandomTransform):
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
         self.parse_control_points(self.num_control_points)
@@ -231,8 +229,6 @@ class RandomElasticDeformation(RandomTransform):
                 bspline_params,
                 interpolation,
             )
-        random_parameters_dict = {'coarse_grid': bspline_params}
-        sample.add_transform(self, random_parameters_dict)
         return sample
 
     def apply_bspline_transform(

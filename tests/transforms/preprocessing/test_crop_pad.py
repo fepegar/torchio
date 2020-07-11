@@ -24,42 +24,43 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(shape, mask_name='label')
         with self.assertWarns(UserWarning):
             transformed = transform(self.sample)
-        for key in transformed:
-            image_dict = self.sample[key]
-            assert_array_equal(image_dict[DATA], transformed[key][DATA])
-            assert_array_equal(image_dict[AFFINE], transformed[key][AFFINE])
+        iterable = transformed.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            image = self.sample[image_name]
+            assert_array_equal(image[DATA], transformed[image_name][DATA])
+            assert_array_equal(image[AFFINE], transformed[image_name][AFFINE])
 
     def test_different_shape(self):
         shape = self.sample['t1'].spatial_shape
         target_shape = 9, 21, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             self.assertNotEqual(shape, result_shape)
 
     def test_shape_right(self):
         target_shape = 9, 21, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_only_pad(self):
         target_shape = 11, 22, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_only_crop(self):
         target_shape = 9, 18, 30
         transform = CropOrPad(target_shape)
         transformed = transform(self.sample)
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             self.assertEqual(target_shape, result_shape)
 
     def test_shape_negative(self):
@@ -77,8 +78,8 @@ class TestCropOrPad(TorchioTestCase):
     def test_shape_one(self):
         transform = CropOrPad(1)
         transformed = transform(self.sample)
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             self.assertEqual((1, 1, 1), result_shape)
 
     def test_wrong_mask_name(self):
@@ -106,17 +107,15 @@ class TestCropOrPad(TorchioTestCase):
         mask [0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
         shapes = []
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             shapes.append(result_shape)
         set_shapes = set(shapes)
         message = f'Images have different shapes: {set_shapes}'
         assert len(set_shapes) == 1, message
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape,
-                f'Wrong shape for image: {key}',
-            )
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
+            self.assertEqual(target_shape, result_shape)
 
     def test_mask_only_crop(self):
         target_shape = 9, 18, 30
@@ -126,17 +125,15 @@ class TestCropOrPad(TorchioTestCase):
         mask [0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
         shapes = []
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
             shapes.append(result_shape)
         set_shapes = set(shapes)
         message = f'Images have different shapes: {set_shapes}'
         assert len(set_shapes) == 1, message
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape,
-                f'Wrong shape for image: {key}',
-            )
+        for image in transformed.get_images(intensity_only=False):
+            result_shape = image.spatial_shape
+            self.assertEqual(target_shape, result_shape)
 
     def test_center_mask(self):
         """The mask bounding box and the input image have the same center"""
@@ -148,8 +145,9 @@ class TestCropOrPad(TorchioTestCase):
         mask[0, 4:6, 9:11, 14:16] = 1
         transformed_center = transform_center(self.sample)
         transformed_mask = transform_mask(self.sample)
-        zipped = zip(transformed_center.values(), transformed_mask.values())
-        for image_center, image_mask in zipped:
+        tc_images = transformed_center.get_images(intensity_only=False)
+        tm_images = transformed_mask.get_images(intensity_only=False)
+        for image_center, image_mask in zip(tc_images, tm_images):
             assert_array_equal(
                 image_center[DATA], image_mask[DATA],
                 'Data is different after cropping',
@@ -171,8 +169,9 @@ class TestCropOrPad(TorchioTestCase):
         mask[0, -1, -1, -1] = 1
         transformed_center = transform_center(self.sample)
         transformed_mask = transform_mask(self.sample)
-        zipped = zip(transformed_center.values(), transformed_mask.values())
-        for image_center, image_mask in zipped:
+        tc_images = transformed_center.get_images(intensity_only=False)
+        tm_images = transformed_mask.get_images(intensity_only=False)
+        for image_center, image_mask in zip(tc_images, tm_images):
             assert_array_equal(
                 image_center[DATA], image_mask[DATA],
                 'Data is different after cropping',
@@ -193,8 +192,9 @@ class TestCropOrPad(TorchioTestCase):
         mask[0, 0, 0, 0] = 1
         transformed_center = transform_center(self.sample)
         transformed_mask = transform_mask(self.sample)
-        zipped = zip(transformed_center.values(), transformed_mask.values())
-        for image_center, image_mask in zipped:
+        tc_images = transformed_center.get_images(intensity_only=False)
+        tm_images = transformed_mask.get_images(intensity_only=False)
+        for image_center, image_mask in zip(tc_images, tm_images):
             # Arrays are different
             assert not np.array_equal(image_center[DATA], image_mask[DATA])
             # Rotation matrix doesn't change

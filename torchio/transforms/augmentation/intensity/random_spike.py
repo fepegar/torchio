@@ -19,7 +19,6 @@ class RandomSpike(RandomTransform):
             of the spectrum.
             Larger values generate more distorted images.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -29,9 +28,8 @@ class RandomSpike(RandomTransform):
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (1, 3),
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
         if isinstance(num_spikes, int):
@@ -40,7 +38,6 @@ class RandomSpike(RandomTransform):
             self.num_spikes_range = num_spikes
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             params = self.get_params(
                 self.num_spikes_range,
@@ -51,7 +48,6 @@ class RandomSpike(RandomTransform):
                 'intensity': intensity_param,
                 'spikes_positions': spikes_positions_param,
             }
-            random_parameters_images_dict[image_name] = random_parameters_dict
             image_dict[DATA] = self.add_artifact(
                 image_dict.as_sitk(),
                 spikes_positions_param,
@@ -60,7 +56,6 @@ class RandomSpike(RandomTransform):
             # Add channels dimension
             image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
             image_dict[DATA] = torch.from_numpy(image_dict[DATA])
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

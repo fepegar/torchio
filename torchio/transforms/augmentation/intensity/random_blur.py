@@ -18,15 +18,13 @@ class RandomBlur(RandomTransform):
             where :math:`\sigma_i \sim \mathcal{U}(a, b)` mm.
             If a single value :math:`n` is provided, then :math:`a = b = n`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             std: Union[float, Tuple[float, float]] = (0, 4),
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.std_range = self.parse_range(std, 'std')
         if any(np.array(self.std_range) < 0):
             message = (
@@ -36,17 +34,14 @@ class RandomBlur(RandomTransform):
             raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             std = self.get_params(self.std_range)
             random_parameters_dict = {'std': std}
-            random_parameters_images_dict[image_name] = random_parameters_dict
             image_dict[DATA][0] = blur(
                 image_dict[DATA][0],
                 image_dict[AFFINE],
                 std,
             )
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

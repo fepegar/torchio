@@ -25,7 +25,6 @@ class RandomGhosting(RandomTransform):
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -37,9 +36,8 @@ class RandomGhosting(RandomTransform):
             intensity: Union[float, Tuple[float, float]] = (0.5, 1),
             restore: float = 0.02,
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         if not isinstance(axes, tuple):
             try:
                 axes = tuple(axes)
@@ -84,7 +82,6 @@ class RandomGhosting(RandomTransform):
         return intensity
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             data = image_dict[DATA]
             is_2d = data.shape[-3] == 1
@@ -95,12 +92,6 @@ class RandomGhosting(RandomTransform):
                 self.intensity_range,
             )
             num_ghosts_param, axis_param, intensity_param = params
-            random_parameters_dict = {
-                'axis': axis_param,
-                'num_ghosts': num_ghosts_param,
-                'intensity': intensity_param,
-            }
-            random_parameters_images_dict[image_name] = random_parameters_dict
             image_dict[DATA][0] = self.add_artifact(
                 data[0],
                 num_ghosts_param,
@@ -108,7 +99,6 @@ class RandomGhosting(RandomTransform):
                 intensity_param,
                 self.restore,
             )
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

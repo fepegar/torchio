@@ -19,16 +19,14 @@ class RandomNoise(RandomTransform):
             If two values :math:`(a, b)` are provided,
             then :math:`\sigma \sim \mathcal{U}(a, b)`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
     def __init__(
             self,
             mean: Union[float, Tuple[float, float]] = 0,
             std: Union[float, Tuple[float, float]] = (0, 0.25),
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.mean_range = self.parse_range(mean, 'mean')
         self.std_range = self.parse_range(std, 'std')
         if any(np.array(self.std_range) < 0):
@@ -39,13 +37,9 @@ class RandomNoise(RandomTransform):
             raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
             mean, std = self.get_params(self.mean_range, self.std_range)
-            random_parameters_dict = {'std': std}
-            random_parameters_images_dict[image_name] = random_parameters_dict
             image_dict[DATA] = add_noise(image_dict[DATA], mean, std)
-        sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

@@ -4,6 +4,7 @@ import random
 import tempfile
 import unittest
 from pathlib import Path
+import torch
 import numpy as np
 import nibabel as nib
 from torchio.datasets import IXITiny
@@ -54,6 +55,14 @@ class TorchioTestCase(unittest.TestCase):
         self.dataset = ImagesDataset(self.subjects_list)
         self.sample = self.dataset[-1]
 
+    def tearDown(self):
+        """Tear down test fixtures, if any."""
+        print('Deleting', self.dir)
+        shutil.rmtree(self.dir)
+
+    def assertTensorEqual(self, a, b):
+        assert torch.all(torch.eq(a, b))
+
     def make_2d(self, sample):
         sample = copy.deepcopy(sample)
         for image in sample.get_images(intensity_only=False):
@@ -84,11 +93,6 @@ class TorchioTestCase(unittest.TestCase):
         path = self.get_image_path('ref', shape=(10, 20, 31), spacing=(1, 1, 2))
         image = Image(path, INTENSITY)
         return image, path
-
-    def tearDown(self):
-        """Tear down test fixtures, if any."""
-        print('Deleting', self.dir)
-        shutil.rmtree(self.dir)
 
     def get_ixi_tiny(self):
         root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'

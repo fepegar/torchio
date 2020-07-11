@@ -9,6 +9,7 @@
    data/dataset.rst
    data/patch_based.rst
    transforms/transforms.rst
+   reproducibility.rst
    datasets.rst
    cli.rst
    slicer.rst

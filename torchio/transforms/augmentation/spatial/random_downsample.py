@@ -18,7 +18,6 @@ class RandomDownsample(RandomTransform):
         downsampling: Downsampling factor :math:`m \gt 1`. If a tuple
             :math:`(a, b)` is provided then :math:`m \sim \mathcal{U}(a, b)`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
 
     def __init__(
@@ -26,9 +25,8 @@ class RandomDownsample(RandomTransform):
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
             downsampling: float = (1.5, 5),
             p: float = 1,
-            seed: Optional[int] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p)
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self.parse_downsampling(downsampling)
 
@@ -65,7 +63,6 @@ class RandomDownsample(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> Subject:
         axis, downsampling = self.get_params(self.axes, self.downsampling_range)
-        random_parameters_dict = {'axis': axis, 'downsampling': downsampling}
         items = sample.get_images_dict(intensity_only=False).items()
 
         target_spacing = list(sample.spacing)
@@ -76,5 +73,4 @@ class RandomDownsample(RandomTransform):
             copy=False,  # already copied in super().__init__
         )
         sample = transform(sample)
-        sample.add_transform(self, random_parameters_dict)
         return sample

@@ -117,10 +117,11 @@ def apply_transform_to_file(
         output_path: TypePath,
         type: str = INTENSITY,
         verbose: bool = False,
+        seed: Optional[int] = None,
         ):
     from . import Image, ImagesDataset, Subject
     subject = Subject(image=Image(input_path, type))
-    transformed = transform(subject)
+    transformed = transform(subject, seed=seed)
     transformed.image.save(output_path)
     if verbose and transformed.history:
         print(transformed.history[0])
@@ -218,3 +219,7 @@ def round_up(value: float) -> float:
 
     """
     return np.floor(value + 0.5)
+
+def get_transform_class(transform_name):
+    from . import transforms
+    return getattr(transforms, transform_name)

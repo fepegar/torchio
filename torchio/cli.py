@@ -51,14 +51,13 @@ def apply_transform(
         raise ValueError(message) from error
 
     params_dict = get_params_dict_from_kwargs(kwargs)
-    if issubclass(transform_class, RandomTransform):
-        params_dict['seed'] = seed
     transform = transform_class(**params_dict)
     apply_transform_to_file(
         input_path,
         transform,
         output_path,
         verbose=verbose,
+        seed=seed,
     )
     return 0
 

@@ -18,19 +18,27 @@ class RandomTransform(Transform):
 
     Args:
         p: Probability that this transform will be applied.
-        seed: Seed for :py:mod:`torch` random number generator.
     """
-    def __init__(
-            self,
-            p: float = 1,
-            seed: Optional[int] = None,
-            ):
+    def __init__(self, p: float = 1):
         super().__init__(p=p)
-        self._seed = seed
 
-    def __call__(self, sample: Subject):
-        self.check_seed()
-        return super().__call__(sample)
+    def __call__(self, sample: Subject, seed: Optional[int] = None):
+        seed = self.generate_seed() if seed is None else seed
+        with torch.random.fork_rng():
+            torch.manual_seed(seed)
+            transformed = super().__call__(sample)
+        if transformed is sample:
+            pass  # the transform was not applied
+        elif not isinstance(transformed, Subject):
+            pass  # random parameters are stored in instances of Subject
+        else:
+            transformed.add_transform(self, seed)
+        return transformed
+
+    @staticmethod
+    def generate_seed():
+        # https://github.com/fepegar/torchio/issues/208#issuecomment-650262724
+        return torch.randint(1, 2**63 - 1, (1,)).item()
 
     @staticmethod
     def parse_range(
@@ -83,10 +91,6 @@ class RandomTransform(Transform):
             translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(translation, 'translation')
-
-    def check_seed(self) -> None:
-        if self._seed is not None:
-            torch.manual_seed(self._seed)
 
     @staticmethod
     def fourier_transform(array: np.ndarray):
