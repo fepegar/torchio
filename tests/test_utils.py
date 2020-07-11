@@ -5,45 +5,20 @@
 import unittest
 import torch
 import numpy as np
-from torchio import LABEL, INTENSITY
+import SimpleITK as sitk
+from torchio import LABEL, INTENSITY, RandomFlip
 from torchio.utils import (
     to_tuple,
     get_stem,
     guess_type,
+    sitk_to_nib,
+    apply_transform_to_file,
 )
 from .utils import TorchioTestCase
 
 
 class TestUtils(TorchioTestCase):
     """Tests for `utils` module."""
-
-    def get_sample(self, consistent):
-        shape = 1, 10, 20, 30
-        affine = np.diag((1, 2, 3, 1))
-        affine[:3, 3] = 40, 50, 60
-        shape2 = 1, 20, 10, 30
-        sample = {
-            't1': dict(
-                data=self.getRandomData(shape),
-                affine=affine,
-                type=INTENSITY,
-            ),
-            't2': dict(
-                data=self.getRandomData(shape if consistent else shape2),
-                affine=affine,
-                type=INTENSITY,
-            ),
-            'label': dict(
-                data=(self.getRandomData(shape) > 0.5).float(),
-                affine=affine,
-                type=LABEL,
-            ),
-        }
-        return sample
-
-    @staticmethod
-    def getRandomData(shape):
-        return torch.rand(*shape)
 
     def test_to_tuple(self):
         assert to_tuple(1) == (1,)
@@ -73,3 +48,18 @@ class TestUtils(TorchioTestCase):
         good_sample.check_consistent_shape()
         with self.assertRaises(ValueError):
             bad_sample.check_consistent_shape()
+
+    def test_apply_transform_to_file(self):
+        transform = RandomFlip()
+        apply_transform_to_file(
+            self.get_image_path('input'),
+            transform,
+            self.get_image_path('output'),
+            verbose=True,
+        )
+
+    def test_sitk_to_nib(self):
+        data = np.random.rand(10, 10)
+        image = sitk.GetImageFromArray(data)
+        tensor, affine = sitk_to_nib(image)
+        self.assertAlmostEqual(data.sum(), tensor.sum())

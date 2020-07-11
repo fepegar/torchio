@@ -19,12 +19,19 @@ import click
     type=int,
     help='Seed for PyTorch random number generator.',
 )
+@click.option(
+    '--verbose/--no-verbose', '-v',
+    type=bool,
+    default=False,
+    help='Print random transform parameters.',
+)
 def apply_transform(
         input_path,
         transform_name,
         output_path,
         kwargs,
         seed,
+        verbose,
         ):
     """Apply transform to an image.
 
@@ -51,6 +58,7 @@ def apply_transform(
         input_path,
         transform,
         output_path,
+        verbose=verbose,
     )
     return 0
 

@@ -10,6 +10,7 @@ from .augmentation.composition import Compose
 
 from .augmentation.spatial import RandomFlip
 from .augmentation.spatial import RandomAffine
+from .augmentation.spatial import RandomDownsample
 from .augmentation.spatial import RandomElasticDeformation
 
 from .augmentation.intensity import RandomSwap
