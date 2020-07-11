@@ -20,8 +20,7 @@ class RandomGhosting(RandomTransform):
         intensity: Positive number representing the artifact strength
             :math:`s` with respect to the maximum of the :math:`k`-space.
             If ``0``, the ghosts will not be visible. If a tuple
-            :math:`(a, b)`, is provided then
-            :math:`s \sim \mathcal{U}(a, b)`.
+            :math:`(a, b)` is provided then :math:`s \sim \mathcal{U}(a, b)`.
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.

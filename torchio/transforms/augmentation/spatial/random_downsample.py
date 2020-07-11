@@ -13,12 +13,10 @@ class RandomDownsample(RandomTransform):
     This transform simulates an image that has been acquired using anisotropic
     spacing, using downsampling with nearest neighbor interpolation.
 
-    .. image:: https://user-images.githubusercontent.com/12688084/87075276-fe9d9d00-c217-11ea-81a4-db0cac163ce7.png
-        :alt: Simulation of an image with highly anisotropic spacing
-
     Args:
         axes: Axis or tuple of axes along which the image will be downsampled.
-        downsampling: Downsampling factor :math:`f`.
+        downsampling: Downsampling factor :math:`m \gt 1`. If a tuple
+            :math:`(a, b)` is provided then :math:`m \sim \mathcal{U}(a, b)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
