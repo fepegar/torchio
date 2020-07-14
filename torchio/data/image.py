@@ -20,6 +20,7 @@ from ..torchio import (
     PATH,
     STEM,
     INTENSITY,
+    LABEL,
 )
 from .io import read_image, write_image
 
@@ -41,7 +42,7 @@ class Image(dict):
         >>> image.save('doubled_image.nii.gz')
 
     For information about medical image orientation, check out `NiBabel docs`_,
-    the `3D Slicer wiki`_, `Graham Wideman's website`_ or the `FSL docs`_.
+    the `3D Slicer wiki`_, `Graham Wideman's website`_ or `FSL docs`_.
 
     Args:
         path: Path to a file that can be read by
@@ -72,8 +73,12 @@ class Image(dict):
         >>> import torch
         >>> import torchio
         >>> # Loading from a file
-        >>> image = torchio.Image('t1.nii.gz', type=torchio.INTENSITY)
-        >>> image = torchio.Image('t1_seg.nii.gz', type=torchio.LABEL)
+        >>> t1_image = torchio.Image('t1.nii.gz', type=torchio.INTENSITY)
+        >>> # Also:
+        >>> image = torchio.ScalarImage('t1.nii.gz')
+        >>> label_image = torchio.Image('t1_seg.nii.gz', type=torchio.LABEL)
+        >>> # Also:
+        >>> label_image = torchio.LabelMap('t1_seg.nii.gz')
         >>> image = torchio.Image(tensor=torch.rand(3, 4, 5))
         >>> image = torchio.Image('safe_image.nrrd', check_nans=False)
         >>> data, affine = image.data, image.affine
@@ -141,7 +146,7 @@ class Image(dict):
                 f'memory: {humanize.naturalsize(self.memory, binary=True)}',
             ])
         else:
-            properties.append(f'path: {self.path}')
+            properties.append(f'path: "{self.path}"')
         properties.append(f'type: {self.type}')
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
@@ -315,4 +320,32 @@ class Image(dict):
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
         patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
-        return Image(tensor=patch, affine=new_affine, type=self.type)
+        return self.__class__(tensor=patch, affine=new_affine, type=self.type)
+
+
+class ScalarImage(Image):
+    """Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.INTENSITY`.
+
+    See :py:class:`~torchio.Image` for more information.
+
+    Raises:
+        ValueError: A :py:attr:`type` is used for instantiation.
+    """
+    def __init__(self, *args, **kwargs):
+        if 'type' in kwargs:
+            raise ValueError('Type of ScalarImage is always torchio.INTENSITY')
+        super().__init__(*args, **kwargs, type=INTENSITY)
+
+
+class LabelMap(Image):
+    """Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.LABEL`.
+
+    See :py:class:`~torchio.Image` for more information.
+
+    Raises:
+        ValueError: A :py:attr:`type` is used for instantiation.
+    """
+    def __init__(self, *args, **kwargs):
+        if 'type' in kwargs:
+            raise ValueError('Type of LabelMap is always torchio.LABEL')
+        super().__init__(*args, **kwargs, type=LABEL)
