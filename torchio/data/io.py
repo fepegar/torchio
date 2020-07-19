@@ -31,6 +31,8 @@ def read_image(
 def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     nii = nib.load(str(path), mmap=False)
     data = nii.get_fdata(dtype=np.float32)
+    if data.ndim > 3:
+        raise ValueError('4D images are not supported yet')
     tensor = torch.from_numpy(data)
     affine = nii.affine
     return tensor, affine
