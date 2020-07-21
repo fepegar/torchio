@@ -141,4 +141,6 @@ class Subject(dict):
             else:
                 value = copy.deepcopy(value)
             result_dict[key] = value
-        return Subject(result_dict)
+        new = Subject(result_dict)
+        new.history = self.history
+        return new

@@ -26,6 +26,9 @@ from .io import read_image, write_image
 
 
 class Image(dict):
+
+    PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
+
     r"""TorchIO image.
 
     TorchIO images are `lazy loaders`_, i.e. the data is only loaded from disk
@@ -47,7 +50,8 @@ class Image(dict):
     Args:
         path: Path to a file that can be read by
             :mod:`SimpleITK` or :mod:`nibabel` or to a directory containing
-            DICOM files.
+            DICOM files. If :py:attr:`tensor` is given, the data in
+            :py:attr:`path` will not be read.
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
@@ -58,7 +62,7 @@ class Image(dict):
             resample images with type :attr:`torchio.LABEL`.
             The type :attr:`torchio.SAMPLING_MAP` may be used with instances of
             :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
-        tensor: If :attr:`path` is not given, :attr:`tensor` must be a 3D
+        tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 3D
             :py:class:`torch.Tensor` or NumPy array with dimensions
             :math:`(D, H, W)`.
         affine: If :attr:`path` is not given, :attr:`affine` must be a
@@ -111,10 +115,10 @@ class Image(dict):
             ):
         if path is None and tensor is None:
             raise ValueError('A value for path or tensor must be given')
-        if path is not None:
-            if tensor is not None or affine is not None:
-                message = 'If a path is given, tensor and affine must be None'
-                raise ValueError(message)
+        # if path is not None:
+        #     if tensor is not None or affine is not None:
+        #         message = 'If a path is given, tensor and affine must be None'
+        #         raise ValueError(message)
         self._loaded = False
         tensor = self.parse_tensor(tensor)
         affine = self.parse_affine(affine)
@@ -124,7 +128,7 @@ class Image(dict):
             self[DATA] = tensor
             self[AFFINE] = affine
             self._loaded = True
-        for key in (DATA, AFFINE, TYPE, PATH, STEM):
+        for key in self.PROTECTED_KEYS:
             if key in kwargs:
                 message = f'Key "{key}" is reserved. Use a different one'
                 raise ValueError(message)
@@ -313,14 +317,17 @@ class Image(dict):
         self.check_nans = check_nans
 
     def crop(self, index_ini, index_fin):
-        # TODO: add the rest of kwargs
         new_origin = nib.affines.apply_affine(self.affine, index_ini)
         new_affine = self.affine.copy()
         new_affine[:3, 3] = new_origin
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
         patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
-        return self.__class__(tensor=patch, affine=new_affine, type=self.type)
+        kwargs = dict(tensor=patch, affine=new_affine, type=self.type)
+        for key, value in self.items():
+            if key in (DATA, STEM): continue
+            kwargs[key] = value  # should I copy? deepcopy?
+        return self.__class__(**kwargs)
 
 
 class ScalarImage(Image):
