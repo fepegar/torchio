@@ -12,39 +12,39 @@ STD_RANGE = (0.01, 0.1)
 
 
 class RandomLabelsToImage(RandomTransform):
-    r"""Generate a random image from a binary label map or a set of
-     partial volume (PV) label maps.
+    r"""Generate an image from a segmentation.
 
     Args:
         label_key: String designating the label map in the sample
             that will be used to generate the new image.
-            Cannot be set at the same time as pv_label_keys.
+            Cannot be set at the same time as :py:attr:`pv_label_keys`.
         pv_label_keys: Sequence of strings designating the PV label maps in
             the sample that will be used to generate the new image.
-            Cannot be set at the same time as label_key.
-        image_key: String designating the key to which the new volume will be saved.
-            If this key corresponds to an already existing volume, zero elements from
-            the label maps will be filled with elements of the original volume.
-        gaussian_parameters: Dictionary containing the mean and standard deviation for
-            each label. For each value :math:`v`, if a tuple
-            :math:`(a, b)` is provided then
-            :math:`v \sim \mathcal{U}(a, b)`.
-            If no value is given for a label, value from default_gaussian_parameters
-            will be used.
+            Cannot be set at the same time as :py:attr:`label_key`.
+        image_key: String designating the key to which the new volume will be
+            saved. If this key corresponds to an already existing volume,
+            zero-voxels from the label maps will be filled with the
+            corresponding values in the original volume.
+        gaussian_parameters: Dictionary containing the mean and standard
+            deviation for each label. For each value :math:`v`, if a tuple
+            :math:`(a, b)` is provided then :math:`v \sim \mathcal{U}(a, b)`.
+            If no value is given for a label, the value from
+            :py:attr:`default_gaussian_parameters` will be used.
         default_gaussian_parameters: Dictionary containing the default
             mean and standard deviation used for all labels that are not
-            defined in gaussian_parameters.
-            Default values are :math:`(0.1, 0.9)` for the mean and
-            :math:`(0.01, 0.1)` for the standard deviation.
-        binarize: Boolean to tell if PV label maps should be binarized.
+            defined in :py:attr:`gaussian_parameters`.
+            Default values are ``(0.1, 0.9)`` for the mean and
+            ``(0.01, 0.1)`` for the standard deviation.
+        binarize: If ``True``, PV label maps will be binarized.
             Does not have any effects if not using PV label maps.
             Binarization is done taking the highest value per voxel
             in the different PV label maps.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
-    .. note:: Generated images using label maps are unrealistic, therefore it is recommended
-        to blur the new images. See :py:class:`~torchio.transforms.augmentation.RandomBlur`.
+    .. note:: It is recommended to blur the new images to make the result more
+        realistic. See
+        :py:class:`~torchio.transforms.augmentation.intensity.random_blur.RandomBlur`.
 
     Example:
         >>> import torchio
