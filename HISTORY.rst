@@ -1,6 +1,42 @@
 History
 =======
 
+
+0.17.0 (23-06-2020)
+-------------------
+
+* Add transforms history to ``Subject`` attributes to improve traceability
+* Add support to use an initial transformation in ``Resample``
+* Add support to use an image file as target in ``Resample``
+* Add ``mean`` argument to ``RandomNoise``
+* Add tensor support for transforms
+* Add support to use strings as interpolation argument
+* Add support for 2D images
+* Add attribute access to ``Subject`` and ``Image``
+* Add MNI and 3D Slicer datasets
+* Add ``intensity`` argument to ``RandomGhosting``
+* Add ``translation`` argument to ``RandomAffine``
+* Add shape, spacing and orientation attributes to ``Image`` and ``Subject``
+* Refactor samplers
+* Refactor inference classes
+* Add 3D Slicer extension
+* Add ITK-SNAP datasets
+* Add support to take NumPy arrays as transforms input
+* Optimize cropping using PyTorch
+* Optimizing transforms by reducing number of tensor copying
+* Improve representation (``repr()``) of ``Image``
+* Use lazy loading in ``Image``
+
+
+0.16.0 (21-04-2020)
+-------------------
+
+* Add advanced padding options for ``RandomAffine``
+* Add reference space options in ``Resample``
+* Add probability argument to all transforms
+* Add ``OneOf`` and ``Compose`` transforms to improve composability
+
+
 0.15.0 (07-04-2020)
 -------------------
 
