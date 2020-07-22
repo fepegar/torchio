@@ -10,6 +10,15 @@ with open('README.md', encoding="utf8") as readme_file:
 with open('HISTORY.rst', encoding="utf8") as history_file:
     history = history_file.read()
 
+def get_version_from_setup_cfg():
+    with open('setup.cfg', 'r') as file:
+        for line in file:
+            if 'current_version' in line:
+                version_str = line.replace('current_version = ', '')
+                version_str = version_str.replace('\n', '')
+                break
+    return version_str
+
 requirements = [
     'Click>=7.0',
     'humanize',
@@ -58,6 +67,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.17.12',
+    version=get_version_from_setup_cfg(),
     zip_safe=False,
 )
