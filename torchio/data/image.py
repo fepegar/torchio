@@ -1,6 +1,7 @@
 import warnings
 from pathlib import Path
 from typing import Any, Dict, Tuple, Optional
+from copy import deepcopy
 
 import torch
 import humanize
@@ -323,9 +324,9 @@ class Image(dict):
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
         patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
-        kwargs = dict(tensor=patch, affine=new_affine, type=self.type)
+        kwargs = dict(tensor=patch, affine=new_affine, type=self.type, path=self.path)
         for key, value in self.items():
-            if key in (DATA, STEM): continue
+            if key in self.PROTECTED_KEYS: continue
             kwargs[key] = value  # should I copy? deepcopy?
         return self.__class__(**kwargs)
 

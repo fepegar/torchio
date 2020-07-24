@@ -34,3 +34,10 @@ class TestImage(TorchioTestCase):
     def test_crop_attributes(self):
         cropped = self.sample.crop((1, 1, 1), (5, 5, 5))
         self.assertIs(self.sample.t1['pre_affine'], cropped.t1['pre_affine'])
+
+    def test_crop_does_not_create_wrong_path(self):
+        data = torch.ones((10, 10, 10))
+        image = Image(tensor=data)
+        cropped = image.crop((1, 1, 1), (5, 5, 5))
+        self.assertIs(cropped.path, None)
+
