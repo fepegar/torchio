@@ -50,7 +50,7 @@ class Subject(dict):
             if isinstance(v, Image)
         ]
         self._parse_images(self.images)
-        self.__dict__.update(self)  # this allows me to do e.g. subject.t1
+        self.update_attributes()  # this allows me to do e.g. subject.t1
         self.history = []
 
     def __repr__(self):
@@ -144,3 +144,11 @@ class Subject(dict):
         new = Subject(result_dict)
         new.history = self.history
         return new
+
+    def update_attributes(self):
+        # This allows to get images using attribute notation, e.g. subject.t1
+        self.__dict__.update(self)
+
+    def add_image(self, image, image_name):
+        self[image_name] = image
+        self.update_attributes()
