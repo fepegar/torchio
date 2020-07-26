@@ -253,8 +253,8 @@ class RandomLabelsToImage(RandomTransform):
     @staticmethod
     def generate_tissue(
             data: TypeData,
-            mean: TypeNumber,
-            std: TypeNumber,
+            mean: float,
+            std: float,
             ) -> TypeData:
         # Create the simulated tissue using a gaussian random variable
         data_shape = data.shape
