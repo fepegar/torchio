@@ -4,27 +4,31 @@ import torch
 import numpy as np
 from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE, INTENSITY
 from ....data.subject import Subject
-from ....data.image import Image
+from ....data.image import ScalarImage
 from .. import RandomTransform
 
-MEAN_RANGE = (0.1, 0.9)
-STD_RANGE = (0.01, 0.1)
+
 
 
 class RandomLabelsToImage(RandomTransform):
+    MEAN_RANGE = (0.1, 0.9)
+    STD_RANGE = (0.01, 0.1)
     r"""Generate an image from a segmentation.
+
+    Based on the work by `Billot et al., A Learning Strategy for
+    Contrast-agnostic MRI Segmentation <https://arxiv.org/abs/2003.01995>`_.
 
     Args:
         label_key: String designating the label map in the sample
             that will be used to generate the new image.
             Cannot be set at the same time as :py:attr:`pv_label_keys`.
-        pv_label_keys: Sequence of strings designating the PV label maps in
-            the sample that will be used to generate the new image.
-            Cannot be set at the same time as :py:attr:`label_key`.
+        pv_label_keys: Sequence of strings designating the partial-volume (PV)
+            label maps in the sample that will be used to generate the new
+            image. Cannot be set at the same time as :py:attr:`label_key`.
         image_key: String designating the key to which the new volume will be
             saved. If this key corresponds to an already existing volume,
-            zero-voxels from the label maps will be filled with the
-            corresponding values in the original volume.
+            voxels that have a value of 0 in the label maps will be filled with
+            the corresponding values in the original volume.
         gaussian_parameters: Dictionary containing the mean and standard
             deviation for each label. For each value :math:`v`, if a tuple
             :math:`(a, b)` is provided then :math:`v \sim \mathcal{U}(a, b)`.
@@ -54,21 +58,23 @@ class RandomLabelsToImage(RandomTransform):
         >>> # Using the default gaussian_parameters
         >>> transform = RandomLabelsToImage(label_key='cls')
         >>> # Using custom gaussian_parameters
-        >>> label_values = colin['cls'][DATA].unique().round()
+        >>> label_values = colin['cls'][DATA].unique().round().long()
         >>> gaussian_parameters = {
-        >>>     int(label): {
-        >>>         'mean': i / len(label_values), 'std': 0.01
-        >>>     } for i, label in enumerate(label_values)
-        >>> }
+        ...     label: {
+        ...         'mean': i / len(label_values),
+        ...         'std': 0.01
+        ...     }
+        ...     for i, label in enumerate(label_values)
+        ... }
         >>> transform = RandomLabelsToImage(label_key='cls', gaussian_parameters=gaussian_parameters)
         >>> transformed = transform(colin)  # colin has a new key 'image' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
         >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = RandomLabelsToImage(
-        >>>     label_key='cls',
-        >>>     image_key='t1',
-        >>>     gaussian_parameters={0: {'mean': 0, 'std': 0}}
-        >>> )
+        ...     label_key='cls',
+        ...     image_key='t1',
+        ...     gaussian_parameters={0: {'mean': 0, 'std': 0}}
+        ... )
         >>> transform = Compose([rescale_transform, simulation_transform])
         >>> transformed = transform(colin)  # colin's key 't1' has been replaced with the simulated image
     """
@@ -148,21 +154,21 @@ class RandomLabelsToImage(RandomTransform):
                 'std': std
             }
 
-        final_image = Image(type=INTENSITY, affine=affine, tensor=tissues)
+        final_image = ScalarImage(affine=affine, tensor=tissues)
 
         if original_image is not None:
             if self.pv_label_keys is not None and not self.binarize:
                 label_map = label_map.sum(dim=0)
-            background_indices = label_map.unsqueeze(0) <= 0
-            final_image[DATA][background_indices] = original_image[DATA][background_indices]
+            bg_mask = label_map.unsqueeze(0) <= 0
+            final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
 
-        sample[self.image_key] = final_image
+        sample.add_image(final_image, self.image_key)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     def parse_default_gaussian_parameters(self, default_gaussian_parameters):
         if default_gaussian_parameters is None:
-            return {'mean': MEAN_RANGE, 'std': STD_RANGE}
+            return {'mean': self.MEAN_RANGE, 'std': self.STD_RANGE}
 
         if list(default_gaussian_parameters.keys()) != ['mean', 'std']:
             raise KeyError(f'Default gaussian parameters {default_gaussian_parameters.keys()} do not '
