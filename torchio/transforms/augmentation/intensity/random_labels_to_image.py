@@ -2,17 +2,20 @@
 from typing import Union, Tuple, Optional, Dict, Sequence
 import torch
 import numpy as np
-from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE, INTENSITY
+from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE
 from ....data.subject import Subject
 from ....data.image import ScalarImage
 from .. import RandomTransform
 
 
+GAUSSIAN_PARAMETERS_TYPE = Optional[
+    Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]
+]
+
+
 
 
 class RandomLabelsToImage(RandomTransform):
-    MEAN_RANGE = (0.1, 0.9)
-    STD_RANGE = (0.01, 0.1)
     r"""Generate an image from a segmentation.
 
     Based on the work by `Billot et al., A Learning Strategy for
@@ -32,16 +35,14 @@ class RandomLabelsToImage(RandomTransform):
         gaussian_parameters: Dictionary containing the mean and standard
             deviation for each label. For each value :math:`v`, if a tuple
             :math:`(a, b)` is provided then :math:`v \sim \mathcal{U}(a, b)`.
-            If no value is given for a label, the value from
-            :py:attr:`default_gaussian_parameters` will be used.
+            If no value is given for a label, :py:attr:`default_mean` and
+            :py:attr:`default_std` ranges will be used.
+        default_mean: Default mean range.
+        default_std: Default standard deviation range.
         default_gaussian_parameters: Dictionary containing the default
-            mean and standard deviation used for all labels that are not
-            defined in :py:attr:`gaussian_parameters`.
-            Default values are ``(0.1, 0.9)`` for the mean and
-            ``(0.01, 0.1)`` for the standard deviation.
         binarize: If ``True``, PV label maps will be binarized.
             Does not have any effects if not using PV label maps.
-            Binarization is done taking the highest value per voxel
+            Binarization is done taking the class of the highest value per voxel
             in the different PV label maps.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
@@ -83,35 +84,53 @@ class RandomLabelsToImage(RandomTransform):
             label_key: Optional[str] = None,
             pv_label_keys: Optional[Sequence[str]] = None,
             image_key: str = 'image',
-            gaussian_parameters: Optional[Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]] = None,
-            default_gaussian_parameters: Optional[Dict[str, TypeRangeFloat]] = None,
+            gaussian_parameters: GAUSSIAN_PARAMETERS_TYPE = None,
+            default_mean: TypeRangeFloat = (0.1, 0.9),
+            default_std: TypeRangeFloat = (0.01, 0.1),
             binarize: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
         super().__init__(p=p, seed=seed)
-        self.label_key, self.pv_label_keys = self.parse_keys(label_key, pv_label_keys)
-        self.default_gaussian_parameters = self.parse_default_gaussian_parameters(default_gaussian_parameters)
-        self.gaussian_parameters = self.parse_gaussian_parameters(gaussian_parameters)
+        self.label_key, self.pv_label_keys = self.parse_keys(
+            label_key, pv_label_keys)
+        self.default_mean = self.parse_gaussian_parameter(default_mean, 'mean')
+        self.default_std = self.parse_gaussian_parameter(default_std, 'std')
+        self.gaussian_parameters = self.parse_gaussian_parameters(
+            gaussian_parameters)
         self.image_key = image_key
         self.binarize = binarize
 
     @staticmethod
     def parse_keys(label_key, pv_label_keys):
         if label_key is not None and pv_label_keys is not None:
-            raise ValueError('"label_key" and "pv_label_keys" can\'t be set at the same time.')
+            message = (
+                '"label_key" and "pv_label_keys" can\'t be set at '
+                'the same time.'
+            )
+            raise ValueError(message)
         if label_key is None and pv_label_keys is None:
-            raise ValueError('One of "label_key" and "pv_label_keys" must be set.')
+            message = 'One of "label_key" and "pv_label_keys" must be set.'
+            raise ValueError(message)
         if label_key is not None and not isinstance(label_key, str):
-            raise TypeError(f'"label_key" must be a string, not {label_key}')
+            message = f'"label_key" must be a string, not {label_key}'
+            raise TypeError(message)
         if pv_label_keys is not None:
             try:
                 iter(pv_label_keys)
             except TypeError:
-                raise TypeError(f'"pv_label_keys" must be a sequence of strings, not {pv_label_keys}')
+                message = (
+                    '"pv_label_keys" must be a sequence of strings, '
+                    f'not {pv_label_keys}'
+                )
+                raise TypeError(message)
             for key in pv_label_keys:
                 if not isinstance(key, str):
-                    raise TypeError(f'Every key of "pv_label_keys" must be a string, found {key}')
+                    message = (
+                        f'Every key of "pv_label_keys" must be a string, '
+                        f'found {key}'
+                    )
+                    raise TypeError(message)
             pv_label_keys = list(pv_label_keys)
 
         return label_key, pv_label_keys
@@ -121,7 +140,8 @@ class RandomLabelsToImage(RandomTransform):
         original_image = sample.get(self.image_key)
 
         if self.pv_label_keys is not None:
-            label_map, affine = self.parse_pv_label_maps(self.pv_label_keys, sample)
+            label_map, affine = self.parse_pv_label_maps(
+                self.pv_label_keys, sample)
             n_labels, *image_shape = label_map.shape
             labels = self.pv_label_keys
             values = list(range(n_labels))
@@ -166,42 +186,32 @@ class RandomLabelsToImage(RandomTransform):
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
-    def parse_default_gaussian_parameters(self, default_gaussian_parameters):
-        if default_gaussian_parameters is None:
-            return {'mean': self.MEAN_RANGE, 'std': self.STD_RANGE}
-
-        if list(default_gaussian_parameters.keys()) != ['mean', 'std']:
-            raise KeyError(f'Default gaussian parameters {default_gaussian_parameters.keys()} do not '
-                           f'match {["mean", "std"]}')
-
-        mean = self.parse_gaussian_parameter(default_gaussian_parameters['mean'], 'mean')
-        std = self.parse_gaussian_parameter(default_gaussian_parameters['std'], 'std')
-
-        return {'mean': mean, 'std': std}
-
-    def parse_gaussian_parameters(self, gaussian_parameters):
-        if gaussian_parameters is None:
-            gaussian_parameters = {}
+    def parse_gaussian_parameters(self, parameters):
+        if parameters is None:
+            parameters = {}
 
         if self.pv_label_keys is not None:
-            if not set(self.pv_label_keys).issuperset(gaussian_parameters.keys()):
-                raise KeyError(f'Found keys in gaussian parameters {gaussian_parameters.keys()} '
-                               f'not in pv_label_keys {self.pv_label_keys}')
+            if not set(self.pv_label_keys).issuperset(parameters.keys()):
+                message = (
+                    f'Found keys in gaussian parameters {parameters.keys()} '
+                    f'not in pv_label_keys {self.pv_label_keys}'
+                )
+                raise KeyError(message)
 
-        parsed_gaussian_parameters = {}
+        parsed_parameters = {}
 
-        for label_key, dictionary in gaussian_parameters.items():
+        for label_key, dictionary in parameters.items():
             if 'mean' in dictionary:
                 mean = self.parse_gaussian_parameter(dictionary['mean'], 'mean')
             else:
-                mean = self.default_gaussian_parameters['mean']
+                mean = self.default_mean
             if 'std' in dictionary:
                 std = self.parse_gaussian_parameter(dictionary['std'], 'std')
             else:
-                std = self.default_gaussian_parameters['std']
-            parsed_gaussian_parameters.update({label_key: {'mean': mean, 'std': std}})
+                std = self.default_std
+            parsed_parameters.update({label_key: {'mean': mean, 'std': std}})
 
-        return parsed_gaussian_parameters
+        return parsed_parameters
 
     @staticmethod
     def parse_gaussian_parameter(
@@ -228,13 +238,23 @@ class RandomLabelsToImage(RandomTransform):
             sample: dict,
             ) -> (TypeData, TypeData):
         try:
-            label_map = torch.cat([sample[key][DATA] for key in pv_label_keys], dim=0)
+            label_map = torch.cat(
+                [sample[key][DATA] for key in pv_label_keys],
+                dim=0)
         except RuntimeError:
-            raise RuntimeError('PV label maps have different shapes, make sure they all have the same shapes.')
+            message = (
+                'PV label maps have different shapes, make sure they all '
+                'have the same shapes.'
+            )
+            raise RuntimeError(message)
         affine = sample[pv_label_keys[0]][AFFINE]
         for key in pv_label_keys[1:]:
             if not np.array_equal(affine, sample[key][AFFINE]):
-                raise RuntimeWarning('Be careful, PV label maps with different affines were found.')
+                message = (
+                    'Be careful, PV label maps with different affines '
+                    'were found.'
+                )
+                raise RuntimeWarning(message)
         return label_map, affine
 
     def get_params(
@@ -242,9 +262,10 @@ class RandomLabelsToImage(RandomTransform):
             label: Union[str, TypeNumber]
             ) -> Tuple[float, float]:
         if label in self.gaussian_parameters:
-            mean_range, std_range = self.gaussian_parameters[label]['mean'], self.gaussian_parameters[label]['std']
+            mean_range = self.gaussian_parameters[label]['mean']
+            std_range = self.gaussian_parameters[label]['std']
         else:
-            mean_range, std_range = self.default_gaussian_parameters['mean'], self.default_gaussian_parameters['std']
+            mean_range, std_range = self.default_mean, self.default_std
 
         mean = torch.FloatTensor(1).uniform_(*mean_range).item()
         std = torch.FloatTensor(1).uniform_(*std_range).item()
