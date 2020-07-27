@@ -102,7 +102,10 @@ class RandomLabelsToImage(RandomTransform):
         self.binarize = binarize
 
     @staticmethod
-    def parse_keys(label_key, pv_label_keys):
+    def parse_keys(
+            label_key: str,
+            pv_label_keys: Sequence[str]
+            ) -> (str, Sequence[str]):
         if label_key is not None and pv_label_keys is not None:
             message = (
                 '"label_key" and "pv_label_keys" can\'t be set at '
@@ -186,7 +189,10 @@ class RandomLabelsToImage(RandomTransform):
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
-    def parse_gaussian_parameters(self, parameters):
+    def parse_gaussian_parameters(
+            self,
+            parameters: GAUSSIAN_PARAMETERS_TYPE
+            ) -> GAUSSIAN_PARAMETERS_TYPE:
         if parameters is None:
             parameters = {}
 
