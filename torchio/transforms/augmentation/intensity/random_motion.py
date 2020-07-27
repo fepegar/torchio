@@ -62,8 +62,8 @@ class RandomMotion(RandomTransform):
         self.translation_range = self.parse_translation(translation)
         if not 0 < num_transforms or not isinstance(num_transforms, int):
             message = (
-                'Number of transforms must be a natural number,'
-                f' not {num_transforms}'
+                'Number of transforms must be a strictly positive natural'
+                f'number, not {num_transforms}'
             )
             raise ValueError(message)
         self.num_transforms = num_transforms

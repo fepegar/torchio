@@ -27,7 +27,17 @@ class RandomSwap(RandomTransform):
             ):
         super().__init__(p=p, seed=seed)
         self.patch_size = to_tuple(patch_size)
-        self.num_iterations = num_iterations
+        self.num_iterations = self.parse_num_iterations(num_iterations)
+
+    @staticmethod
+    def parse_num_iterations(num_iterations):
+        if not isinstance(num_iterations, int):
+            raise TypeError('num_iterations must be an int,'
+                            f'not {num_iterations}')
+        if num_iterations < 0:
+            raise ValueError('num_iterations must be positive,'
+                             f'not {num_iterations}')
+        return num_iterations
 
     @staticmethod
     def get_params():

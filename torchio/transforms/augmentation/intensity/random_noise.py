@@ -1,6 +1,5 @@
 from typing import Tuple, Optional, Union
 import torch
-import numpy as np
 from ....torchio import DATA
 from ....data.subject import Subject
 from .. import RandomTransform
@@ -14,10 +13,14 @@ class RandomNoise(RandomTransform):
             from which the noise is sampled.
             If two values :math:`(a, b)` are provided,
             then :math:`\mu \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\mu \sim \mathcal{U}(-d, d)`.
         std: Standard deviation :math:`\sigma` of the Gaussian distribution
             from which the noise is sampled.
             If two values :math:`(a, b)` are provided,
             then :math:`\sigma \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\sigma \sim \mathcal{U}(0, d)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
@@ -30,13 +33,7 @@ class RandomNoise(RandomTransform):
             ):
         super().__init__(p=p, seed=seed)
         self.mean_range = self.parse_range(mean, 'mean')
-        self.std_range = self.parse_range(std, 'std')
-        if any(np.array(self.std_range) < 0):
-            message = (
-                'Standard deviation std must greater or equal to zero,'
-                f' not "{self.std_range}"'
-            )
-            raise ValueError(message)
+        self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -60,5 +57,5 @@ class RandomNoise(RandomTransform):
 
 def add_noise(tensor: torch.Tensor, mean: float, std: float) -> torch.Tensor:
     noise = torch.FloatTensor(*tensor.shape).normal_(mean=mean, std=std)
-    tensor += noise
+    tensor.data = tensor + noise
     return tensor

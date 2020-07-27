@@ -28,7 +28,7 @@ class RandomBiasField(RandomTransform):
         super().__init__(p=p, seed=seed)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
-        self.order = order
+        self.order = self.parse_order(order)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -97,3 +97,11 @@ class RandomBiasField(RandomTransform):
                     i += 1
         bias_field = np.exp(bias_field).astype(np.float32)
         return bias_field
+
+    @staticmethod
+    def parse_order(order):
+        if not isinstance(order, int):
+            raise TypeError(f'Order must be an int, not {order}')
+        if order < 0:
+            raise ValueError(f'Ordre must be a positive int, not {order}')
+        return order

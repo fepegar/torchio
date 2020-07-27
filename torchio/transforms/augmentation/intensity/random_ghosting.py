@@ -1,8 +1,7 @@
 from typing import Tuple, Optional, Union
 import torch
 import numpy as np
-import SimpleITK as sitk
-from ....torchio import DATA, AFFINE
+from ....torchio import DATA
 from ....data.subject import Subject
 from .. import RandomTransform
 
@@ -14,6 +13,8 @@ class RandomGhosting(RandomTransform):
         num_ghosts: Number of 'ghosts' :math:`n` in the image.
             If :py:attr:`num_ghosts` is a tuple :math:`(a, b)`, then
             :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.
+            If only one value :math:`d` is provided,
+            :math:`\n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values.
@@ -21,6 +22,8 @@ class RandomGhosting(RandomTransform):
             :math:`s` with respect to the maximum of the :math:`k`-space.
             If ``0``, the ghosts will not be visible. If a tuple
             :math:`(a, b)` is provided then :math:`s \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\s \sim \mathcal{U}(0, d)`.
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
@@ -49,39 +52,21 @@ class RandomGhosting(RandomTransform):
             if axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
-        self.num_ghosts_range = self.parse_num_ghosts(num_ghosts)
-        self.intensity_range = self.parse_intensity(intensity)
-        if not 0 <= restore < 1:
+        self.num_ghosts_range = self.parse_range(
+            num_ghosts, 'num_ghosts', min_constraint=0, type_constraint=int)
+        self.intensity_range = self.parse_range(
+            intensity, 'intensity_range', min_constraint=0)
+        self.restore = self.parse_restore(restore)
+
+    @staticmethod
+    def parse_restore(restore):
+        if not isinstance(restore, float):
+            raise TypeError(f'Restore must be a float, not {restore}')
+        if not 0 <= restore <= 1:
             message = (
                 f'Restore must be a number between 0 and 1, not {restore}')
             raise ValueError(message)
-        self.restore = restore
-
-    @staticmethod
-    def parse_num_ghosts(num_ghosts):
-        try:
-            iter(num_ghosts)
-        except TypeError:
-            num_ghosts = num_ghosts, num_ghosts
-        for n in num_ghosts:
-            if not isinstance(n, int) or n < 0:
-                message = (
-                    f'Number of ghosts must be a natural number, not {n}')
-                raise ValueError(message)
-        return num_ghosts
-
-    @staticmethod
-    def parse_intensity(intensity):
-        try:
-            iter(intensity)
-        except TypeError:
-            intensity = intensity, intensity
-        for n in intensity:
-            if n < 0:
-                message = (
-                    f'Intensity must be a positive number, not {n}')
-                raise ValueError(message)
-        return intensity
+        return restore
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -131,6 +116,9 @@ class RandomGhosting(RandomTransform):
             intensity: float,
             restore_center: float,
             ):
+        if num_ghosts == 0:
+            return tensor
+
         array = tensor.numpy()
         spectrum = self.fourier_transform(array)
 

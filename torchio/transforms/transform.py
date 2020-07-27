@@ -1,6 +1,6 @@
 import numbers
 import warnings
-from typing import Union
+from typing import Union, Tuple
 from copy import deepcopy
 from abc import ABC, abstractmethod
 
@@ -8,7 +8,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from .. import TypeData, INTENSITY, DATA
+from .. import TypeData, INTENSITY, DATA, TypeNumber
 from ..data.image import Image
 from ..data.subject import Subject
 from ..data.dataset import ImagesDataset
@@ -75,6 +75,109 @@ class Transform(ABC):
     @abstractmethod
     def apply_transform(self, sample: Subject):
         raise NotImplementedError
+
+    @staticmethod
+    def parse_range(
+            nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
+            name: str,
+            min_constraint: TypeNumber = None,
+            max_constraint: TypeNumber = None,
+            type_constraint: type = None,
+            ) -> Tuple[TypeNumber, TypeNumber]:
+        r"""Adapted from ``torchvision.transforms.RandomRotation``.
+
+        Args:
+            nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
+                where :math:`n_{min} \leq n_{max}`.
+                If a single positive number :math:`n` is provided,
+                :math:`n_{min} = -n` and :math:`n_{max} = n`.
+            name: Name of the parameter, so that an informative error message
+                can be printed.
+            min_constraint: Minimal value that :math:`n_{min}` can take,
+                default is None, i.e. there is no minimal value.
+            max_constraint: Maximal value that :math:`n_{max}` can take,
+                default is None, i.e. there is no maximal value.
+            type_constraint: Precise type that :math:`n_{max}` and
+                :math:`n_{min}` must take.
+
+        Returns:
+            A tuple of two numbers :math:`(n_{min}, n_{max})`.
+
+        Raises:
+            ValueError: if :attr:`nums_range` is negative
+            ValueError: if :math:`n_{max}` or :math:`n_{min}` is not a number
+            ValueError: if :math:`n_{max} \lt n_{min}`
+            ValueError: if :attr:`min_constraint` is not None and
+                :math:`n_{min}` is smaller than :attr:`min_constraint`
+            ValueError: if :attr:`max_constraint` is not None and
+                :math:`n_{max}` is greater than :attr:`max_constraint`
+            ValueError: if :attr:`type_constraint` is not None and
+                :math:`n_{max}` and :math:`n_{max}` are not of type
+                :attr:`type_constraint`.
+        """
+        if isinstance(nums_range, numbers.Number):
+            if nums_range < 0:
+                raise ValueError(
+                    f'If {name} is a single number,'
+                    f' it must be positive, not {nums_range}')
+            if min_constraint is not None and nums_range < min_constraint:
+                raise ValueError(
+                    f'If {name} is a single number, it must be greater'
+                    f'than {min_constraint}, not {nums_range}'
+                )
+            if max_constraint is not None and nums_range > max_constraint:
+                raise ValueError(
+                    f'If {name} is a single number, it must be smaller'
+                    f'than {max_constraint}, not {nums_range}'
+                )
+            if type_constraint is not None and \
+                    not isinstance(nums_range, type_constraint):
+                raise ValueError(
+                    f'If {name} is a single number, it must be of'
+                    f'type {type_constraint}, not {nums_range}'
+                )
+            min_range = -nums_range if min_constraint is None else nums_range
+            return (min_range, nums_range)
+
+        try:
+            min_degree, max_degree = nums_range
+        except (TypeError, ValueError):
+            raise ValueError(
+                f'If {name} is not a single number, it muste be'
+                f'a sequence of len 2, not {nums_range}'
+            )
+
+        if not isinstance(min_degree, numbers.Number) or \
+                not isinstance(max_degree, numbers.Number):
+            message = (
+                f'{name} values must be numbers, not {nums_range}')
+            raise ValueError(message)
+
+        if min_degree > max_degree:
+            raise ValueError(
+                f'If {name} is a sequence, the second value must be'
+                f' equal or greater than the first, not {nums_range}')
+
+        if min_constraint is not None and min_degree < min_constraint:
+            raise ValueError(
+                f'If {name} is a sequence, the first value must be greater'
+                f'than {min_constraint}, not {min_degree}'
+            )
+
+        if max_constraint is not None and max_degree > max_constraint:
+            raise ValueError(
+                f'If {name} is a sequence, the second value must be smaller'
+                f'than {max_constraint}, not {max_degree}'
+            )
+
+        if type_constraint is not None:
+            if not isinstance(min_degree, type_constraint) or \
+                    not isinstance(max_degree, type_constraint):
+                raise ValueError(
+                    f'If {name} is a sequence, its values must be of'
+                    f'type {type_constraint}, not {nums_range}'
+                )
+        return nums_range
 
     @staticmethod
     def parse_probability(probability: float) -> float:
