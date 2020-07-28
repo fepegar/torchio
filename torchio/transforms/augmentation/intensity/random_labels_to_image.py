@@ -39,7 +39,6 @@ class RandomLabelsToImage(RandomTransform):
             :py:attr:`default_std` ranges will be used.
         default_mean: Default mean range.
         default_std: Default standard deviation range.
-        default_gaussian_parameters: Dictionary containing the default
         binarize: If ``True``, PV label maps will be binarized.
             Does not have any effects if not using PV label maps.
             Binarization is done taking the class of the highest value per voxel
