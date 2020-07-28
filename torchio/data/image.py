@@ -1,7 +1,6 @@
 import warnings
 from pathlib import Path
 from typing import Any, Dict, Tuple, Optional
-from copy import deepcopy
 
 import torch
 import humanize
