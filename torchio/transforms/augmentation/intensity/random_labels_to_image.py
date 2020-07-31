@@ -8,11 +8,7 @@ from ....data.image import ScalarImage
 from .. import RandomTransform
 
 
-GAUSSIAN_PARAMETERS_TYPE = Optional[
-    Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]
-]
-
-
+TypeGaussian = Optional[Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]]
 
 
 class RandomLabelsToImage(RandomTransform):
@@ -25,7 +21,7 @@ class RandomLabelsToImage(RandomTransform):
         label_key: String designating the label map in the sample
             that will be used to generate the new image.
             Cannot be set at the same time as :py:attr:`pv_label_keys`.
-        pv_label_keys: Sequence of strings designating the partial-volume (PV)
+        pv_label_keys: Sequence of strings designating the partial-volume
             label maps in the sample that will be used to generate the new
             image. Cannot be set at the same time as :py:attr:`label_key`.
         image_key: String designating the key to which the new volume will be
@@ -39,10 +35,10 @@ class RandomLabelsToImage(RandomTransform):
             :py:attr:`default_std` ranges will be used.
         default_mean: Default mean range.
         default_std: Default standard deviation range.
-        discretize: If ``True``, PV label maps will be discretized.
-            Does not have any effects if not using PV label maps.
+        discretize: If ``True``, partial-volume label maps will be discretized.
+            Does not have any effects if not using partial-volume label maps.
             Discretization is done taking the class of the highest value per
-            voxel in the different PV label maps using
+            voxel in the different partial-volume label maps using
             :py:func:`torch.argmax()` on the channel dimension (i.e. 0).
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
@@ -84,7 +80,7 @@ class RandomLabelsToImage(RandomTransform):
             label_key: Optional[str] = None,
             pv_label_keys: Optional[Sequence[str]] = None,
             image_key: str = 'image',
-            gaussian_parameters: GAUSSIAN_PARAMETERS_TYPE = None,
+            gaussian_parameters: TypeGaussian = None,
             default_mean: TypeRangeFloat = (0.1, 0.9),
             default_std: TypeRangeFloat = (0.01, 0.1),
             discretize: bool = False,
@@ -108,15 +104,14 @@ class RandomLabelsToImage(RandomTransform):
             ) -> (str, Sequence[str]):
         if label_key is not None and pv_label_keys is not None:
             message = (
-                '"label_key" and "pv_label_keys" can\'t be set at '
-                'the same time.'
+                '"label_key" and "pv_label_keys" cannot be set at the same time'
             )
             raise ValueError(message)
         if label_key is None and pv_label_keys is None:
-            message = 'One of "label_key" and "pv_label_keys" must be set.'
+            message = 'One of "label_key" and "pv_label_keys" must be set'
             raise ValueError(message)
         if label_key is not None and not isinstance(label_key, str):
-            message = f'"label_key" must be a string, not {label_key}'
+            message = f'"label_key" must be a string, not {type(label_key)}'
             raise TypeError(message)
         if pv_label_keys is not None:
             try:
@@ -131,7 +126,7 @@ class RandomLabelsToImage(RandomTransform):
                 if not isinstance(key, str):
                     message = (
                         f'Every key of "pv_label_keys" must be a string, '
-                        f'found {key}'
+                        f'found {type(key)}'
                     )
                     raise TypeError(message)
             pv_label_keys = list(pv_label_keys)
@@ -154,7 +149,6 @@ class RandomLabelsToImage(RandomTransform):
                 max_label, label_map = label_map.max(dim=0)
                 # Remove values where all labels are 0
                 label_map[max_label == 0] = -1
-
         else:
             label_map = sample[self.label_key][DATA][0]
             affine = sample[self.label_key][AFFINE]
@@ -191,8 +185,8 @@ class RandomLabelsToImage(RandomTransform):
 
     def parse_gaussian_parameters(
             self,
-            parameters: GAUSSIAN_PARAMETERS_TYPE
-            ) -> GAUSSIAN_PARAMETERS_TYPE:
+            parameters: TypeGaussian,
+            ) -> TypeGaussian:
         if parameters is None:
             parameters = {}
 
@@ -248,17 +242,13 @@ class RandomLabelsToImage(RandomTransform):
                 [sample[key][DATA] for key in pv_label_keys],
                 dim=0)
         except RuntimeError:
-            message = (
-                'PV label maps have different shapes, make sure they all '
-                'have the same shapes.'
-            )
+            message = 'Partial-volume label maps have different shapes'
             raise RuntimeError(message)
         affine = sample[pv_label_keys[0]][AFFINE]
         for key in pv_label_keys[1:]:
             if not np.array_equal(affine, sample[key][AFFINE]):
                 message = (
-                    'Be careful, PV label maps with different affines '
-                    'were found.'
+                    'Partial-volume label maps have different affine matrices'
                 )
                 raise RuntimeWarning(message)
         return label_map, affine
