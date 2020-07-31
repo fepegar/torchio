@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
+from ....utils import nib_to_sitk
 from ....torchio import (
     INTENSITY,
     DATA,
@@ -176,15 +177,19 @@ class RandomAffine(RandomTransform):
             else:
                 center = None
 
-            image[DATA] = self.apply_affine_transform(
-                image[DATA],
-                image[AFFINE],
-                scaling_params.tolist(),
-                rotation_params.tolist(),
-                translation_params.tolist(),
-                interpolation,
-                center_lps=center,
-            )
+            transformed_tensors = []
+            for tensor in image[DATA]:
+                transformed_tensor = self.apply_affine_transform(
+                    tensor,
+                    image[AFFINE],
+                    scaling_params.tolist(),
+                    rotation_params.tolist(),
+                    translation_params.tolist(),
+                    interpolation,
+                    center_lps=center,
+                )
+                transformed_tensors.append(transformed_tensor)
+            image[DATA] = torch.stack(transformed_tensors)
         random_parameters_dict = {
             'scaling': scaling_params,
             'rotation': rotation_params,
@@ -203,10 +208,9 @@ class RandomAffine(RandomTransform):
             interpolation: Interpolation,
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
-        assert tensor.ndim == 4
-        assert len(tensor) == 1
+        assert tensor.ndim == 3
 
-        image = self.nib_to_sitk(tensor[0], affine)
+        image = nib_to_sitk(tensor[np.newaxis], affine, force_3d=True)
         floating = reference = image
 
         scaling_transform = self.get_scaling_transform(
@@ -241,7 +245,7 @@ class RandomAffine(RandomTransform):
 
         np_array = sitk.GetArrayFromImage(resampled)
         np_array = np_array.transpose()  # ITK to NumPy
-        tensor[0] = torch.from_numpy(np_array)
+        tensor = torch.from_numpy(np_array)
         return tensor
 
 

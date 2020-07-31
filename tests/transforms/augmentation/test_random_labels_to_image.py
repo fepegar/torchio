@@ -172,6 +172,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
             pv_label_keys=['label', 'label2'],
         )
         sample = self.get_inconsistent_sample()
+        sample.load()  # otherwise sample['label2'] data wil be loaded later
         sample['label2'][DATA] = sample['label'][DATA].clone()
         sample['label2'][AFFINE][0, 0] = -1
         with self.assertRaises(RuntimeWarning):

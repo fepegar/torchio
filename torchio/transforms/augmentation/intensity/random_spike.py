@@ -2,7 +2,7 @@ from typing import Tuple, Optional, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....torchio import DATA
+from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .. import RandomTransform
 
@@ -10,19 +10,24 @@ from .. import RandomTransform
 class RandomSpike(RandomTransform):
     r"""Add random MRI spike artifacts.
 
+    Also known as `Herringbone artifact
+    <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
+    crisscross artifact or corduroy artifact, it creates stripes in different
+    directions in image space due to spikes in k-space.
+
     Args:
         num_spikes: Number of spikes :math:`n` present in k-space.
             If a tuple :math:`(a, b)` is provided, then
             :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.
             If only one value :math:`d` is provided,
-            :math:`\n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.
+            :math:`n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.
             Larger values generate more distorted images.
         intensity: Ratio :math:`r` between the spike intensity and the maximum
             of the spectrum.
             If a tuple :math:`(a, b)` is provided, then
             :math:`r \sim \mathcal{U}(a, b)`.
             If only one value :math:`d` is provided,
-            :math:`\r \sim \mathcal{U}(-d, d)`.
+            :math:`r \sim \mathcal{U}(-d, d)`.
             Larger values generate more distorted images.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
@@ -45,25 +50,27 @@ class RandomSpike(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
-            params = self.get_params(
-                self.num_spikes_range,
-                self.intensity_range,
-            )
-            spikes_positions_param, intensity_param = params
-            random_parameters_dict = {
-                'intensity': intensity_param,
-                'spikes_positions': spikes_positions_param,
-            }
-            random_parameters_images_dict[image_name] = random_parameters_dict
-            image_dict[DATA] = self.add_artifact(
-                image_dict.as_sitk(),
-                spikes_positions_param,
-                intensity_param,
-            )
-            # Add channels dimension
-            image_dict[DATA] = image_dict[DATA][np.newaxis, ...]
-            image_dict[DATA] = torch.from_numpy(image_dict[DATA])
+        for image_name, image in sample.get_images_dict().items():
+            transformed_tensors = []
+            for channel_idx, channel in enumerate(image[DATA]):
+                params = self.get_params(
+                    self.num_spikes_range,
+                    self.intensity_range,
+                )
+                spikes_positions_param, intensity_param = params
+                random_parameters_dict = {
+                    'intensity': intensity_param,
+                    'spikes_positions': spikes_positions_param,
+                }
+                key = f'{image_name}_channel_{channel_idx}'
+                random_parameters_images_dict[key] = random_parameters_dict
+                transformed_tensor = self.add_artifact(
+                    channel,
+                    spikes_positions_param,
+                    intensity_param,
+                )
+                transformed_tensors.append(transformed_tensor)
+            image[DATA] = torch.stack(transformed_tensors)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
@@ -80,11 +87,11 @@ class RandomSpike(RandomTransform):
 
     def add_artifact(
             self,
-            image: sitk.Image,
+            tensor: torch.Tensor,
             spikes_positions: np.ndarray,
             intensity_factor: float,
             ):
-        array = sitk.GetArrayViewFromImage(image).transpose()
+        array = np.asarray(tensor)
         spectrum = self.fourier_transform(array)
         shape = np.array(spectrum.shape)
         mid_shape = shape // 2
@@ -100,4 +107,4 @@ class RandomSpike(RandomTransform):
             #i, j, k = mid_shape - diff
             #spectrum[i, j, k] = spectrum.max() * intensity_factor
         result = np.real(self.inv_fourier_transform(spectrum))
-        return result.astype(np.float32)
+        return torch.from_numpy(result.astype(np.float32))

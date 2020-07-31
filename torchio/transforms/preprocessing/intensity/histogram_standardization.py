@@ -17,6 +17,9 @@ TypeLandmarks = Union[TypePath, Dict[str, Union[TypePath, np.ndarray]]]
 class HistogramStandardization(NormalizationTransform):
     """Perform histogram standardization of intensity values.
 
+    Implementation of `New variants of a method of MRI scale
+    standardization <https://ieeexplore.ieee.org/document/836373>`_.
+
     See example in :py:func:`torchio.transforms.HistogramStandardization.train`.
 
     Args:

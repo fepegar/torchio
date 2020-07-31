@@ -13,18 +13,3 @@ Dataset
 .. autoclass:: ImagesDataset
     :members:
     :show-inheritance:
-
-
-:class:`Subject`
-----------------
-
-.. autoclass:: Subject
-    :members:
-    :show-inheritance:
-
-
-:class:`Image`
---------------
-
-.. autoclass:: Image
-    :show-inheritance:

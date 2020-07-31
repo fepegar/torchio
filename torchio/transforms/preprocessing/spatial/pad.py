@@ -38,7 +38,6 @@ class Pad(BoundsTransform):
             - ``wrap`` Same as ``circular``.
 
         p: Probability that this transform will be applied.
-
     """
 
     PADDING_FUNCTIONS = {

@@ -150,6 +150,6 @@ class ImagesDataset(Dataset):
             output_paths_dict: Dict[str, TypePath],
             ) -> None:
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key][DATA].squeeze()  # assume 2D if (1, 1, H, W)
+            tensor = sample[key][DATA]
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)

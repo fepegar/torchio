@@ -160,72 +160,90 @@ class Resample(Transform):
         if use_pre_affine:
             self.check_affine_key_presence(self.affine_name, sample)
         images_dict = sample.get_images_dict(intensity_only=False).items()
-        for image_name, image_dict in images_dict:
+        for image_name, image in images_dict:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
                 continue
 
             # Choose interpolator
-            if image_dict[TYPE] != INTENSITY:
+            if image[TYPE] != INTENSITY:
                 interpolation_order = 0  # nearest neighbor
             else:
                 interpolation_order = self.interpolation_order
 
             # Apply given affine matrix if found in image
-            if use_pre_affine and self.affine_name in image_dict:
-                self.check_affine(self.affine_name, image_dict)
-                matrix = image_dict[self.affine_name]
+            if use_pre_affine and self.affine_name in image:
+                self.check_affine(self.affine_name, image)
+                matrix = image[self.affine_name]
                 if isinstance(matrix, torch.Tensor):
                     matrix = matrix.numpy()
-                image_dict[AFFINE] = matrix @ image_dict[AFFINE]
+                image[AFFINE] = matrix @ image[AFFINE]
 
             # Resample
-            args = image_dict[DATA], image_dict[AFFINE], interpolation_order
             if use_reference:
                 if isinstance(self.reference_image, str):
                     try:
-                        ref_image_dict = sample[self.reference_image]
+                        ref_image = sample[self.reference_image]
                     except KeyError as error:
                         message = (
                             f'Reference name "{self.reference_image}"'
                             ' not found in sample'
                         )
                         raise ValueError(message) from error
-                    reference = ref_image_dict[DATA], ref_image_dict[AFFINE]
+                    reference = ref_image[DATA], ref_image[AFFINE]
                 else:
                     reference = self.reference_image
                 kwargs = dict(reference=reference)
             else:
                 kwargs = dict(target_spacing=self.target_spacing)
-            image_dict[DATA], image_dict[AFFINE] = self.apply_resample(
-                *args,
+            image[DATA], image[AFFINE] = self.apply_resample(
+                image[DATA],
+                image[AFFINE],
+                interpolation_order,
                 **kwargs,
             )
         return sample
 
     @staticmethod
     def apply_resample(
-            tensor: torch.Tensor,
+            tensor: torch.Tensor,  # (C, D, H, W)
             affine: np.ndarray,
             interpolation_order: int,
             target_spacing: Optional[Tuple[float, float, float]] = None,
             reference: Optional[Tuple[torch.Tensor, np.ndarray]] = None,
             ) -> Tuple[torch.Tensor, np.ndarray]:
-        array = tensor.numpy()[0]
+        array = tensor.numpy()
+        niis = []
+        arrays_resampled = []
         if reference is None:
-            nii = resample_to_output(
-                nib.Nifti1Image(array, affine),
-                voxel_sizes=target_spacing,
-                order=interpolation_order,
-            )
+            for channel in array:
+                nii = resample_to_output(
+                    nib.Nifti1Image(channel, affine),
+                    voxel_sizes=target_spacing,
+                    order=interpolation_order,
+                )
+                arrays_resampled.append(nii.get_fdata(dtype=np.float32))
         else:
             reference_tensor, reference_affine = reference
             reference_array = reference_tensor.numpy()[0]
-            nii = resample_from_to(
-                nib.Nifti1Image(array, affine),
-                nib.Nifti1Image(reference_array, reference_affine),
-                order=interpolation_order,
-            )
-        tensor = torch.from_numpy(nii.get_fdata(dtype=np.float32))
-        tensor = tensor.unsqueeze(dim=0)
+            for channel_array in array:
+                nii = resample_from_to(
+                    nib.Nifti1Image(channel_array, affine),
+                    nib.Nifti1Image(reference_array, reference_affine),
+                    order=interpolation_order,
+                )
+                arrays_resampled.append(nii.get_fdata(dtype=np.float32))
+        tensor = torch.Tensor(arrays_resampled)
         return tensor, nii.affine
+
+    @staticmethod
+    def get_sigma(downsampling_factor, spacing):
+        """Compute optimal standard deviation for Gaussian kernel.
+
+        From Cardoso et al., "Scale factor point spread function matching:
+        beyond aliasing in image resampling", MICCAI 2015
+        """
+        k = downsampling_factor
+        variance = (k ** 2 - 1 ** 2) * (2 * np.sqrt(2 * np.log(2))) ** (-2)
+        sigma = spacing * np.sqrt(variance)
+        return sigma

@@ -4,19 +4,12 @@ Preprocessing
 .. contents::
    :local:
 
+
 Intensity
 ---------
 
-.. currentmodule:: torchio.transforms.preprocessing.intensity
-
-:class:`NormalizationTransform`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: NormalizationTransform
-    :show-inheritance:
-
-
 .. currentmodule:: torchio.transforms
+
 
 :class:`RescaleIntensity`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,10 +28,6 @@ Intensity
 :class:`HistogramStandardization`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Implementation of
-`New variants of a method of MRI scale standardization <https://ieeexplore.ieee.org/document/836373>`_,
-adapted from NiftyNet.
-
 .. image:: ../../images/histogram_standardization.png
    :alt: Histogram standardization
 
@@ -47,8 +36,20 @@ adapted from NiftyNet.
     :members:
 
 
+.. currentmodule:: torchio.transforms.preprocessing.intensity
+
+
+:class:`NormalizationTransform`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: NormalizationTransform
+    :show-inheritance:
+
+
 Spatial
 -------
+
+.. currentmodule:: torchio.transforms
 
 :class:`CropOrPad`
 ~~~~~~~~~~~~~~~~~~~~~~~~

@@ -6,7 +6,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from ..utils import TorchioTestCase
-from torchio.data import io
+from torchio.data import io, Image
 
 
 class TestIO(TorchioTestCase):
@@ -69,9 +69,24 @@ class TestIO(TorchioTestCase):
     def test_matrix_txt(self):
         self.write_read_matrix('.txt')
 
-    def test_4d_not_supported(self):
-        path = self.dir / 'img4d.nii'
-        nii = nib.Nifti1Image(np.random.rand(4,5,6,7), np.eye(4))
-        nii.to_filename(str(path))
-        with self.assertRaises(ValueError):
-            io.read_image(path)
+    def save_load_save_load(self, dimensions):
+        path = self.dir / f'img{dimensions}d.nii'
+        shape = [4]
+        for _ in range(dimensions - 1):
+            shape.append(6)
+        shape = *shape[1:4], shape[0]  # save channels in last dim
+        nii = nib.Nifti1Image(np.random.rand(*shape), np.eye(4))
+        nii.to_filename(path)
+        read_nii_tensor, _ = io.read_image(path)
+        assert read_nii_tensor.shape == shape
+        assert read_nii_tensor.ndim == dimensions
+        image = Image(path)
+        image.save(path)
+        read_tio_tensor, _ = io.read_image(path)
+        assert tuple(read_tio_tensor.shape) == shape
+        assert read_tio_tensor.ndim == dimensions, read_tio_tensor.shape
+
+    def test_nd(self):
+        self.save_load_save_load(2)
+        self.save_load_save_load(3)
+        self.save_load_save_load(4)

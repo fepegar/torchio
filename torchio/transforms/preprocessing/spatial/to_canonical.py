@@ -25,20 +25,21 @@ class ToCanonical(Transform):
         :py:meth:`nibabel.as_closest_canonical`.
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
-
     """
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_dict in sample.get_images(intensity_only=False):
-            affine = image_dict[AFFINE]
+        for image in sample.get_images(intensity_only=False):
+            affine = image[AFFINE]
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
-            array = image_dict[DATA][0].numpy()
+            array = image[DATA].numpy()[np.newaxis]  # (1, C, D, H, W)
+            # NIfTI images should have channels in 5th dimension
+            array = array.transpose(2, 3, 4, 0, 1)  # (D, H, W, 1, C)
             nii = nib.Nifti1Image(array, affine)
             reoriented = nib.as_closest_canonical(nii)
             array = reoriented.get_fdata(dtype=np.float32)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            array = array.copy()[np.newaxis, ...]
-            image_dict[DATA] = torch.from_numpy(array)
-            image_dict[AFFINE] = reoriented.affine
+            array = array.copy().transpose(3, 4, 0, 1, 2) # (1, C, D, H, W)
+            image[DATA] = torch.from_numpy(array[0])
+            image[AFFINE] = reoriented.affine
         return sample
