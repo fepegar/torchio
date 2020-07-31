@@ -187,3 +187,10 @@ This is typically used in
 
 .. autoclass:: RandomSwap
     :show-inheritance:
+
+
+:class:`RandomLabelsToImage`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: RandomLabelsToImage
+    :show-inheritance:

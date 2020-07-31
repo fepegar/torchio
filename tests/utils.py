@@ -74,6 +74,14 @@ class TorchioTestCase(unittest.TestCase):
                 ),
                 LABEL,
             ),
+            label2=Image(
+                self.get_image_path(
+                    'label2_inc',
+                    shape=(18, 17, 25),
+                    binary=True,
+                ),
+                LABEL,
+            ),
         )
         subjects_list = [subject]
         dataset = ImagesDataset(subjects_list)
@@ -105,7 +113,7 @@ class TorchioTestCase(unittest.TestCase):
         if binary:
             data = (data > 0.5).astype(np.uint8)
         affine = np.diag((*spacing, 1))
-        suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.minc', '.img'))
+        suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)

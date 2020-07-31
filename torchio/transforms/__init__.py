@@ -20,6 +20,7 @@ from .augmentation.intensity import RandomSpike
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import RandomGhosting
 from .augmentation.intensity import RandomBiasField
+from .augmentation.intensity import RandomLabelsToImage
 
 # Preprocessing
 from .preprocessing import Pad
