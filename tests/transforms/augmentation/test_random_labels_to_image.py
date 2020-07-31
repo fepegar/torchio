@@ -44,11 +44,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_deterministic_simulation_with_binary_pv_label_map(self):
         """The transform creates an image where values are equal to given mean
         if standard deviation is zero.
-        Using a binarized PV label map."""
+        Using a discretized PV label map."""
         transform = RandomLabelsToImage(
             pv_label_keys=['label'],
             gaussian_parameters={'label': {'mean': 0.5, 'std': 0}},
-            binarize=True
+            discretize=True
         )
         transformed = transform(self.sample)
         assert_array_equal(
@@ -90,11 +90,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_filling_with_binary_pv_label_map(self):
         """The transform can fill in the generated image with an already
         existing image.
-        Using a binarized PV label map."""
+        Using a discretized PV label map."""
         transform = RandomLabelsToImage(
             pv_label_keys=['label'],
             image_key='t1',
-            binarize=True
+            discretize=True
         )
         t1_indices = self.sample['label'][DATA] == 0
         transformed = transform(self.sample)

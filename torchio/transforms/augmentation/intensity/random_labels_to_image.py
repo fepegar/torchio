@@ -39,10 +39,11 @@ class RandomLabelsToImage(RandomTransform):
             :py:attr:`default_std` ranges will be used.
         default_mean: Default mean range.
         default_std: Default standard deviation range.
-        binarize: If ``True``, PV label maps will be binarized.
+        discretize: If ``True``, PV label maps will be discretized.
             Does not have any effects if not using PV label maps.
-            Binarization is done taking the class of the highest value per voxel
-            in the different PV label maps.
+            Discretization is done taking the class of the highest value per
+            voxel in the different PV label maps using
+            :py:func:`torch.argmax()` on the channel dimension (i.e. 0).
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
 
@@ -86,7 +87,7 @@ class RandomLabelsToImage(RandomTransform):
             gaussian_parameters: GAUSSIAN_PARAMETERS_TYPE = None,
             default_mean: TypeRangeFloat = (0.1, 0.9),
             default_std: TypeRangeFloat = (0.01, 0.1),
-            binarize: bool = False,
+            discretize: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
             ):
@@ -98,7 +99,7 @@ class RandomLabelsToImage(RandomTransform):
         self.gaussian_parameters = self.parse_gaussian_parameters(
             gaussian_parameters)
         self.image_key = image_key
-        self.binarize = binarize
+        self.discretize = discretize
 
     @staticmethod
     def parse_keys(
@@ -148,7 +149,7 @@ class RandomLabelsToImage(RandomTransform):
             labels = self.pv_label_keys
             values = list(range(n_labels))
 
-            if self.binarize:
+            if self.discretize:
                 # Take label with highest value in voxel
                 max_label, label_map = label_map.max(dim=0)
                 # Remove values where all labels are 0
@@ -165,7 +166,7 @@ class RandomLabelsToImage(RandomTransform):
 
         for i, label in enumerate(labels):
             mean, std = self.get_params(label)
-            if self.pv_label_keys is not None and not self.binarize:
+            if self.pv_label_keys is not None and not self.discretize:
                 mask = label_map[i]
             else:
                 mask = label_map == values[i]
@@ -179,7 +180,7 @@ class RandomLabelsToImage(RandomTransform):
         final_image = ScalarImage(affine=affine, tensor=tissues)
 
         if original_image is not None:
-            if self.pv_label_keys is not None and not self.binarize:
+            if self.pv_label_keys is not None and not self.discretize:
                 label_map = label_map.sum(dim=0)
             bg_mask = label_map.unsqueeze(0) <= 0
             final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
