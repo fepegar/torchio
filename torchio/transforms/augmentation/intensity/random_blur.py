@@ -16,7 +16,8 @@ class RandomBlur(RandomTransform):
             :math:`(\sigma_1, \sigma_2, \sigma_3)` of the Gaussian kernels used
             to blur the image along each axis,
             where :math:`\sigma_i \sim \mathcal{U}(a, b)` mm.
-            If a single value :math:`n` is provided, then :math:`a = b = n`.
+            If only one value :math:`d` is provided,
+            :math:`\sigma_i \sim \mathcal{U}(0, d)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
     """
@@ -27,13 +28,7 @@ class RandomBlur(RandomTransform):
             seed: Optional[int] = None,
             ):
         super().__init__(p=p, seed=seed)
-        self.std_range = self.parse_range(std, 'std')
-        if any(np.array(self.std_range) < 0):
-            message = (
-                'Standard deviation std must greater or equal to zero,'
-                f' not "{self.std_range}"'
-            )
-            raise ValueError(message)
+        self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}

@@ -26,6 +26,8 @@ class RandomAffine(RandomTransform):
             For example, using ``scales=(0.5, 0.5)`` will zoom out the image,
             making the objects inside look twice as small while preserving
             the physical size and position of the image.
+            If only one value :math:`d` is provided,
+            :math:`\s_i \sim \mathcal{U}(0, d)`.
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
             The rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
@@ -73,7 +75,7 @@ class RandomAffine(RandomTransform):
     """
     def __init__(
             self,
-            scales: Tuple[float, float] = (0.9, 1.1),
+            scales: TypeRangeFloat = (0.9, 1.1),
             degrees: TypeRangeFloat = 10,
             translation: TypeRangeFloat = 0,
             isotropic: bool = False,
@@ -84,7 +86,7 @@ class RandomAffine(RandomTransform):
             seed: Optional[int] = None,
             ):
         super().__init__(p=p, seed=seed)
-        self.scales = scales
+        self.scales = self.parse_range(scales, 'scales', min_constraint=0)
         self.degrees = self.parse_degrees(degrees)
         self.translation = self.parse_range(translation, 'translation')
         self.isotropic = isotropic

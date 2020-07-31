@@ -2,7 +2,7 @@ from typing import Tuple, Optional, Union
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....torchio import DATA, AFFINE
+from ....torchio import DATA
 from ....data.subject import Subject
 from .. import RandomTransform
 
@@ -11,12 +11,18 @@ class RandomSpike(RandomTransform):
     r"""Add random MRI spike artifacts.
 
     Args:
-        num_spikes: Number of spikes :math:`n` presnet in k-space.
+        num_spikes: Number of spikes :math:`n` present in k-space.
             If a tuple :math:`(a, b)` is provided, then
             :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.
+            If only one value :math:`d` is provided,
+            :math:`\n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.
             Larger values generate more distorted images.
         intensity: Ratio :math:`r` between the spike intensity and the maximum
             of the spectrum.
+            If a tuple :math:`(a, b)` is provided, then
+            :math:`r \sim \mathcal{U}(a, b)`.
+            If only one value :math:`d` is provided,
+            :math:`\r \sim \mathcal{U}(-d, d)`.
             Larger values generate more distorted images.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
@@ -34,10 +40,8 @@ class RandomSpike(RandomTransform):
         super().__init__(p=p, seed=seed)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
-        if isinstance(num_spikes, int):
-            self.num_spikes_range = num_spikes, num_spikes
-        else:
-            self.num_spikes_range = num_spikes
+        self.num_spikes_range = self.parse_range(
+            num_spikes, 'num_spikes', min_constraint=0, type_constraint=int)
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
@@ -88,7 +92,7 @@ class RandomSpike(RandomTransform):
         for index in indices:
             diff = index - mid_shape
             i, j, k = mid_shape + diff
-            spectrum[i, j, k] = spectrum.max() * intensity_factor
+            spectrum[i, j, k] += spectrum.max() * intensity_factor
             # If we wanted to add a pure cosine, we should add spikes to both
             # sides of k-space. However, having only one is a better
             # representation og the actual cause of the artifact in real

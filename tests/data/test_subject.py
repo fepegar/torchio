@@ -26,3 +26,7 @@ class TestSubject(TorchioTestCase):
             subject = Subject(input_dict)
             with self.assertRaises(RuntimeError):
                 RandomFlip()(subject)
+
+    def test_history(self):
+        transformed = RandomFlip()(self.sample)
+        self.assertIs(len(transformed.history), 1)

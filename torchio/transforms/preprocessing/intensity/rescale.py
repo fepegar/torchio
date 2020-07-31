@@ -1,12 +1,11 @@
 import warnings
-from typing import Tuple
 
 import torch
 import numpy as np
 from deprecated import deprecated
 
 from ....data.subject import Subject
-from ....torchio import DATA
+from ....torchio import DATA, TypeRangeFloat
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 
@@ -15,10 +14,14 @@ class RescaleIntensity(NormalizationTransform):
 
     Args:
         out_min_max: Range :math:`(n_{min}, n_{max})` of output intensities.
+            If only one value :math:`d` is provided,
+            :math:`(n_{min}, n_{max}) = (-d, d)`.
         percentiles: Percentile values of the input image that will be mapped
             to :math:`(n_{min}, n_{max})`. They can be used for contrast
             stretching, as in `this scikit-image example`_. For example,
             Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.
+            If only one value :math:`d` is provided,
+            :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
         p: Probability that this transform will be applied.
@@ -28,14 +31,16 @@ class RescaleIntensity(NormalizationTransform):
     """
     def __init__(
             self,
-            out_min_max: Tuple[float, float],
-            percentiles: Tuple[int, int] = (0, 100),
+            out_min_max: TypeRangeFloat,
+            percentiles: TypeRangeFloat = (0, 100),
             masking_method: TypeMaskingMethod = None,
             p: float = 1,
             ):
         super().__init__(masking_method=masking_method, p=p)
-        self.out_min, self.out_max = out_min_max
-        self.percentiles = percentiles
+        self.out_min, self.out_max = self.parse_range(
+            out_min_max, 'out_min_max')
+        self.percentiles = self.parse_range(
+            percentiles, 'percentiles', min_constraint=0, max_constraint=100)
 
     def apply_normalization(
             self,

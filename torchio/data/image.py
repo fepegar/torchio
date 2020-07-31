@@ -323,9 +323,9 @@ class Image(dict):
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
         patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
-        kwargs = dict(tensor=patch, affine=new_affine, type=self.type)
+        kwargs = dict(tensor=patch, affine=new_affine, type=self.type, path=self.path)
         for key, value in self.items():
-            if key in (DATA, STEM): continue
+            if key in self.PROTECTED_KEYS: continue
             kwargs[key] = value  # should I copy? deepcopy?
         return self.__class__(**kwargs)
 
@@ -339,9 +339,10 @@ class ScalarImage(Image):
         ValueError: A :py:attr:`type` is used for instantiation.
     """
     def __init__(self, *args, **kwargs):
-        if 'type' in kwargs:
+        if 'type' in kwargs and kwargs['type'] != INTENSITY:
             raise ValueError('Type of ScalarImage is always torchio.INTENSITY')
-        super().__init__(*args, **kwargs, type=INTENSITY)
+        kwargs.update({'type': INTENSITY})
+        super().__init__(*args, **kwargs)
 
 
 class LabelMap(Image):
@@ -353,6 +354,7 @@ class LabelMap(Image):
         ValueError: A :py:attr:`type` is used for instantiation.
     """
     def __init__(self, *args, **kwargs):
-        if 'type' in kwargs:
+        if 'type' in kwargs and kwargs['type'] != LABEL:
             raise ValueError('Type of LabelMap is always torchio.LABEL')
-        super().__init__(*args, **kwargs, type=LABEL)
+        kwargs.update({'type': LABEL})
+        super().__init__(*args, **kwargs)

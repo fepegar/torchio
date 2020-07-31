@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from copy import copy
 from torchio.data import GridSampler
 from ...utils import TorchioTestCase
 
@@ -38,3 +39,12 @@ class TestGridSampler(TorchioTestCase):
         sampler = GridSampler(self.sample, (10, 20, 30), 0)
         fixture = [[0, 0, 0, 10, 20, 30]]
         self.assertEqual(sampler.locations.tolist(), fixture)
+
+    def test_sample_shape(self):
+        patch_size = 5, 20, 20
+        patch_overlap = 2, 4, 6
+        initial_shape = copy(self.sample.shape)
+        sampler = GridSampler(
+            self.sample, patch_size, patch_overlap, padding_mode='reflect')
+        final_shape = self.sample.shape
+        self.assertEqual(initial_shape, final_shape)
