@@ -1,6 +1,5 @@
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
 from torchio import LOCATION, DATA
 from torchio.data.inference import GridSampler, GridAggregator
 from ...utils import TorchioTestCase
@@ -28,13 +27,12 @@ class TestInference(TorchioTestCase):
             )
             aggregator = GridAggregator(grid_sampler)
             patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
-            with torch.no_grad():
-                for patches_batch in tqdm(patch_loader):
-                    input_tensor = patches_batch['t1'][DATA]
-                    locations = patches_batch[LOCATION]
-                    logits = model(input_tensor)  # some model
-                    outputs = logits
-                    aggregator.add_batch(outputs, locations)
+            for patches_batch in patch_loader:
+                input_tensor = patches_batch['t1'][DATA]
+                locations = patches_batch[LOCATION]
+                logits = model(input_tensor)  # some model
+                outputs = logits
+                aggregator.add_batch(outputs, locations)
 
             output = aggregator.get_output_tensor()
             assert (output == -5).all()

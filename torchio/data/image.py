@@ -339,8 +339,14 @@ class Image(dict):
         new_affine[:3, 3] = new_origin
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
-        patch = self.data[0, i0:i1, j0:j1, k0:k1].clone()
-        kwargs = dict(tensor=patch, affine=new_affine, type=self.type, path=self.path)
+        patch = self.data[:, i0:i1, j0:j1, k0:k1].clone()
+        kwargs = dict(
+            tensor=patch,
+            affine=new_affine,
+            type=self.type,
+            path=self.path,
+            channels_last=False,
+        )
         for key, value in self.items():
             if key in PROTECTED_KEYS: continue
             kwargs[key] = value  # should I copy? deepcopy?
