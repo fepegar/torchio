@@ -145,3 +145,9 @@ class TorchioTestCase(unittest.TestCase):
             assert not torch.all(torch.eq(a, b))
         else:
             assert not torch.all(torch.eq(a, b)), message
+
+    def assertTensorEqual(self, a, b, message=None):
+        if message is None:
+            assert torch.all(torch.eq(a, b))
+        else:
+            assert torch.all(torch.eq(a, b)), message

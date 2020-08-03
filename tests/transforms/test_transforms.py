@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import copy
 import torch
 import numpy as np
 import torchio
@@ -102,3 +101,16 @@ class TestTransforms(TorchioTestCase):
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transformed = transform(tensor)
         self.assertIs(transformed, tensor)
+
+    def test_original_unchanged(self):
+        sample = copy.deepcopy(self.sample)
+        composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
+        sample = self.flip_affine_x(sample)
+        for transform in composed.transform.transforms:
+            original_data = copy.deepcopy(sample.t1.data)
+            transformed = transform(sample)
+            self.assertTensorEqual(
+                sample.t1.data,
+                original_data,
+                f'Changes after {transform.name}'
+            )
