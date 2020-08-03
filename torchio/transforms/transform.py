@@ -16,6 +16,9 @@ from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
 
 
+IMAGE_NAME = 'image'
+
+
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
@@ -49,9 +52,14 @@ class Transform(ABC):
         if isinstance(data, (np.ndarray, torch.Tensor)):
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
+            is_image = False
             sample = self.parse_tensor(data)
-        else:
+        elif isinstance(data, Image):
+            sample = self._get_subject_from_image(data)
             is_tensor = is_array = False
+            is_image = True
+        else:
+            is_tensor = is_array = is_image = False
             sample = data
         self.parse_sample(sample)
 
@@ -70,6 +78,8 @@ class Transform(ABC):
             transformed = torch.cat(images)
         if is_array:
             transformed = transformed.numpy()
+        if is_image:
+            transformed = transformed[IMAGE_NAME]
         return transformed
 
     @abstractmethod
@@ -250,6 +260,11 @@ class Transform(ABC):
             image = Image(tensor=channel_tensor, type=INTENSITY)
             subject_dict[name] = image
         subject = Subject(subject_dict)
+        return subject
+
+    @staticmethod
+    def _get_subject_from_image(image: Image) -> Subject:
+        subject = Subject({IMAGE_NAME: image})
         return subject
 
     @staticmethod
