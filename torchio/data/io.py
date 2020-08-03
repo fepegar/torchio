@@ -114,6 +114,7 @@ def _write_sitk(
         affine: TypeData,
         path: TypePath,
         squeeze: bool = True,
+        use_compression: bool = True,
         ) -> None:
     assert tensor.ndim == 4
     path = Path(path)
@@ -121,7 +122,7 @@ def _write_sitk(
         warnings.warn(f'Casting to uint 8 before saving to {path}')
         tensor = tensor.numpy().astype(np.uint8)
     image = nib_to_sitk(tensor, affine, squeeze=squeeze)
-    sitk.WriteImage(image, str(path))
+    sitk.WriteImage(image, str(path), use_compression)
 
 
 def read_matrix(path: TypePath):
