@@ -11,6 +11,7 @@ from torchio.utils import (
     to_tuple,
     get_stem,
     guess_type,
+    nib_to_sitk,
     sitk_to_nib,
     apply_transform_to_file,
 )
@@ -63,3 +64,55 @@ class TestUtils(TorchioTestCase):
         image = sitk.GetImageFromArray(data)
         tensor, affine = sitk_to_nib(image)
         self.assertAlmostEqual(data.sum(), tensor.sum())
+
+
+class TestNibabelToSimpleITK(TorchioTestCase):
+    def setUp(self):
+        super().setUp()
+        self.affine = np.eye(4)
+
+    def test_wrong_dims(self):
+        with self.assertRaises(ValueError):
+            nib_to_sitk(np.random.rand(10, 10), self.affine)
+
+    def test_2d_single(self):
+        data = np.random.rand(1, 1, 10, 12)
+        image = nib_to_sitk(data, self.affine)
+        assert image.GetDimension() == 2
+        assert image.GetSize() == (10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 1
+
+    def test_2d_multi(self):
+        data = np.random.rand(5, 1, 10, 12)
+        image = nib_to_sitk(data, self.affine)
+        assert image.GetDimension() == 2
+        assert image.GetSize() == (10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 5
+
+    def test_2d_3d_single(self):
+        data = np.random.rand(1, 1, 10, 12)
+        image = nib_to_sitk(data, self.affine, force_3d=True)
+        assert image.GetDimension() == 3
+        assert image.GetSize() == (1, 10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 1
+
+    def test_2d_3d_multi(self):
+        data = np.random.rand(5, 1, 10, 12)
+        image = nib_to_sitk(data, self.affine, force_3d=True)
+        assert image.GetDimension() == 3
+        assert image.GetSize() == (1, 10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 5
+
+    def test_3d_single(self):
+        data = np.random.rand(1, 8, 10, 12)
+        image = nib_to_sitk(data, self.affine)
+        assert image.GetDimension() == 3
+        assert image.GetSize() == (8, 10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 1
+
+    def test_3d_multi(self):
+        data = np.random.rand(5, 8, 10, 12)
+        image = nib_to_sitk(data, self.affine)
+        assert image.GetDimension() == 3
+        assert image.GetSize() == (8, 10, 12)
+        assert image.GetNumberOfComponentsPerPixel() == 5

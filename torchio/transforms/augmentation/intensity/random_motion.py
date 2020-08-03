@@ -11,6 +11,7 @@ from typing import Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
+from ....utils import nib_to_sitk
 from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .. import Interpolation, get_sitk_interpolator
@@ -20,9 +21,10 @@ from .. import RandomTransform
 class RandomMotion(RandomTransform):
     r"""Add random MRI motion artifact.
 
-    Custom implementation of `Shaw et al. 2019, MRI k-Space Motion Artefact
-    Augmentation: Model Robustness and Task-Specific
-    Uncertainty <http://proceedings.mlr.press/v102/shaw19a.html>`_.
+    Magnetic resonance images suffer from motion artifacts when the subject
+    moves during image acquisition. This transform follows
+    `Shaw et al., 2019 <http://proceedings.mlr.press/v102/shaw19a.html>`_ to
+    simulate motion artifacts for data augmentation.
 
     Args:
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees of
@@ -72,39 +74,42 @@ class RandomMotion(RandomTransform):
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
         for image_name, image_dict in sample.get_images_dict().items():
-            data = image_dict[DATA]
-            is_2d = data.shape[-3] == 1
-            params = self.get_params(
-                self.degrees_range,
-                self.translation_range,
-                self.num_transforms,
-                is_2d=is_2d,
-            )
-            times_params, degrees_params, translation_params = params
-            random_parameters_dict = {
-                'times': times_params,
-                'degrees': degrees_params,
-                'translation': translation_params,
-            }
-            random_parameters_images_dict[image_name] = random_parameters_dict
-            image = self.nib_to_sitk(
-                data[0],
-                image_dict[AFFINE],
-            )
-            transforms = self.get_rigid_transforms(
-                degrees_params,
-                translation_params,
-                image,
-            )
-            data = self.add_artifact(
-                image,
-                transforms,
-                times_params,
-                self.image_interpolation,
-            )
-            # Add channels dimension
-            data = data[np.newaxis, ...]
-            image_dict[DATA] = torch.from_numpy(data)
+            result_arrays = []
+            for channel_idx, data in enumerate(image_dict[DATA]):
+                is_2d = data.shape[-3] == 1
+                params = self.get_params(
+                    self.degrees_range,
+                    self.translation_range,
+                    self.num_transforms,
+                    is_2d=is_2d,
+                )
+                times_params, degrees_params, translation_params = params
+                random_parameters_dict = {
+                    'times': times_params,
+                    'degrees': degrees_params,
+                    'translation': translation_params,
+                }
+                key = f'{image_name}_channel_{channel_idx}'
+                random_parameters_images_dict[key] = random_parameters_dict
+                image = nib_to_sitk(
+                    data[np.newaxis],
+                    image_dict[AFFINE],
+                    force_3d=True,
+                )
+                transforms = self.get_rigid_transforms(
+                    degrees_params,
+                    translation_params,
+                    image,
+                )
+                data = self.add_artifact(
+                    image,
+                    transforms,
+                    times_params,
+                    self.image_interpolation,
+                )
+                result_arrays.append(data)
+            result = np.stack(result_arrays)
+            image_dict[DATA] = torch.from_numpy(result)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 

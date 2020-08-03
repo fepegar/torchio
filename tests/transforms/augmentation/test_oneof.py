@@ -22,6 +22,8 @@ class TestOneOf(TorchioTestCase):
             OneOf({RandomAffine: 1, RandomElasticDeformation: 2})
 
     def test_one_of(self):
-        transform = OneOf(
-            {RandomAffine(): 0.2, RandomElasticDeformation(): 0.8})
+        transform = OneOf({
+            RandomAffine(): 0.2,
+            RandomElasticDeformation(max_displacement=0.5): 0.8,
+        })
         transform(self.sample)

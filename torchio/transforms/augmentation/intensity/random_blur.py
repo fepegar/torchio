@@ -32,15 +32,20 @@ class RandomBlur(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
-            std = self.get_params(self.std_range)
-            random_parameters_dict = {'std': std}
-            random_parameters_images_dict[image_name] = random_parameters_dict
-            image_dict[DATA][0] = blur(
-                image_dict[DATA][0],
-                image_dict[AFFINE],
-                std,
-            )
+        for image_name, image in sample.get_images_dict().items():
+            transformed_tensors = []
+            for channel_idx, tensor in enumerate(image[DATA]):
+                std = self.get_params(self.std_range)
+                random_parameters_dict = {'std': std}
+                key = f'{image_name}_channel_{channel_idx}'
+                random_parameters_images_dict[key] = random_parameters_dict
+                transformed_tensor = blur(
+                    tensor,
+                    image[AFFINE],
+                    std,
+                )
+                transformed_tensors.append(transformed_tensor)
+            image[DATA] = torch.stack(transformed_tensors)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
@@ -51,8 +56,9 @@ class RandomBlur(RandomTransform):
 
 
 def blur(data: TypeData, affine: TypeData, std: np.ndarray) -> torch.Tensor:
-    image = nib_to_sitk(data, affine)
+    assert data.ndim == 3
+    image = nib_to_sitk(data[np.newaxis], affine)
     image = sitk.DiscreteGaussian(image, std.tolist())
     array, _ = sitk_to_nib(image)
-    tensor = torch.from_numpy(array)
+    tensor = torch.from_numpy(array[0])
     return tensor

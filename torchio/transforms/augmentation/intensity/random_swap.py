@@ -3,12 +3,15 @@ import torch
 import numpy as np
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ....torchio import DATA, TypeTuple, TypeData
+from ....torchio import DATA, TypeTuple, TypeData, TypeTripletInt
 from .. import RandomTransform
 
 
 class RandomSwap(RandomTransform):
     r"""Randomly swap patches within an image.
+
+    This is typically used in `context restoration for self-supervised learning
+    <https://www.sciencedirect.com/science/article/pii/S1361841518304699>`_.
 
     Args:
         patch_size: Tuple of integers :math:`(d, h, w)` to swap patches
@@ -45,8 +48,9 @@ class RandomSwap(RandomTransform):
         return
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_dict in sample.get_images():
-            swap(image_dict[DATA][0], self.patch_size, self.num_iterations)
+        for image in sample.get_images():
+            for tensor in image[DATA]:
+                swap(tensor, self.patch_size, self.num_iterations)
         return sample
 
 
@@ -96,8 +100,8 @@ def crop(
 
 
 def get_random_indices_from_shape(
-        shape: Tuple[int, int, int],
-        patch_size: Tuple[int, int, int],
+        shape: TypeTripletInt,
+        patch_size: TypeTripletInt,
         ) -> Tuple[np.ndarray, np.ndarray]:
     shape_array = np.array(shape)
     patch_size_array = np.array(patch_size)

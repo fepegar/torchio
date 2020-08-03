@@ -45,7 +45,7 @@ class RandomLabelsToImage(RandomTransform):
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
-        :py:class:`~torchio.transforms.augmentation.intensity.random_blur.RandomBlur`.
+        :py:class:`~torchio.transforms.augmentation.RandomBlur`.
 
     Example:
         >>> import torchio
@@ -238,9 +238,7 @@ class RandomLabelsToImage(RandomTransform):
             sample: dict,
             ) -> (TypeData, TypeData):
         try:
-            label_map = torch.cat(
-                [sample[key][DATA] for key in pv_label_keys],
-                dim=0)
+            label_map = torch.cat([sample[key][DATA] for key in pv_label_keys])
         except RuntimeError:
             message = 'Partial-volume label maps have different shapes'
             raise RuntimeError(message)

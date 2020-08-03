@@ -5,8 +5,8 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import to_tuple
-from ....torchio import INTENSITY, DATA, AFFINE, TYPE
+from ....utils import to_tuple, nib_to_sitk
+from ....torchio import INTENSITY, DATA, AFFINE, TYPE, TypeTripletInt
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
@@ -136,7 +136,7 @@ class RandomElasticDeformation(RandomTransform):
 
     @staticmethod
     def parse_control_points(
-            num_control_points: Tuple[int, int, int],
+            num_control_points: TypeTripletInt,
             ) -> None:
         for axis, number in enumerate(num_control_points):
             if not isinstance(number, int) or number < 4:
@@ -161,7 +161,7 @@ class RandomElasticDeformation(RandomTransform):
 
     @staticmethod
     def get_params(
-            num_control_points: Tuple[int, int, int],
+            num_control_points: TypeTripletInt,
             max_displacement: Tuple[float, float, float],
             num_locked_borders: int,
             ) -> Tuple:
@@ -186,7 +186,7 @@ class RandomElasticDeformation(RandomTransform):
     @staticmethod
     def get_bspline_transform(
             image: sitk.Image,
-            num_control_points: Tuple[int, int, int],
+            num_control_points: TypeTripletInt,
             coarse_field: np.ndarray,
             ) -> sitk.BSplineTransformInitializer:
         mesh_shape = [n - SPLINE_ORDER for n in num_control_points]
@@ -243,25 +243,25 @@ class RandomElasticDeformation(RandomTransform):
             interpolation: Interpolation,
             ) -> torch.Tensor:
         assert tensor.dim() == 4
-        assert len(tensor) == 1
-        image = self.nib_to_sitk(tensor[0], affine)
-        floating = reference = image
-        bspline_transform = self.get_bspline_transform(
-            image,
-            self.num_control_points,
-            bspline_params,
-        )
-        self.parse_free_form_transform(
-            bspline_transform, self.max_displacement)
-        resampler = sitk.ResampleImageFilter()
-        resampler.SetReferenceImage(reference)
-        resampler.SetTransform(bspline_transform)
-        resampler.SetInterpolator(get_sitk_interpolator(interpolation))
-        resampler.SetDefaultPixelValue(tensor.min().item())
-        resampler.SetOutputPixelType(sitk.sitkFloat32)
-        resampled = resampler.Execute(floating)
-
-        np_array = sitk.GetArrayFromImage(resampled)
-        np_array = np_array.transpose()  # ITK to NumPy
-        tensor[0] = torch.from_numpy(np_array)
+        results = []
+        for component in tensor:
+            image = nib_to_sitk(component[np.newaxis], affine, force_3d=True)
+            floating = reference = image
+            bspline_transform = self.get_bspline_transform(
+                image,
+                self.num_control_points,
+                bspline_params,
+            )
+            self.parse_free_form_transform(
+                bspline_transform, self.max_displacement)
+            resampler = sitk.ResampleImageFilter()
+            resampler.SetReferenceImage(reference)
+            resampler.SetTransform(bspline_transform)
+            resampler.SetInterpolator(get_sitk_interpolator(interpolation))
+            resampler.SetDefaultPixelValue(component.min().item())
+            resampler.SetOutputPixelType(sitk.sitkFloat32)
+            resampled = resampler.Execute(floating)
+            result, _ = self.sitk_to_nib(resampled)
+            results.append(torch.from_numpy(result))
+        tensor = torch.cat(results)
         return tensor

@@ -6,6 +6,8 @@
    :maxdepth: 2
 
    quickstart.rst
+   data/image.rst
+   data/subject.rst
    data/dataset.rst
    data/patch_based.rst
    transforms/transforms.rst

@@ -4,7 +4,7 @@ import numpy as np
 from deprecated import deprecated
 from .pad import Pad
 from .crop import Crop
-from .bounds_transform import BoundsTransform, TypeShape, TypeSixBounds
+from .bounds_transform import BoundsTransform, TypeTripletInt, TypeSixBounds
 from ....data.subject import Subject
 from ....utils import round_up
 
@@ -46,7 +46,7 @@ class CropOrPad(BoundsTransform):
     """
     def __init__(
             self,
-            target_shape: Union[int, TypeShape],
+            target_shape: Union[int, TypeTripletInt],
             padding_mode: Union[str, float] = 0,
             mask_name: Optional[str] = None,
             p: float = 1,
@@ -93,7 +93,7 @@ class CropOrPad(BoundsTransform):
         return bb_min, bb_max
 
     @staticmethod
-    def _get_sample_shape(sample: Subject) -> TypeShape:
+    def _get_sample_shape(sample: Subject) -> TypeTripletInt:
         """Return the shape of the first image in the sample."""
         sample.check_consistent_shape()
         for image_dict in sample.get_images(intensity_only=False):
@@ -120,7 +120,6 @@ class CropOrPad(BoundsTransform):
             >>> p = np.array((4, 0, 7))
             >>> _get_six_bounds_parameters(p)
             (2, 2, 0, 0, 4, 3)
-
         """
         parameters = parameters / 2
         result = []
@@ -131,8 +130,8 @@ class CropOrPad(BoundsTransform):
 
     def _compute_cropping_padding_from_shapes(
             self,
-            source_shape: TypeShape,
-            target_shape: TypeShape,
+            source_shape: TypeTripletInt,
+            target_shape: TypeTripletInt,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         diff_shape = target_shape - source_shape
 

@@ -9,7 +9,7 @@ class Lambda(Transform):
     """Applies a user-defined function as transform.
 
     Args:
-        function: Callable that receives and returns a 3D
+        function: Callable that receives and returns a 4D
             :py:class:`torch.Tensor`.
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
@@ -43,7 +43,7 @@ class Lambda(Transform):
                 if image_type not in self.types_to_apply:
                     continue
 
-            function_arg = image[DATA][0]
+            function_arg = image[DATA]
             result = self.function(function_arg)
             if not isinstance(result, torch.Tensor):
                 message = (
@@ -63,5 +63,5 @@ class Lambda(Transform):
                     f' be {function_arg.ndim}, not {result.ndim}'
                 )
                 raise ValueError(message)
-            image[DATA][0] = result
+            image[DATA] = result
         return sample

@@ -15,6 +15,7 @@ from .torchio import (
     TypeData,
     TypeNumber,
     TypePath,
+    REPO_URL,
 )
 
 
@@ -158,23 +159,75 @@ def get_rotation_and_spacing_from_affine(
     return rotation, spacing
 
 
-def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
-    array = data.numpy() if isinstance(data, torch.Tensor) else data
-    affine = affine.numpy() if isinstance(affine, torch.Tensor) else affine
-    origin = np.dot(FLIP_XY, affine[:3, 3]).astype(np.float64)
+def nib_to_sitk(
+        data: TypeData,
+        affine: TypeData,
+        squeeze: bool = False,
+        force_3d: bool = False,
+        force_4d: bool = False,
+        ) -> sitk.Image:
+    """Create a SimpleITK image from a tensor and a 4x4 affine matrix.
+
+    Args:
+        data: PyTorch tensor or NumPy array
+        affine: # TODO
+    """
+    if data.ndim != 4:
+        raise ValueError(f'Input must be 4D, but has shape {tuple(data.shape)}')
+    # Possibilities
+    # (1, 1, h, w)
+    # (c, 1, h, w)
+    # (1, d, h, w)
+    # (c, d, h, w)
+    array = np.asarray(data)
+    affine = np.asarray(affine).astype(np.float64)
+
+    is_multichannel = array.shape[0] > 1 and not force_4d
+    is_2d = array.shape[1] == 1 and not force_3d
+    if is_2d:
+        array = array[:, 0, :, :]
+    if not is_multichannel and not force_4d:
+        array = array[0]
+    array = array.transpose()  # (W, H, D, C) or (W, H, D)
+    image = sitk.GetImageFromArray(array, isVector=is_multichannel)
+
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
+    origin = np.dot(FLIP_XY, affine[:3, 3])
     direction = np.dot(FLIP_XY, rotation)
-    image = sitk.GetImageFromArray(array.transpose())
-    if array.ndim == 2:  # ignore first dimension if 2D (1, 1, H, W)
+    if is_2d:  # ignore first dimension if 2D (1, 1, H, W)
         direction = direction[1:3, 1:3]
-    image.SetOrigin(origin)
+    image.SetOrigin(origin)  # should I add a 4th value if force_4d?
     image.SetSpacing(spacing)
     image.SetDirection(direction.flatten())
+    if data.ndim == 4:
+        assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
+    num_spatial_dims = 2 if is_2d else 3
+    assert image.GetSize() == data.shape[-num_spatial_dims:]
     return image
 
 
-def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
+def sitk_to_nib(
+        image: sitk.Image,
+        keepdim: bool = False,
+        ) -> Tuple[np.ndarray, np.ndarray]:
+    """[summary]
+
+    Args:
+        image (sitk.Image): [description]
+        keepdim (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: [description]
+    """
     data = sitk.GetArrayFromImage(image).transpose()
+    num_components = image.GetNumberOfComponentsPerPixel()
+    if num_components == 1:
+        data = data[np.newaxis]  # add channels dimension
+    input_spatial_dims = image.GetDimension()
+    if not keepdim:
+        data = ensure_4d(data, False, num_spatial_dims=input_spatial_dims)
+    assert data.shape[0] == num_components
+    assert data.shape[-input_spatial_dims:] == image.GetSize()
     spacing = np.array(image.GetSpacing())
     direction = np.array(image.GetDirection())
     origin = image.GetOrigin()
@@ -193,6 +246,58 @@ def sitk_to_nib(image: sitk.Image) -> Tuple[np.ndarray, np.ndarray]:
     affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation
     return data, affine
+
+
+def ensure_4d(
+        tensor: TypeData,
+        channels_last: bool,
+        num_spatial_dims=None,
+        ) -> TypeData:
+    """[summary] # TODO
+
+    Args:
+        tensor: [description].
+        channels_last: If ``True``, last dimension of the input represents
+            channels.
+        num_spatial_dims: [description].
+
+    Raises:
+        ValueError: [description]
+    """
+    # I wish named tensors were properly supported in PyTorch
+    num_dimensions = tensor.ndim
+    if num_dimensions == 5:  # hope (X, X, X, 1, X)
+        if tensor.shape[-1] == 1:
+            tensor = tensor[..., 0, :]
+    if num_dimensions == 4:  # assume 3D multichannel
+        if channels_last:  # (D, H, W, C)
+            tensor = tensor.permute(3, 0, 1, 2)  # (C, D, H, W)
+    elif num_dimensions == 2:  # assume 2D monochannel (H, W)
+        tensor = tensor[np.newaxis, np.newaxis]  # (1, 1, H, W)
+    elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
+        if num_spatial_dims == 2:
+            if channels_last:  # (H, W, C)
+                tensor = tensor.permute(2, 0, 1)  # (C, H, W)
+            tensor = tensor[:, np.newaxis]  # (C, 1, H, W)
+        elif num_spatial_dims == 3:  # (D, H, W)
+            tensor = tensor[np.newaxis]  # (1, D, H, W)
+        else:  # try to guess
+            shape = tensor.shape
+            maybe_rgb = 3 in (shape[0], shape[-1])
+            if maybe_rgb:
+                if shape[-1] == 3:  # (H, W, 3)
+                    tensor = tensor.permute(2, 0, 1)  # (3, H, W)
+                tensor = tensor[:, np.newaxis]  # (3, 1, H, W)
+            else:  # (D, H, W)
+                tensor = tensor[np.newaxis]  # (1, D, H, W)
+    else:
+        message = (
+            f'{num_dimensions}D images not supported yet. Please create an'
+            f' issue in {REPO_URL} if you would like support for them'
+        )
+        raise ValueError(message)
+    assert tensor.ndim == 4
+    return tensor
 
 
 def get_torchio_cache_dir():

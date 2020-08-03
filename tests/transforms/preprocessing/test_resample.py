@@ -13,20 +13,19 @@ class TestResample(TorchioTestCase):
         spacing = 2
         transform = Resample(spacing)
         transformed = transform(self.sample)
-        for image_dict in transformed.values():
-            image = image_dict.as_sitk()
-            self.assertEqual(image.GetSpacing(), 3 * (spacing,))
+        for image in transformed.get_images(intensity_only=False):
+            self.assertEqual(image.spacing, 3 * (spacing,))
 
     def test_reference_name(self):
         sample = self.get_inconsistent_sample()
         reference_name = 't1'
         transform = Resample(reference_name)
         transformed = transform(sample)
-        ref_image_dict = sample[reference_name]
-        for image_dict in transformed.values():
+        reference_image = sample[reference_name]
+        for image in transformed.get_images(intensity_only=False):
             self.assertEqual(
-                ref_image_dict.shape, image_dict.shape)
-            assert_array_equal(ref_image_dict[AFFINE], image_dict[AFFINE])
+                reference_image.shape, image.shape)
+            assert_array_equal(reference_image[AFFINE], image[AFFINE])
 
     def test_affine(self):
         spacing = 1

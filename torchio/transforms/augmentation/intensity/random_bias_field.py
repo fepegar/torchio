@@ -10,6 +10,18 @@ from .. import RandomTransform
 class RandomBiasField(RandomTransform):
     r"""Add random MRI bias field artifact.
 
+    MRI magnetic field inhomogeneity creates intensity
+    variations of very low frequency across the whole image.
+
+    The bias field is modeled as a linear combination of
+    polynomial basis functions, as in K. Van Leemput et al., 1999,
+    *Automated model-based tissue classification of MR images of the brain*.
+
+    It was implemented in NiftyNet by Carole Sudre and used in
+    `Sudre et al., 2017, Longitudinal segmentation of age-related
+    white matter hyperintensities
+    <https://www.sciencedirect.com/science/article/pii/S1361841517300257?via%3Dihub>`_.
+
     Args:
         coefficients: Magnitude :math:`n` of polynomial coefficients.
             If a tuple :math:`(a, b)` is specified, then
@@ -42,8 +54,7 @@ class RandomBiasField(RandomTransform):
 
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
-            image_with_bias = image_dict[DATA] * torch.from_numpy(bias_field)
-            image_dict[DATA] = image_with_bias
+            image_dict[DATA] = image_dict[DATA] * torch.from_numpy(bias_field)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
@@ -60,7 +71,7 @@ class RandomBiasField(RandomTransform):
                 for _ in range(0, order + 1 - (x_order + y_order)):
                     number = torch.FloatTensor(1).uniform_(*coefficients_range)
                     random_coefficients.append(number.item())
-        return np.array(random_coefficients)
+        return np.asarray(random_coefficients)
 
     @staticmethod
     def generate_bias_field(

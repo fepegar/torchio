@@ -8,6 +8,8 @@ from .. import RandomTransform
 class RandomNoise(RandomTransform):
     r"""Add random Gaussian noise.
 
+    Adds noise sampled from a normal distribution.
+
     Args:
         mean: Mean :math:`\mu` of the Gaussian distribution
             from which the noise is sampled.
