@@ -10,7 +10,7 @@ import SimpleITK as sitk
 
 from .. import TypeData, INTENSITY, DATA, TypeNumber
 from ..data.subject import Subject
-from ..data.image import ScalarImage
+from ..data.image import Image, ScalarImage
 from ..data.dataset import ImagesDataset
 from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
