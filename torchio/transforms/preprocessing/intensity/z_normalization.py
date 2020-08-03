@@ -40,6 +40,7 @@ class ZNormalization(NormalizationTransform):
 
     @staticmethod
     def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        tensor = tensor.clone()
         values = tensor.masked_select(mask)
         mean, std = values.mean(), values.std()
         if std == 0:

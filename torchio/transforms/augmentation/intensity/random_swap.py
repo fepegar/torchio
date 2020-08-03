@@ -49,8 +49,11 @@ class RandomSwap(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         for image in sample.get_images():
+            tensors = []
             for tensor in image[DATA]:
-                swap(tensor, self.patch_size, self.num_iterations)
+                tensor = swap(tensor, self.patch_size, self.num_iterations)
+                tensors.append(tensor)
+            image[DATA] = torch.stack(tensors)
         return sample
 
 
@@ -59,6 +62,7 @@ def swap(
         patch_size: TypeTuple,
         num_iterations: int,
         ) -> None:
+    tensor = tensor.clone()
     patch_size = to_tuple(patch_size)
     for _ in range(num_iterations):
         first_ini, first_fin = get_random_indices_from_shape(
@@ -80,6 +84,7 @@ def swap(
         second_patch = crop(tensor, second_ini, second_fin).clone()
         insert(tensor, first_patch, second_ini)
         insert(tensor, second_patch, first_ini)
+    return tensor
 
 
 def insert(tensor: TypeData, patch: TypeData, index_ini: np.ndarray) -> None:

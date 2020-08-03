@@ -210,15 +210,6 @@ def sitk_to_nib(
         image: sitk.Image,
         keepdim: bool = False,
         ) -> Tuple[np.ndarray, np.ndarray]:
-    """[summary]
-
-    Args:
-        image (sitk.Image): [description]
-        keepdim (bool, optional): [description]. Defaults to False.
-
-    Returns:
-        Tuple[np.ndarray, np.ndarray]: [description]
-    """
     data = sitk.GetArrayFromImage(image).transpose()
     num_components = image.GetNumberOfComponentsPerPixel()
     if num_components == 1:

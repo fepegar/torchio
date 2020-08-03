@@ -57,7 +57,7 @@ class RescaleIntensity(NormalizationTransform):
             mask: torch.Tensor,
             image_name: str,
             ) -> torch.Tensor:
-        array = tensor.numpy()
+        array = tensor.clone().numpy()
         mask = mask.numpy()
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
