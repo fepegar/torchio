@@ -1,5 +1,6 @@
 from typing import Union, Tuple, Optional, List
 import torch
+import numpy as np
 from ....torchio import DATA
 from ....data.subject import Subject
 from ....utils import to_tuple
@@ -57,7 +58,11 @@ class RandomFlip(RandomTransform):
                     )
                     raise RuntimeError(message)
                 dims.append(actual_dim)
-            data = torch.flip(data, dims=dims)
+            # data = torch.flip(data, dims=dims)
+            data = data.numpy()
+            data = np.flip(data, axis=dims)
+            data = data.copy()  # remove negative strides
+            data = torch.from_numpy(data)
             image_dict[DATA] = data
         sample.add_transform(self, random_parameters_dict)
         return sample
