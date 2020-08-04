@@ -6,6 +6,7 @@ from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE
 from ....data.subject import Subject
 from ....data.image import ScalarImage
 from .. import RandomTransform
+from . import RandomBlur
 
 
 TypeGaussian = Optional[Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]]
@@ -45,7 +46,7 @@ class RandomLabelsToImage(RandomTransform):
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
-        :py:class:`~torchio.transforms.augmentation.RandomBlur`.
+        :py:class:`RandomBlur`.
 
     Example:
         >>> import torchio
