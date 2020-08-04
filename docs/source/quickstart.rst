@@ -42,21 +42,21 @@ in parallel::
     # Each instance of torchio.Subject is passed arbitrary keyword arguments.
     # Typically, these arguments will be instances of torchio.Image
     subject_a = torchio.Subject(
-        t1=torchio.Image('subject_a.nii.gz', type=torchio.INTENSITY),
-        label=torchio.Image('subject_a.nii', type=torchio.LABEL),
+        t1=torchio.ScalarImage('subject_a.nii.gz'),
+        label=torchio.LabelMap('subject_a.nii'),
         diagnosis='positive',
     )
 
     # Images can be in any format supported by SimpleITK or NiBabel, including DICOM
     subject_b = torchio.Subject(
-        t1=torchio.Image('subject_b_dicom_folder', type=torchio.INTENSITY),
-        label=torchio.Image('subject_b_seg.nrrd', type=torchio.LABEL),
+        t1=torchio.ScalarImage('subject_b_dicom_folder'),
+        label=torchio.LabelMap('subject_b_seg.nrrd'),
         diagnosis='negative',
     )
     subjects_list = [subject_a, subject_b]
 
     # Let's use one preprocessing transform and one augmentation transform
-    # This transform will be applied only to torchio.INTENSITY images:
+    # This transform will be applied only to scalar images:
     rescale = RescaleIntensity((0, 1))
 
     # As RandomAffine is faster then RandomElasticDeformation, we choose to

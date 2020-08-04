@@ -6,7 +6,7 @@ import unittest
 import torch
 import numpy as np
 import SimpleITK as sitk
-from torchio import LABEL, INTENSITY, RandomFlip
+from torchio import RandomFlip
 from torchio.utils import (
     to_tuple,
     get_stem,

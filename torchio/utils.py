@@ -11,7 +11,6 @@ import SimpleITK as sitk
 from tqdm import trange
 from .torchio import (
     INTENSITY,
-    LABEL,
     TypeData,
     TypeNumber,
     TypePath,
@@ -59,7 +58,7 @@ def create_dummy_dataset(
         force: bool = False,
         verbose: bool = False,
         ):
-    from .data import Image, Subject
+    from .data import ScalarImage, LabelMap, Subject
     output_dir = tempfile.gettempdir() if directory is None else directory
     output_dir = Path(output_dir)
     images_dir = output_dir / 'dummy_images'
@@ -75,8 +74,8 @@ def create_dummy_dataset(
             image_path = images_dir / f'image_{i}{suffix}'
             label_path = labels_dir / f'label_{i}{suffix}'
             subject = Subject(
-                one_modality=Image(image_path, INTENSITY),
-                segmentation=Image(label_path, LABEL),
+                one_modality=ScalarImage(image_path),
+                segmentation=LabelMap(label_path),
             )
             subjects.append(subject)
     else:
@@ -105,8 +104,8 @@ def create_dummy_dataset(
             nii.to_filename(str(label_path))
 
             subject = Subject(
-                one_modality=Image(image_path, INTENSITY),
-                segmentation=Image(label_path, LABEL),
+                one_modality=ScalarImage(image_path),
+                segmentation=LabelMap(label_path),
             )
             subjects.append(subject)
     return subjects
@@ -120,7 +119,7 @@ def apply_transform_to_file(
         verbose: bool = False,
         ):
     from . import Image, ImagesDataset, Subject
-    subject = Subject(image=Image(input_path, type))
+    subject = Subject(image=Image(input_path, type=type))
     transformed = transform(subject)
     transformed.image.save(output_path)
     if verbose and transformed.history:

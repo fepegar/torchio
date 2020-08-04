@@ -15,19 +15,19 @@ class Subject(dict):
     Example:
 
         >>> import torchio
-        >>> from torchio import Image, Subject
+        >>> from torchio import ScalarImage, LabelMap, Subject
         >>> # One way:
         >>> subject = Subject(
-        ...     one_image=Image('path_to_image.nii.gz', type=torchio.INTENSITY),
-        ...     a_segmentation=Image('path_to_seg.nii.gz', type=torchio.LABEL),
+        ...     one_image=ScalarImage('path_to_image.nii.gz'),
+        ...     a_segmentation=LabelMap('path_to_seg.nii.gz'),
         ...     age=45,
         ...     name='John Doe',
         ...     hospital='Hospital Juan Negrín',
         ... )
         >>> # If you want to create the mapping before, or have spaces in the keys:
         >>> subject_dict = {
-        ...     'one image': Image('path_to_image.nii.gz', type=torchio.INTENSITY),
-        ...     'a segmentation': Image('path_to_seg.nii.gz', type=torchio.LABEL),
+        ...     'one image': ScalarImage('path_to_image.nii.gz'),
+        ...     'a segmentation': LabelMap('path_to_seg.nii.gz'),
         ...     'age': 45,
         ...     'name': 'John Doe',
         ...     'hospital': 'Hospital Juan Negrín',

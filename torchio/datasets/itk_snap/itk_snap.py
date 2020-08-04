@@ -1,7 +1,7 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import Subject, Image, LABEL
+from ... import Subject, ScalarImage, LabelMap
 
 
 class SubjectITKSNAP(Subject):
@@ -42,11 +42,11 @@ class BrainTumor(SubjectITKSNAP):
             for name in ('T1', 'T1C', 'T2', 'FLAIR', 'truth')
         ]
         return dict(
-            t1=Image(t1),
-            t1c=Image(t1c),
-            t2=Image(t2),
-            flair=Image(flair),
-            seg=Image(seg, type=LABEL),
+            t1=ScalarImage(t1),
+            t1c=ScalarImage(t1c),
+            t2=ScalarImage(t2),
+            flair=ScalarImage(flair),
+            seg=LabelMap(seg),
         )
 
 
@@ -58,8 +58,8 @@ class T1T2(SubjectITKSNAP):
         mprage = self.download_root / self.name / 'mprage_3T_bet_dr.nii'
         tse = self.download_root / self.name / 'tse_3t_dr.nii'
         return dict(
-            mprage=Image(mprage),
-            tse=Image(tse),
+            mprage=ScalarImage(mprage),
+            tse=ScalarImage(tse),
         )
 
 
@@ -73,8 +73,8 @@ class AorticValve(SubjectITKSNAP):
             for name in ('14', '14_manseg', '25', '25_manseg')
         ]
         return dict(
-            b14=Image(b14),
-            b14_seg=Image(b14_seg, type=LABEL),
-            b25=Image(b25),
-            b25_seg=Image(b25_seg, type=LABEL),
+            b14=ScalarImage(b14),
+            b14_seg=LabelMap(b14_seg),
+            b25=ScalarImage(b25),
+            b25_seg=LabelMap(b25_seg),
         )

@@ -1,7 +1,7 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import Image, LABEL, DATA
+from ... import ScalarImage, LabelMap, LABEL, DATA
 from .mni import SubjectMNI
 
 
@@ -46,14 +46,14 @@ class Colin27(SubjectMNI):
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> colin_1998.load()
         >>> colin_1998.t1
-        Image(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)
+        ScalarImage(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)
         >>>
         >>> colin_2008 = torchio.datasets.Colin27(version=2008)
         >>> colin_2008
         Colin27(Keys: ('t1', 't2', 'pd', 'cls'); images: 4)
         >>> colin_2008.load()
         >>> colin_2008.t1
-        Image(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
+        ScalarImage(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
 
     """
     def __init__(self, version=1998):
@@ -75,7 +75,7 @@ class Colin27(SubjectMNI):
             # Fix label map (https://github.com/fepegar/torchio/issues/220)
             if version == 2008:
                 path = download_root / 'colin27_cls_tal_hires.nii'
-                cls_image = Image(path, type=LABEL)
+                cls_image = LabelMap(path)
                 cls_image[DATA] = cls_image[DATA].round().byte()
                 cls_image.save(path)
 
@@ -85,9 +85,9 @@ class Colin27(SubjectMNI):
                 for suffix in ('', '_headmask', '_mask')
             ]
             super().__init__(
-                t1=Image(t1),
-                head=Image(head, type=LABEL),
-                brain=Image(mask, type=LABEL),
+                t1=ScalarImage(t1),
+                head=LabelMap(head),
+                brain=LabelMap(mask),
             )
         elif version == 2008:
             t1, t2, pd, label = [
@@ -95,8 +95,8 @@ class Colin27(SubjectMNI):
                 for name in ('t1', 't2', 'pd', 'cls')
             ]
             super().__init__(
-                t1=Image(t1),
-                t2=Image(t2),
-                pd=Image(pd),
-                cls=Image(label, type=LABEL, labels=TISSUES_2008),
+                t1=ScalarImage(t1),
+                t2=ScalarImage(t2),
+                pd=ScalarImage(pd),
+                cls=LabelMap(label, labels=TISSUES_2008),
             )

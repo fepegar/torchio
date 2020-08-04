@@ -1,6 +1,6 @@
 import urllib.parse
 from torchvision.datasets.utils import download_url
-from .. import Subject, Image
+from .. import Subject, ScalarImage
 from ..utils import get_torchio_cache_dir
 
 
@@ -49,5 +49,5 @@ class Slicer(Subject):
                 filename=filename,
             )
         super().__init__({
-            stem: Image(download_root / filename),  # will use the last filename
+            stem: ScalarImage(download_root / filename),  # will use the last filename
         })

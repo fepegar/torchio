@@ -11,7 +11,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 import torchio
-from torchio import Image, Subject, ImagesDataset, Queue
+from torchio import ScalarImage, LabelMap, Subject, ImagesDataset, Queue
 from torchio.data import UniformSampler
 
 def main():
@@ -24,15 +24,15 @@ def main():
 
     # Populate a list with images
     one_subject = Subject(
-        T1=Image('../BRATS2018_crop_renamed/LGG75_T1.nii.gz', torchio.INTENSITY),
-        T2=Image('../BRATS2018_crop_renamed/LGG75_T2.nii.gz', torchio.INTENSITY),
-        label=Image('../BRATS2018_crop_renamed/LGG75_Label.nii.gz', torchio.LABEL),
+        T1=ScalarImage('../BRATS2018_crop_renamed/LGG75_T1.nii.gz'),
+        T2=ScalarImage('../BRATS2018_crop_renamed/LGG75_T2.nii.gz'),
+        label=LabelMap('../BRATS2018_crop_renamed/LGG75_Label.nii.gz'),
     )
 
     # This subject doesn't have a T2 MRI!
     another_subject = Subject(
-        T1=Image('../BRATS2018_crop_renamed/LGG74_T1.nii.gz', torchio.INTENSITY),
-        label=Image('../BRATS2018_crop_renamed/LGG74_Label.nii.gz', torchio.LABEL),
+        T1=ScalarImage('../BRATS2018_crop_renamed/LGG74_T1.nii.gz'),
+        label=LabelMap('../BRATS2018_crop_renamed/LGG74_Label.nii.gz'),
     )
 
     subjects = [

@@ -1,7 +1,7 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import Image
+from ... import ScalarImage
 from .mni import SubjectMNI
 
 
@@ -22,5 +22,5 @@ class Sheep(SubjectMNI):
             )
         t1_path = download_root / 'ovine_model_05.nii'
         super().__init__(
-            t1=Image(t1_path)
+            t1=ScalarImage(t1_path)
         )

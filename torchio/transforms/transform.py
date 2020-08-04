@@ -8,7 +8,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from .. import TypeData, INTENSITY, DATA, TypeNumber
+from .. import TypeData, DATA, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..data.dataset import ImagesDataset

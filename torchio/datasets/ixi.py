@@ -24,7 +24,7 @@ from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
 from torchvision.datasets.utils import download_and_extract_archive
 from ..transforms import Transform
-from .. import ImagesDataset, Subject, Image, INTENSITY, LABEL, TypePath
+from .. import ImagesDataset, Subject, ScalarImage, LabelMap, TypePath
 
 
 class IXI(ImagesDataset):
@@ -122,13 +122,13 @@ class IXI(ImagesDataset):
         for filepath in paths:
             subject_id = get_subject_id(filepath)
             images_dict = dict(subject_id=subject_id)
-            images_dict[one_modality] = Image(filepath, INTENSITY)
+            images_dict[one_modality] = ScalarImage(filepath)
             for modality in modalities[1:]:
                 globbed = sglob(
                     root / modality, f'{subject_id}-{modality}.nii.gz')
                 if globbed:
                     assert len(globbed) == 1
-                    images_dict[modality] = Image(globbed[0], INTENSITY)
+                    images_dict[modality] = ScalarImage(globbed[0])
                 else:
                     skip_subject = True
                     break
@@ -215,8 +215,8 @@ class IXITiny(ImagesDataset):
         for image_path, label_path in zip(image_paths, label_paths):
             subject_id = get_subject_id(image_path)
             subject_dict = {}
-            subject_dict['image'] = Image(image_path, INTENSITY)
-            subject_dict['label'] = Image(label_path, LABEL)
+            subject_dict['image'] = ScalarImage(image_path)
+            subject_dict['label'] = LabelMap(label_path)
             subject_dict['subject_id'] = subject_id
             subjects.append(Subject(**subject_dict))
         return subjects

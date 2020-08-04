@@ -5,7 +5,7 @@
 import copy
 import torch
 import numpy as np
-from torchio import INTENSITY, LABEL, Image, ScalarImage, LabelMap, Subject
+from torchio import Image, ScalarImage, LabelMap, Subject, INTENSITY, LABEL
 from ..utils import TorchioTestCase
 from torchio import RandomFlip, RandomAffine
 
@@ -15,15 +15,15 @@ class TestImage(TorchioTestCase):
 
     def test_image_not_found(self):
         with self.assertRaises(FileNotFoundError):
-            Image('nopath', type=INTENSITY)
+            Image('nopath')
 
     def test_wrong_path_type(self):
         with self.assertRaises(TypeError):
-            Image(5, type=INTENSITY)
+            Image(5)
 
     def test_wrong_affine(self):
         with self.assertRaises(TypeError):
-            Image(5, type=INTENSITY, affine=1)
+            Image(5, affine=1)
 
     def test_tensor_flip(self):
         sample_input = torch.ones((4, 30, 30, 30))

@@ -53,19 +53,19 @@ class ImagesDataset(Dataset):
 
     Example:
         >>> import torchio
-        >>> from torchio import ImagesDataset, Image, Subject
+        >>> from torchio import ImagesDataset, ScalarImage, LabelMap, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
         >>> subject_a = Subject([
-        ...     t1=Image('t1.nrrd', type=torchio.INTENSITY),
-        ...     t2=Image('t2.mha', type=torchio.INTENSITY),
-        ...     label=Image('t1_seg.nii.gz', type=torchio.LABEL),
+        ...     t1=ScalarImage('t1.nrrd',),
+        ...     t2=ScalarImage('t2.mha',),
+        ...     label=LabelMap('t1_seg.nii.gz'),
         ...     age=31,
         ...     name='Fernando Perez',
         >>> ])
         >>> subject_b = Subject(
-        ...     t1=Image('colin27_t1_tal_lin.minc', type=torchio.INTENSITY),
-        ...     t2=Image('colin27_t2_tal_lin_dicom', type=torchio.INTENSITY),
-        ...     label=Image('colin27_seg1.nii.gz', type=torchio.LABEL),
+        ...     t1=ScalarImage('colin27_t1_tal_lin.minc',),
+        ...     t2=ScalarImage('colin27_t2_tal_lin_dicom',),
+        ...     label=LabelMap('colin27_seg1.nii.gz'),
         ...     age=56,
         ...     name='Colin Holmes',
         ... )

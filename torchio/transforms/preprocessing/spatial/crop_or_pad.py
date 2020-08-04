@@ -31,8 +31,8 @@ class CropOrPad(BoundsTransform):
         >>> import torchio
         >>> from torchio.transforms import CropOrPad
         >>> subject = torchio.Subject(
-        ...     torchio.Image('chest_ct', 'subject_a_ct.nii.gz', torchio.INTENSITY),
-        ...     torchio.Image('heart_mask', 'subject_a_heart_seg.nii.gz', torchio.LABEL),
+        ...     torchio.ScalarImage('chest_ct', 'subject_a_ct.nii.gz'),
+        ...     torchio.LabelMap('heart_mask', 'subject_a_heart_seg.nii.gz'),
         ... )
         >>> subject['chest_ct'].shape
         torch.Size([1, 512, 512, 289])

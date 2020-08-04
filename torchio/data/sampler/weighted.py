@@ -34,7 +34,7 @@ class WeightedSampler(RandomSampler):
     Example:
         >>> import torchio
         >>> subject = torchio.Subject(
-        ...     t1=torchio.Image('t1_mri.nii.gz', type=torchio.INTENSITY),
+        ...     t1=torchio.ScalarImage('t1_mri.nii.gz'),
         ...     sampling_map=torchio.Image('sampling.nii.gz', type=torchio.SAMPLING_MAP),
         ... )
         >>> sample = torchio.ImagesDataset([subject])[0]

@@ -1,6 +1,6 @@
 import urllib.parse
 from torchvision.datasets.utils import download_url
-from .. import Subject, Image, DATA_REPO, INTENSITY, LABEL
+from .. import Subject, ScalarImage, LabelMap, DATA_REPO
 from ..utils import get_torchio_cache_dir
 from ..data.io import read_matrix
 
@@ -29,15 +29,13 @@ class FPG(Subject):
         rigid = read_matrix(download_root / self.filenames['rigid'])
         affine = read_matrix(download_root / self.filenames['affine'])
         subject_dict = {
-            't1': Image(
+            't1': ScalarImage(
                 download_root / self.filenames['t1'],
-                type=INTENSITY,
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),
-            'seg': Image(
+            'seg': LabelMap(
                 download_root / self.filenames['seg'],
-                type=LABEL,
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),

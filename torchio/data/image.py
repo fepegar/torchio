@@ -125,7 +125,7 @@ class Image(dict):
     def __init__(
             self,
             path: Optional[TypePath] = None,
-            type: str = INTENSITY,
+            type: str = None,
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
             check_nans: bool = True,
@@ -135,6 +135,14 @@ class Image(dict):
             ):
         self.check_nans = check_nans
         self.num_spatial_dims = num_spatial_dims
+
+        if type is None:
+            warnings.warn(
+                'Not specifying the image type is deprecated and will be'
+                ' mandatory in the future. You can probably use ScalarImage or'
+                ' LabelMap instead'
+            )
+            type = INTENSITY
 
         if path is None and tensor is None:
             raise ValueError('A value for path or tensor must be given')
