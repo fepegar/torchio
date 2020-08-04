@@ -8,6 +8,7 @@ from pathlib import Path
 import torch
 import numpy as np
 import nibabel as nib
+from numpy.testing import assert_array_equal, assert_raises
 from torchio.datasets import IXITiny
 from torchio import DATA, AFFINE, ScalarImage, LabelMap, ImagesDataset, Subject
 
@@ -137,17 +138,8 @@ class TorchioTestCase(unittest.TestCase):
         image.save(path)
         return path
 
-    def assertTensorNotEqual(self, a, b, message=None):
-        if a.shape != b.shape:
-            return
-        # There must be better ways to do this
-        if message is None:
-            assert not torch.all(torch.eq(a, b))
-        else:
-            assert not torch.all(torch.eq(a, b)), message
+    def assertTensorNotEqual(self, *args, **kwargs):
+        assert_raises(AssertionError, assert_array_equal, *args, **kwargs)
 
-    def assertTensorEqual(self, a, b, message=None):
-        if message is None:
-            assert torch.all(torch.eq(a, b))
-        else:
-            assert torch.all(torch.eq(a, b)), message
+    def assertTensorEqual(self, *args, **kwargs):
+        assert_array_equal(*args, **kwargs)

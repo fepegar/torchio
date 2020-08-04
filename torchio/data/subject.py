@@ -60,6 +60,18 @@ class Subject(dict):
         )
         return string
 
+    def __copy__(self):
+        result_dict = {}
+        for key, value in self.items():
+            if isinstance(value, Image):
+                value = copy.copy(value)
+            else:
+                value = copy.deepcopy(value)
+            result_dict[key] = value
+        new = Subject(result_dict)
+        new.history = self.history
+        return new
+
     @staticmethod
     def _parse_images(images: List[Tuple[str, Image]]) -> None:
         # Check that it's not empty

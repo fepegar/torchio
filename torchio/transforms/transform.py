@@ -1,7 +1,7 @@
+import copy
 import numbers
 import warnings
 from typing import Union, Tuple
-from copy import deepcopy
 from abc import ABC, abstractmethod
 
 import torch
@@ -65,7 +65,7 @@ class Transform(ABC):
         self.parse_sample(sample)
 
         if self.copy:
-            sample = deepcopy(sample)
+            sample = copy.copy(sample)
 
         with np.errstate(all='raise'):
             transformed = self.apply_transform(sample)

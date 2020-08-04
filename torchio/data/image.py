@@ -196,6 +196,19 @@ class Image(dict):
     def __array__(self):
         return self[DATA].numpy()
 
+    def __copy__(self):
+        kwargs = dict(
+            tensor=self.data,
+            affine=self.affine,
+            type=self.type,
+            path=self.path,
+            channels_last=False,
+        )
+        for key, value in self.items():
+            if key in PROTECTED_KEYS: continue
+            kwargs[key] = value  # should I copy? deepcopy?
+        return self.__class__(**kwargs)
+
     @property
     def data(self):
         return self[DATA]
