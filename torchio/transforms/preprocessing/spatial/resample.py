@@ -1,6 +1,6 @@
 from pathlib import Path
 from numbers import Number
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
 
 import torch
 import numpy as np
@@ -41,6 +41,7 @@ class Resample(Transform):
             supported for backward compatibility,
             but will be removed in a future version.
         p: Probability that this transform will be applied.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. note:: Resampling is performed using
         :py:meth:`nibabel.processing.resample_to_output` or
@@ -66,9 +67,9 @@ class Resample(Transform):
             image_interpolation: str = 'linear',
             pre_affine_name: Optional[str] = None,
             p: float = 1,
-            copy: bool = True,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, copy=copy)
+        super().__init__(p=p, keys=keys)
         self.reference_image, self.target_spacing = self.parse_target(target)
         self.interpolation_order = self.parse_interpolation(image_interpolation)
         self.affine_name = pre_affine_name

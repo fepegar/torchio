@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Callable, Union
+from typing import Callable, Union, List, Optional
 import SimpleITK as sitk
 from .bounds_transform import BoundsTransform, TypeBounds
 
@@ -38,6 +38,7 @@ class Pad(BoundsTransform):
             - ``wrap`` Same as ``circular``.
 
         p: Probability that this transform will be applied.
+        keys: See :py:class:`~torchio.transforms.Transform`.
     """
 
     PADDING_FUNCTIONS = {
@@ -54,13 +55,14 @@ class Pad(BoundsTransform):
             padding: TypeBounds,
             padding_mode: Union[str, float] = 0,
             p: float = 1,
+            keys: Optional[List[str]] = None,
             ):
         """
         padding_mode can be 'constant', 'reflect', 'replicate' or 'circular'.
         See https://pytorch.org/docs/stable/nn.functional.html#pad for more
         information about this transform.
         """
-        super().__init__(padding, p=p)
+        super().__init__(padding, p=p, keys=keys)
         self.padding_mode, self.fill = self.parse_padding_mode(padding_mode)
 
     @classmethod

@@ -2,7 +2,7 @@
 This is the docstring of random transform module
 """
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import torch
 import numpy as np
@@ -18,13 +18,15 @@ class RandomTransform(Transform):
     Args:
         p: Probability that this transform will be applied.
         seed: Seed for :py:mod:`torch` random number generator.
+        keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p)
+        super().__init__(p=p, keys=keys)
         self._seed = seed
 
     def __call__(self, sample: Subject):

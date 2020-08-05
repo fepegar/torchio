@@ -1,8 +1,8 @@
 import copy
 import numbers
 import warnings
-from typing import Union, Tuple
 from abc import ABC, abstractmethod
+from typing import Optional, Union, Tuple, List
 
 import torch
 import numpy as np
@@ -32,10 +32,19 @@ class Transform(ABC):
     Args:
         p: Probability that this transform will be applied.
         copy: Make a deep copy of the input before applying the transform.
+        keys: If the input is a dictionary, the corresponding values will be
+            converted to :py:class:`torchio.ScalarImage` so that the transform
+            is applied to them only.
     """
-    def __init__(self, p: float = 1, copy: bool = True):
+    def __init__(
+            self,
+            p: float = 1,
+            copy: bool = True,
+            keys: Optional[List[str]] = None,
+            ):
         self.probability = self.parse_probability(p)
         self.copy = copy
+        self.keys = keys
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
         """Transform a sample and return the result.
@@ -50,6 +59,8 @@ class Transform(ABC):
         """
         if torch.rand(1).item() > self.probability:
             return data
+
+        is_dict = False
         if isinstance(data, (np.ndarray, torch.Tensor)):
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
@@ -59,9 +70,19 @@ class Transform(ABC):
             sample = self._get_subject_from_image(data)
             is_tensor = is_array = False
             is_image = True
-        else:
+        elif isinstance(data, Subject):
             is_tensor = is_array = is_image = False
             sample = data
+        elif isinstance(data, dict):  # e.g. Eisen dict
+            if self.keys is None:
+                message = (
+                    'If input is a dictionary, a value for "keys" must be'
+                    ' specified when instantiating the transform'
+                )
+                raise RuntimeError(message)
+            sample = self._get_subject_from_dict(data, self.keys)
+            is_tensor = is_array = is_image = False
+            is_dict = True
         self.parse_sample(sample)
 
         if self.copy:
@@ -80,6 +101,11 @@ class Transform(ABC):
             transformed = transformed.numpy()
         if is_image:
             transformed = transformed[IMAGE_NAME]
+        if is_dict:
+            transformed = dict(transformed)
+            for key, value in transformed.items():
+                if isinstance(value, Image):
+                    transformed[key] = value.data
         return transformed
 
     @abstractmethod
@@ -255,11 +281,23 @@ class Transform(ABC):
         return subject
 
     @staticmethod
-    def nib_to_sitk(data: TypeData, affine: TypeData):
+    def _get_subject_from_dict(
+            data: dict,
+            image_keys: List[str],
+            ) -> Subject:
+        subject_dict = {}
+        for key, value in data.items():
+            if key in image_keys:
+                value = ScalarImage(tensor=value)
+            subject_dict[key] = value
+        return Subject(subject_dict)
+
+    @staticmethod
+    def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
         return nib_to_sitk(data, affine)
 
     @staticmethod
-    def sitk_to_nib(image: sitk.Image):
+    def sitk_to_nib(image: sitk.Image) -> Tuple[torch.Tensor, np.ndarray]:
         return sitk_to_nib(image)
 
     @property

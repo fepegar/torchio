@@ -46,6 +46,7 @@ class RandomMotion(RandomTransform):
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -58,8 +59,9 @@ class RandomMotion(RandomTransform):
             image_interpolation: str = 'linear',
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         if not 0 < num_transforms or not isinstance(num_transforms, int):

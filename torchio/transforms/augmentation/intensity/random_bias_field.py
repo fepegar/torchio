@@ -1,5 +1,5 @@
 
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
 import numpy as np
 import torch
 from ....torchio import DATA, TypeData
@@ -29,6 +29,7 @@ class RandomBiasField(RandomTransform):
         order: Order of the basis polynomial functions.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
@@ -36,8 +37,9 @@ class RandomBiasField(RandomTransform):
             order: int = 3,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = self.parse_order(order)

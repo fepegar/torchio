@@ -1,4 +1,4 @@
-from typing import Sequence, Optional
+from typing import Sequence, Optional, List
 import torch
 from ..data.subject import Subject
 from ..torchio import DATA, TYPE, TypeCallable
@@ -15,6 +15,7 @@ class Lambda(Transform):
             which this transform should be applied. If ``None``, the transform
             will be applied to all images in the sample.
         p: Probability that this transform will be applied.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio
@@ -30,8 +31,9 @@ class Lambda(Transform):
             function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
             p: float = 1,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p)
+        super().__init__(p=p, keys=keys)
         self.function = function
         self.types_to_apply = types_to_apply
 

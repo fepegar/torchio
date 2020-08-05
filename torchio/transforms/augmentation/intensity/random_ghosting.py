@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List
 import torch
 import numpy as np
 from ....torchio import DATA
@@ -36,6 +36,7 @@ class RandomGhosting(RandomTransform):
             that generate the artifact.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -48,8 +49,9 @@ class RandomGhosting(RandomTransform):
             restore: float = 0.02,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         if not isinstance(axes, tuple):
             try:
                 axes = tuple(axes)
