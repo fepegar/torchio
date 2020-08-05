@@ -19,6 +19,7 @@ class RandomDownsample(RandomTransform):
             :math:`(a, b)` is provided then :math:`m \sim \mathcal{U}(a, b)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
         >>> from torchio import RandomDownsample
@@ -37,8 +38,9 @@ class RandomDownsample(RandomTransform):
             downsampling: TypeRangeFloat = (1.5, 5),
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self.parse_range(
             downsampling, 'downsampling', min_constraint=1)
@@ -70,7 +72,6 @@ class RandomDownsample(RandomTransform):
         transform = Resample(
             tuple(target_spacing),
             image_interpolation='nearest',
-            copy=False,  # already copied in super().__init__
         )
         sample = transform(sample)
         sample.add_transform(self, random_parameters_dict)

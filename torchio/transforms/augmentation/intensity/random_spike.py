@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List
 import torch
 import numpy as np
 import SimpleITK as sitk
@@ -31,6 +31,7 @@ class RandomSpike(RandomTransform):
             Larger values generate more distorted images.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -41,8 +42,9 @@ class RandomSpike(RandomTransform):
             intensity: Union[float, Tuple[float, float]] = (1, 3),
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
         self.num_spikes_range = self.parse_range(

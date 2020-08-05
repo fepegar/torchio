@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, List
 import torch
 import numpy as np
 from ....data.subject import Subject
@@ -20,6 +20,7 @@ class RandomSwap(RandomTransform):
         num_iterations: Number of times that two patches will be swapped.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
@@ -27,8 +28,9 @@ class RandomSwap(RandomTransform):
             num_iterations: int = 100,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.patch_size = to_tuple(patch_size)
         self.num_iterations = self.parse_num_iterations(num_iterations)
 

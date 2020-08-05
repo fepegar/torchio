@@ -16,6 +16,7 @@ class RandomFlip(RandomTransform):
             computed on a per-axis basis.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. note:: If the input image is 2D, all axes should be in ``(0, 1)``.
     """
@@ -26,8 +27,9 @@ class RandomFlip(RandomTransform):
             flip_probability: float = 0.5,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.axes = self.parse_axes(axes)
         self.flip_probability = self.parse_probability(
             flip_probability,

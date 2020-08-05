@@ -1,7 +1,9 @@
 import warnings
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
+
 import numpy as np
 from deprecated import deprecated
+
 from .pad import Pad
 from .crop import Crop
 from .bounds_transform import BoundsTransform, TypeTripletInt, TypeSixBounds
@@ -26,6 +28,7 @@ class CropOrPad(BoundsTransform):
             of the bounding box of non-zero values in the image named
             :py:attr:`mask_name`.
         p: Probability that this transform will be applied.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio
@@ -50,8 +53,9 @@ class CropOrPad(BoundsTransform):
             padding_mode: Union[str, float] = 0,
             mask_name: Optional[str] = None,
             p: float = 1,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(target_shape, p=p)
+        super().__init__(target_shape, p=p, keys=keys)
         self.padding_mode = padding_mode
         if mask_name is not None and not isinstance(mask_name, str):
             message = (

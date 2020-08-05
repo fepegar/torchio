@@ -1,5 +1,5 @@
 
-from typing import Union, Tuple, Optional, Dict, Sequence
+from typing import Union, Tuple, Optional, Dict, Sequence, List
 import torch
 import numpy as np
 from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE
@@ -42,6 +42,7 @@ class RandomLabelsToImage(RandomTransform):
             :py:func:`torch.argmax()` on the channel dimension (i.e. 0).
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -86,8 +87,9 @@ class RandomLabelsToImage(RandomTransform):
             discretize: bool = False,
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.label_key, self.pv_label_keys = self.parse_keys(
             label_key, pv_label_keys)
         self.default_mean = self.parse_gaussian_parameter(default_mean, 'mean')

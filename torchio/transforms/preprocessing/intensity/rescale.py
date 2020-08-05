@@ -1,4 +1,5 @@
 import warnings
+from typing import Optional, List
 
 import torch
 import numpy as np
@@ -25,6 +26,7 @@ class RescaleIntensity(NormalizationTransform):
         masking_method: See
             :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
         p: Probability that this transform will be applied.
+        keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
     .. _nn-UNet paper: https://arxiv.org/abs/1809.10486
@@ -35,8 +37,9 @@ class RescaleIntensity(NormalizationTransform):
             percentiles: TypeRangeFloat = (0, 100),
             masking_method: TypeMaskingMethod = None,
             p: float = 1,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(masking_method=masking_method, p=p)
+        super().__init__(masking_method=masking_method, p=p, keys=keys)
         self.out_min, self.out_max = self.parse_range(
             out_min_max, 'out_min_max')
         self.percentiles = self.parse_range(

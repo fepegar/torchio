@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List
 import torch
 from ....torchio import DATA
 from ....data.subject import Subject
@@ -25,6 +25,7 @@ class RandomNoise(RandomTransform):
             :math:`\sigma \sim \mathcal{U}(0, d)`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
+        keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
@@ -32,8 +33,9 @@ class RandomNoise(RandomTransform):
             std: Union[float, Tuple[float, float]] = (0, 0.25),
             p: float = 1,
             seed: Optional[int] = None,
+            keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed)
+        super().__init__(p=p, seed=seed, keys=keys)
         self.mean_range = self.parse_range(mean, 'mean')
         self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
