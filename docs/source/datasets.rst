@@ -30,6 +30,14 @@ MNI
 .. currentmodule:: torchio.datasets.mni
 
 
+:class:`ICBM2009CNonlinearSymmetryc`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ICBM2009CNonlinearSymmetryc
+    :members:
+    :show-inheritance:
+
+
 :class:`Colin27`
 ~~~~~~~~~~~~~~~~
 

@@ -1,4 +1,5 @@
 import ast
+import gzip
 import shutil
 import tempfile
 from pathlib import Path
@@ -313,3 +314,9 @@ def round_up(value: float) -> float:
 
     """
     return np.floor(value + 0.5)
+
+
+def compress(input_path, output_path):
+    with open(input_path, 'rb') as f_in:
+        with gzip.open(output_path, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
