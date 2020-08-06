@@ -43,13 +43,17 @@ BibTeX:
 
 .. code-block:: latex
 
-   @misc{fern2020torchio,
-      title={TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
-      author={Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin},
-      year={2020},
-      eprint={2003.04696},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV}
+   @article{perez-garcia_torchio_2020,
+      title = {{TorchIO}: a {Python} library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+      shorttitle = {{TorchIO}},
+      url = {http://arxiv.org/abs/2003.04696},
+      urldate = {2020-03-11},
+      journal = {arXiv:2003.04696 [cs, eess, stat]},
+      author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, Sebastien},
+      month = mar,
+      year = {2020},
+      note = {arXiv: 2003.04696},
+      keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing, Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Statistics - Machine Learning},
    }
 
 This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
