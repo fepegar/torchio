@@ -166,12 +166,13 @@ class Transform(ABC):
                     f'If {name} is a single number, it must be smaller'
                     f' than {max_constraint}, not {nums_range}'
                 )
-            nums_ok = isinstance(nums_range, type_constraint)
-            if type_constraint is not None and not nums_ok:
-                raise ValueError(
-                    f'If {name} is a single number, it must be of'
-                    f' type {type_constraint}, not {nums_range}'
-                )
+            type_constraint
+            if type_constraint is not None:
+                if not isinstance(nums_range, type_constraint):
+                    raise ValueError(
+                        f'If {name} is a single number, it must be of'
+                        f' type {type_constraint}, not {nums_range}'
+                    )
             min_range = -nums_range if min_constraint is None else nums_range
             return (min_range, nums_range)
 
