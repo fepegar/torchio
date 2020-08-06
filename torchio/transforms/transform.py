@@ -159,18 +159,18 @@ class Transform(ABC):
             if min_constraint is not None and nums_range < min_constraint:
                 raise ValueError(
                     f'If {name} is a single number, it must be greater'
-                    f'than {min_constraint}, not {nums_range}'
+                    f' than {min_constraint}, not {nums_range}'
                 )
             if max_constraint is not None and nums_range > max_constraint:
                 raise ValueError(
                     f'If {name} is a single number, it must be smaller'
-                    f'than {max_constraint}, not {nums_range}'
+                    f' than {max_constraint}, not {nums_range}'
                 )
-            if type_constraint is not None and \
-                    not isinstance(nums_range, type_constraint):
+            nums_ok = isinstance(nums_range, type_constraint)
+            if type_constraint is not None and not nums_ok:
                 raise ValueError(
                     f'If {name} is a single number, it must be of'
-                    f'type {type_constraint}, not {nums_range}'
+                    f' type {type_constraint}, not {nums_range}'
                 )
             min_range = -nums_range if min_constraint is None else nums_range
             return (min_range, nums_range)
@@ -179,12 +179,13 @@ class Transform(ABC):
             min_degree, max_degree = nums_range
         except (TypeError, ValueError):
             raise ValueError(
-                f'If {name} is not a single number, it muste be'
-                f'a sequence of len 2, not {nums_range}'
+                f'If {name} is not a single number, it must be'
+                f' a sequence of len 2, not {nums_range}'
             )
 
-        if not isinstance(min_degree, numbers.Number) or \
-                not isinstance(max_degree, numbers.Number):
+        min_is_number = isinstance(min_degree, numbers.Number)
+        max_is_number = isinstance(max_degree, numbers.Number)
+        if not min_is_number or not max_is_number:
             message = (
                 f'{name} values must be numbers, not {nums_range}')
             raise ValueError(message)
@@ -192,26 +193,27 @@ class Transform(ABC):
         if min_degree > max_degree:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be'
-                f' equal or greater than the first, not {nums_range}')
+                f' equal or greater than the first, but it is {nums_range}')
 
         if min_constraint is not None and min_degree < min_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the first value must be greater'
-                f'than {min_constraint}, not {min_degree}'
+                f' than {min_constraint}, but it is {min_degree}'
             )
 
         if max_constraint is not None and max_degree > max_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be smaller'
-                f'than {max_constraint}, not {max_degree}'
+                f' than {max_constraint}, but it is {max_degree}'
             )
 
         if type_constraint is not None:
-            if not isinstance(min_degree, type_constraint) or \
-                    not isinstance(max_degree, type_constraint):
+            min_type_ok = isinstance(min_degree, type_constraint)
+            max_type_ok = isinstance(max_degree, type_constraint)
+            if not min_type_ok or not max_type_ok:
                 raise ValueError(
-                    f'If {name} is a sequence, its values must be of'
-                    f'type {type_constraint}, not {nums_range}'
+                    f'If "{name}" is a sequence, its values must be of'
+                    f' type "{type_constraint}", not "{type(nums_range)}"'
                 )
         return nums_range
 
