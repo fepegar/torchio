@@ -31,7 +31,7 @@ class Transform(ABC):
 
     Args:
         p: Probability that this transform will be applied.
-        copy: Make a deep copy of the input before applying the transform.
+        copy: Make a shallow copy of the input before applying the transform.
         keys: If the input is a dictionary, the corresponding values will be
             converted to :py:class:`torchio.ScalarImage` so that the transform
             is applied to them only.
