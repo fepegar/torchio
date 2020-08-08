@@ -8,7 +8,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from .. import TypeData, DATA, TypeNumber
+from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..data.dataset import ImagesDataset
@@ -60,20 +60,22 @@ class Transform(ABC):
         if torch.rand(1).item() > self.probability:
             return data
 
+        is_tensor = is_array = is_dict = is_image = is_sitk = False
+
         is_dict = False
         if isinstance(data, (np.ndarray, torch.Tensor)):
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
-            is_image = False
             sample = self.parse_tensor(data)
         elif isinstance(data, Image):
             sample = self._get_subject_from_image(data)
-            is_tensor = is_array = False
             is_image = True
         elif isinstance(data, Subject):
-            is_tensor = is_array = is_image = False
             sample = data
-        elif isinstance(data, dict):  # e.g. Eisen dict
+        elif isinstance(data, sitk.Image):
+            sample = self._get_subject_from_sitk_image(data)
+            is_sitk = True
+        elif isinstance(data, dict):  # e.g. Eisen or MONAI dicts
             if self.keys is None:
                 message = (
                     'If input is a dictionary, a value for "keys" must be'
@@ -81,7 +83,6 @@ class Transform(ABC):
                 )
                 raise RuntimeError(message)
             sample = self._get_subject_from_dict(data, self.keys)
-            is_tensor = is_array = is_image = False
             is_dict = True
         self.parse_sample(sample)
 
@@ -95,13 +96,16 @@ class Transform(ABC):
             ndim = image[DATA].ndim
             assert ndim == 4, f'Output of {self.name} is {ndim}D'
 
-        if is_tensor:
-            transformed = transformed[self.image_name][DATA]
-        if is_array:
-            transformed = transformed.numpy()
-        if is_image:
+        if is_tensor or is_sitk:
+            image = transformed[self.image_name]
+            transformed = image[DATA]
+            if is_array:
+                transformed = transformed.numpy()
+            elif is_sitk:
+                transformed = nib_to_sitk(image[DATA], image[AFFINE])
+        elif is_image:
             transformed = transformed[IMAGE_NAME]
-        if is_dict:
+        elif is_dict:
             transformed = dict(transformed)
             for key, value in transformed.items():
                 if isinstance(value, Image):
@@ -293,6 +297,11 @@ class Transform(ABC):
                 value = ScalarImage(tensor=value)
             subject_dict[key] = value
         return Subject(subject_dict)
+
+    @staticmethod
+    def _get_subject_from_sitk_image(image):
+        tensor, affine = sitk_to_nib(image)
+        return Subject({IMAGE_NAME: ScalarImage(tensor=tensor, affine=affine)})
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
