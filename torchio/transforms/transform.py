@@ -6,6 +6,7 @@ from typing import Optional, Union, Tuple, List
 
 import torch
 import numpy as np
+import nibabel as nib
 import SimpleITK as sitk
 
 from .. import TypeData, DATA, AFFINE, TypeNumber
@@ -60,13 +61,17 @@ class Transform(ABC):
         if torch.rand(1).item() > self.probability:
             return data
 
-        is_tensor = is_array = is_dict = is_image = is_sitk = False
+        is_tensor = is_array = is_dict = is_image = is_sitk = is_nib = False
 
-        is_dict = False
-        if isinstance(data, (np.ndarray, torch.Tensor)):
+        if isinstance(data, nib.Nifti1Image):
+            tensor = data.get_fdata(dtype=np.float32)
+            data = ScalarImage(tensor=tensor, affine=data.affine)
+            sample = self._get_subject_from_image(data)
+            is_nib = True
+        elif isinstance(data, (np.ndarray, torch.Tensor)):
+            sample = self.parse_tensor(data)
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
-            sample = self.parse_tensor(data)
         elif isinstance(data, Image):
             sample = self._get_subject_from_image(data)
             is_image = True
@@ -110,6 +115,16 @@ class Transform(ABC):
             for key, value in transformed.items():
                 if isinstance(value, Image):
                     transformed[key] = value.data
+        elif is_nib:
+            image = transformed[IMAGE_NAME]
+            data = image[DATA]
+            if len(data) > 1:
+                message = (
+                    'Multichannel images not supported for input of type'
+                    ' nibabel.nifti.Nifti1Image'
+                )
+                raise RuntimeError(message)
+            transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
         return transformed
 
     @abstractmethod
