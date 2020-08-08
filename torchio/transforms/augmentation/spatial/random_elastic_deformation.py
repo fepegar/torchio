@@ -8,13 +8,14 @@ from ....data.subject import Subject
 from ....utils import to_tuple, nib_to_sitk
 from ....torchio import INTENSITY, DATA, AFFINE, TYPE, TypeTripletInt
 from .. import Interpolation, get_sitk_interpolator
+from ... import SpatialTransform
 from .. import RandomTransform
 
 
 SPLINE_ORDER = 3
 
 
-class RandomElasticDeformation(RandomTransform):
+class RandomElasticDeformation(RandomTransform, SpatialTransform):
     r"""Apply dense random elastic deformation.
 
     A random displacement is assigned to a coarse grid of control points around
@@ -220,7 +221,7 @@ class RandomElasticDeformation(RandomTransform):
             self.max_displacement,
             self.num_locked_borders,
         )
-        for image in sample.get_images(intensity_only=False):
+        for image in self.get_images(sample):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:

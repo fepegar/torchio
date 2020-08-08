@@ -5,10 +5,11 @@ import SimpleITK as sitk
 from ....utils import nib_to_sitk, sitk_to_nib
 from ....torchio import DATA, AFFINE, TypeData
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomBlur(RandomTransform):
+class RandomBlur(RandomTransform, IntensityTransform):
     r"""Blur an image using a random-sized Gaussian filter.
 
     Args:
@@ -34,7 +35,7 @@ class RandomBlur(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image in sample.get_images_dict().items():
+        for image_name, image in self.get_images_dict(sample).items():
             transformed_tensors = []
             for channel_idx, tensor in enumerate(image[DATA]):
                 std = self.get_params(self.std_range)

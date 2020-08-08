@@ -4,10 +4,11 @@ import numpy as np
 import torch
 from ....torchio import DATA, TypeData
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomBiasField(RandomTransform):
+class RandomBiasField(RandomTransform, IntensityTransform):
     r"""Add random MRI bias field artifact.
 
     MRI magnetic field inhomogeneity creates intensity
@@ -46,7 +47,7 @@ class RandomBiasField(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
+        for image_name, image_dict in self.get_images_dict(sample).items():
             coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,

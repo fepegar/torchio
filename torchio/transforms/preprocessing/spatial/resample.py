@@ -10,7 +10,8 @@ from nibabel.processing import resample_to_output, resample_from_to
 from ....data.subject import Subject
 from ....data.image import Image
 from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
-from ... import Transform, Interpolation
+from ... import SpatialTransform
+from ... import Interpolation
 
 
 
@@ -21,7 +22,7 @@ TypeTarget = Tuple[
 ]
 
 
-class Resample(Transform):
+class Resample(SpatialTransform):
     """Change voxel spacing by resampling.
 
     Args:
@@ -160,7 +161,7 @@ class Resample(Transform):
         use_pre_affine = self.affine_name is not None
         if use_pre_affine:
             self.check_affine_key_presence(self.affine_name, sample)
-        images_dict = sample.get_images_dict(intensity_only=False).items()
+        images_dict = self.get_images_dict(sample).items()
         for image_name, image in images_dict:
             # Do not resample the reference image if there is one
             if use_reference and image_name == self.reference_image:
