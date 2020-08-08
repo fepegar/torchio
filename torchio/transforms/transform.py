@@ -166,7 +166,6 @@ class Transform(ABC):
                     f'If {name} is a single number, it must be smaller'
                     f' than {max_constraint}, not {nums_range}'
                 )
-            type_constraint
             if type_constraint is not None:
                 if not isinstance(nums_range, type_constraint):
                     raise ValueError(
