@@ -105,3 +105,13 @@ ITK-SNAP
 .. autoclass:: Slicer
     :members:
     :show-inheritance:
+
+
+FPG
+---
+
+.. currentmodule:: torchio.datasets.fpg
+
+.. autoclass:: FPG
+    :members:
+    :show-inheritance:
