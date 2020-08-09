@@ -7,7 +7,7 @@ class TestRandomFlip(TorchioTestCase):
     """Tests for `RandomFlip`."""
     def test_2d(self):
         sample = self.make_2d(self.sample)
-        transform = RandomFlip(axes=(0, 1), flip_probability=1)
+        transform = RandomFlip(axes=(1, 2), flip_probability=1)
         transformed = transform(sample)
         assert_array_equal(
             sample.t1.data.numpy()[:, :, ::-1, ::-1],
