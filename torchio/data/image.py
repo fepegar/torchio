@@ -251,6 +251,16 @@ class Image(dict):
         string = f'({", ".join(strings)})'
         return string
 
+    def get_bounds(self):
+        """Get image bounds in mm."""
+        first_index = 3 * (-0.5,)
+        last_index = np.array(self.spatial_shape) - 0.5
+        first_point = nib.affines.apply_affine(self.affine, first_index)
+        last_point = nib.affines.apply_affine(self.affine, last_index)
+        array = np.array((first_point, last_point))
+        bounds_x, bounds_y, bounds_z = array.T.tolist()
+        return bounds_x, bounds_y, bounds_z
+
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
         if path is None:
