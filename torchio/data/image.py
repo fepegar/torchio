@@ -266,14 +266,18 @@ class Image(dict):
 
         # Generally, TorchIO tensors are (C, D, H, W)
         if axis == 'H':
-            return 2
+            return -2
         elif axis == 'W':
-            return 3
+            return -1
         else:
             try:
-                return self.orientation.index(axis)
+                index = self.orientation.index(axis)
             except ValueError:
-                return self.orientation.index(self.flip_axis(axis))
+                index = self.orientation.index(self.flip_axis(axis))
+            # Return negative indices so that it does not matter whether we
+            # refer to spatial dimensions or not
+            index = -4 + index
+            return index
 
     @staticmethod
     def flip_axis(axis):

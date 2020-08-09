@@ -120,6 +120,9 @@ class Subject(dict):
         images_dict = self.get_images_dict(intensity_only=intensity_only)
         return list(images_dict.values())
 
+    def get_first_image(self):
+        return self.get_images(intensity_only=False)[0]
+
     def check_consistent_shape(self) -> None:
         shapes_dict = {}
         iterable = self.get_images_dict(intensity_only=False).items()
@@ -128,8 +131,21 @@ class Subject(dict):
         num_unique_shapes = len(set(shapes_dict.values()))
         if num_unique_shapes > 1:
             message = (
-                'Images in sample have inconsistent shapes:'
+                'Images in subject have inconsistent shapes:'
                 f'\n{pprint.pformat(shapes_dict)}'
+            )
+            raise ValueError(message)
+
+    def check_consistent_orientation(self) -> None:
+        orientations_dict = {}
+        iterable = self.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            orientations_dict[image_name] = image.orientation
+        num_unique_orientations = len(set(orientations_dict.values()))
+        if num_unique_orientations > 1:
+            message = (
+                'Images in subject have inconsistent orientations:'
+                f'\n{pprint.pformat(orientations_dict)}'
             )
             raise ValueError(message)
 
