@@ -20,7 +20,6 @@ IMAGE_NAME = 'image'
 
 
 class Transform(ABC):
-    image_name = 'image'
     """Abstract class for all TorchIO transforms.
 
     All classes used to transform a sample from an
@@ -45,6 +44,7 @@ class Transform(ABC):
         self.probability = self.parse_probability(p)
         self.copy = copy
         self.keys = keys
+        self.image_name = 'default_image_name'
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
         """Transform a sample and return the result.

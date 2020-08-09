@@ -51,13 +51,15 @@ class TestTransforms(TorchioTestCase):
 
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
-        transform = self.get_transform(channels=('image',), labels=False)
+        transform = self.get_transform(
+            channels=('default_image_name',), labels=False)
         transformed = transform(tensor)
         self.assertIsInstance(transformed, torch.Tensor)
 
     def test_transforms_array(self):
         tensor = torch.rand(2, 4, 5, 8).numpy()
-        transform = self.get_transform(channels=('image',), labels=False)
+        transform = self.get_transform(
+            channels=('default_image_name',), labels=False)
         transformed = transform(tensor)
         self.assertIsInstance(transformed, np.ndarray)
 
