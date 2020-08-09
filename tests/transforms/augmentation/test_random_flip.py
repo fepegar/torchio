@@ -13,12 +13,6 @@ class TestRandomFlip(TorchioTestCase):
             sample.t1.data.numpy()[:, :, ::-1, ::-1],
             transformed.t1.data.numpy())
 
-    def test_wrong_axes(self):
-        sample = self.make_2d(self.sample)
-        transform = RandomFlip(axes=2, flip_probability=1)
-        with self.assertRaises(RuntimeError):
-            transform(sample)
-
     def test_out_of_range_axis(self):
         with self.assertRaises(ValueError):
             RandomFlip(axes=3)
@@ -29,7 +23,7 @@ class TestRandomFlip(TorchioTestCase):
 
     def test_wrong_axes_type(self):
         with self.assertRaises(ValueError):
-            RandomFlip(axes='wrong')
+            RandomFlip(axes=None)
 
     def test_wrong_flip_probability_type(self):
         with self.assertRaises(ValueError):
