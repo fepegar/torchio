@@ -6,7 +6,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from ..utils import TorchioTestCase
-from torchio.data import io, Image
+from torchio.data import io, ScalarImage
 
 
 class TestIO(TorchioTestCase):
@@ -80,7 +80,7 @@ class TestIO(TorchioTestCase):
         read_nii_tensor, _ = io.read_image(path)
         assert read_nii_tensor.shape == shape
         assert read_nii_tensor.ndim == dimensions
-        image = Image(path)
+        image = ScalarImage(path)
         image.save(path)
         read_tio_tensor, _ = io.read_image(path)
         assert tuple(read_tio_tensor.shape) == shape

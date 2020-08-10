@@ -1,7 +1,9 @@
 import copy
 import torch
-import numpy as np
 import torchio
+import numpy as np
+import nibabel as nib
+import SimpleITK as sitk
 from ..utils import TorchioTestCase
 
 
@@ -62,6 +64,22 @@ class TestTransforms(TorchioTestCase):
             channels=('default_image_name',), labels=False)
         transformed = transform(tensor)
         self.assertIsInstance(transformed, np.ndarray)
+
+    def test_transforms_sitk(self):
+        tensor = torch.rand(2, 4, 5, 8)
+        affine = np.diag((-1, 2, -3, 1))
+        image = torchio.utils.nib_to_sitk(tensor, affine)
+        transform = self.get_transform(channels=('image',), labels=False)
+        transformed = transform(image)
+        self.assertIsInstance(transformed, sitk.Image)
+
+    def test_transforms_nib(self):
+        data = torch.rand(4, 5, 8).numpy()
+        affine = np.diag((1, -2, 3, 1))
+        image = nib.Nifti1Image(data, affine)
+        transform = self.get_transform(channels=('image',), labels=False)
+        transformed = transform(image)
+        self.assertIsInstance(transformed, nib.Nifti1Image)
 
     def test_transforms_sample_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)

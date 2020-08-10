@@ -278,7 +278,9 @@ class Image(dict):
         if tensor is None:
             return None
         if isinstance(tensor, np.ndarray):
-            tensor = torch.from_numpy(tensor)
+            tensor = torch.from_numpy(tensor.astype(np.float32))
+        elif isinstance(tensor, torch.Tensor):
+            tensor = tensor.float()
         tensor = self.parse_tensor_shape(tensor)
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in tensor')
