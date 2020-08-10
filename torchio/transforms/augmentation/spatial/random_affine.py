@@ -13,11 +13,12 @@ from ....torchio import (
     TypeRangeFloat,
     TypeTripletFloat,
 )
+from ... import SpatialTransform
 from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
 
-class RandomAffine(RandomTransform):
+class RandomAffine(RandomTransform, SpatialTransform):
     r"""Random affine transformation.
 
     Args:
@@ -164,7 +165,7 @@ class RandomAffine(RandomTransform):
             self.isotropic,
         )
         scaling_params, rotation_params, translation_params = params
-        for image in sample.get_images(intensity_only=False):
+        for image in self.get_images(sample):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:

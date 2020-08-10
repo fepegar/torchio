@@ -3,11 +3,12 @@ import torch
 from ....torchio import TypeRangeFloat
 from ....data.subject import Subject
 from ....utils import to_tuple
+from ... import SpatialTransform
 from .. import RandomTransform
 from ...preprocessing import Resample
 
 
-class RandomDownsample(RandomTransform):
+class RandomDownsample(RandomTransform, SpatialTransform):
     """Downsample an image along an axis.
 
     This transform simulates an image that has been acquired using anisotropic

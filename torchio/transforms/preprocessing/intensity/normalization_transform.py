@@ -2,13 +2,13 @@ from typing import Union, List, Optional
 import torch
 from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
-from ... import Transform
+from ... import IntensityTransform
 
 
 TypeMaskingMethod = Union[str, TypeCallable, None]
 
 
-class NormalizationTransform(Transform):
+class NormalizationTransform(IntensityTransform):
     """Base class for intensity preprocessing transforms.
 
     Args:
@@ -64,7 +64,7 @@ class NormalizationTransform(Transform):
             return sample[self.mask_name][DATA].bool()
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image_name, image_dict in sample.get_images_dict().items():
+        for image_name, image_dict in self.get_images_dict(sample).items():
             mask = self.get_mask(sample, image_dict[DATA])
             self.apply_normalization(sample, image_name, mask)
         return sample

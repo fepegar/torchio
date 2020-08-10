@@ -3,10 +3,11 @@ import torch
 import numpy as np
 from ....torchio import DATA
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomGhosting(RandomTransform):
+class RandomGhosting(RandomTransform, IntensityTransform):
     r"""Add random MRI ghosting artifact.
 
     Discrete "ghost" artifacts may occur along the phase-encode direction
@@ -88,7 +89,7 @@ class RandomGhosting(RandomTransform):
         if any(isinstance(n, str) for n in self.axes):
             sample.check_consistent_orientation()
             axes_string = True
-        for image_name, image in sample.get_images_dict().items():
+        for image_name, image in self.get_images_dict(sample).items():
             transformed_tensors = []
             is_2d = image.is_2d()
             axes = [a for a in self.axes if a != 0] if is_2d else self.axes

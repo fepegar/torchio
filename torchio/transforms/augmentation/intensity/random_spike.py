@@ -4,10 +4,11 @@ import numpy as np
 import SimpleITK as sitk
 from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomSpike(RandomTransform):
+class RandomSpike(RandomTransform, IntensityTransform):
     r"""Add random MRI spike artifacts.
 
     Also known as `Herringbone artifact
@@ -52,7 +53,7 @@ class RandomSpike(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image in sample.get_images_dict().items():
+        for image_name, image in self.get_images_dict(sample).items():
             transformed_tensors = []
             for channel_idx, channel in enumerate(image[DATA]):
                 params = self.get_params(
