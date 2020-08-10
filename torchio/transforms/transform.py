@@ -17,9 +17,6 @@ from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
 
 
-IMAGE_NAME = 'image'
-
-
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
@@ -45,7 +42,7 @@ class Transform(ABC):
         self.probability = self.parse_probability(p)
         self.copy = copy
         self.keys = keys
-        self.image_name = 'default_image_name'
+        self.default_image_name = 'default_image_name'
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
         """Transform a sample and return the result.
@@ -102,21 +99,21 @@ class Transform(ABC):
             assert ndim == 4, f'Output of {self.name} is {ndim}D'
 
         if is_tensor or is_sitk:
-            image = transformed[self.image_name]
+            image = transformed[self.default_image_name]
             transformed = image[DATA]
             if is_array:
                 transformed = transformed.numpy()
             elif is_sitk:
                 transformed = nib_to_sitk(image[DATA], image[AFFINE])
         elif is_image:
-            transformed = transformed[IMAGE_NAME]
+            transformed = transformed[self.default_image_name]
         elif is_dict:
             transformed = dict(transformed)
             for key, value in transformed.items():
                 if isinstance(value, Image):
                     transformed[key] = value.data
         elif is_nib:
-            image = transformed[IMAGE_NAME]
+            image = transformed[self.default_image_name]
             data = image[DATA]
             if len(data) > 1:
                 message = (
@@ -294,11 +291,10 @@ class Transform(ABC):
 
     def _get_subject_from_tensor(self, tensor: torch.Tensor) -> Subject:
         image = ScalarImage(tensor=tensor, channels_last=False)
-        return Subject({self.image_name: image})
+        return self._get_subject_from_image(image)
 
-    @staticmethod
-    def _get_subject_from_image(image: Image) -> Subject:
-        subject = Subject({IMAGE_NAME: image})
+    def _get_subject_from_image(self, image: Image) -> Subject:
+        subject = Subject({self.default_image_name: image})
         return subject
 
     @staticmethod
@@ -313,10 +309,10 @@ class Transform(ABC):
             subject_dict[key] = value
         return Subject(subject_dict)
 
-    @staticmethod
-    def _get_subject_from_sitk_image(image):
+    def _get_subject_from_sitk_image(self, image):
         tensor, affine = sitk_to_nib(image)
-        return Subject({IMAGE_NAME: ScalarImage(tensor=tensor, affine=affine)})
+        image = ScalarImage(tensor=tensor, affine=affine)
+        return self._get_subject_from_image(image)
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:

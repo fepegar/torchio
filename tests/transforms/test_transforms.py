@@ -69,7 +69,8 @@ class TestTransforms(TorchioTestCase):
         tensor = torch.rand(2, 4, 5, 8)
         affine = np.diag((-1, 2, -3, 1))
         image = torchio.utils.nib_to_sitk(tensor, affine)
-        transform = self.get_transform(channels=('image',), labels=False)
+        transform = self.get_transform(
+            channels=('default_image_name',), labels=False)
         transformed = transform(image)
         self.assertIsInstance(transformed, sitk.Image)
 
@@ -77,7 +78,8 @@ class TestTransforms(TorchioTestCase):
         data = torch.rand(4, 5, 8).numpy()
         affine = np.diag((1, -2, 3, 1))
         image = nib.Nifti1Image(data, affine)
-        transform = self.get_transform(channels=('image',), labels=False)
+        transform = self.get_transform(
+            channels=('default_image_name',), labels=False)
         transformed = transform(image)
         self.assertIsInstance(transformed, nib.Nifti1Image)
 
