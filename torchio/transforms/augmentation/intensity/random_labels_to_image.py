@@ -5,13 +5,14 @@ import numpy as np
 from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE
 from ....data.subject import Subject
 from ....data.image import ScalarImage
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
 TypeGaussian = Optional[Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]]
 
 
-class RandomLabelsToImage(RandomTransform):
+class RandomLabelsToImage(RandomTransform, IntensityTransform):
     r"""Generate an image from a segmentation.
 
     Based on the work by `Billot et al., A Learning Strategy for

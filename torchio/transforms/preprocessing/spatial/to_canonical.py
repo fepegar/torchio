@@ -3,10 +3,10 @@ import numpy as np
 import nibabel as nib
 from ....data.subject import Subject
 from ....torchio import DATA, AFFINE
-from ... import Transform
+from ... import SpatialTransform
 
 
-class ToCanonical(Transform):
+class ToCanonical(SpatialTransform):
     """Reorder the data to be closest to canonical (RAS+) orientation.
 
     This transform reorders the voxels and modifies the affine matrix so that

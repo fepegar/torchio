@@ -2,10 +2,11 @@ from typing import Tuple, Optional, Union, List
 import torch
 from ....torchio import DATA
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomNoise(RandomTransform):
+class RandomNoise(RandomTransform, IntensityTransform):
     r"""Add random Gaussian noise.
 
     Adds noise sampled from a normal distribution.
@@ -41,7 +42,7 @@ class RandomNoise(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
+        for image_name, image_dict in self.get_images_dict(sample).items():
             mean, std = self.get_params(self.mean_range, self.std_range)
             random_parameters_dict = {'std': std}
             random_parameters_images_dict[image_name] = random_parameters_dict

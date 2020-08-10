@@ -4,10 +4,11 @@ import numpy as np
 from ....data.subject import Subject
 from ....utils import to_tuple
 from ....torchio import DATA, TypeTuple, TypeData, TypeTripletInt
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomSwap(RandomTransform):
+class RandomSwap(RandomTransform, IntensityTransform):
     r"""Randomly swap patches within an image.
 
     This is typically used in `context restoration for self-supervised learning
@@ -50,7 +51,7 @@ class RandomSwap(RandomTransform):
         return
 
     def apply_transform(self, sample: Subject) -> dict:
-        for image in sample.get_images():
+        for image in self.get_images(sample):
             tensors = []
             for tensor in image[DATA]:
                 tensor = swap(tensor, self.patch_size, self.num_iterations)

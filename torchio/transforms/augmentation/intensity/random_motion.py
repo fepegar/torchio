@@ -15,10 +15,11 @@ from ....utils import nib_to_sitk
 from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .. import Interpolation, get_sitk_interpolator
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomMotion(RandomTransform):
+class RandomMotion(RandomTransform, IntensityTransform):
     r"""Add random MRI motion artifact.
 
     Magnetic resonance images suffer from motion artifacts when the subject
@@ -75,7 +76,7 @@ class RandomMotion(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
+        for image_name, image_dict in self.get_images_dict(sample).items():
             result_arrays = []
             for channel_idx, data in enumerate(image_dict[DATA]):
                 is_2d = data.shape[-3] == 1

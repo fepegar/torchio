@@ -4,7 +4,7 @@ import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
 from ....torchio import DATA, AFFINE, TypeTripletInt
-from ... import Transform
+from ... import SpatialTransform
 
 
 TypeSixBounds = Tuple[int, int, int, int, int, int]
@@ -15,7 +15,7 @@ TypeBounds = Union[
 ]
 
 
-class BoundsTransform(Transform):
+class BoundsTransform(SpatialTransform):
     """Base class for transforms that change image bounds.
 
     Args:
@@ -69,7 +69,7 @@ class BoundsTransform(Transform):
     def apply_transform(self, sample: Subject) -> dict:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
-        for image in sample.get_images(intensity_only=False):
+        for image in self.get_images(sample):
             itk_image = image.as_sitk()
             result = self._apply_bounds_function(itk_image, low, high)
             data, affine = self.sitk_to_nib(result)

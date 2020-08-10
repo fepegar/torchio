@@ -1,4 +1,6 @@
 from .transform import Transform
+from .spatial_transform import SpatialTransform
+from .intensity_transform import IntensityTransform
 from .interpolation import Interpolation, get_sitk_interpolator
 
 # Generic

@@ -4,10 +4,11 @@ import numpy as np
 from ....torchio import DATA
 from ....data.subject import Subject
 from ....utils import to_tuple
+from ... import SpatialTransform
 from .. import RandomTransform
 
 
-class RandomFlip(RandomTransform):
+class RandomFlip(RandomTransform, SpatialTransform):
     """Reverse the order of elements in an image along the given axes.
 
     Args:
@@ -63,7 +64,7 @@ class RandomFlip(RandomTransform):
             if i not in axes:
                 axes_to_flip_hot[i] = False
         random_parameters_dict = {'axes': axes_to_flip_hot}
-        items = sample.get_images_dict(intensity_only=False).items()
+        items = self.get_images_dict(sample).items()
         for image_name, image in items:
             dims = []
             for dim, flip_this in enumerate(axes_to_flip_hot):
