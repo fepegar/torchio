@@ -25,7 +25,8 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             :math:`n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.
         axes: Axis along which the ghosts will be created. If
             :py:attr:`axes` is a tuple, the axis will be randomly chosen
-            from the passed values.
+            from the passed values. Anatomical labels may also be used (see
+            :py:class:`~torchio.transforms.augmentation.RandomFlip`).
         intensity: Positive number representing the artifact strength
             :math:`s` with respect to the maximum of the :math:`k`-space.
             If ``0``, the ghosts will not be visible. If a tuple
@@ -41,6 +42,10 @@ class RandomGhosting(RandomTransform, IntensityTransform):
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
+
+    .. warning:: Note that height and width of 2D images correspond to axes
+        ``1`` and ``2`` respectively, as TorchIO images are generally considered
+        to have 3 spatial dimensions.
     """
     def __init__(
             self,
@@ -59,7 +64,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             except TypeError:
                 axes = (axes,)
         for axis in axes:
-            if axis not in (0, 1, 2):
+            if not isinstance(axis, str) and axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
         self.num_ghosts_range = self.parse_range(
@@ -80,6 +85,10 @@ class RandomGhosting(RandomTransform, IntensityTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
+        axes_string = False
+        if any(isinstance(n, str) for n in self.axes):
+            sample.check_consistent_orientation()
+            axes_string = True
         for image_name, image in self.get_images_dict(sample).items():
             transformed_tensors = []
             is_2d = image.is_2d()

@@ -8,7 +8,7 @@ import nibabel as nib
 from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
-from ....data.image import Image
+from ....data.image import Image, ScalarImage
 from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
 from ... import SpatialTransform
 from ... import Interpolation
@@ -82,7 +82,7 @@ class Resample(SpatialTransform):
         if isinstance(target, (str, Path)):
             if Path(target).is_file():
                 path = target
-                image = Image(path)
+                image = ScalarImage(path)
                 reference_image = image.data, image.affine
             else:
                 reference_image = target

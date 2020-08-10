@@ -55,7 +55,7 @@ class TestRandomGhosting(TorchioTestCase):
 
     def test_wrong_axes_type(self):
         with self.assertRaises(ValueError):
-            RandomGhosting(axes='wrong')
+            RandomGhosting(axes=None)
 
     def test_out_of_range_restore(self):
         with self.assertRaises(ValueError):

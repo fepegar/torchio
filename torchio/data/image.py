@@ -246,10 +246,67 @@ class Image(dict):
     def memory(self):
         return np.prod(self.shape) * 4  # float32, i.e. 4 bytes per voxel
 
+    def axis_name_to_index(self, axis: str):
+        """Convert an axis name to an axis index.
+
+        Args:
+            axis: Possible inputs are ``'Left'``, ``'Right'``, ``'Anterior'``,
+            ``'Posterior'``, ``'Inferior'``, ``'Superior'``. Lower-case versions
+            and first letters are also valid, as only the first letter will be
+            used.
+
+        .. note:: If you are working with animals, you should probably use
+            ``'Superior'``, ``'Inferior'``, ``'Anterior'`` and ``'Posterior'``
+            for ``'Dorsal'``, ``'Ventral'``, ``'Rostral'`` and ``'Caudal'``,
+            respectively.
+        """
+        if not isinstance(axis, str):
+            raise ValueError('Axis must be a string')
+        axis = axis[0].upper()
+
+        # Generally, TorchIO tensors are (C, D, H, W)
+        if axis == 'H':
+            return -2
+        elif axis == 'W':
+            return -1
+        else:
+            try:
+                index = self.orientation.index(axis)
+            except ValueError:
+                index = self.orientation.index(self.flip_axis(axis))
+            # Return negative indices so that it does not matter whether we
+            # refer to spatial dimensions or not
+            index = -4 + index
+            return index
+
+    @staticmethod
+    def flip_axis(axis):
+        if axis == 'R': return 'L'
+        elif axis == 'L': return 'R'
+        elif axis == 'A': return 'P'
+        elif axis == 'P': return 'A'
+        elif axis == 'I': return 'S'
+        elif axis == 'S': return 'I'
+        else:
+            message = (
+                f'Axis not understood. Please use a value in {tuple("LRAPIS")}'
+            )
+            raise ValueError(message)
+
     def get_spacing_string(self):
         strings = [f'{n:.2f}' for n in self.spacing]
         string = f'({", ".join(strings)})'
         return string
+
+    def get_bounds(self):
+        """Get image bounds in mm."""
+        first_index = 3 * (-0.5,)
+        last_index = np.array(self.spatial_shape) - 0.5
+        first_point = nib.affines.apply_affine(self.affine, first_index)
+        last_point = nib.affines.apply_affine(self.affine, last_index)
+        array = np.array((first_point, last_point))
+        bounds_x, bounds_y, bounds_z = array.T.tolist()
+        return bounds_x, bounds_y, bounds_z
 
     @staticmethod
     def _parse_path(path: TypePath) -> Path:
@@ -268,7 +325,9 @@ class Image(dict):
         if tensor is None:
             return None
         if isinstance(tensor, np.ndarray):
-            tensor = torch.from_numpy(tensor)
+            tensor = torch.from_numpy(tensor.astype(np.float32))
+        elif isinstance(tensor, torch.Tensor):
+            tensor = tensor.float()
         tensor = self.parse_tensor_shape(tensor)
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in tensor')

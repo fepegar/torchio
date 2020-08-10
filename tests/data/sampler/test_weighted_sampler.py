@@ -18,8 +18,8 @@ class TestWeightedSampler(TorchioTestCase):
         prob = torch.zeros_like(t1)
         prob[3, 3, 3] = 1
         subject = torchio.Subject(
-            t1=torchio.Image(tensor=t1),
-            prob=torchio.Image(tensor=prob),
+            t1=torchio.ScalarImage(tensor=t1),
+            prob=torchio.ScalarImage(tensor=prob),
         )
         sample = torchio.ImagesDataset([subject])[0]
         return sample
