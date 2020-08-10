@@ -9,7 +9,7 @@ from ...preprocessing import Resample
 
 
 class RandomDownsample(RandomTransform, SpatialTransform):
-    """Downsample an image along an axis.
+    r"""Downsample an image along an axis.
 
     This transform simulates an image that has been acquired using anisotropic
     spacing, using downsampling with nearest neighbor interpolation.
