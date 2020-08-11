@@ -264,39 +264,37 @@ class Image(dict):
         return bounds_x, bounds_y, bounds_z
 
     @staticmethod
+    def _parse_single_path(
+            path: TypePath
+            ) -> Path:
+        try:
+            path = Path(path).expanduser()
+        except TypeError:
+            message = (
+                f'Expected type str or Path but found {path} with '
+                f'{type(path)} instead'
+            )
+            raise TypeError(message)
+        except RuntimeError:
+            message = (
+                f'Conversion to path not possible for variable: {path}'
+            )
+            raise RuntimeError(message)
+
+        if not (path.is_file() or path.is_dir()):   # might be a dir with DICOM
+            raise FileNotFoundError(f'File not found: {path}')
+        return path
+
     def _parse_path(
+            self,
             path: Union[TypePath, Sequence[TypePath]]
-            ) -> Union[Path, List[str]]:
+            ) -> Union[Path, List[Path]]:
         if path is None:
             return None
-
         if isinstance(path, (str, Path)):
-            try:
-                path = Path(path).expanduser()
-            except (TypeError, RuntimeError):
-                message = (
-                    f'Conversion to path not possible for variable: {path}'
-                )
-                raise TypeError(message)
+            return self._parse_single_path(path)
         else:
-            try:
-                path = [Path(p).expanduser() for p in path]
-            except (TypeError, RuntimeError):
-                message = (
-                    'Conversion to list of paths not possible for '
-                    f'variable: {path}'
-                )
-                raise TypeError(message)
-
-        if isinstance(path, Path):
-            if not (path.is_file() or path.is_dir()):   # might be a DICOM dir
-                raise FileNotFoundError(f'File not found: {path}')
-        else:
-            for p in path:
-                if not (p.is_file() or p.is_dir()):  # might be a DICOM dir
-                    raise FileNotFoundError(f'File not found: {p}')
-            path = [str(p) for p in path]   # To match path representation
-        return path
+            return [self._parse_single_path(p) for p in path]
 
     def parse_tensor(self, tensor: TypeData) -> torch.Tensor:
         if tensor is None:
@@ -362,7 +360,7 @@ class Image(dict):
 
             tensors.append(new_tensor)
 
-        tensor = torch.cat(tensors, dim=0)
+        tensor = torch.cat(tensors)
 
         self[DATA] = tensor
         self[AFFINE] = affine

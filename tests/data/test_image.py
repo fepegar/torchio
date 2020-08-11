@@ -18,7 +18,7 @@ class TestImage(TorchioTestCase):
             ScalarImage('nopath')
 
     def test_wrong_path_value(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             ScalarImage('~&./@#"!?X7=+')
 
     def test_wrong_path_type(self):
