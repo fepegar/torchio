@@ -24,10 +24,10 @@ from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
 from torchvision.datasets.utils import download_and_extract_archive
 from ..transforms import Transform
-from .. import ImagesDataset, Subject, ScalarImage, LabelMap, TypePath
+from .. import SubjectsDataset, Subject, ScalarImage, LabelMap, TypePath
 
 
-class IXI(ImagesDataset):
+class IXI(SubjectsDataset):
     """
     Full IXI dataset.
 
@@ -161,7 +161,7 @@ class IXI(ImagesDataset):
                 )
 
 
-class IXITiny(ImagesDataset):
+class IXITiny(SubjectsDataset):
     r"""
     This is the dataset used in the `notebook`_.
     It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR

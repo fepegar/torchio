@@ -25,7 +25,7 @@ Hello, World!
 =============
 
 This example shows the basic usage of TorchIO, where an instance of
-:py:class:`~torchio.data.dataset.ImagesDataset` is passed to
+:py:class:`~torchio.data.dataset.SubjectsDataset` is passed to
 a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::
@@ -71,8 +71,8 @@ in parallel::
     transforms = [rescale, spatial]
     transform = Compose(transforms)
 
-    # ImagesDataset is a subclass of torch.data.utils.Dataset
-    subjects_dataset = torchio.ImagesDataset(subjects_list, transform=transform)
+    # SubjectsDataset is a subclass of torch.data.utils.Dataset
+    subjects_dataset = torchio.SubjectsDataset(subjects_list, transform=transform)
 
     # Images are processed in parallel thanks to a PyTorch DataLoader
     training_loader = DataLoader(subjects_dataset, batch_size=4, num_workers=4)

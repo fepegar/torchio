@@ -7,7 +7,7 @@ from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
 from .sampler import PatchSampler
-from .dataset import ImagesDataset
+from .dataset import SubjectsDataset
 
 
 class Queue(Dataset):
@@ -15,7 +15,7 @@ class Queue(Dataset):
 
     Args:
         subjects_dataset: Instance of
-            :class:`~torchio.data.dataset.ImagesDataset`.
+            :class:`~torchio.data.dataset.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
@@ -56,7 +56,7 @@ class Queue(Dataset):
     >>> samples_per_volume = 10
     >>> sample = torchio.data.UniformSampler(patch_size)
     >>> patches_queue = torchio.Queue(
-    ...     subjects_dataset,  # instance of torchio.ImagesDataset
+    ...     subjects_dataset,  # instance of torchio.SubjectsDataset
     ...     queue_length,
     ...     samples_per_volume,
     ...     sampler,
@@ -75,7 +75,7 @@ class Queue(Dataset):
     """
     def __init__(
             self,
-            subjects_dataset: ImagesDataset,
+            subjects_dataset: SubjectsDataset,
             max_length: int,
             samples_per_volume: int,
             sampler: PatchSampler,
