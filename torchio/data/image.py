@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, Tuple, Optional, Union, Sequence, List
 
 import torch
 import humanize
@@ -41,12 +41,14 @@ class Image(dict):
     `SimpleITK docs`_.
 
     Args:
-        path: Path to a file that can be read by
+        path: Path to a file or sequence of paths to files that can be read by
             :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing
             DICOM files. If :py:attr:`tensor` is given, the data in
             :py:attr:`path` will not be read. The data is expected to be 2D or
             3D, and may have multiple channels (see :attr:`num_spatial_dims` and
-            :attr:`channels_last`).
+            :attr:`channels_last`). If a sequence of paths is given, data
+            will be concatenated on the channel dimension so spatial
+            dimensions must match.
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
@@ -106,7 +108,7 @@ class Image(dict):
     """
     def __init__(
             self,
-            path: Optional[TypePath] = None,
+            path: Union[TypePath, Sequence[TypePath], None] = None,
             type: str = None,
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
@@ -291,17 +293,37 @@ class Image(dict):
         return bounds_x, bounds_y, bounds_z
 
     @staticmethod
-    def _parse_path(path: TypePath) -> Path:
-        if path is None:
-            return None
+    def _parse_single_path(
+            path: TypePath
+            ) -> Path:
         try:
             path = Path(path).expanduser()
         except TypeError:
-            message = f'Conversion to path not possible for variable: {path}'
+            message = (
+                f'Expected type str or Path but found {path} with '
+                f'{type(path)} instead'
+            )
             raise TypeError(message)
-        if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
+        except RuntimeError:
+            message = (
+                f'Conversion to path not possible for variable: {path}'
+            )
+            raise RuntimeError(message)
+
+        if not (path.is_file() or path.is_dir()):   # might be a dir with DICOM
             raise FileNotFoundError(f'File not found: {path}')
         return path
+
+    def _parse_path(
+            self,
+            path: Union[TypePath, Sequence[TypePath]]
+            ) -> Union[Path, List[Path]]:
+        if path is None:
+            return None
+        if isinstance(path, (str, Path)):
+            return self._parse_single_path(path)
+        else:
+            return [self._parse_single_path(p) for p in path]
 
     def parse_tensor(self, tensor: TypeData) -> torch.Tensor:
         if tensor is None:
@@ -328,7 +350,7 @@ class Image(dict):
             raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
         return affine
 
-    def _load(self) -> Tuple[torch.Tensor, np.ndarray]:
+    def _load(self) -> None:
         r"""Load the image from disk.
 
         Returns:
@@ -338,11 +360,37 @@ class Image(dict):
         """
         if self._loaded:
             return
-        tensor, affine = read_image(self.path)
+
+        paths = self.path if isinstance(self.path, list) else [self.path]
+        tensor, affine = read_image(paths[0])
         tensor = self.parse_tensor_shape(tensor)
 
         if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in file "{self.path}"')
+            warnings.warn(f'NaNs found in file "{paths[0]}"')
+
+        tensors = [tensor]
+        for path in paths[1:]:
+            new_tensor, new_affine = read_image(path)
+            new_tensor = self.parse_tensor_shape(new_tensor)
+
+            if self.check_nans and torch.isnan(tensor).any():
+                warnings.warn(f'NaNs found in file "{path}"')
+
+            if not np.array_equal(affine, new_affine):
+                message = 'Files have different affine matrices'
+                warnings.warn(message, RuntimeWarning)
+
+            if not tensor.shape[1:] == new_tensor.shape[1:]:
+                message = (
+                    f'Files shape do not match, found {tensor.shape}'
+                    f'and {new_tensor.shape}'
+                )
+                RuntimeError(message)
+
+            tensors.append(new_tensor)
+
+        tensor = torch.cat(tensors)
+
         self[DATA] = tensor
         self[AFFINE] = affine
         self._loaded = True

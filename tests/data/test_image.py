@@ -5,7 +5,7 @@
 import copy
 import torch
 import numpy as np
-from torchio import Image, ScalarImage, LabelMap, Subject, INTENSITY, LABEL
+from torchio import ScalarImage, LabelMap, Subject, INTENSITY, LABEL, STEM
 from ..utils import TorchioTestCase
 from torchio import RandomFlip, RandomAffine
 
@@ -16,6 +16,10 @@ class TestImage(TorchioTestCase):
     def test_image_not_found(self):
         with self.assertRaises(FileNotFoundError):
             ScalarImage('nopath')
+
+    def test_wrong_path_value(self):
+        with self.assertRaises(RuntimeError):
+            ScalarImage('~&./@#"!?X7=+')
 
     def test_wrong_path_type(self):
         with self.assertRaises(TypeError):
@@ -117,3 +121,37 @@ class TestImage(TorchioTestCase):
         lps = image.get_center(lps=True)
         self.assertEqual(ras, (1, 1, 1))
         self.assertEqual(lps, (-1, -1, 1))
+
+    def test_with_list_of_missing_files(self):
+        with self.assertRaises(FileNotFoundError):
+            ScalarImage(path=['nopath', 'error'])
+
+    def test_with_a_list_of_paths(self):
+        shape = (5, 5, 5)
+        path1 = self.get_image_path('path1', shape=shape)
+        path2 = self.get_image_path('path2', shape=shape)
+        image = ScalarImage(path=[path1, path2])
+        self.assertEqual(image.shape, (2, 5, 5, 5))
+        self.assertEqual(image[STEM], ['path1', 'path2'])
+
+    def test_with_a_list_of_images_with_different_shapes(self):
+        path1 = self.get_image_path('path1', shape=(5, 5, 5))
+        path2 = self.get_image_path('path2', shape=(7, 5, 5))
+        image = ScalarImage(path=[path1, path2])
+        with self.assertRaises(RuntimeError):
+            image._load()
+
+    def test_with_a_list_of_images_with_different_affines(self):
+        path1 = self.get_image_path('path1', spacing=(1, 1, 1))
+        path2 = self.get_image_path('path2', spacing=(1, 2, 1))
+        image = ScalarImage(path=[path1, path2])
+        with self.assertWarns(RuntimeWarning):
+            image._load()
+
+    def test_with_a_list_of_2d_paths(self):
+        shape = (5, 5)
+        path1 = self.get_image_path('path1', shape=shape)
+        path2 = self.get_image_path('path2', shape=shape)
+        image = ScalarImage(path=[path1, path2])
+        self.assertEqual(image.shape, (2, 1, 5, 5))
+        self.assertEqual(image[STEM], ['path1', 'path2'])

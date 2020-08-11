@@ -43,12 +43,17 @@ def to_tuple(
     return value
 
 
-def get_stem(path: TypePath) -> str:
+def get_stem(
+        path: Union[TypePath, List[TypePath]]
+        ) -> Union[str, List[str]]:
     """
     '/home/user/image.nii.gz' -> 'image'
     """
-    path = Path(path)
-    return path.name.split('.')[0]
+    def _get_stem(path_string):
+        return Path(path_string).name.split('.')[0]
+    if isinstance(path, (str, Path)):
+        return _get_stem(path)
+    return [_get_stem(p) for p in path]
 
 
 def create_dummy_dataset(
