@@ -126,7 +126,7 @@ class Image(dict):
     """
     def __init__(
             self,
-            path: Union[TypePath, Sequence[TypePath]] = None,
+            path: Union[TypePath, Sequence[TypePath], None] = None,
             type: str = None,
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
@@ -273,16 +273,19 @@ class Image(dict):
         if isinstance(path, (str, Path)):
             try:
                 path = Path(path).expanduser()
-            except TypeError:
-                message = f'Conversion to path not possible for variable: ' \
-                          f'{path}'
+            except (TypeError, RuntimeError):
+                message = (
+                    f'Conversion to path not possible for variable: {path}'
+                )
                 raise TypeError(message)
         else:
             try:
                 path = [Path(p).expanduser() for p in path]
-            except TypeError:
-                message = f'Conversion to list of paths not possible for ' \
-                          f'variable: {path}'
+            except (TypeError, RuntimeError):
+                message = (
+                    'Conversion to list of paths not possible for '
+                    f'variable: {path}'
+                )
                 raise TypeError(message)
 
         if isinstance(path, Path):
@@ -351,8 +354,10 @@ class Image(dict):
                 warnings.warn(message, RuntimeWarning)
 
             if not tensor.shape[1:] == new_tensor.shape[1:]:
-                message = f'Files shape do not match, found {tensor.shape}' \
-                          f'and {new_tensor.shape}'
+                message = (
+                    f'Files shape do not match, found {tensor.shape}'
+                    f'and {new_tensor.shape}'
+                )
                 RuntimeError(message)
 
             tensors.append(new_tensor)

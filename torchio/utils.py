@@ -49,10 +49,11 @@ def get_stem(
     """
     '/home/user/image.nii.gz' -> 'image'
     """
+    def _get_stem(path_string):
+        return Path(path_string).name.split('.')[0]
     if isinstance(path, (str, Path)):
-        path = Path(path)
-        return path.name.split('.')[0]
-    return [Path(p).name.split('.')[0] for p in path]
+        return _get_stem(path)
+    return [_get_stem(p) for p in path]
 
 
 def create_dummy_dataset(

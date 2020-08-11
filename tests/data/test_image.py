@@ -17,6 +17,10 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             ScalarImage('nopath')
 
+    def test_wrong_path_value(self):
+        with self.assertRaises(TypeError):
+            ScalarImage('~&./@#"!?X7=+')
+
     def test_wrong_path_type(self):
         with self.assertRaises(TypeError):
             ScalarImage(5)
@@ -117,6 +121,10 @@ class TestImage(TorchioTestCase):
         lps = image.get_center(lps=True)
         self.assertEqual(ras, (1, 1, 1))
         self.assertEqual(lps, (-1, -1, 1))
+
+    def test_with_list_of_missing_files(self):
+        with self.assertRaises(FileNotFoundError):
+            ScalarImage(path=['nopath', 'error'])
 
     def test_with_a_list_of_paths(self):
         shape = (5, 5, 5)
