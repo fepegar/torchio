@@ -82,35 +82,17 @@ class Image(dict):
         **kwargs: Items that will be added to the image dictionary, e.g.
             acquisition parameters.
 
-    Example:
-        >>> import torch
-        >>> import torchio
-        >>> # Loading from a file
-        >>> t1_image = torchio.Image('t1.nii.gz', type=torchio.INTENSITY)
-        >>> label_image = torchio.Image('t1_seg.nii.gz', type=torchio.LABEL)
-        >>> image = torchio.Image(tensor=torch.rand(3, 4, 5))
-        >>> image = torchio.Image('safe_image.nrrd', check_nans=False)
-        >>> data, affine = image.data, image.affine
-        >>> affine.shape
-        (4, 4)
-        >>> image.data is image[torchio.DATA]
-        True
-        >>> image.data is image.tensor
-        True
-        >>> type(image.data)
-        torch.Tensor
-
     TorchIO images are `lazy loaders`_, i.e. the data is only loaded from disk
     when needed.
 
     Example:
         >>> import torchio
-        >>> image = torchio.Image('t1.nii.gz')
+        >>> image = torchio.ScalarImage('t1.nii.gz')  # subclass of Image
         >>> image  # not loaded yet
-        Image(path: t1.nii.gz; type: intensity)
+        ScalarImage(path: t1.nii.gz; type: intensity)
         >>> times_two = 2 * image.data  # data is loaded and cached here
         >>> image
-        Image(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
+        ScalarImage(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
         >>> image.save('doubled_image.nii.gz')
 
     .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading
@@ -439,8 +421,10 @@ class ScalarImage(Image):
     Example:
         >>> import torch
         >>> import torchio
-        >>> image = torchio.ScalarImage('t1.nii.gz')  # loading from a file
-        >>> image = torchio.ScalarImage(tensor=torch.rand(128, 128, 68))  # from tensor
+        >>> # Loading from a file
+        >>> t1_image = torchio.ScalarImage('t1.nii.gz')
+        >>> dmri = torchio.ScalarImage(tensor=torch.rand(32, 128, 128, 88))
+        >>> image = torchio.ScalarImage('safe_image.nrrd', check_nans=False)
         >>> data, affine = image.data, image.affine
         >>> affine.shape
         (4, 4)
@@ -471,6 +455,11 @@ class LabelMap(Image):
         >>> import torchio
         >>> labels = torchio.LabelMap(tensor=torch.rand(128, 128, 68) > 0.5)
         >>> labels = torchio.LabelMap('t1_seg.nii.gz')  # loading from a file
+        >>> tpm = torchio.LabelMap(                     # loading from files
+        ...     'gray_matter.nii.gz',
+        ...     'white_matter.nii.gz',
+        ...     'csf.nii.gz',
+        ... )
 
     See :py:class:`~torchio.data.image.Image` for more information.
 
