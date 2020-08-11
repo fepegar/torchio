@@ -10,7 +10,7 @@ import numpy as np
 import nibabel as nib
 from numpy.testing import assert_array_equal, assert_raises
 from torchio.datasets import IXITiny
-from torchio import DATA, AFFINE, ScalarImage, LabelMap, ImagesDataset, Subject
+from torchio import DATA, AFFINE, ScalarImage, LabelMap, SubjectsDataset, Subject
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -57,7 +57,7 @@ class TorchioTestCase(unittest.TestCase):
             subject_c,
             subject_d,
         ]
-        self.dataset = ImagesDataset(self.subjects_list)
+        self.dataset = SubjectsDataset(self.subjects_list)
         self.sample = self.dataset[-1]  # subject_d
 
     def make_2d(self, sample):

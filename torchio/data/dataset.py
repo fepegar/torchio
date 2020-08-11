@@ -12,38 +12,16 @@ from .io import write_image
 from .subject import Subject
 
 
-class ImagesDataset(Dataset):
+class SubjectsDataset(Dataset):
     """Base TorchIO dataset.
 
-    :py:class:`~torchio.data.dataset.ImagesDataset`
+    :py:class:`~torchio.data.dataset.SubjectsDataset`
     is a reader of 3D medical images that directly
     inherits from :class:`torch.utils.data.Dataset`.
     It can be used with a :class:`torch.utils.data.DataLoader`
     for efficient loading and augmentation.
-    It receives a list of subjects, where each subject is an instance of
-    :py:class:`torchio.data.subject.Subject` containing instances of
-    :py:class:`torchio.data.image.Image`.
-    The file format must be compatible with `NiBabel`_ or `SimpleITK`_ readers.
-    It can also be a directory containing
-    `DICOM`_ files.
-
-    Indexing an :py:class:`~torchio.data.dataset.ImagesDataset` returns an
-    instance of :py:class:`~torchio.data.subject.Subject`. Check out the
-    documentation for both classes for usage examples.
-
-    Example:
-
-        >>> sample = images_dataset[0]
-        >>> sample
-        Subject(Keys: ('image', 'label'); images: 2)
-        >>> image = sample['image']  # or sample.image
-        >>> image.shape
-        torch.Size([1, 176, 256, 256])
-        >>> image.affine
-        array([[   0.03,    1.13,   -0.08,  -88.54],
-               [   0.06,    0.08,    0.95, -129.66],
-               [   1.18,   -0.06,   -0.11,  -67.15],
-               [   0.  ,    0.  ,    0.  ,    1.  ]])
+    It receives a list of instances of
+    :py:class:`torchio.data.subject.Subject`.
 
     Args:
         subjects: Sequence of instances of
@@ -53,7 +31,7 @@ class ImagesDataset(Dataset):
 
     Example:
         >>> import torchio
-        >>> from torchio import ImagesDataset, ScalarImage, LabelMap, Subject
+        >>> from torchio import SubjectsDataset, ScalarImage, LabelMap, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
         >>> subject_a = Subject([
         ...     t1=ScalarImage('t1.nrrd',),
@@ -75,7 +53,7 @@ class ImagesDataset(Dataset):
         ...     RandomAffine(),
         ... ]
         >>> transform = Compose(transforms)
-        >>> subjects_dataset = ImagesDataset(subjects_list, transform=transform)
+        >>> subjects_dataset = SubjectsDataset(subjects_list, transform=transform)
         >>> subject_sample = subjects_dataset[0]
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
@@ -142,7 +120,7 @@ class ImagesDataset(Dataset):
 
     @classmethod
     @deprecated(
-        'ImagesDataset.save_sample is deprecated. Use Image.save instead'
+        'SubjectsDataset.save_sample is deprecated. Use Image.save instead'
     )
     def save_sample(
             cls,
@@ -153,3 +131,8 @@ class ImagesDataset(Dataset):
             tensor = sample[key][DATA]
             affine = sample[key][AFFINE]
             write_image(tensor, affine, output_path)
+
+
+@deprecated('ImagesDataset is deprecated. Use SubjectsDataset instead.')
+class ImagesDataset(SubjectsDataset):
+    pass

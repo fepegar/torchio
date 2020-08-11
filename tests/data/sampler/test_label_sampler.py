@@ -18,7 +18,7 @@ class TestLabelSampler(TorchioTestCase):
         subject = torchio.Subject(
             label=torchio.Image(tensor=labels, type=torchio.LABEL),
         )
-        sample = torchio.ImagesDataset([subject])[0]
+        sample = torchio.SubjectsDataset([subject])[0]
         probs_dict = {0: 0, 1: 50, 2: 25, 3: 25}
         sampler = LabelSampler(5, 'label', label_probabilities=probs_dict)
         probabilities = sampler.get_probability_map(sample)

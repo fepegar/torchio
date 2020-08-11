@@ -124,7 +124,7 @@ def apply_transform_to_file(
         type: str = INTENSITY,
         verbose: bool = False,
         ):
-    from . import Image, ImagesDataset, Subject
+    from . import Image, SubjectsDataset, Subject
     subject = Subject(image=Image(input_path, type=type))
     transformed = transform(subject)
     transformed.image.save(output_path)

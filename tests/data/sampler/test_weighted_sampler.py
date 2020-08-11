@@ -21,5 +21,5 @@ class TestWeightedSampler(TorchioTestCase):
             t1=torchio.ScalarImage(tensor=t1),
             prob=torchio.ScalarImage(tensor=prob),
         )
-        sample = torchio.ImagesDataset([subject])[0]
+        sample = torchio.SubjectsDataset([subject])[0]
         return sample

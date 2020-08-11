@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from torchio.data import UniformSampler
-from torchio import ImagesDataset, Queue, DATA
+from torchio import SubjectsDataset, Queue, DATA
 from torchio.utils import create_dummy_dataset
 from ..utils import TorchioTestCase
 
@@ -18,7 +18,7 @@ class TestQueue(TorchioTestCase):
         )
 
     def test_queue(self):
-        subjects_dataset = ImagesDataset(self.subjects_list)
+        subjects_dataset = SubjectsDataset(self.subjects_list)
         patch_size = 10
         sampler = UniformSampler(patch_size)
         queue_dataset = Queue(

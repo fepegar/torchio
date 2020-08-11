@@ -13,6 +13,7 @@ from .data import (
     sampler,
     inference,
     ImagesDataset,
+    SubjectsDataset,
     Image,
     ScalarImage,
     LabelMap,

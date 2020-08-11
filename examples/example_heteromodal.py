@@ -11,7 +11,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 
 import torchio
-from torchio import ScalarImage, LabelMap, Subject, ImagesDataset, Queue
+from torchio import ScalarImage, LabelMap, Subject, SubjectsDataset, Queue
 from torchio.data import UniformSampler
 
 def main():
@@ -40,7 +40,7 @@ def main():
         another_subject,
     ]
 
-    subjects_dataset = ImagesDataset(subjects)
+    subjects_dataset = SubjectsDataset(subjects)
     queue_dataset = Queue(
         subjects_dataset,
         queue_length,

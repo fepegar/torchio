@@ -4,7 +4,7 @@
 
 import nibabel as nib
 import torchio
-from torchio import DATA, SubjectsDataset, ImagesDataset
+from torchio import DATA, SubjectsDataset
 from ..utils import TorchioTestCase
 
 
@@ -77,11 +77,3 @@ class TestSubjectsDataset(TorchioTestCase):
         for batch in loader:
             batch['t1'][DATA]
             batch['brain'][DATA]
-
-    def test_save_deprecated(self):
-        with self.assertWarns(DeprecationWarning):
-            self.dataset.save_sample(self.sample, {})
-
-    def test_images_dataset_deprecated(self):
-        with self.assertWarns(DeprecationWarning):
-            ImagesDataset(self.subjects_list)

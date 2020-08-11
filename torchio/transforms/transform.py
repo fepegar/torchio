@@ -12,7 +12,7 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..data.dataset import ImagesDataset
+from ..data.dataset import SubjectsDataset
 from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
 
@@ -21,7 +21,7 @@ class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
     All classes used to transform a sample from an
-    :py:class:`~torchio.ImagesDataset` should subclass it.
+    :py:class:`~torchio.SubjectsDataset` should subclass it.
     All subclasses should overwrite
     :py:meth:`torchio.tranforms.Transform.apply_transform`,
     which takes a sample, applies some transformation and returns the result.
