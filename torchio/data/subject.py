@@ -45,18 +45,15 @@ class Subject(dict):
                     'Only one dictionary as positional argument is allowed')
                 raise ValueError(message)
         super().__init__(**kwargs)
-        self.images = [
-            (k, v) for (k, v) in self.items()
-            if isinstance(v, Image)
-        ]
-        self._parse_images(self.images)
+        self._parse_images(self.get_images(intensity_only=False))
         self.update_attributes()  # this allows me to do e.g. subject.t1
         self.history = []
 
     def __repr__(self):
+        num_images = len(self.get_images(intensity_only=False))
         string = (
             f'{self.__class__.__name__}'
-            f'(Keys: {tuple(self.keys())}; images: {len(self.images)})'
+            f'(Keys: {tuple(self.keys())}; images: {num_images})'
         )
         return string
 
@@ -84,27 +81,46 @@ class Subject(dict):
 
         Consistency of shapes across images in the subject is checked first.
         """
-        self.check_consistent_shape()
-        image = self.get_images(intensity_only=False)[0]
-        return image.shape
+        self.check_consistent_attribute('shape')
+        return self.get_first_image().shape
 
     @property
     def spatial_shape(self):
         """Return spatial shape of first image in subject.
 
-        Consistency of shapes across images in the subject is checked first.
+        Consistency of spatial shapes across images in the subject is checked
+        first.
         """
-        return self.shape[1:]
+        self.check_consistent_spatial_shape()
+        return self.get_first_image().spatial_shape
 
     @property
     def spacing(self):
         """Return spacing of first image in subject.
 
-        Consistency of shapes across images in the subject is checked first.
+        Consistency of spacings across images in the subject is checked first.
         """
-        self.check_consistent_shape()
-        image = self.get_images(intensity_only=False)[0]
-        return image.spacing
+        self.check_consistent_attribute('spacing')
+        return self.get_first_image().spacing
+
+    def check_consistent_attribute(self, attribute: str) -> None:
+        values_dict = {}
+        iterable = self.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            values_dict[image_name] = getattr(image, attribute)
+        num_unique_values = len(set(values_dict.values()))
+        if num_unique_values > 1:
+            message = (
+                f'More than one {attribute} found in subject images:'
+                f'\n{pprint.pformat(values_dict)}'
+            )
+            raise RuntimeError(message)
+
+    def check_consistent_shape(self) -> None:
+        self.check_consistent_attribute('shape')
+
+    def check_consistent_spatial_shape(self) -> None:
+        self.check_consistent_attribute('spatial_shape')
 
     def get_images_dict(self, intensity_only=True):
         images = {}
@@ -122,32 +138,6 @@ class Subject(dict):
 
     def get_first_image(self):
         return self.get_images(intensity_only=False)[0]
-
-    def check_consistent_shape(self) -> None:
-        shapes_dict = {}
-        iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            shapes_dict[image_name] = image.shape
-        num_unique_shapes = len(set(shapes_dict.values()))
-        if num_unique_shapes > 1:
-            message = (
-                'Images in subject have inconsistent shapes:'
-                f'\n{pprint.pformat(shapes_dict)}'
-            )
-            raise ValueError(message)
-
-    def check_consistent_orientation(self) -> None:
-        orientations_dict = {}
-        iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            orientations_dict[image_name] = image.orientation
-        num_unique_orientations = len(set(orientations_dict.values()))
-        if num_unique_orientations > 1:
-            message = (
-                'Images in subject have inconsistent orientations:'
-                f'\n{pprint.pformat(orientations_dict)}'
-            )
-            raise ValueError(message)
 
     def add_transform(
             self,
@@ -177,6 +167,9 @@ class Subject(dict):
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)
 
-    def add_image(self, image, image_name):
+    def add_image(self, image: Image, image_name: str) -> None:
         self[image_name] = image
         self.update_attributes()
+
+    def remove_image(self, image_name: str) -> None:
+        del self[image_name]

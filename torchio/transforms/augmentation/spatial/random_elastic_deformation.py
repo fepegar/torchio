@@ -215,7 +215,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             warnings.warn(message, RuntimeWarning)
 
     def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_shape()
+        sample.check_consistent_spatial_shape()
         bspline_params = self.get_params(
             self.num_control_points,
             self.max_displacement,

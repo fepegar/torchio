@@ -43,13 +43,6 @@ class TestUtils(TorchioTestCase):
         assert isinstance(guess_type('[1,3,5]'), list)
         assert isinstance(guess_type('test'), str)
 
-    def test_check_consistent_shape(self):
-        good_sample = self.sample
-        bad_sample = self.get_inconsistent_sample()
-        good_sample.check_consistent_shape()
-        with self.assertRaises(ValueError):
-            bad_sample.check_consistent_shape()
-
     def test_apply_transform_to_file(self):
         transform = RandomFlip()
         apply_transform_to_file(
