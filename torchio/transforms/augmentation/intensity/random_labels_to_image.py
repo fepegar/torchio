@@ -77,7 +77,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ... )
         >>> blurring_transform = RandomBlur(std=0.3)
         >>> transform = Compose([simulation_transform, blurring_transform])
-        >>> transformed = transform(sample)  # sample has a new key 'image' with the simulated image
+        >>> transformed = transform(sample)  # sample has a new key 'image_from_labels' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
         >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = RandomLabelsToImage(
@@ -92,7 +92,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             self,
             label_key: str,
             used_labels: Optional[Sequence[int]] = None,
-            image_key: str = 'image',
+            image_key: str = 'image_from_labels',
             mean: Optional[Sequence[TypeRangeFloat]] = None,
             std: Optional[Sequence[TypeRangeFloat]] = None,
             default_mean: TypeRangeFloat = (0.1, 0.9),
