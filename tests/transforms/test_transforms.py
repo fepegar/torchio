@@ -51,6 +51,24 @@ class TestTransforms(TorchioTestCase):
             transforms.append(torchio.RandomLabelsToImage(label_key='label'))
         return torchio.Compose(transforms)
 
+    def test_transforms_dict(self):
+        transform = torchio.RandomNoise(keys=('t1', 't2'))
+        input_dict = {k: v.data for (k, v) in self.sample.items()}
+        transformed = transform(input_dict)
+        self.assertIsInstance(transformed, dict)
+
+    def test_transforms_dict_no_keys(self):
+        transform = torchio.RandomNoise()
+        input_dict = {k: v.data for (k, v) in self.sample.items()}
+        with self.assertRaises(RuntimeError):
+            transform(input_dict)
+
+    def test_transforms_image(self):
+        transform = self.get_transform(
+            channels=('default_image_name',), labels=False)
+        transformed = transform(self.sample.t1)
+        self.assertIsInstance(transformed, torchio.ScalarImage)
+
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
         transform = self.get_transform(
@@ -136,3 +154,9 @@ class TestTransforms(TorchioTestCase):
                 original_data,
                 f'Changes after {transform.name}'
             )
+
+
+class TestTransform(TorchioTestCase):
+    def test_abstract_transform(self):
+        with self.assertRaises(TypeError):
+            transform = torchio.Transform()
