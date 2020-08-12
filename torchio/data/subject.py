@@ -85,26 +85,26 @@ class Subject(dict):
         Consistency of shapes across images in the subject is checked first.
         """
         self.check_consistent_shape()
-        image = self.get_images(intensity_only=False)[0]
-        return image.shape
+        return self.get_first_image().shape
 
     @property
     def spatial_shape(self):
         """Return spatial shape of first image in subject.
 
-        Consistency of shapes across images in the subject is checked first.
+        Consistency of spatial shapes across images in the subject is checked
+        first.
         """
-        return self.shape[1:]
+        self.check_consistent_spatial_shape()
+        return self.get_first_image().spatial_shape
 
     @property
     def spacing(self):
         """Return spacing of first image in subject.
 
-        Consistency of shapes across images in the subject is checked first.
+        Consistency of spacings across images in the subject is checked first.
         """
-        self.check_consistent_shape()
-        image = self.get_images(intensity_only=False)[0]
-        return image.spacing
+        self.check_consistent_spacing()
+        return self.get_first_image().spacing
 
     def get_images_dict(self, intensity_only=True):
         images = {}
@@ -123,18 +123,22 @@ class Subject(dict):
     def get_first_image(self):
         return self.get_images(intensity_only=False)[0]
 
-    def check_consistent_shape(self) -> None:
+    def check_consistent_shape(self, spatial_only: bool = False) -> None:
         shapes_dict = {}
         iterable = self.get_images_dict(intensity_only=False).items()
         for image_name, image in iterable:
-            shapes_dict[image_name] = image.shape
+            shape = image.spatial_shape if spatial_only else image.shape
+            shapes_dict[image_name] = shape
         num_unique_shapes = len(set(shapes_dict.values()))
         if num_unique_shapes > 1:
             message = (
-                'Images in subject have inconsistent shapes:'
+                'More than one shape found in subject images:'
                 f'\n{pprint.pformat(shapes_dict)}'
             )
-            raise ValueError(message)
+            raise RuntimeError(message)
+
+    def check_consistent_spatial_shape(self) -> None:
+        self.check_consistent_shape(spatial_only=True)
 
     def check_consistent_orientation(self) -> None:
         orientations_dict = {}
@@ -144,10 +148,13 @@ class Subject(dict):
         num_unique_orientations = len(set(orientations_dict.values()))
         if num_unique_orientations > 1:
             message = (
-                'Images in subject have inconsistent orientations:'
+                'More than one orientation found in subject images:'
                 f'\n{pprint.pformat(orientations_dict)}'
             )
-            raise ValueError(message)
+            raise RuntimeError(message)
+
+    def check_consistent_spacing(self) -> None:
+        pass  # TODO
 
     def add_transform(
             self,
