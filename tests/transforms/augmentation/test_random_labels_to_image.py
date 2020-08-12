@@ -8,11 +8,11 @@ from numpy.testing import assert_array_equal
 class TestRandomLabelsToImage(TorchioTestCase):
     """Tests for `RandomLabelsToImage`."""
     def test_random_simulation(self):
-        """The transform runs without error and an 'image' key is
+        """The transform runs without error and an 'image_from_labels' key is
         present in the transformed sample."""
         transform = RandomLabelsToImage(label_key='label')
         transformed = transform(self.sample)
-        self.assertIn('image', transformed)
+        self.assertIn('image_from_labels', transformed)
 
     def test_deterministic_simulation(self):
         """The transform creates an image where values are equal to given
@@ -25,11 +25,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(self.sample)
         assert_array_equal(
-            transformed['image'][DATA] == 0.5,
+            transformed['image_from_labels'][DATA] == 0.5,
             self.sample['label'][DATA] == 0
         )
         assert_array_equal(
-            transformed['image'][DATA] == 2,
+            transformed['image_from_labels'][DATA] == 2,
             self.sample['label'][DATA] == 1
         )
 
@@ -45,11 +45,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(self.sample)
         assert_array_equal(
-            transformed['image'][DATA] == 0.5,
+            transformed['image_from_labels'][DATA] == 0.5,
             self.sample['label'][DATA] == 0
         )
         assert_array_equal(
-            transformed['image'][DATA] == 2,
+            transformed['image_from_labels'][DATA] == 2,
             self.sample['label'][DATA] == 1
         )
 
@@ -64,10 +64,13 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(sample)
         assert_array_equal(
-            transformed['image'][DATA][0],
+            transformed['image_from_labels'][DATA][0],
             sample['label'][DATA][0] * 0.5 + sample['label'][DATA][1] * 1
         )
-        self.assertEqual(transformed['image'][DATA].shape, (1, 10, 20, 30))
+        self.assertEqual(
+            transformed['image_from_labels'][DATA].shape,
+            (1, 10, 20, 30)
+        )
 
     def test_deterministic_simulation_with_discretized_pv_map(self):
         """The transform creates an image where values are equal to given mean
@@ -82,7 +85,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(sample)
         assert_array_equal(
-            transformed['image'][DATA],
+            transformed['image_from_labels'][DATA],
             (sample['label'][DATA] > 0) * 0.5
         )
 
