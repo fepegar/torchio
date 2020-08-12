@@ -1,15 +1,12 @@
 
-from typing import Union, Tuple, Optional, Dict, Sequence, List
+from typing import Tuple, Optional, Sequence, List
 import torch
-import numpy as np
-from ....torchio import DATA, TypeData, TypeRangeFloat, TypeNumber, AFFINE
+from ....torchio import DATA, AFFINE, TypeData, TypeRangeFloat
+from ....utils import check_sequence
 from ....data.subject import Subject
 from ....data.image import ScalarImage
 from ... import IntensityTransform
 from .. import RandomTransform
-
-
-TypeGaussian = Optional[Dict[Union[str, TypeNumber], Dict[str, TypeRangeFloat]]]
 
 
 class RandomLabelsToImage(RandomTransform, IntensityTransform):
@@ -21,19 +18,33 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     Args:
         label_key: String designating the label map in the sample
             that will be used to generate the new image.
-            Cannot be set at the same time as :py:attr:`pv_label_keys`.
-        pv_label_keys: Sequence of strings designating the partial-volume
-            label maps in the sample that will be used to generate the new
-            image. Cannot be set at the same time as :py:attr:`label_key`.
+        used_labels: Sequence of integers designating the labels used
+            to generate the new image. If categorical encoding is used,
+            :py:attr:`label_channels` refers to the values of the
+            categorical encoding. If one hot encoding or partial-volume
+            label maps are used, :py:attr:`label_channels` refers to the
+            channels of the label maps.
+            Default uses all labels. Missing voxels will be filled with zero
+            or with voxels from an already existing volume,
+            see :py:attr:`image_key`.
         image_key: String designating the key to which the new volume will be
             saved. If this key corresponds to an already existing volume,
-            voxels that have a value of 0 in the label maps will be filled with
-            the corresponding values in the original volume.
-        gaussian_parameters: Dictionary containing the mean and standard
-            deviation for each label. For each value :math:`v`, if a tuple
-            :math:`(a, b)` is provided then :math:`v \sim \mathcal{U}(a, b)`.
-            If no value is given for a label, :py:attr:`default_mean` and
-            :py:attr:`default_std` ranges will be used.
+            missing voxels will be filled with the corresponding values
+            in the original volume.
+        mean: Sequence of means for each label.
+            For each value :math:`v`, if a tuple :math:`(a, b)` is
+            provided then :math:`v \sim \mathcal{U}(a, b)`.
+            If None, py:attr:`default_mean` range will be used for every label.
+            If not None and py:attr:`label_channels` is not None,
+            py:attr:`mean` and py:attr:`label_channels` must have the
+            same length.
+        std: Sequence of standard deviations for each label.
+            For each value :math:`v`, if a tuple :math:`(a, b)` is
+            provided then :math:`v \sim \mathcal{U}(a, b)`.
+            If None, py:attr:`default_std` range will be used for every label.
+            If not None and py:attr:`label_channels` is not None,
+            py:attr:`std` and py:attr:`label_channels` must have the
+            same length.
         default_mean: Default mean range.
         default_std: Default standard deviation range.
         discretize: If ``True``, partial-volume label maps will be discretized.
@@ -51,38 +62,39 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
     Example:
         >>> import torchio
-        >>> from torchio import RandomLabelsToImage, DATA, RescaleIntensity, Compose
-        >>> from torchio.datasets import Colin27
-        >>> colin = Colin27(2008)
-        >>> # Using the default gaussian_parameters
-        >>> transform = RandomLabelsToImage(label_key='cls')
-        >>> # Using custom gaussian_parameters
-        >>> label_values = colin['cls'][DATA].unique().round().long()
-        >>> gaussian_parameters = {
-        ...     label: {
-        ...         'mean': i / len(label_values),
-        ...         'std': 0.01
-        ...     }
-        ...     for i, label in enumerate(label_values)
-        ... }
-        >>> transform = RandomLabelsToImage(label_key='cls', gaussian_parameters=gaussian_parameters)
-        >>> transformed = transform(colin)  # colin has a new key 'image' with the simulated image
+        >>> from torchio import RandomLabelsToImage, RescaleIntensity, RandomBlur, Compose
+        >>> from torchio.datasets import ICBM2009CNonlinearSymmetryc
+        >>> sample = ICBM2009CNonlinearSymmetryc()
+        >>> # Using the default parameters
+        >>> transform = RandomLabelsToImage(label_key='tissues')
+        >>> # Using custom mean and std
+        >>> transform = RandomLabelsToImage(
+        ...     label_key='tissues', mean=[0.33, 0.66, 1.], std=[0, 0, 0]
+        ... )
+        >>> # Discretizing the partial volume maps and blurring the result
+        >>> simulation_transform = RandomLabelsToImage(
+        ...     label_key='tissues', mean=[0.33, 0.66, 1.], std=[0, 0, 0], discretize=True
+        ... )
+        >>> blurring_transform = RandomBlur(std=0.3)
+        >>> transform = Compose([simulation_transform, blurring_transform])
+        >>> transformed = transform(sample)  # sample has a new key 'image' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
         >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = RandomLabelsToImage(
-        ...     label_key='cls',
+        ...     label_key='tissues',
         ...     image_key='t1',
-        ...     gaussian_parameters={0: {'mean': 0, 'std': 0}}
+        ...     used_labels=[0, 1]
         ... )
         >>> transform = Compose([rescale_transform, simulation_transform])
-        >>> transformed = transform(colin)  # colin's key 't1' has been replaced with the simulated image
+        >>> transformed = transform(sample)  # sample's key 't1' has been replaced with the simulated image
     """
     def __init__(
             self,
-            label_key: Optional[str] = None,
-            pv_label_keys: Optional[Sequence[str]] = None,
+            label_key: str,
+            used_labels: Optional[Sequence[int]] = None,
             image_key: str = 'image',
-            gaussian_parameters: TypeGaussian = None,
+            mean: Optional[Sequence[TypeRangeFloat]] = None,
+            std: Optional[Sequence[TypeRangeFloat]] = None,
             default_mean: TypeRangeFloat = (0.1, 0.9),
             default_std: TypeRangeFloat = (0.01, 0.1),
             discretize: bool = False,
@@ -91,133 +103,71 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, seed=seed, keys=keys)
-        self.label_key, self.pv_label_keys = self.parse_keys(
-            label_key, pv_label_keys)
-        self.default_mean = self.parse_gaussian_parameter(default_mean, 'mean')
-        self.default_std = self.parse_gaussian_parameter(default_std, 'std')
-        self.gaussian_parameters = self.parse_gaussian_parameters(
-            gaussian_parameters)
+        self.label_key = self.parse_label_key(label_key)
+        self.used_labels = self.parse_used_labels(used_labels)
+        self.mean, self.std = self.parse_mean_and_std(mean, std)
+        self.default_mean = self.parse_gaussian_param(
+            default_mean, 'default_mean')
+        self.default_std = self.parse_gaussian_param(default_std, 'default_std')
         self.image_key = image_key
         self.discretize = discretize
 
     @staticmethod
-    def parse_keys(
-            label_key: str,
-            pv_label_keys: Sequence[str]
-            ) -> (str, Sequence[str]):
-        if label_key is not None and pv_label_keys is not None:
-            message = (
-                '"label_key" and "pv_label_keys" cannot be set at the same time'
-            )
-            raise ValueError(message)
-        if label_key is None and pv_label_keys is None:
-            message = 'One of "label_key" and "pv_label_keys" must be set'
-            raise ValueError(message)
-        if label_key is not None and not isinstance(label_key, str):
+    def parse_label_key(label_key: str) -> str:
+        if not isinstance(label_key, str):
             message = f'"label_key" must be a string, not {type(label_key)}'
             raise TypeError(message)
-        if pv_label_keys is not None:
-            try:
-                iter(pv_label_keys)
-            except TypeError:
-                message = (
-                    '"pv_label_keys" must be a sequence of strings, '
-                    f'not {pv_label_keys}'
-                )
-                raise TypeError(message)
-            for key in pv_label_keys:
-                if not isinstance(key, str):
-                    message = (
-                        f'Every key of "pv_label_keys" must be a string, '
-                        f'found {type(key)}'
-                    )
-                    raise TypeError(message)
-            pv_label_keys = list(pv_label_keys)
-
-        return label_key, pv_label_keys
-
-    def apply_transform(self, sample: Subject) -> dict:
-        random_parameters_images_dict = {}
-        original_image = sample.get(self.image_key)
-
-        if self.pv_label_keys is not None:
-            label_map, affine = self.parse_pv_label_maps(
-                self.pv_label_keys, sample)
-            n_labels, *image_shape = label_map.shape
-            labels = self.pv_label_keys
-            values = list(range(n_labels))
-
-            if self.discretize:
-                # Take label with highest value in voxel
-                max_label, label_map = label_map.max(dim=0)
-                # Remove values where all labels are 0
-                label_map[max_label == 0] = -1
-        else:
-            label_map = sample[self.label_key][DATA][0]
-            affine = sample[self.label_key][AFFINE]
-            image_shape = label_map.shape
-            values = label_map.unique()
-            labels = [int(key) for key in values.round()]
-
-        tissues = torch.zeros(image_shape)
-
-        for i, label in enumerate(labels):
-            mean, std = self.get_params(label)
-            if self.pv_label_keys is not None and not self.discretize:
-                mask = label_map[i]
-            else:
-                mask = label_map == values[i]
-            tissues += self.generate_tissue(mask, mean, std)
-
-            random_parameters_images_dict[label] = {
-                'mean': mean,
-                'std': std
-            }
-
-        final_image = ScalarImage(affine=affine, tensor=tissues)
-
-        if original_image is not None:
-            if self.pv_label_keys is not None and not self.discretize:
-                label_map = label_map.sum(dim=0)
-            bg_mask = label_map.unsqueeze(0) <= 0
-            final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
-
-        sample.add_image(final_image, self.image_key)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
-
-    def parse_gaussian_parameters(
-            self,
-            parameters: TypeGaussian,
-            ) -> TypeGaussian:
-        if parameters is None:
-            parameters = {}
-
-        if self.pv_label_keys is not None:
-            if not set(self.pv_label_keys).issuperset(parameters.keys()):
-                message = (
-                    f'Found keys in gaussian parameters {parameters.keys()} '
-                    f'not in pv_label_keys {self.pv_label_keys}'
-                )
-                raise KeyError(message)
-
-        parsed_parameters = {}
-
-        for label_key, dictionary in parameters.items():
-            if 'mean' in dictionary:
-                mean = self.parse_gaussian_parameter(dictionary['mean'], 'mean')
-            else:
-                mean = self.default_mean
-            if 'std' in dictionary:
-                std = self.parse_gaussian_parameter(dictionary['std'], 'std')
-            else:
-                std = self.default_std
-            parsed_parameters.update({label_key: {'mean': mean, 'std': std}})
-
-        return parsed_parameters
+        return label_key
 
     @staticmethod
-    def parse_gaussian_parameter(
+    def parse_used_labels(used_labels: Sequence[int]) -> Sequence[int]:
+        if used_labels is None:
+            return None
+        check_sequence(used_labels, 'used_labels')
+        for e in used_labels:
+            if not isinstance(e, int):
+                message = f'"used_labels" elements must be integers, ' \
+                          f'not {used_labels}'
+                raise ValueError(message)
+        return used_labels
+
+    def parse_mean_and_std(
+            self,
+            mean: Sequence[TypeRangeFloat],
+            std: Sequence[TypeRangeFloat]
+            ) -> (List[TypeRangeFloat], List[TypeRangeFloat]):
+        if mean is not None:
+            mean = self.parse_gaussian_params(mean, 'mean')
+        if std is not None:
+            std = self.parse_gaussian_params(std, 'std')
+        if mean is not None and std is not None:
+            message = (
+                'If both "mean" and "std" are defined they must have the same'
+                'length'
+            )
+            assert len(mean) == len(std), message
+        return mean, std
+
+    def parse_gaussian_params(
+            self,
+            params: Sequence[TypeRangeFloat],
+            name: str
+            ) -> List[TypeRangeFloat]:
+        check_sequence(params, name)
+        params = [
+            self.parse_gaussian_param(p, f'{name}[{i}]')
+            for i, p in enumerate(params)
+        ]
+        if self.used_labels is not None:
+            message = (
+                f'If both "{name}" and "used_labels" are defined, '
+                f'they must have the same length'
+            )
+            assert len(params) == len(self.used_labels), message
+        return params
+
+    @staticmethod
+    def parse_gaussian_param(
             nums_range: TypeRangeFloat,
             name: str,
             ) -> Tuple[float, float]:
@@ -235,34 +185,95 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                 f' equal or greater than the first, not {nums_range}')
         return min_value, max_value
 
-    @staticmethod
-    def parse_pv_label_maps(
-            pv_label_keys: Sequence[str],
-            sample: dict,
-            ) -> (TypeData, TypeData):
-        try:
-            label_map = torch.cat([sample[key][DATA] for key in pv_label_keys])
-        except RuntimeError:
-            message = 'Partial-volume label maps have different shapes'
-            raise RuntimeError(message)
-        affine = sample[pv_label_keys[0]][AFFINE]
-        for key in pv_label_keys[1:]:
-            if not np.array_equal(affine, sample[key][AFFINE]):
-                message = (
-                    'Partial-volume label maps have different affine matrices'
-                )
-                raise RuntimeWarning(message)
-        return label_map, affine
+    def apply_transform(self, sample: Subject) -> dict:
+        random_parameters_images_dict = {'mean': [], 'std': []}
+        original_image = sample.get(self.image_key)
+
+        label_map = sample[self.label_key][DATA]
+        affine = sample[self.label_key][AFFINE]
+
+        spatial_shape = label_map.shape[1:]
+
+        # Find out if we face a partial-volume or a label map.
+        # One hot encoded label map is considered as a partial-volume one.
+        is_discretized = label_map.eq(label_map.round()).all() and \
+            label_map.squeeze().dim() < label_map.dim()
+
+        if not is_discretized and self.discretize:
+            # Take label with highest value in voxel
+            max_label, label_map = label_map.max(dim=0, keepdim=True)
+            # Remove values where all labels are 0 (i.e. missing labels)
+            label_map[max_label == 0] = -1
+            is_discretized = True
+
+        tissues = torch.zeros(1, *spatial_shape).float()
+        if is_discretized:
+            labels = label_map.unique().long().tolist()
+            if -1 in labels:
+                labels.remove(-1)
+        else:
+            labels = range(label_map.shape[0])
+
+        # Raise error if mean and std are not defined for every label
+        self.check_mean_and_std_length(labels)
+
+        for label in labels:
+            if self.used_labels is None or label in self.used_labels:
+                mean, std = self.get_params(label)
+                if is_discretized:
+                    mask = label_map == label
+                else:
+                    mask = label_map[label]
+                tissues += self.generate_tissue(mask, mean, std)
+
+                random_parameters_images_dict['mean'].append(mean)
+                random_parameters_images_dict['std'].append(std)
+            else:
+                # Modify label map to easily compute background mask
+                if is_discretized:
+                    label_map[label_map == label] = -1
+                else:
+                    label_map[label] = 0
+
+        final_image = ScalarImage(affine=affine, tensor=tissues)
+
+        if original_image is not None:
+            if is_discretized:
+                bg_mask = label_map == -1
+            else:
+                bg_mask = label_map.sum(dim=0, keepdim=True) < 0.5
+            final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
+
+        sample.add_image(final_image, self.image_key)
+        sample.add_transform(self, random_parameters_images_dict)
+        return sample
+
+    def check_mean_and_std_length(self, labels: Sequence):
+        if self.mean is not None:
+            message = (
+                '"mean" must define a value for each label but length of "mean"'
+                f' is {len(self.mean)} while {len(labels)} labels were found'
+            )
+            assert len(self.mean) == len(labels), message
+        if self.std is not None:
+            message = (
+                '"std" must define a value for each label but length of "std"'
+                f' is {len(self.std)} while {len(labels)} labels were found'
+            )
+            assert len(self.std) == len(labels), message
 
     def get_params(
             self,
-            label: Union[str, TypeNumber]
+            label: int
             ) -> Tuple[float, float]:
-        if label in self.gaussian_parameters:
-            mean_range = self.gaussian_parameters[label]['mean']
-            std_range = self.gaussian_parameters[label]['std']
+        if self.mean is not None:
+            mean_range = self.mean[label]
         else:
-            mean_range, std_range = self.default_mean, self.default_std
+            mean_range = self.default_mean
+        if self.std is not None:
+            std_range = self.std[label]
+        else:
+            std_range = self.default_std
 
         mean = torch.FloatTensor(1).uniform_(*mean_range).item()
         std = torch.FloatTensor(1).uniform_(*std_range).item()

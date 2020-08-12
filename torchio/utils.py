@@ -3,7 +3,7 @@ import gzip
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Union, Iterable, Tuple, Any, Optional, List
+from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
 
 import torch
 import numpy as np
@@ -325,3 +325,11 @@ def compress(input_path, output_path):
     with open(input_path, 'rb') as f_in:
         with gzip.open(output_path, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+
+
+def check_sequence(sequence: Sequence, name: str):
+    try:
+        iter(sequence)
+    except TypeError:
+        message = f'"{name}" must be a sequence, not {type(name)}'
+        raise TypeError(message)
