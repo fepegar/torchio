@@ -66,7 +66,7 @@ class Subject(dict):
                 value = copy.deepcopy(value)
             result_dict[key] = value
         new = Subject(result_dict)
-        new.history = self.history
+        new.history = self.history[:]
         return new
 
     @staticmethod
