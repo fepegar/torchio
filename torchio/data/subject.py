@@ -45,18 +45,15 @@ class Subject(dict):
                     'Only one dictionary as positional argument is allowed')
                 raise ValueError(message)
         super().__init__(**kwargs)
-        self.images = [
-            (k, v) for (k, v) in self.items()
-            if isinstance(v, Image)
-        ]
-        self._parse_images(self.images)
+        self._parse_images(self.get_images(intensity_only=False))
         self.update_attributes()  # this allows me to do e.g. subject.t1
         self.history = []
 
     def __repr__(self):
+        num_images = len(self.get_images(intensity_only=False))
         string = (
             f'{self.__class__.__name__}'
-            f'(Keys: {tuple(self.keys())}; images: {len(self.images)})'
+            f'(Keys: {tuple(self.keys())}; images: {num_images})'
         )
         return string
 
@@ -84,7 +81,7 @@ class Subject(dict):
 
         Consistency of shapes across images in the subject is checked first.
         """
-        self.check_consistent_shape()
+        self.check_consistent_attribute('shape')
         return self.get_first_image().shape
 
     @property
@@ -103,8 +100,27 @@ class Subject(dict):
 
         Consistency of spacings across images in the subject is checked first.
         """
-        self.check_consistent_spacing()
+        self.check_consistent_attribute('spacing')
         return self.get_first_image().spacing
+
+    def check_consistent_attribute(self, attribute: str) -> None:
+        values_dict = {}
+        iterable = self.get_images_dict(intensity_only=False).items()
+        for image_name, image in iterable:
+            values_dict[image_name] = getattr(image, attribute)
+        num_unique_values = len(set(values_dict.values()))
+        if num_unique_values > 1:
+            message = (
+                f'More than one {attribute} found in subject images:'
+                f'\n{pprint.pformat(values_dict)}'
+            )
+            raise RuntimeError(message)
+
+    def check_consistent_shape(self) -> None:
+        self.check_consistent_attribute('shape')
+
+    def check_consistent_spatial_shape(self) -> None:
+        self.check_consistent_attribute('spatial_shape')
 
     def get_images_dict(self, intensity_only=True):
         images = {}
@@ -122,39 +138,6 @@ class Subject(dict):
 
     def get_first_image(self):
         return self.get_images(intensity_only=False)[0]
-
-    def check_consistent_shape(self, spatial_only: bool = False) -> None:
-        shapes_dict = {}
-        iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            shape = image.spatial_shape if spatial_only else image.shape
-            shapes_dict[image_name] = shape
-        num_unique_shapes = len(set(shapes_dict.values()))
-        if num_unique_shapes > 1:
-            message = (
-                'More than one shape found in subject images:'
-                f'\n{pprint.pformat(shapes_dict)}'
-            )
-            raise RuntimeError(message)
-
-    def check_consistent_spatial_shape(self) -> None:
-        self.check_consistent_shape(spatial_only=True)
-
-    def check_consistent_orientation(self) -> None:
-        orientations_dict = {}
-        iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            orientations_dict[image_name] = image.orientation
-        num_unique_orientations = len(set(orientations_dict.values()))
-        if num_unique_orientations > 1:
-            message = (
-                'More than one orientation found in subject images:'
-                f'\n{pprint.pformat(orientations_dict)}'
-            )
-            raise RuntimeError(message)
-
-    def check_consistent_spacing(self) -> None:
-        pass  # TODO
 
     def add_transform(
             self,
@@ -184,6 +167,9 @@ class Subject(dict):
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)
 
-    def add_image(self, image, image_name):
+    def add_image(self, image: Image, image_name: str) -> None:
         self[image_name] = image
         self.update_attributes()
+
+    def remove_image(self, image_name: str) -> None:
+        del self[image_name]

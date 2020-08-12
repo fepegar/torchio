@@ -157,7 +157,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         return transform
 
     def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_shape()
+        sample.check_consistent_spatial_shape()
         params = self.get_params(
             self.scales,
             self.degrees,
