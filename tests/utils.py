@@ -107,6 +107,19 @@ class TorchioTestCase(unittest.TestCase):
         image = ScalarImage(path)
         return image, path
 
+    def get_sample_with_partial_volume_label_map(self, components=1):
+        """Return a sample with a partial-volume label map."""
+        return Subject(
+            t1=ScalarImage(
+                self.get_image_path('t1_d'),
+            ),
+            label=LabelMap(
+                self.get_image_path(
+                    'label_d2', binary=False, components=components
+                )
+            ),
+        )
+
     def tearDown(self):
         """Tear down test fixtures, if any."""
         shutil.rmtree(self.dir)
