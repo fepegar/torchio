@@ -12,8 +12,10 @@ from .. import RandomTransform
 class RandomLabelsToImage(RandomTransform, IntensityTransform):
     r"""Generate an image from a segmentation.
 
-    Based on the work by `Billot et al., A Learning Strategy for
-    Contrast-agnostic MRI Segmentation <https://arxiv.org/abs/2003.01995>`_.
+    Based on the works by Billot et al.: `A Learning Strategy for
+    Contrast-agnostic MRI Segmentation <https://arxiv.org/abs/2003.01995>`_
+    and `Partial Volume Segmentation of Brain MRI Scans of any Resolution and
+    Contrast <https://arxiv.org/abs/2004.10221>`.
 
     Args:
         label_key: String designating the label map in the sample
