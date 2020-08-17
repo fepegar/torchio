@@ -150,8 +150,8 @@ class TestImage(TorchioTestCase):
 
     def test_with_a_list_of_2d_paths(self):
         shape = (5, 5)
-        path1 = self.get_image_path('path1', shape=shape)
-        path2 = self.get_image_path('path2', shape=shape)
+        path1 = self.get_image_path('path1', shape=shape, suffix='.nii')
+        path2 = self.get_image_path('path2', shape=shape, suffix='.img')
         image = ScalarImage(path=[path1, path2])
         self.assertEqual(image.shape, (2, 5, 5, 1))
         self.assertEqual(image[STEM], ['path1', 'path2'])

@@ -135,7 +135,8 @@ class TorchioTestCase(unittest.TestCase):
             shape=(10, 20, 30),
             spacing=(1, 1, 1),
             components=1,
-            add_nans=False
+            add_nans=False,
+            suffix=None,
             ):
         shape = (*shape, 1) if len(shape) == 2 else shape
         data = np.random.rand(components, *shape)
@@ -144,7 +145,8 @@ class TorchioTestCase(unittest.TestCase):
         if add_nans:
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
-        suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
+        if suffix is None:
+            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)
