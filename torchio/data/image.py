@@ -392,7 +392,13 @@ class Image(dict):
                 warnings.warn(f'NaNs found in file "{path}"')
 
             if not np.array_equal(affine, new_affine):
-                message = 'Files have different affine matrices'
+                message = (
+                    'Files have different affine matrices.'
+                    f'\nMatrix of {paths[0]}:'
+                    f'\n{affine}'
+                    f'\nMatrix of {path}:'
+                    f'\n{new_affine}'
+                )
                 warnings.warn(message, RuntimeWarning)
 
             if not tensor.shape[1:] == new_tensor.shape[1:]:
