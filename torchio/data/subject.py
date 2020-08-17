@@ -148,7 +148,7 @@ class Subject(dict):
 
     def load(self):
         for image in self.get_images(intensity_only=False):
-            image._load()
+            image.load()
 
     def crop(self, index_ini, index_fin):
         result_dict = {}

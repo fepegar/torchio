@@ -180,17 +180,17 @@ def nib_to_sitk(
     if data.ndim != 4:
         raise ValueError(f'Input must be 4D, but has shape {tuple(data.shape)}')
     # Possibilities
-    # (1, 1, h, w)
-    # (c, 1, h, w)
-    # (1, d, h, w)
-    # (c, d, h, w)
+    # (1, h, w, 1)
+    # (c, h, w, 1)
+    # (1, h, w, 1)
+    # (c, h, w, d)
     array = np.asarray(data)
     affine = np.asarray(affine).astype(np.float64)
 
     is_multichannel = array.shape[0] > 1 and not force_4d
-    is_2d = array.shape[1] == 1 and not force_3d
+    is_2d = array.shape[3] == 1 and not force_3d
     if is_2d:
-        array = array[:, 0, :, :]
+        array = array[..., 0]
     if not is_multichannel and not force_4d:
         array = array[0]
     array = array.transpose()  # (W, H, D, C) or (W, H, D)
@@ -199,15 +199,15 @@ def nib_to_sitk(
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
     origin = np.dot(FLIP_XY, affine[:3, 3])
     direction = np.dot(FLIP_XY, rotation)
-    if is_2d:  # ignore first dimension if 2D (1, 1, H, W)
-        direction = direction[1:3, 1:3]
+    if is_2d:  # ignore first dimension if 2D (1, H, W, 1)
+        direction = direction[:2, :2]
     image.SetOrigin(origin)  # should I add a 4th value if force_4d?
     image.SetSpacing(spacing)
     image.SetDirection(direction.flatten())
     if data.ndim == 4:
         assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
     num_spatial_dims = 2 if is_2d else 3
-    assert image.GetSize() == data.shape[-num_spatial_dims:]
+    assert image.GetSize() == data.shape[1: 1 + num_spatial_dims]
     return image
 
 
@@ -223,18 +223,18 @@ def sitk_to_nib(
     if not keepdim:
         data = ensure_4d(data, False, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
-    assert data.shape[-input_spatial_dims:] == image.GetSize()
+    assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
     spacing = np.array(image.GetSpacing())
     direction = np.array(image.GetDirection())
     origin = image.GetOrigin()
     if len(direction) == 9:
         rotation = direction.reshape(3, 3)
-    elif len(direction) == 4:  # ignore first dimension if 2D (1, 1, H, W)
+    elif len(direction) == 4:  # ignore first dimension if 2D (1, H, W, 1)
         rotation_2d = direction.reshape(2, 2)
         rotation = np.eye(3)
-        rotation[1:3, 1:3] = rotation_2d
-        spacing = 1, *spacing
-        origin = 0, *origin
+        rotation[:2, :2] = rotation_2d
+        spacing = *spacing, 1
+        origin = *origin, 0
     rotation = np.dot(FLIP_XY, rotation)
     rotation_zoom = rotation * spacing
     translation = np.dot(FLIP_XY, origin)
@@ -266,26 +266,26 @@ def ensure_4d(
         if tensor.shape[-1] == 1:
             tensor = tensor[..., 0, :]
     if num_dimensions == 4:  # assume 3D multichannel
-        if channels_last:  # (D, H, W, C)
-            tensor = tensor.permute(3, 0, 1, 2)  # (C, D, H, W)
+        if channels_last:  # (H, W, D, C)
+            tensor = tensor.permute(3, 0, 1, 2)  # (C, H, W, C)
     elif num_dimensions == 2:  # assume 2D monochannel (H, W)
-        tensor = tensor[np.newaxis, np.newaxis]  # (1, 1, H, W)
+        tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, H, W, 1)
     elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
         if num_spatial_dims == 2:
             if channels_last:  # (H, W, C)
                 tensor = tensor.permute(2, 0, 1)  # (C, H, W)
-            tensor = tensor[:, np.newaxis]  # (C, 1, H, W)
-        elif num_spatial_dims == 3:  # (D, H, W)
-            tensor = tensor[np.newaxis]  # (1, D, H, W)
+            tensor = tensor[..., np.newaxis]  # (C, H, W, 1)
+        elif num_spatial_dims == 3:  # (H, W, D)
+            tensor = tensor[np.newaxis]  # (1, H, W, D)
         else:  # try to guess
             shape = tensor.shape
             maybe_rgb = 3 in (shape[0], shape[-1])
             if maybe_rgb:
                 if shape[-1] == 3:  # (H, W, 3)
                     tensor = tensor.permute(2, 0, 1)  # (3, H, W)
-                tensor = tensor[:, np.newaxis]  # (3, 1, H, W)
-            else:  # (D, H, W)
-                tensor = tensor[np.newaxis]  # (1, D, H, W)
+                tensor = tensor[..., np.newaxis]  # (3, H, W, 1)
+            else:  # (H, W, D)
+                tensor = tensor[np.newaxis]  # (1, H, W, D)
     else:
         message = (
             f'{num_dimensions}D images not supported yet. Please create an'

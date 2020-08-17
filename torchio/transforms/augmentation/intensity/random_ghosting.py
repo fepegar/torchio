@@ -92,7 +92,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         for image_name, image in self.get_images_dict(sample).items():
             transformed_tensors = []
             is_2d = image.is_2d()
-            axes = [a for a in self.axes if a != 0] if is_2d else self.axes
+            axes = [a for a in self.axes if a != 2] if is_2d else self.axes
             for channel_idx, tensor in enumerate(image[DATA]):
                 params = self.get_params(
                     self.num_ghosts_range,

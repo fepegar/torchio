@@ -18,8 +18,8 @@ class CropOrPad(BoundsTransform):
     physical positions of the voxels are maintained.
 
     Args:
-        target_shape: Tuple :math:`(D, H, W)`. If a single value :math:`N` is
-            provided, then :math:`D = H = W = N`.
+        target_shape: Tuple :math:`(H, W, D)`. If a single value :math:`N` is
+            provided, then :math:`H = W = D = N`.
         padding_mode: Same as :attr:`padding_mode` in
             :py:class:`~torchio.transforms.Pad`.
         mask_name: If ``None``, the centers of the input and output volumes
@@ -112,11 +112,11 @@ class CropOrPad(BoundsTransform):
         r"""Compute bounds parameters for ITK filters.
 
         Args:
-            parameters: Tuple :math:`(d, h, w)` with the number of voxels to be
+            parameters: Tuple :math:`(h, w, d)` with the number of voxels to be
                 cropped or padded.
 
         Returns:
-            Tuple :math:`(d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})`,
+            Tuple :math:`(h_{ini}, h_{fin}, w_{ini}, w_{fin}, d_{ini}, d_{fin})`,
             where :math:`n_{ini} = \left \lceil \frac{n}{2} \right \rceil` and
             :math:`n_{fin} = \left \lfloor \frac{n}{2} \right \rfloor`.
 
@@ -158,8 +158,8 @@ class CropOrPad(BoundsTransform):
             sample: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = self._get_sample_shape(sample)
-        # The parent class turns the 3-element shape tuple (d, h, w)
-        # into a 6-element bounds tuple (d, d, h, h, w, w)
+        # The parent class turns the 3-element shape tuple (h, w, d)
+        # into a 6-element bounds tuple (h, h, w, w, d, d)
         target_shape = np.array(self.bounds_parameters[::2])
         parameters = self._compute_cropping_padding_from_shapes(
             source_shape, target_shape)

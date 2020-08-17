@@ -172,8 +172,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
                 interpolation = self.interpolation
 
             if image.is_2d():
-                scaling_params[0] = 1
-                rotation_params[-2:] = 0
+                scaling_params[2] = 1
+                rotation_params[:-1] = 0
 
             if self.use_image_center:
                 center = image.get_center(lps=True)

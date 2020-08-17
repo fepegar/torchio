@@ -61,7 +61,7 @@ class Image(dict):
             :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
         tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` or NumPy array with dimensions
-            :math:`(C, D, H, W)`. If it is not 4D, TorchIO will try to guess
+            :math:`(C, H, W, D)`. If it is not 4D, TorchIO will try to guess
             the dimensions meanings. If 2D, the shape will be interpreted as
             :math:`(H, W)`. If 3D, the number of spatial dimensions should be
             determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
@@ -174,7 +174,7 @@ class Image(dict):
     def __getitem__(self, item):
         if item in (DATA, AFFINE):
             if item not in self:
-                self._load()
+                self.load()
         return super().__getitem__(item)
 
     def __array__(self):
@@ -217,6 +217,21 @@ class Image(dict):
     def spatial_shape(self) -> TypeTripletInt:
         return self.shape[1:]
 
+    def check_is_2d(self):
+        if not self.is_2d():
+            message = f'Image is not 2D. Spatial shape: {self.spatial_shape}'
+            raise RuntimeError(message)
+
+    @property
+    def height(self) -> int:
+        self.check_is_2d()
+        return self.spatial_shape[0]
+
+    @property
+    def width(self) -> int:
+        self.check_is_2d()
+        return self.spatial_shape[1]
+
     @property
     def orientation(self):
         return nib.aff2axcodes(self.affine)
@@ -248,11 +263,11 @@ class Image(dict):
             raise ValueError('Axis must be a string')
         axis = axis[0].upper()
 
-        # Generally, TorchIO tensors are (C, D, H, W)
+        # Generally, TorchIO tensors are (C, H, W, D)
         if axis == 'H':
-            return -2
+            return 1
         elif axis == 'W':
-            return -1
+            return 2
         else:
             try:
                 index = self.orientation.index(axis)
@@ -350,11 +365,11 @@ class Image(dict):
             raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
         return affine
 
-    def _load(self) -> None:
+    def load(self) -> None:
         r"""Load the image from disk.
 
         Returns:
-            Tuple containing a 4D tensor of size :math:`(C, D, H, W)` and a 2D
+            Tuple containing a 4D tensor of size :math:`(C, H, W, D)` and a 2D
             :math:`4 \times 4` affine matrix to convert voxel indices to world
             coordinates.
         """
@@ -377,7 +392,13 @@ class Image(dict):
                 warnings.warn(f'NaNs found in file "{path}"')
 
             if not np.array_equal(affine, new_affine):
-                message = 'Files have different affine matrices'
+                message = (
+                    'Files have different affine matrices.'
+                    f'\nMatrix of {paths[0]}:'
+                    f'\n{affine}'
+                    f'\nMatrix of {path}:'
+                    f'\n{new_affine}'
+                )
                 warnings.warn(message, RuntimeWarning)
 
             if not tensor.shape[1:] == new_tensor.shape[1:]:
@@ -414,7 +435,7 @@ class Image(dict):
         )
 
     def is_2d(self) -> bool:
-        return self.shape[-3] == 1
+        return self.shape[-1] == 1
 
     def numpy(self) -> np.ndarray:
         """Get a NumPy array containing the image data."""

@@ -14,11 +14,11 @@ class TestTransforms(TorchioTestCase):
         landmarks_dict = {
             channel: np.linspace(0, 100, 13) for channel in channels
         }
-        disp = 1 if is_3d else (0.01, 1, 1)
+        disp = 1 if is_3d else (1, 1, 0.01)
         elastic = torchio.RandomElasticDeformation(max_displacement=disp)
-        cp_args = (9, 21, 30) if is_3d else (1, 21, 30)
+        cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
         flip_axes = (0, 1, 2) if is_3d else (0, 1)
-        swap_patch = (2, 3, 4) if is_3d else (1, 3, 4)
+        swap_patch = (2, 3, 4) if is_3d else (3, 4, 1)
         pad_args = (1, 2, 3, 0, 5, 6) if is_3d else (0, 0, 3, 0, 5, 6)
         crop_args = (3, 2, 8, 0, 1, 4) if is_3d else (0, 0, 8, 0, 1, 4)
         transforms = [

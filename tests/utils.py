@@ -63,7 +63,7 @@ class TorchioTestCase(unittest.TestCase):
     def make_2d(self, sample):
         sample = copy.deepcopy(sample)
         for image in sample.get_images(intensity_only=False):
-            image[DATA] = image[DATA][:, 0:1, ...]
+            image[DATA] = image[DATA][..., :1]
         return sample
 
     def make_4d(self, sample):
@@ -135,15 +135,18 @@ class TorchioTestCase(unittest.TestCase):
             shape=(10, 20, 30),
             spacing=(1, 1, 1),
             components=1,
-            add_nans=False
+            add_nans=False,
+            suffix=None,
             ):
+        shape = (*shape, 1) if len(shape) == 2 else shape
         data = np.random.rand(components, *shape)
         if binary:
             data = (data > 0.5).astype(np.uint8)
         if add_nans:
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
-        suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
+        if suffix is None:
+            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)
