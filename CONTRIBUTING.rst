@@ -81,14 +81,10 @@ is #55::
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes pass the tests
+   using ``tox``::
 
-    $ flake8 torchio tests
-    $ pytest
     $ tox
-
-   To get ``flake8`` and ``tox``, just ``pip install`` them into your virtual environment.
 
 6. Commit your changes and push your branch to GitHub (`here's some great
 advice to write good commit
@@ -118,5 +114,4 @@ Tips
 
 To run a subset of tests::
 
-
-    $ python -m unittest tests.test_torchio
+    $ pytest tests/data/test_image.py
