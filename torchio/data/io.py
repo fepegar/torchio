@@ -108,10 +108,16 @@ def _write_nibabel(
     if channels_last:
         tensor = tensor.permute(1, 2, 3, 0)
     tensor = tensor.squeeze() if squeeze else tensor
-    nii = nib.Nifti1Image(np.asarray(tensor), affine)
-    nii.header['qform_code'] = 1
-    nii.header['sform_code'] = 0
-    nii.to_filename(str(path))
+    suffix = Path(path).suffix
+    if '.nii' in suffix:
+        img = nib.Nifti1Image(np.asarray(tensor), affine)
+    elif '.hdr' in suffix or '.img' in suffix:
+        img = nib.Nifti1Pair(np.asarray(tensor), affine)
+    else:
+        raise nib.loadsave.ImageFileError
+    img.header['qform_code'] = 1
+    img.header['sform_code'] = 0
+    img.to_filename(str(path))
 
 
 def _write_sitk(
