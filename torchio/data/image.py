@@ -61,7 +61,7 @@ class Image(dict):
             :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
         tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` or NumPy array with dimensions
-            :math:`(C, D, H, W)`. If it is not 4D, TorchIO will try to guess
+            :math:`(C, H, W, D)`. If it is not 4D, TorchIO will try to guess
             the dimensions meanings. If 2D, the shape will be interpreted as
             :math:`(H, W)`. If 3D, the number of spatial dimensions should be
             determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
@@ -174,7 +174,7 @@ class Image(dict):
     def __getitem__(self, item):
         if item in (DATA, AFFINE):
             if item not in self:
-                self._load()
+                self.load()
         return super().__getitem__(item)
 
     def __array__(self):
@@ -350,11 +350,11 @@ class Image(dict):
             raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
         return affine
 
-    def _load(self) -> None:
+    def load(self) -> None:
         r"""Load the image from disk.
 
         Returns:
-            Tuple containing a 4D tensor of size :math:`(C, D, H, W)` and a 2D
+            Tuple containing a 4D tensor of size :math:`(C, H, W, D)` and a 2D
             :math:`4 \times 4` affine matrix to convert voxel indices to world
             coordinates.
         """

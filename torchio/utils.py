@@ -200,14 +200,14 @@ def nib_to_sitk(
     origin = np.dot(FLIP_XY, affine[:3, 3])
     direction = np.dot(FLIP_XY, rotation)
     if is_2d:  # ignore first dimension if 2D (1, H, W, 1)
-        direction = direction[1:3, 1:3]
+        direction = direction[:2, :2]
     image.SetOrigin(origin)  # should I add a 4th value if force_4d?
     image.SetSpacing(spacing)
     image.SetDirection(direction.flatten())
     if data.ndim == 4:
         assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
     num_spatial_dims = 2 if is_2d else 3
-    assert image.GetSize() == data.shape[-num_spatial_dims:]
+    assert image.GetSize() == data.shape[1: 1 + num_spatial_dims]
     return image
 
 
@@ -223,7 +223,7 @@ def sitk_to_nib(
     if not keepdim:
         data = ensure_4d(data, False, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
-    assert data.shape[-input_spatial_dims:] == image.GetSize()
+    assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
     spacing = np.array(image.GetSpacing())
     direction = np.array(image.GetDirection())
     origin = image.GetOrigin()
@@ -232,9 +232,9 @@ def sitk_to_nib(
     elif len(direction) == 4:  # ignore first dimension if 2D (1, H, W, 1)
         rotation_2d = direction.reshape(2, 2)
         rotation = np.eye(3)
-        rotation[1:3, 1:3] = rotation_2d
-        spacing = 1, *spacing
-        origin = 0, *origin
+        rotation[:2, :2] = rotation_2d
+        spacing = *spacing, 1
+        origin = *origin, 0
     rotation = np.dot(FLIP_XY, rotation)
     rotation_zoom = rotation * spacing
     translation = np.dot(FLIP_XY, origin)
@@ -269,7 +269,7 @@ def ensure_4d(
         if channels_last:  # (H, W, D, C)
             tensor = tensor.permute(3, 0, 1, 2)  # (C, H, W, C)
     elif num_dimensions == 2:  # assume 2D monochannel (H, W)
-        tensor = tensor[np.newaxis, np.newaxis]  # (1, H, W, 1)
+        tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, H, W, 1)
     elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
         if num_spatial_dims == 2:
             if channels_last:  # (H, W, C)

@@ -19,6 +19,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
             ``'Inferior'``, ``'Superior'``, ``'Height'`` and ``'Width'``,
             ``'AP'`` (antero-posterior), ``'lr'`` (lateral), ``'w'`` (width) or
             ``'i'`` (inferior). Only the first letter of the string will be
+            used. If the image is 2D, ``'Height'`` and ``'Width'`` may be
             used.
         flip_probability: Probability that the image will be flipped. This is
             computed on a per-axis basis.
@@ -33,10 +34,6 @@ class RandomFlip(RandomTransform, SpatialTransform):
 
     .. tip:: It is handy to specify the axes as anatomical labels when the image
         orientation is not known.
-
-    .. warning:: Note that height and width of 2D images correspond to axes
-        ``1`` and ``2`` respectively, as TorchIO images are generally considered
-        to have 3 spatial dimensions.
     """
 
     def __init__(

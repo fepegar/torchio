@@ -112,7 +112,7 @@ class TestImage(TorchioTestCase):
     def test_nans_file(self):
         image = ScalarImage(self.get_image_path('repr_test', add_nans=True))
         with self.assertWarns(UserWarning):
-            image._load()
+            image.load()
 
     def test_get_center(self):
         tensor = torch.rand(1, 3, 3, 3)
@@ -139,19 +139,19 @@ class TestImage(TorchioTestCase):
         path2 = self.get_image_path('path2', shape=(7, 5, 5))
         image = ScalarImage(path=[path1, path2])
         with self.assertRaises(RuntimeError):
-            image._load()
+            image.load()
 
     def test_with_a_list_of_images_with_different_affines(self):
         path1 = self.get_image_path('path1', spacing=(1, 1, 1))
         path2 = self.get_image_path('path2', spacing=(1, 2, 1))
         image = ScalarImage(path=[path1, path2])
         with self.assertWarns(RuntimeWarning):
-            image._load()
+            image.load()
 
     def test_with_a_list_of_2d_paths(self):
         shape = (5, 5)
         path1 = self.get_image_path('path1', shape=shape)
         path2 = self.get_image_path('path2', shape=shape)
         image = ScalarImage(path=[path1, path2])
-        self.assertEqual(image.shape, (2, 1, 5, 5))
+        self.assertEqual(image.shape, (2, 5, 5, 1))
         self.assertEqual(image[STEM], ['path1', 'path2'])
