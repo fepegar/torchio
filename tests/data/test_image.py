@@ -154,13 +154,13 @@ class TestImage(TorchioTestCase):
         path2 = self.get_image_path('path2', shape=shape, suffix='.img')
         path3 = self.get_image_path('path3', shape=shape, suffix='.hdr')
         image = ScalarImage(path=[path1, path2, path3])
-        self.assertEqual(image.shape, (3, 5, 5, 1))
+        self.assertEqual(image.shape, (3, 5, 6, 1))
         self.assertEqual(image[STEM], ['path1', 'path2', 'path3'])
 
     def test_axis_name_2d(self):
         path = self.get_image_path('im2d', shape=(5, 6))
         image = ScalarImage(path)
-        height_idx = image.axis_name_to_index['h']
-        width_idx = image.axis_name_to_index['w']
+        height_idx = image.axis_name_to_index('h')
+        width_idx = image.axis_name_to_index('w')
         self.assertEqual(image.height, image.shape[height_idx])
         self.assertEqual(image.width, image.shape[width_idx])
