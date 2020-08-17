@@ -18,18 +18,18 @@ class GridSampler(PatchSampler, Dataset):
     Args:
         sample: Instance of :py:class:`~torchio.data.subject.Subject`
             from which patches will be extracted.
-        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
+        patch_size: Tuple of integers :math:`(h, w, d)` to generate patches
             of size :math:`d \times h \times w`.
             If a single number :math:`n` is provided,
-            :math:`d = h = w = n`.
-        patch_overlap: Tuple of even integers :math:`(d_o, h_o, w_o)` specifying
+            :math:`h = w = d = n`.
+        patch_overlap: Tuple of even integers :math:`(h_o, w_o, d_o)` specifying
             the overlap between patches for dense inference. If a single number
-            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.
+            :math:`n` is provided, :math:`h_o = w_o = d_o = n`.
         padding_mode: Same as :attr:`padding_mode` in
             :py:class:`~torchio.transforms.Pad`. If ``None``, the volume will
             not be padded before sampling and patches at the border will not be
             cropped by the aggregator. Otherwise, the volume will be padded with
-            :math:`\left(\frac{d_o}{2}, \frac{h_o}{2}, \frac{w_o}{2}\right)`
+            :math:`\left(\frac{h_o}{2}, \frac{w_o}{2}, \frac{d_o}{2} \right)`
             on each side before sampling. If the sampler is passed to a
             :py:class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.

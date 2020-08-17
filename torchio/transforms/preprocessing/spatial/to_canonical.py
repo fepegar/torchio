@@ -32,14 +32,14 @@ class ToCanonical(SpatialTransform):
             affine = image[AFFINE]
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
-            array = image[DATA].numpy()[np.newaxis]  # (1, C, D, H, W)
+            array = image[DATA].numpy()[np.newaxis]  # (1, C, H, W, D)
             # NIfTI images should have channels in 5th dimension
-            array = array.transpose(2, 3, 4, 0, 1)  # (D, H, W, 1, C)
+            array = array.transpose(2, 3, 4, 0, 1)  # (H, W, D, 1, C)
             nii = nib.Nifti1Image(array, affine)
             reoriented = nib.as_closest_canonical(nii)
             array = reoriented.get_fdata(dtype=np.float32)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            array = array.copy().transpose(3, 4, 0, 1, 2) # (1, C, D, H, W)
+            array = array.copy().transpose(3, 4, 0, 1, 2) # (1, C, H, W, D)
             image[DATA] = torch.from_numpy(array[0])
             image[AFFINE] = reoriented.affine
         return sample

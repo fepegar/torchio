@@ -9,17 +9,19 @@ class Pad(BoundsTransform):
 
     Args:
         padding: Tuple
-            :math:`(d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})`
+            :math:`(h_{ini}, h_{fin}, w_{ini}, w_{fin}, d_{ini}, d_{fin})`
             defining the number of values padded to the edges of each axis.
             If the initial shape of the image is
-            :math:`D \times H \times W`, the final shape will be
-            :math:`(d_{ini} + D + d_{fin}) \times (h_{ini} + H + h_{fin}) \times (w_{ini} + W + w_{fin})`.
-            If only three values :math:`(d, h, w)` are provided, then
-            :math:`d_{ini} = d_{fin} = d`,
-            :math:`h_{ini} = h_{fin} = h` and
-            :math:`w_{ini} = w_{fin} = w`.
+            :math:`H \times W \times D`, the final shape will be
+            :math:`(h_{ini} + H + h_{fin}) \times (w_{ini} + W + w_{fin})
+            \times (d_{ini} + D + d_{fin})`.
+            If only three values :math:`(h, w, d)` are provided, then
+            :math:`h_{ini} = h_{fin} = h`,
+            :math:`w_{ini} = w_{fin} = w` and
+            :math:`d_{ini} = d_{fin} = d`.
             If only one value :math:`n` is provided, then
-            :math:`d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n`.
+            :math:`h_{ini} = h_{fin} = w_{ini} = w_{fin} =
+            d_{ini} = d_{fin} = n`.
         padding_mode:
             Type of padding. Should be one of:
 

@@ -12,9 +12,9 @@ class PatchSampler:
     r"""Base class for TorchIO samplers.
 
     Args:
-        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
-            of size :math:`d \times h \times w`.
-            If a single number :math:`n` is provided, :math:`d = h = w = n`.
+        patch_size: Tuple of integers :math:`(h, w, d)` to generate patches
+            of size :math:`h \times w \times d`.
+            If a single number :math:`n` is provided, :math:`h = w = d = n`.
     """
     def __init__(self, patch_size: TypePatchSize):
         patch_size_array = np.array(to_tuple(patch_size, length=3))
@@ -43,9 +43,9 @@ class RandomSampler(PatchSampler):
     r"""Base class for TorchIO samplers.
 
     Args:
-        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches
-            of size :math:`d \times h \times w`.
-            If a single number :math:`n` is provided, :math:`d = h = w = n`.
+        patch_size: Tuple of integers :math:`(h, w, d)` to generate patches
+            of size :math:`h \times w \times d`.
+            If a single number :math:`n` is provided, :math:`h = w = d = n`.
     """
     def __call__(
             self,

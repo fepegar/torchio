@@ -248,11 +248,11 @@ class Image(dict):
             raise ValueError('Axis must be a string')
         axis = axis[0].upper()
 
-        # Generally, TorchIO tensors are (C, D, H, W)
+        # Generally, TorchIO tensors are (C, H, W, D)
         if axis == 'H':
-            return -2
+            return 1
         elif axis == 'W':
-            return -1
+            return 2
         else:
             try:
                 index = self.orientation.index(axis)
@@ -414,7 +414,7 @@ class Image(dict):
         )
 
     def is_2d(self) -> bool:
-        return self.shape[-3] == 1
+        return self.shape[-1] == 1
 
     def numpy(self) -> np.ndarray:
         """Get a NumPy array containing the image data."""

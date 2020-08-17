@@ -26,8 +26,8 @@ class Resample(SpatialTransform):
     """Change voxel spacing by resampling.
 
     Args:
-        target: Tuple :math:`(s_d, s_h, s_w)`. If only one value
-            :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.
+        target: Tuple :math:`(s_h, s_w, s_d)`. If only one value
+            :math:`n` is specified, then :math:`s_h = s_w = s_d = n`.
             If a string or :py:class:`~pathlib.Path` is given,
             all images will be resampled using the image
             with that name as reference or found at the path.
@@ -208,7 +208,7 @@ class Resample(SpatialTransform):
 
     @staticmethod
     def apply_resample(
-            tensor: torch.Tensor,  # (C, D, H, W)
+            tensor: torch.Tensor,
             affine: np.ndarray,
             interpolation_order: int,
             target_spacing: Optional[Tuple[float, float, float]] = None,
