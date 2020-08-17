@@ -76,15 +76,14 @@ class RandomMotion(RandomTransform, IntensityTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in self.get_images_dict(sample).items():
+        for image_name, image in self.get_images_dict(sample).items():
             result_arrays = []
-            for channel_idx, data in enumerate(image_dict[DATA]):
-                is_2d = data.shape[-3] == 1
+            for channel_idx, data in enumerate(image[DATA]):
                 params = self.get_params(
                     self.degrees_range,
                     self.translation_range,
                     self.num_transforms,
-                    is_2d=is_2d,
+                    is_2d=image.is_2d(),
                 )
                 times_params, degrees_params, translation_params = params
                 random_parameters_dict = {
@@ -96,7 +95,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
                 random_parameters_images_dict[key] = random_parameters_dict
                 image = nib_to_sitk(
                     data[np.newaxis],
-                    image_dict[AFFINE],
+                    image[AFFINE],
                     force_3d=True,
                 )
                 transforms = self.get_rigid_transforms(
@@ -112,7 +111,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
                 )
                 result_arrays.append(data)
             result = np.stack(result_arrays)
-            image_dict[DATA] = torch.from_numpy(result)
+            image[DATA] = torch.from_numpy(result)
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
@@ -130,8 +129,8 @@ class RandomMotion(RandomTransform, IntensityTransform):
         translation_params = get_params_array(
             translation_range, num_transforms)
         if is_2d:  # imagine sagittal (1, A, S)
-            degrees_params[:, -2:] = 0  # rotate around R axis only
-            translation_params[:, 0] = 0  # translate in AS plane only
+            degrees_params[:, :-1] = 0  # rotate around Z axis only
+            translation_params[:, 2] = 0  # translate in XY plane only
         step = 1 / (num_transforms + 1)
         times = torch.arange(0, 1, step)[1:]
         noise = torch.FloatTensor(num_transforms)

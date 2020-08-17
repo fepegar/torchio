@@ -227,7 +227,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             else:
                 interpolation = self.interpolation
             if image.is_2d():
-                bspline_params[..., -3] = 0  # no displacement in LR axis
+                bspline_params[..., -1] = 0  # no displacement in IS axis
             image[DATA] = self.apply_bspline_transform(
                 image[DATA],
                 image[AFFINE],
