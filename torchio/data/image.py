@@ -217,6 +217,21 @@ class Image(dict):
     def spatial_shape(self) -> TypeTripletInt:
         return self.shape[1:]
 
+    def check_is_2d(self):
+        if not self.is_2d():
+            message = f'Image is not 2D. Spatial shape: {self.spatial_shape}'
+            raise RuntimeError(message)
+
+    @property
+    def height(self) -> int:
+        self.check_is_2d()
+        return self.spatial_shape[0]
+
+    @property
+    def width(self) -> int:
+        self.check_is_2d()
+        return self.spatial_shape[1]
+
     @property
     def orientation(self):
         return nib.aff2axcodes(self.affine)
