@@ -4,7 +4,6 @@ from typing import Union, Tuple, Optional, List
 
 import torch
 import numpy as np
-import nibabel as nib
 import SimpleITK as sitk
 from nibabel.processing import resample_to_output, resample_from_to
 
@@ -45,11 +44,6 @@ class Resample(SpatialTransform):
             but will be removed in a future version.
         p: Probability that this transform will be applied.
         keys: See :py:class:`~torchio.transforms.Transform`.
-
-    .. note:: Resampling is performed using
-        :py:meth:`nibabel.processing.resample_to_output` or
-        :py:meth:`nibabel.processing.resample_from_to`, depending on whether
-        the target is a spacing or a reference image.
 
     Example:
         >>> import torchio
