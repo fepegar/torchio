@@ -93,7 +93,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
                 }
                 key = f'{image_name}_channel_{channel_idx}'
                 random_parameters_images_dict[key] = random_parameters_dict
-                image = nib_to_sitk(
+                sitk_image = nib_to_sitk(
                     data[np.newaxis],
                     image[AFFINE],
                     force_3d=True,
@@ -101,10 +101,10 @@ class RandomMotion(RandomTransform, IntensityTransform):
                 transforms = self.get_rigid_transforms(
                     degrees_params,
                     translation_params,
-                    image,
+                    sitk_image,
                 )
                 data = self.add_artifact(
-                    image,
+                    sitk_image,
                     transforms,
                     times_params,
                     self.image_interpolation,
