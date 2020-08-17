@@ -108,7 +108,7 @@ def _write_nibabel(
     if channels_last:
         tensor = tensor.permute(1, 2, 3, 0)
     tensor = tensor.squeeze() if squeeze else tensor
-    suffix = Path(path).suffix
+    suffix = Path(str(path).replace('.gz', '')).suffix
     if '.nii' in suffix:
         img = nib.Nifti1Image(np.asarray(tensor), affine)
     elif '.hdr' in suffix or '.img' in suffix:
