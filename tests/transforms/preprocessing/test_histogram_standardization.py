@@ -2,6 +2,7 @@ from copy import deepcopy
 import numpy as np
 import torch
 from torchio.transforms import HistogramStandardization
+from torchio import LabelMap, ScalarImage, Subject, SubjectsDataset
 from ...utils import TorchioTestCase
 
 
@@ -10,11 +11,17 @@ class TestHistogramStandardization(TorchioTestCase):
 
     def setUp(self):
         super().setUp()
-        self.dataset = self.get_ixi_tiny()
+        self.subjects = [
+            Subject(
+                image=ScalarImage(self.get_image_path(f'hs_image_{i}')),
+                label=LabelMap(self.get_image_path(f'hs_label_{i}')),
+            )
+            for i in range(5)
+        ]
+        self.dataset = SubjectsDataset(self.subjects)
 
     def test_train_histogram(self):
-        samples = [self.dataset[i] for i in range(3)]
-        paths = [sample['image']['path'] for sample in samples]
+        paths = [sample['image']['path'] for sample in self.dataset]
         HistogramStandardization.train(
             paths,
             masking_function=HistogramStandardization.mean,
@@ -22,7 +29,7 @@ class TestHistogramStandardization(TorchioTestCase):
         )
         HistogramStandardization.train(
             paths,
-            mask_path=samples[0]['label']['path'],
+            mask_path=self.dataset[0]['label']['path'],
             output_path=(self.dir / 'landmarks.npy'),
         )
 

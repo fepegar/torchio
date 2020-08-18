@@ -5,9 +5,6 @@ from ..utils import TorchioTestCase
 class TestIXI(TorchioTestCase):
     """Tests for `ixi` module."""
 
-    def test_ixi(self):
-        self.get_ixi_tiny()
-
     def test_not_downloaded(self):
         with self.assertRaises(RuntimeError):
             IXI('testing123', download=False)
