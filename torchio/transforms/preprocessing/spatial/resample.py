@@ -4,14 +4,15 @@ from typing import Union, Tuple, Optional, List
 
 import torch
 import numpy as np
-import nibabel as nib
+import SimpleITK as sitk
 from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
 from ....data.image import Image, ScalarImage
-from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData
+from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData, TypeTripletFloat
+from ....utils import sitk_to_nib
 from ... import SpatialTransform
-from ... import Interpolation
+from ... import Interpolation, get_sitk_interpolator
 
 
 TypeSpacing = Union[float, Tuple[float, float, float]]
@@ -43,11 +44,6 @@ class Resample(SpatialTransform):
         p: Probability that this transform will be applied.
         keys: See :py:class:`~torchio.transforms.Transform`.
 
-    .. note:: Resampling is performed using
-        :py:meth:`nibabel.processing.resample_to_output` or
-        :py:meth:`nibabel.processing.resample_from_to`, depending on whether
-        the target is a spacing or a reference image.
-
     Example:
         >>> import torchio
         >>> from torchio import Resample
@@ -71,18 +67,22 @@ class Resample(SpatialTransform):
             ):
         super().__init__(p=p, keys=keys)
         self.reference_image, self.target_spacing = self.parse_target(target)
-        self.interpolation_order = self.parse_interpolation(image_interpolation)
+        self.interpolation = self.parse_interpolation(image_interpolation)
         self.affine_name = pre_affine_name
 
     def parse_target(
             self,
             target: Union[TypeSpacing, str],
             ) -> TypeTarget:
+        """
+        If target is an existing path, return a torchio.ScalarImage
+        If it does not exist, return the string
+        If it is not a Path or string, return None
+        """
         if isinstance(target, (str, Path)):
             if Path(target).is_file():
                 path = target
-                image = ScalarImage(path)
-                reference_image = image.data, image.affine
+                reference_image = ScalarImage(path)
             else:
                 reference_image = target
             target_spacing = None
@@ -106,20 +106,6 @@ class Resample(SpatialTransform):
         if np.any(np.array(spacing) <= 0):
             raise ValueError(f'Spacing must be positive, not "{spacing}"')
         return result
-
-    def parse_interpolation(self, interpolation: str) -> int:
-        interpolation = super().parse_interpolation(interpolation)
-
-        if interpolation in (Interpolation.NEAREST, 'nearest'):
-            order = 0
-        elif interpolation in (Interpolation.LINEAR, 'linear'):
-            order = 1
-        elif interpolation in (Interpolation.BSPLINE, 'bspline'):
-            order = 3
-        else:
-            message = f'Interpolation not implemented yet: {interpolation}'
-            raise NotImplementedError(message)
-        return order
 
     @staticmethod
     def check_affine(affine_name: str, image_dict: dict):
@@ -156,21 +142,21 @@ class Resample(SpatialTransform):
         raise ValueError(message)
 
     def apply_transform(self, sample: Subject) -> dict:
-        use_reference = self.reference_image is not None
         use_pre_affine = self.affine_name is not None
         if use_pre_affine:
             self.check_affine_key_presence(self.affine_name, sample)
         images_dict = self.get_images_dict(sample).items()
         for image_name, image in images_dict:
             # Do not resample the reference image if there is one
-            if use_reference and image_name == self.reference_image:
+            if image is self.reference_image:
                 continue
 
-            # Choose interpolator
+            # Choose interpolation
             if image[TYPE] != INTENSITY:
-                interpolation_order = 0  # nearest neighbor
+                interpolation = Interpolation.NEAREST
             else:
-                interpolation_order = self.interpolation_order
+                interpolation = self.interpolation
+            interpolator = get_sitk_interpolator(interpolation)
 
             # Apply given affine matrix if found in image
             if use_pre_affine and self.affine_name in image:
@@ -180,62 +166,52 @@ class Resample(SpatialTransform):
                     matrix = matrix.numpy()
                 image[AFFINE] = matrix @ image[AFFINE]
 
+            floating_itk = image.as_sitk(force_3d=True)
+
             # Resample
-            if use_reference:
-                if isinstance(self.reference_image, str):
-                    try:
-                        ref_image = sample[self.reference_image]
-                    except KeyError as error:
-                        message = (
-                            f'Reference name "{self.reference_image}"'
-                            ' not found in sample'
-                        )
-                        raise ValueError(message) from error
-                    reference = ref_image[DATA], ref_image[AFFINE]
-                else:
-                    reference = self.reference_image
-                kwargs = dict(reference=reference)
-            else:
-                kwargs = dict(target_spacing=self.target_spacing)
-            image[DATA], image[AFFINE] = self.apply_resample(
-                image[DATA],
-                image[AFFINE],
-                interpolation_order,
-                **kwargs,
-            )
+            if isinstance(self.reference_image, str):
+                try:
+                    reference_image_sitk = sample[self.reference_image].as_sitk()
+                except KeyError as error:
+                    message = (
+                        f'Reference name "{self.reference_image}"'
+                        ' not found in sample'
+                    )
+                    raise ValueError(message) from error
+            elif isinstance(self.reference_image, ScalarImage):
+                reference_image_sitk = self.reference_image.as_sitk()
+            elif self.reference_image is None:  # target is a spacing
+                reference_image_sitk = self.get_reference_image(
+                    floating_itk,
+                    self.target_spacing,
+                )
+
+            resampler = sitk.ResampleImageFilter()
+            resampler.SetInterpolator(interpolator)
+            resampler.SetReferenceImage(reference_image_sitk)
+            resampled = resampler.Execute(floating_itk)
+
+            image[DATA], image[AFFINE] = sitk_to_nib(resampled)
         return sample
 
     @staticmethod
-    def apply_resample(
-            tensor: torch.Tensor,
-            affine: np.ndarray,
-            interpolation_order: int,
-            target_spacing: Optional[Tuple[float, float, float]] = None,
-            reference: Optional[Tuple[torch.Tensor, np.ndarray]] = None,
-            ) -> Tuple[torch.Tensor, np.ndarray]:
-        array = tensor.numpy()
-        niis = []
-        arrays_resampled = []
-        if reference is None:
-            for channel in array:
-                nii = resample_to_output(
-                    nib.Nifti1Image(channel, affine),
-                    voxel_sizes=target_spacing,
-                    order=interpolation_order,
-                )
-                arrays_resampled.append(nii.get_fdata(dtype=np.float32))
-        else:
-            reference_tensor, reference_affine = reference
-            reference_array = reference_tensor.numpy()[0]
-            for channel_array in array:
-                nii = resample_from_to(
-                    nib.Nifti1Image(channel_array, affine),
-                    nib.Nifti1Image(reference_array, reference_affine),
-                    order=interpolation_order,
-                )
-                arrays_resampled.append(nii.get_fdata(dtype=np.float32))
-        tensor = torch.Tensor(arrays_resampled)
-        return tensor, nii.affine
+    def get_reference_image(
+            image: sitk.Image,
+            spacing: TypeTripletFloat,
+            ) -> sitk.Image:
+        old_spacing = np.array(image.GetSpacing())
+        new_spacing = np.array(spacing)
+        old_size = np.array(image.GetSize())
+        new_size = old_size * old_spacing / new_spacing
+        new_size = np.ceil(new_size).astype(np.uint16)
+        new_origin_index = 0.5 * (new_spacing / old_spacing - 1)
+        new_origin_lps = image.TransformContinuousIndexToPhysicalPoint(
+            new_origin_index)
+        reference = sitk.Image(*new_size.tolist(), sitk.sitkFloat32)
+        reference.SetDirection(image.GetDirection())
+        reference.SetSpacing(new_spacing.tolist())
+        reference.SetOrigin(new_origin_lps)
+        return reference
 
     @staticmethod
     def get_sigma(downsampling_factor, spacing):

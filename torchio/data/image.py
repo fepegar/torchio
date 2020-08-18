@@ -442,9 +442,9 @@ class Image(dict):
         """Get a NumPy array containing the image data."""
         return np.asarray(self)
 
-    def as_sitk(self) -> sitk.Image:
+    def as_sitk(self, **kwargs) -> sitk.Image:
         """Get the image as an instance of :py:class:`sitk.Image`."""
-        return nib_to_sitk(self[DATA], self[AFFINE])
+        return nib_to_sitk(self[DATA], self[AFFINE], **kwargs)
 
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS+ or LPS+ coordinates.

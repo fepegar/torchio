@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 from torchio import DATA, AFFINE
 from torchio.transforms import Resample
 from torchio.utils import nib_to_sitk
@@ -32,13 +32,13 @@ class TestResample(TorchioTestCase):
         affine_name = 'pre_affine'
         transform = Resample(spacing, pre_affine_name=affine_name)
         transformed = transform(self.sample)
-        for image_dict in transformed.values():
-            if affine_name in image_dict.keys():
-                new_affine = np.eye(4)
-                new_affine[0, 3] = 10
-                assert_array_equal(image_dict[AFFINE], new_affine)
+        for image in transformed.values():
+            if affine_name in image:
+                target_affine = np.eye(4)
+                target_affine[:3, 3] = 10, 0, -0.1
+                assert_array_almost_equal(image[AFFINE], target_affine)
             else:
-                assert_array_equal(image_dict[AFFINE], np.eye(4))
+                assert_array_equal(image[AFFINE], np.eye(4))
 
     def test_missing_affine(self):
         transform = Resample(1, pre_affine_name='missing')
@@ -69,3 +69,8 @@ class TestResample(TorchioTestCase):
         transform = Resample('missing')
         with self.assertRaises(ValueError):
             transform(self.sample)
+
+    def test_2d(self):
+        sample = self.make_2d(self.sample)
+        transform = Resample(2)
+        transform(sample)
