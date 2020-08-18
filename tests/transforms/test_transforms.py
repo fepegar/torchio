@@ -93,7 +93,7 @@ class TestTransforms(TorchioTestCase):
         self.assertIsInstance(transformed, sitk.Image)
 
     def test_transforms_nib(self):
-        data = torch.rand(4, 5, 8).numpy()
+        data = torch.rand(1, 4, 5, 8).numpy()
         affine = np.diag((1, -2, 3, 1))
         image = nib.Nifti1Image(data, affine)
         transform = self.get_transform(
@@ -114,7 +114,7 @@ class TestTransforms(TorchioTestCase):
 
     def test_transforms_sample_4d(self):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
-        sample = self.make_4d(self.sample)
+        sample = self.make_multichannel(self.sample)
         sample = self.flip_affine_x(sample)
         for transform in composed.transform.transforms:
             transformed = transform(sample)

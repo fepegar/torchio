@@ -66,7 +66,7 @@ class TorchioTestCase(unittest.TestCase):
             image[DATA] = image[DATA][..., :1]
         return sample
 
-    def make_4d(self, sample):
+    def make_multichannel(self, sample):
         sample = copy.deepcopy(sample)
         for image in sample.get_images(intensity_only=False):
             image[DATA] = torch.cat(4 * (image[DATA],))

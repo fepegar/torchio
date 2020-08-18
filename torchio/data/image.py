@@ -48,7 +48,14 @@ class Image(dict):
             3D, and may have multiple channels (see :attr:`num_spatial_dims` and
             :attr:`channels_last`). If a sequence of paths is given, data
             will be concatenated on the channel dimension so spatial
-            dimensions must match.
+            dimensions must match. If the read tensor is not 4D,
+            TorchIO will try to guess the dimensions meanings.
+            If 2D, the shape will be interpreted as
+            :math:`(H, W)`. If 3D, the number of spatial dimensions should be
+            determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
+            is not given and the shape is 3 along the first or last dimensions,
+            it will be interpreted as a multichannel 2D image. Otherwise, it
+            be interpreted as a 3D image with a single channel.
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
@@ -61,13 +68,7 @@ class Image(dict):
             :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
         tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` or NumPy array with dimensions
-            :math:`(C, H, W, D)`. If it is not 4D, TorchIO will try to guess
-            the dimensions meanings. If 2D, the shape will be interpreted as
-            :math:`(H, W)`. If 3D, the number of spatial dimensions should be
-            determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
-            is not given and the shape is 3 along the first or last dimensions,
-            it will be interpreted as a multichannel 2D image. Otherwise, it
-            be interpreted as a 3D image with a single channel.
+            :math:`(C, H, W, D)`.
         affine: If :attr:`path` is not given, :attr:`affine` must be a
             :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
             identity matrix.
@@ -132,11 +133,12 @@ class Image(dict):
             raise ValueError('A value for path or tensor must be given')
         self._loaded = False
 
-        # Number of channels are typically stored in the last dimensions in disk
-        # But if a tensor is given, the channels should be in the first dim
-        if channels_last is None:
-            channels_last = path is not None
-        self.channels_last = channels_last
+        if tensor is not None and channels_last is not None:
+            message = (
+                'channels_last cannot be specified is tensor is not None.'
+                ' The tensor shape must be (C, H, W, D)'
+            )
+            raise ValueError(message)
 
         tensor = self.parse_tensor(tensor)
         affine = self.parse_affine(affine)
@@ -151,6 +153,12 @@ class Image(dict):
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
+
+        # Number of channels are typically stored in the last dimensions in disk
+        # But if a tensor is given, the channels should be in the first dim
+        if channels_last is None:
+            channels_last = self.guess_channels_last(self.path)
+        self.channels_last = channels_last
         self[PATH] = '' if self.path is None else str(self.path)
         self[STEM] = '' if self.path is None else get_stem(self.path)
         self[TYPE] = type
@@ -186,7 +194,6 @@ class Image(dict):
             affine=self.affine,
             type=self.type,
             path=self.path,
-            channels_last=False,
         )
         for key, value in self.items():
             if key in PROTECTED_KEYS: continue
@@ -348,13 +355,19 @@ class Image(dict):
             tensor = torch.from_numpy(tensor.astype(np.float32))
         elif isinstance(tensor, torch.Tensor):
             tensor = tensor.float()
-        tensor = self.parse_tensor_shape(tensor)
+        if tensor.ndim != 4:
+            raise ValueError('Input tensor must be 4D')
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in tensor')
         return tensor
 
-    def parse_tensor_shape(self, tensor: torch.Tensor) -> torch.Tensor:
-        return ensure_4d(tensor, self.channels_last, self.num_spatial_dims)
+    def parse_tensor_shape(
+            self,
+            tensor: torch.Tensor,
+            num_spatial_dims: int,
+            channels_last: Optional[bool],
+            ) -> torch.Tensor:
+        return ensure_4d(tensor, channels_last, num_spatial_dims)
 
     @staticmethod
     def parse_affine(affine: np.ndarray) -> np.ndarray:
@@ -379,7 +392,11 @@ class Image(dict):
 
         paths = self.path if isinstance(self.path, list) else [self.path]
         tensor, affine = read_image(paths[0])
-        tensor = self.parse_tensor_shape(tensor)
+        tensor = self.parse_tensor_shape(
+            tensor,
+            self.num_spatial_dims,
+            self.channels_last,
+        )
 
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{paths[0]}"')
@@ -387,7 +404,11 @@ class Image(dict):
         tensors = [tensor]
         for path in paths[1:]:
             new_tensor, new_affine = read_image(path)
-            new_tensor = self.parse_tensor_shape(new_tensor)
+            new_tensor = self.parse_tensor_shape(
+                new_tensor,
+                self.num_spatial_dims,
+                self.channels_last,
+            )
 
             if self.check_nans and torch.isnan(tensor).any():
                 warnings.warn(f'NaNs found in file "{path}"')
@@ -465,6 +486,14 @@ class Image(dict):
     def set_check_nans(self, check_nans: bool):
         self.check_nans = check_nans
 
+    def guess_channels_last(self, path: Union[Path, List[Path]]) -> bool:
+        # https://github.com/fepegar/torchio/issues/273
+        if path is None:
+            return
+        if isinstance(path, list):  # assume all images are similar
+            path = path[0]
+        return not path.is_dir()
+
     def crop(self, index_ini: TypeTripletInt, index_fin: TypeTripletInt):
         new_origin = nib.affines.apply_affine(self.affine, index_ini)
         new_affine = self.affine.copy()
@@ -477,7 +506,6 @@ class Image(dict):
             affine=new_affine,
             type=self.type,
             path=self.path,
-            channels_last=False,
         )
         for key, value in self.items():
             if key in PROTECTED_KEYS: continue

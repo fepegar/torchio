@@ -290,7 +290,7 @@ class Transform(ABC):
         return interpolation
 
     def _get_subject_from_tensor(self, tensor: torch.Tensor) -> Subject:
-        image = ScalarImage(tensor=tensor, channels_last=False)
+        image = ScalarImage(tensor=tensor)
         return self._get_subject_from_image(image)
 
     def _get_subject_from_image(self, image: Image) -> Subject:

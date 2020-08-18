@@ -14,7 +14,7 @@ class TestLabelSampler(TorchioTestCase):
             self.assertEqual(patch_center, 1)
 
     def test_label_probabilities(self):
-        labels = torch.Tensor((0, 0, 1, 1, 2, 1, 0)).reshape(1, 1, -1)
+        labels = torch.Tensor((0, 0, 1, 1, 2, 1, 0)).reshape(1, 1, 1, -1)
         subject = torchio.Subject(
             label=torchio.Image(tensor=labels, type=torchio.LABEL),
         )
