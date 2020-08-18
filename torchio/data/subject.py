@@ -116,9 +116,6 @@ class Subject(dict):
             )
             raise RuntimeError(message)
 
-    def check_consistent_shape(self) -> None:
-        self.check_consistent_attribute('shape')
-
     def check_consistent_spatial_shape(self) -> None:
         self.check_consistent_attribute('spatial_shape')
 
