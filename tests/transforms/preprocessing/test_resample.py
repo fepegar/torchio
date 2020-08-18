@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 from torchio import DATA, AFFINE
 from torchio.transforms import Resample
 from torchio.utils import nib_to_sitk
@@ -34,9 +34,9 @@ class TestResample(TorchioTestCase):
         transformed = transform(self.sample)
         for image in transformed.values():
             if affine_name in image:
-                new_affine = np.eye(4)
-                new_affine[0, 3] = 10
-                assert_array_equal(image[AFFINE], new_affine)
+                target_affine = np.eye(4)
+                target_affine[:3, 3] = 10, 0, -0.1
+                assert_array_almost_equal(image[AFFINE], target_affine)
             else:
                 assert_array_equal(image[AFFINE], np.eye(4))
 
