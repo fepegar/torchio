@@ -52,7 +52,6 @@ class RandomSwap(RandomTransform, IntensityTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         for image in self.get_images(sample):
-            tensors = []
             tensor = image[DATA]
             image[DATA] = swap(tensor, self.patch_size, self.num_iterations)
         return sample

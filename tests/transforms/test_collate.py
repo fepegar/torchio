@@ -13,12 +13,16 @@ class TestCollate(TorchioTestCase):
         sample_no = transform_no(self.sample)
         sample_yes = transform_yes(self.sample)
         data = sample_no, sample_yes
+
         class Dataset:
             def __init__(self, data):
                 self.data = data
+
             def __len__(self):
                 return len(self.data)
+
             def __getitem__(self, index):
                 return self.data[index]
+
         loader = DataLoader(Dataset(data), batch_size=2)
-        batch = next(iter(loader))
+        next(iter(loader))

@@ -103,7 +103,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape, mask_name='label')
         mask = self.sample['label'][DATA]
         mask *= 0
-        mask [0, 4:6, 5:8, 3:7] = 1
+        mask[0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
         shapes = []
         for key in transformed:
@@ -114,7 +114,8 @@ class TestCropOrPad(TorchioTestCase):
         assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape,
+            self.assertEqual(
+                target_shape, result_shape,
                 f'Wrong shape for image: {key}',
             )
 
@@ -123,7 +124,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape, mask_name='label')
         mask = self.sample['label'][DATA]
         mask *= 0
-        mask [0, 4:6, 5:8, 3:7] = 1
+        mask[0, 4:6, 5:8, 3:7] = 1
         transformed = transform(self.sample)
         shapes = []
         for key in transformed:
@@ -134,7 +135,8 @@ class TestCropOrPad(TorchioTestCase):
         assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape,
+            self.assertEqual(
+                target_shape, result_shape,
                 f'Wrong shape for image: {key}',
             )
 

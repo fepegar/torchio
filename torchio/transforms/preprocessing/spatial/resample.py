@@ -14,7 +14,6 @@ from ... import SpatialTransform
 from ... import Interpolation
 
 
-
 TypeSpacing = Union[float, Tuple[float, float, float]]
 TypeTarget = Tuple[
     Optional[Union[Image, str]],

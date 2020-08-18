@@ -80,7 +80,6 @@ def write_image(
         channels_last: bool = True,
         ) -> None:
     args = tensor, affine, path
-    kwargs = dict(squeeze=squeeze, channels_last=channels_last)
     if itk_first:
         try:
             _write_sitk(*args, squeeze=squeeze)

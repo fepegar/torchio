@@ -9,7 +9,6 @@ from ..subject import Subject
 from .sampler import RandomSampler
 
 
-
 class WeightedSampler(RandomSampler):
     r"""Randomly extract patches from a volume given a probability map.
 

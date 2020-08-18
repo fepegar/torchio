@@ -81,11 +81,11 @@ class TestImage(TorchioTestCase):
 
     def test_no_input(self):
         with self.assertRaises(ValueError):
-            image = ScalarImage()
+            ScalarImage()
 
     def test_bad_key(self):
         with self.assertRaises(ValueError):
-            image = ScalarImage(path='', data=5)
+            ScalarImage(path='', data=5)
 
     def test_repr(self):
         sample = Subject(t1=ScalarImage(self.get_image_path('repr_test')))

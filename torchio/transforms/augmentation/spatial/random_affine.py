@@ -251,7 +251,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         tensor = torch.from_numpy(np_array)
         return tensor
 
-
+# flake8: noqa: E201, E203, E243
 def get_borders_mean(image, filter_otsu=True):
     # pylint: disable=bad-whitespace
     array = sitk.GetArrayViewFromImage(image)

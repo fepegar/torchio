@@ -139,6 +139,7 @@ class Subject(dict):
     def get_first_image(self):
         return self.get_images(intensity_only=False)[0]
 
+    # flake8: noqa: F821
     def add_transform(
             self,
             transform: 'Transform',

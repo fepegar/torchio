@@ -89,7 +89,8 @@ class LabelSampler(WeightedSampler):
         for label, label_probability in iterable:
             mask = label_map == label
             label_size = mask.sum()
-            if not label_size: continue
+            if not label_size:
+                continue
             prob_voxels = label_probability / label_size
             probability_map[mask] = prob_voxels
         return probability_map

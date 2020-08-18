@@ -148,7 +148,7 @@ class TestTransforms(TorchioTestCase):
         sample = self.flip_affine_x(sample)
         for transform in composed.transform.transforms:
             original_data = copy.deepcopy(sample.t1.data)
-            transformed = transform(sample)
+            transform(sample)
             self.assertTensorEqual(
                 sample.t1.data,
                 original_data,
@@ -159,4 +159,4 @@ class TestTransforms(TorchioTestCase):
 class TestTransform(TorchioTestCase):
     def test_abstract_transform(self):
         with self.assertRaises(TypeError):
-            transform = torchio.Transform()
+            torchio.Transform()

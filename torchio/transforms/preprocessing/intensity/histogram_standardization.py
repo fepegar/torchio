@@ -59,7 +59,7 @@ class HistogramStandardization(NormalizationTransform):
     def parse_landmarks(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
         if isinstance(landmarks, (str, Path)):
             path = Path(landmarks)
-            if not path.suffix in ('.pt', '.pth'):
+            if path.suffix not in ('.pt', '.pth'):
                 message = (
                     'The landmarks file must have extension .pt or .pth,'
                     f' not "{path.suffix}"'

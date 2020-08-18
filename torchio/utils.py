@@ -131,6 +131,7 @@ def apply_transform_to_file(
     if verbose and transformed.history:
         print(transformed.history[0])
 
+
 def guess_type(string: str) -> Any:
     # Adapted from
     # https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s

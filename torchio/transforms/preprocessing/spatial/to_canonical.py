@@ -39,7 +39,7 @@ class ToCanonical(SpatialTransform):
             reoriented = nib.as_closest_canonical(nii)
             array = reoriented.get_fdata(dtype=np.float32)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            array = array.copy().transpose(3, 4, 0, 1, 2) # (1, C, H, W, D)
+            array = array.copy().transpose(3, 4, 0, 1, 2)  # (1, C, H, W, D)
             image[DATA] = torch.from_numpy(array[0])
             image[AFFINE] = reoriented.affine
         return sample

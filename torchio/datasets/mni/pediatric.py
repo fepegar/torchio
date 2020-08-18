@@ -14,6 +14,7 @@ SUPPORTED_YEARS = (
     (13, 18.5),
 )
 
+
 def format_age(n):
     integer = int(n)
     decimal = int(10 * (n - integer))

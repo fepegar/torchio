@@ -19,7 +19,6 @@ class FPG(Subject):
 
         download_root = get_torchio_cache_dir() / 'fpg'
         for filename in self.filenames.values():
-            stem = filename.split('.')[0]
             download_url(
                 urllib.parse.urljoin(repo_dir, filename),
                 download_root,

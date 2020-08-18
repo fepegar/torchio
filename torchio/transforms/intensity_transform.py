@@ -1,5 +1,6 @@
 from .transform import Transform
 
+
 class IntensityTransform(Transform):
     """Transform that modifies voxel intensities only."""
     @staticmethod

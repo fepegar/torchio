@@ -31,9 +31,8 @@ class ICBM2009CNonlinearSymmetryc(SubjectMNI):
 
     """
     def __init__(self, load_4d_tissues: bool = True):
-        self.name = f'mni_icbm152_nlin_sym_09c_nifti'
+        self.name = 'mni_icbm152_nlin_sym_09c_nifti'
         self.url_base = 'http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/'
-        dir_name = 'icbm_2009c_nonlinear_symmetric/'
         self.filename = f'{self.name}.zip'
         self.url = urllib.parse.urljoin(self.url_base, self.filename)
         download_root = get_torchio_cache_dir() / self.name

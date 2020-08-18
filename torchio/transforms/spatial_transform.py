@@ -1,5 +1,6 @@
 from .transform import Transform
 
+
 class SpatialTransform(Transform):
     """Transform that modifies image bounds or voxels positions."""
     @staticmethod

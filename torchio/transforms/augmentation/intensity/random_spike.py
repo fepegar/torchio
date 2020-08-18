@@ -106,8 +106,8 @@ class RandomSpike(RandomTransform, IntensityTransform):
             # If we wanted to add a pure cosine, we should add spikes to both
             # sides of k-space. However, having only one is a better
             # representation og the actual cause of the artifact in real
-            # scans.
-            #i, j, k = mid_shape - diff
-            #spectrum[i, j, k] = spectrum.max() * intensity_factor
+            # scans. Therefore the next two lines have been removed.
+            # #i, j, k = mid_shape - diff
+            # #spectrum[i, j, k] = spectrum.max() * intensity_factor
         result = np.real(self.inv_fourier_transform(spectrum))
         return torch.from_numpy(result.astype(np.float32))
