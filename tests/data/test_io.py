@@ -99,7 +99,7 @@ libs = 'sitk', 'nibabel'
 parameters = []
 for save_lib in libs:
     for load_lib in libs:
-        for dims in 2, 3:
+        for dims in 2, 3, 4:
             parameters.append((save_lib, load_lib, dims))
 
 
