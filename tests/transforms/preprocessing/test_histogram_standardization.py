@@ -14,7 +14,13 @@ class TestHistogramStandardization(TorchioTestCase):
         self.subjects = [
             Subject(
                 image=ScalarImage(self.get_image_path(f'hs_image_{i}')),
-                label=LabelMap(self.get_image_path(f'hs_label_{i}')),
+                label=LabelMap(
+                    self.get_image_path(
+                        f'hs_label_{i}',
+                        binary=True,
+                        force_binary_foreground=True,
+                    ),
+                ),
             )
             for i in range(5)
         ]

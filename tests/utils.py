@@ -137,16 +137,19 @@ class TorchioTestCase(unittest.TestCase):
             components=1,
             add_nans=False,
             suffix=None,
+            force_binary_foreground=True,
             ):
         shape = (*shape, 1) if len(shape) == 2 else shape
         data = np.random.rand(components, *shape)
         if binary:
             data = (data > 0.5).astype(np.uint8)
+            if not data.sum() and force_binary_foreground:
+                data[..., 0] = 1
         if add_nans:
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
         if suffix is None:
-            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
+            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img', '.mnc'))
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)

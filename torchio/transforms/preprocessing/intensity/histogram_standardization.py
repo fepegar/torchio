@@ -163,8 +163,8 @@ class HistogramStandardization(NormalizationTransform):
                 mask = masking_function(data)
             else:
                 if mask_path is not None:
-                    mask = nib.load(str(mask_path)).get_fdata()
-                    mask = mask > 0
+                    mask, _ = read_image(mask_path)
+                    mask = mask.numpy() > 0
                 else:
                     mask = np.ones_like(data, dtype=np.bool)
             percentile_values = np.percentile(data[mask], percentiles)

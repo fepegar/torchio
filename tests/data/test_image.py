@@ -4,6 +4,7 @@
 
 import copy
 import torch
+import pytest
 import numpy as np
 from torchio import ScalarImage, LabelMap, Subject, INTENSITY, LABEL, STEM
 from ..utils import TorchioTestCase
@@ -106,13 +107,8 @@ class TestImage(TorchioTestCase):
         tensor = np.random.rand(1, 2, 3, 4)
         tensor[0, 0, 0, 0] = np.nan
         with self.assertWarns(UserWarning):
-            image = ScalarImage(tensor=tensor)
+            image = ScalarImage(tensor=tensor, check_nans=True)
         image.set_check_nans(False)
-
-    def test_nans_file(self):
-        image = ScalarImage(self.get_image_path('repr_test', add_nans=True))
-        with self.assertWarns(UserWarning):
-            image.load()
 
     def test_get_center(self):
         tensor = torch.rand(1, 3, 3, 3)
