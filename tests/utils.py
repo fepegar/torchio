@@ -149,7 +149,7 @@ class TorchioTestCase(unittest.TestCase):
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
         if suffix is None:
-            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img'))
+            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img', '.mnc'))
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)
