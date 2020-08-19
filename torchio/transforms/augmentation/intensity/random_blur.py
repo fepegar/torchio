@@ -27,10 +27,9 @@ class RandomBlur(RandomTransform, IntensityTransform):
             self,
             std: Union[float, Tuple[float, float]] = (0, 4),
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, sample: Subject) -> dict:
@@ -49,7 +48,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        sample.add_transform(self, random_parameters_images_dict)
+        #sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

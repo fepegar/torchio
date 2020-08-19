@@ -334,3 +334,11 @@ def check_sequence(sequence: Sequence, name: str):
     except TypeError:
         message = f'"{name}" must be a sequence, not {type(name)}'
         raise TypeError(message)
+
+
+def gen_seed():
+    """
+    Random seed generator to avoid overflow
+    :return: a random seed as an int
+    """
+    return torch.randint(0, 2**31, (1,)).item()

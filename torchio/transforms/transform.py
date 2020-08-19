@@ -13,7 +13,7 @@ from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..data.dataset import SubjectsDataset
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..utils import nib_to_sitk, sitk_to_nib, gen_seed
 from .interpolation import Interpolation
 
 
@@ -43,8 +43,9 @@ class Transform(ABC):
         self.copy = copy
         self.keys = keys
         self.default_image_name = 'default_image_name'
+        self.transform_params = {}
 
-    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
+    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: int = None):
         """Transform a sample and return the result.
 
         Args:
@@ -55,7 +56,17 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
+
+        if not seed:
+            seed = gen_seed()
+
+        self.transform_params = {}
+        self._store_params()
+        torch.manual_seed(seed=seed)
+        self.transform_params["seed"] = seed
+
         if torch.rand(1).item() > self.probability:
+            data.add_transform(self, parameters_dict=self.transform_params)
             return data
 
         is_tensor = is_array = is_dict = is_image = is_sitk = is_nib = False
@@ -122,7 +133,11 @@ class Transform(ABC):
                 )
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
+        transformed.add_transform(self, parameters_dict=self.transform_params)
         return transformed
+
+    def _store_params(self):
+        self.transform_params.update(self.__dict__)
 
     @abstractmethod
     def apply_transform(self, sample: Subject):

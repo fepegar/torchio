@@ -37,10 +37,9 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             coefficients: Union[float, Tuple[float, float]] = 0.5,
             order: int = 3,
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
         self.order = self.parse_order(order)
@@ -58,7 +57,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_dict[DATA] = image_dict[DATA] * torch.from_numpy(bias_field)
-        sample.add_transform(self, random_parameters_images_dict)
+        #sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     @staticmethod

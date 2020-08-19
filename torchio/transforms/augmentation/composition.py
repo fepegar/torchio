@@ -1,10 +1,12 @@
-from typing import Union, Sequence
+from typing import Union, Sequence, List
 
 import torch
+import torchio
 import numpy as np
 from torchvision.transforms import Compose as PyTorchCompose
 
 from ...data.subject import Subject
+from ...utils import gen_seed
 from .. import Transform
 from . import RandomTransform
 
@@ -23,6 +25,14 @@ class Compose(Transform):
     def __init__(self, transforms: Sequence[Transform], p: float = 1):
         super().__init__(p=p)
         self.transform = PyTorchCompose(transforms)
+
+    def __call__(self, img: Subject, seeds: List = None):
+        if not seeds:
+            seeds = [gen_seed() for _ in range(len(self.transform.transforms))]
+
+        for t, s in zip(self.transform.transforms, seeds):
+            img = t(img, s)
+        return img
 
     def apply_transform(self, sample: Subject):
         return self.transform(sample)
@@ -106,3 +116,21 @@ class OneOf(RandomTransform):
             raise ValueError(message)
         for transform, probability in transforms_dict.items():
             transforms_dict[transform] = probability / probabilities.sum()
+
+
+def compose_from_history(history: List):
+    """
+    Builds a composition of transformations from a given subject history
+    :param history: subject history given as a list of tuples containing (transformation_name, transformation_parameters)
+    :return: Tuple (Compose of transforms, list of seeds to reproduce the transforms from the history)
+    """
+    trsfm_list = []
+    seed_list = []
+    for trsfm_history in history:
+        trsfm_name, trsfm_params = trsfm_history[0], (trsfm_history[1])
+        seed_list.append(trsfm_params['seed'])
+        trsfm_no_seed = {key: value for key, value in trsfm_params.items() if key != "seed"}
+        trsfm_func = getattr(torchio, trsfm_name)()
+        trsfm_func.__dict__ = trsfm_no_seed
+        trsfm_list.append(trsfm_func)
+    return Compose(trsfm_list), seed_list
