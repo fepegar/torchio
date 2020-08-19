@@ -12,26 +12,23 @@ from ..utils import nib_to_sitk, sitk_to_nib
 FLIPXY = np.diag([-1, -1, 1, 1])
 
 
-def read_image(
-        path: TypePath,
-        itk_first: bool = False,
-        ) -> Tuple[torch.Tensor, np.ndarray]:
-    if itk_first:
-        try:
-            result = _read_sitk(path)
-        except RuntimeError:  # try with NiBabel
-            result = _read_nibabel(path)
-    else:
+def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+    try:
+        result = _read_sitk(path)
+    except RuntimeError:  # try with NiBabel
         try:
             result = _read_nibabel(path)
-        except nib.loadsave.ImageFileError:  # try with ITK
-            result = _read_sitk(path)
+        except nib.loadsave.ImageFileError:
+            raise RuntimeError(f'File "{path}" not understood')
     return result
 
 
 def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     img = nib.load(str(path), mmap=False)
     data = img.get_fdata(dtype=np.float32)
+    if data.ndim == 5:
+        data = data[..., 0, :]
+        data = data.transpose(3, 0, 1, 2)
     tensor = torch.from_numpy(data)
     affine = img.affine
     return tensor, affine
@@ -70,37 +67,33 @@ def write_image(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
-        itk_first: bool = False,
         squeeze: bool = True,
-        channels_last: bool = True,
         ) -> None:
     args = tensor, affine, path
-    if itk_first:
-        try:
-            _write_sitk(*args, squeeze=squeeze)
-        except RuntimeError:  # try with NiBabel
-            _write_nibabel(*args, squeeze=squeeze, channels_last=channels_last)
-    else:
-        try:
-            _write_nibabel(*args, squeeze=squeeze, channels_last=channels_last)
-        except nib.loadsave.ImageFileError:  # try with ITK
-            _write_sitk(*args, squeeze=squeeze)
+    try:
+        _write_sitk(*args, squeeze=squeeze)
+    except RuntimeError:  # try with NiBabel
+        _write_nibabel(*args, squeeze=squeeze)
 
 
 def _write_nibabel(
         tensor: TypeData,
         affine: TypeData,
         path: TypePath,
-        squeeze: bool = True,
-        channels_last: bool = True,
+        squeeze: bool = False,
         ) -> None:
     """
     Expects a path with an extension that can be used by nibabel.save
     to write a NIfTI-1 image, such as '.nii.gz' or '.img'
     """
     assert tensor.ndim == 4
-    if channels_last:
-        tensor = tensor.permute(1, 2, 3, 0)
+    num_components = tensor.shape[0]
+
+    # NIfTI components must be at the end, in a 5D array
+    if num_components == 1:
+        tensor = tensor[0]
+    else:
+        tensor = tensor[np.newaxis].permute(2, 3, 4, 0, 1)
     tensor = tensor.squeeze() if squeeze else tensor
     suffix = Path(str(path).replace('.gz', '')).suffix
     if '.nii' in suffix:
@@ -109,6 +102,8 @@ def _write_nibabel(
         img = nib.Nifti1Pair(np.asarray(tensor), affine)
     else:
         raise nib.loadsave.ImageFileError
+    if num_components > 1:
+        img.header.set_intent('vector')
     img.header['qform_code'] = 1
     img.header['sform_code'] = 0
     nib.save(img, str(path))

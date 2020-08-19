@@ -38,9 +38,8 @@ class TestIO(TorchioTestCase):
         writer.Execute(image)
 
     def test_read_image(self):
-        # I need to find something readable by nib but not sitk
+        # I need to find something readable by nib but not sitk (MINC?)
         io.read_image(self.nii_path)
-        io.read_image(self.nii_path, itk_first=True)
 
     def test_read_dicom_file(self):
         io.read_image(self.dicom_path)
@@ -70,28 +69,6 @@ class TestIO(TorchioTestCase):
 
     def test_matrix_txt(self):
         self.write_read_matrix('.txt')
-
-    def save_load_save_load(self, dimensions):
-        path = self.dir / f'img{dimensions}d.nii'
-        shape = [4]
-        for _ in range(dimensions - 1):
-            shape.append(6)
-        shape = *shape[1:4], shape[0]  # save channels in last dim
-        nii = nib.Nifti1Image(np.random.rand(*shape), np.eye(4))
-        nii.to_filename(path)
-        read_nii_tensor, _ = io.read_image(path)
-        assert read_nii_tensor.shape == shape
-        assert read_nii_tensor.ndim == dimensions
-        image = ScalarImage(path)
-        image.save(path)
-        read_tio_tensor, _ = io.read_image(path)
-        assert tuple(read_tio_tensor.shape) == shape
-        assert read_tio_tensor.ndim == dimensions, read_tio_tensor.shape
-
-    def test_nd(self):
-        self.save_load_save_load(2)
-        self.save_load_save_load(3)
-        self.save_load_save_load(4)
 
 
 # This doesn't work as a method of the class

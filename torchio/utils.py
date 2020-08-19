@@ -221,8 +221,10 @@ def sitk_to_nib(
     if num_components == 1:
         data = data[np.newaxis]  # add channels dimension
     input_spatial_dims = image.GetDimension()
+    if input_spatial_dims == 2:
+        data = data[..., np.newaxis]
     if not keepdim:
-        data = ensure_4d(data, False, num_spatial_dims=input_spatial_dims)
+        data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
     assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
     spacing = np.array(image.GetSpacing())
@@ -236,6 +238,8 @@ def sitk_to_nib(
         rotation[:2, :2] = rotation_2d
         spacing = *spacing, 1
         origin = *origin, 0
+    else:
+        raise RuntimeError(f'Direction not understood: {direction}')
     rotation = np.dot(FLIP_XY, rotation)
     rotation_zoom = rotation * spacing
     translation = np.dot(FLIP_XY, origin)
@@ -245,36 +249,18 @@ def sitk_to_nib(
     return data, affine
 
 
-def ensure_4d(
-        tensor: TypeData,
-        channels_last: bool,
-        num_spatial_dims=None,
-        ) -> TypeData:
-    """[summary] # TODO
-
-    Args:
-        tensor: [description].
-        channels_last: If ``True``, last dimension of the input represents
-            channels.
-        num_spatial_dims: [description].
-
-    Raises:
-        ValueError: [description]
-    """
+def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
     # I wish named tensors were properly supported in PyTorch
     num_dimensions = tensor.ndim
-    if num_dimensions == 5:  # hope (X, X, X, 1, X)
+    if num_dimensions == 4:
+        pass
+    elif num_dimensions == 5:  # hope (X, X, X, 1, X)
         if tensor.shape[-1] == 1:
             tensor = tensor[..., 0, :]
-    if num_dimensions == 4:  # assume 3D multichannel
-        if channels_last:  # (W, H, D, C)
-            tensor = tensor.permute(3, 0, 1, 2)  # (C, W, H, C)
     elif num_dimensions == 2:  # assume 2D monochannel (W, H)
         tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, W, H, 1)
     elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
         if num_spatial_dims == 2:
-            if channels_last:  # (W, H, C)
-                tensor = tensor.permute(2, 0, 1)  # (C, W, H)
             tensor = tensor[..., np.newaxis]  # (C, W, H, 1)
         elif num_spatial_dims == 3:  # (W, H, D)
             tensor = tensor[np.newaxis]  # (1, W, H, D)

@@ -45,8 +45,8 @@ class Image(dict):
             :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing
             DICOM files. If :py:attr:`tensor` is given, the data in
             :py:attr:`path` will not be read. The data is expected to be 2D or
-            3D, and may have multiple channels (see :attr:`num_spatial_dims` and
-            :attr:`channels_last`). If a sequence of paths is given, data
+            3D, and may have multiple channels (see :attr:`num_spatial_dims`).
+            If a sequence of paths is given, data
             will be concatenated on the channel dimension so spatial
             dimensions must match. If the read tensor is not 4D,
             TorchIO will try to guess the dimensions meanings.
@@ -79,9 +79,6 @@ class Image(dict):
             will be interpreted as a multichannel 2D image. If ``3`` and the
             input has 3 dimensions, it will be interpreted as a
             single-channel 3D volume.
-        channels_last: If ``True``, the last dimension of the input will be
-            interpreted as the channels. Defaults to ``True`` if :attr:`path` is
-            given and ``False`` otherwise.
         **kwargs: Items that will be added to the image dictionary, e.g.
             acquisition parameters.
 
@@ -115,7 +112,6 @@ class Image(dict):
             affine: Optional[TypeData] = None,
             check_nans: bool = True,
             num_spatial_dims: Optional[int] = None,
-            channels_last: Optional[bool] = None,
             **kwargs: Dict[str, Any],
             ):
         self.check_nans = check_nans
@@ -133,13 +129,6 @@ class Image(dict):
             raise ValueError('A value for path or tensor must be given')
         self._loaded = False
 
-        if tensor is not None and channels_last is not None:
-            message = (
-                'channels_last cannot be specified is tensor is not None.'
-                ' The tensor shape must be (C, W, H, D)'
-            )
-            raise ValueError(message)
-
         tensor = self.parse_tensor(tensor)
         affine = self.parse_affine(affine)
         if tensor is not None:
@@ -154,11 +143,6 @@ class Image(dict):
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
 
-        # Number of channels are typically stored in the last dimensions in disk
-        # But if a tensor is given, the channels should be in the first dim
-        if channels_last is None:
-            channels_last = self.guess_channels_last(self.path)
-        self.channels_last = channels_last
         self[PATH] = '' if self.path is None else str(self.path)
         self[STEM] = '' if self.path is None else get_stem(self.path)
         self[TYPE] = type
@@ -368,9 +352,8 @@ class Image(dict):
             self,
             tensor: torch.Tensor,
             num_spatial_dims: int,
-            channels_last: Optional[bool],
             ) -> torch.Tensor:
-        return ensure_4d(tensor, channels_last, num_spatial_dims)
+        return ensure_4d(tensor, num_spatial_dims)
 
     @staticmethod
     def parse_affine(affine: np.ndarray) -> np.ndarray:
@@ -395,11 +378,7 @@ class Image(dict):
 
         paths = self.path if isinstance(self.path, list) else [self.path]
         tensor, affine = read_image(paths[0])
-        tensor = self.parse_tensor_shape(
-            tensor,
-            self.num_spatial_dims,
-            self.channels_last,
-        )
+        tensor = self.parse_tensor_shape(tensor, self.num_spatial_dims)
 
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{paths[0]}"')
@@ -410,7 +389,6 @@ class Image(dict):
             new_tensor = self.parse_tensor_shape(
                 new_tensor,
                 self.num_spatial_dims,
-                self.channels_last,
             )
 
             if self.check_nans and torch.isnan(tensor).any():
@@ -441,22 +419,19 @@ class Image(dict):
         self[AFFINE] = affine
         self._loaded = True
 
-    def save(self, path, squeeze=True, channels_last=True):
+    def save(self, path, squeeze=True):
         """Save image to disk.
 
         Args:
             path: String or instance of :py:class:`pathlib.Path`.
             squeeze: If ``True``, the singleton dimensions will be removed
                 before saving.
-            channels_last: If ``True``, the channels will be saved in the last
-                dimension.
         """
         write_image(
             self[DATA],
             self[AFFINE],
             path,
             squeeze=squeeze,
-            channels_last=channels_last,
         )
 
     def is_2d(self) -> bool:
@@ -488,14 +463,6 @@ class Image(dict):
 
     def set_check_nans(self, check_nans: bool):
         self.check_nans = check_nans
-
-    def guess_channels_last(self, path: Union[Path, List[Path]]) -> bool:
-        # https://github.com/fepegar/torchio/issues/273
-        if path is None:
-            return
-        if isinstance(path, list):  # assume all images are similar
-            path = path[0]
-        return not path.is_dir()
 
     def crop(self, index_ini: TypeTripletInt, index_fin: TypeTripletInt):
         new_origin = nib.affines.apply_affine(self.affine, index_ini)
