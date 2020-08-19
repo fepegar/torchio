@@ -44,18 +44,10 @@ class Image(dict):
         path: Path to a file or sequence of paths to files that can be read by
             :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing
             DICOM files. If :py:attr:`tensor` is given, the data in
-            :py:attr:`path` will not be read. The data is expected to be 2D or
-            3D, and may have multiple channels (see :attr:`num_spatial_dims`).
+            :py:attr:`path` will not be read.
             If a sequence of paths is given, data
             will be concatenated on the channel dimension so spatial
-            dimensions must match. If the read tensor is not 4D,
-            TorchIO will try to guess the dimensions meanings.
-            If 2D, the shape will be interpreted as
-            :math:`(W, H)`. If 3D, the number of spatial dimensions should be
-            determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
-            is not given and the shape is 3 along the first or last dimensions,
-            it will be interpreted as a multichannel 2D image. Otherwise, it
-            be interpreted as a 3D image with a single channel.
+            dimensions must match.
         type: Type of image, such as :attr:`torchio.INTENSITY` or
             :attr:`torchio.LABEL`. This will be used by the transforms to
             decide whether to apply an operation, or which interpolation to use
@@ -75,10 +67,6 @@ class Image(dict):
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image. If ``False``, images will not be checked for the
             presence of NaNs.
-        num_spatial_dims: If ``2`` and the input tensor has 3 dimensions, it
-            will be interpreted as a multichannel 2D image. If ``3`` and the
-            input has 3 dimensions, it will be interpreted as a
-            single-channel 3D volume.
         **kwargs: Items that will be added to the image dictionary, e.g.
             acquisition parameters.
 
@@ -110,12 +98,12 @@ class Image(dict):
             type: str = None,
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
-            check_nans: bool = True,
-            num_spatial_dims: Optional[int] = None,
+            check_nans: bool = False,  # removed by ITK by default
+            channels_last: bool = False,
             **kwargs: Dict[str, Any],
             ):
         self.check_nans = check_nans
-        self.num_spatial_dims = num_spatial_dims
+        self.channels_last = channels_last
 
         if type is None:
             warnings.warn(
@@ -348,12 +336,8 @@ class Image(dict):
             warnings.warn(f'NaNs found in tensor')
         return tensor
 
-    def parse_tensor_shape(
-            self,
-            tensor: torch.Tensor,
-            num_spatial_dims: int,
-            ) -> torch.Tensor:
-        return ensure_4d(tensor, num_spatial_dims)
+    def parse_tensor_shape(self, tensor: torch.Tensor) -> torch.Tensor:
+        return ensure_4d(tensor)
 
     @staticmethod
     def parse_affine(affine: np.ndarray) -> np.ndarray:
@@ -375,25 +359,11 @@ class Image(dict):
         """
         if self._loaded:
             return
-
         paths = self.path if isinstance(self.path, list) else [self.path]
-        tensor, affine = read_image(paths[0])
-        tensor = self.parse_tensor_shape(tensor, self.num_spatial_dims)
-
-        if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in file "{paths[0]}"')
-
+        tensor, affine = self.read_and_check(paths[0])
         tensors = [tensor]
         for path in paths[1:]:
-            new_tensor, new_affine = read_image(path)
-            new_tensor = self.parse_tensor_shape(
-                new_tensor,
-                self.num_spatial_dims,
-            )
-
-            if self.check_nans and torch.isnan(tensor).any():
-                warnings.warn(f'NaNs found in file "{path}"')
-
+            new_tensor, new_affine = self.read_and_check(path)
             if not np.array_equal(affine, new_affine):
                 message = (
                     'Files have different affine matrices.'
@@ -403,23 +373,28 @@ class Image(dict):
                     f'\n{new_affine}'
                 )
                 warnings.warn(message, RuntimeWarning)
-
             if not tensor.shape[1:] == new_tensor.shape[1:]:
                 message = (
                     f'Files shape do not match, found {tensor.shape}'
                     f'and {new_tensor.shape}'
                 )
                 RuntimeError(message)
-
             tensors.append(new_tensor)
-
         tensor = torch.cat(tensors)
-
         self[DATA] = tensor
         self[AFFINE] = affine
         self._loaded = True
 
-    def save(self, path, squeeze=True):
+    def read_and_check(self, path):
+        tensor, affine = read_image(path)
+        tensor = self.parse_tensor_shape(tensor)
+        if self.channels_last:
+            tensor = tensor.permute(3, 0, 1, 2)
+        if self.check_nans and torch.isnan(tensor).any():
+            warnings.warn(f'NaNs found in file "{path}"')
+        return tensor, affine
+
+    def save(self, path: TypePath, squeeze: bool = True):
         """Save image to disk.
 
         Args:
