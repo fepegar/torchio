@@ -50,8 +50,8 @@ class Transform(ABC):
         Args:
             data: Instance of :py:class:`~torchio.Subject`, 4D
                 :py:class:`torch.Tensor` or 4D NumPy array with dimensions
-                :math:`(C, H, W, D)`, where :math:`C` is the number of channels
-                and :math:`H, W, D` are the spatial dimensions. If the input is
+                :math:`(C, W, H, D)`, where :math:`C` is the number of channels
+                and :math:`W, H, D` are the spatial dimensions. If the input is
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """

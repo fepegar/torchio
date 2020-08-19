@@ -2,7 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 import torch
+import pytest
 import numpy as np
+from numpy.testing import assert_array_equal
 import nibabel as nib
 import SimpleITK as sitk
 from ..utils import TorchioTestCase
@@ -90,3 +92,33 @@ class TestIO(TorchioTestCase):
         self.save_load_save_load(2)
         self.save_load_save_load(3)
         self.save_load_save_load(4)
+
+
+# This doesn't work as a method of the class
+libs = 'sitk', 'nibabel'
+parameters = []
+for save_lib in libs:
+    for load_lib in libs:
+        for dims in 2, 3:
+            parameters.append((save_lib, load_lib, dims))
+@pytest.mark.parametrize(('save_lib', 'load_lib', 'dims'), parameters)
+def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
+    shape = [1, 4, 5, 6]
+    if dims == 2:
+        shape[-1] = 1
+    elif dims == 4:
+        shape[0] = 2
+    tensor = torch.randn(*shape)
+    affine = np.eye(4)
+    tempdir = Path(tempfile.gettempdir()) / '.torchio_tests'
+    tempdir.mkdir(exist_ok=True)
+    path = tempdir / 'test_io.nii'
+    save_function = getattr(io, f'_write_{save_lib}')
+    load_function = getattr(io, f'_read_{save_lib}')
+    save_function(tensor, affine, path)
+    loaded_tensor, loaded_affine = load_function(path)
+    assert_array_equal(
+        tensor.squeeze(), loaded_tensor.squeeze(),
+        f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}'
+    )
+    assert_array_equal(affine, loaded_affine)
