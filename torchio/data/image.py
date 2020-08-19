@@ -51,7 +51,7 @@ class Image(dict):
             dimensions must match. If the read tensor is not 4D,
             TorchIO will try to guess the dimensions meanings.
             If 2D, the shape will be interpreted as
-            :math:`(H, W)`. If 3D, the number of spatial dimensions should be
+            :math:`(W, H)`. If 3D, the number of spatial dimensions should be
             determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`
             is not given and the shape is 3 along the first or last dimensions,
             it will be interpreted as a multichannel 2D image. Otherwise, it
@@ -68,7 +68,7 @@ class Image(dict):
             :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
         tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` or NumPy array with dimensions
-            :math:`(C, H, W, D)`.
+            :math:`(C, W, H, D)`.
         affine: If :attr:`path` is not given, :attr:`affine` must be a
             :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
             identity matrix.
@@ -136,7 +136,7 @@ class Image(dict):
         if tensor is not None and channels_last is not None:
             message = (
                 'channels_last cannot be specified is tensor is not None.'
-                ' The tensor shape must be (C, H, W, D)'
+                ' The tensor shape must be (C, W, H, D)'
             )
             raise ValueError(message)
 
@@ -265,15 +265,19 @@ class Image(dict):
             ``'Superior'``, ``'Inferior'``, ``'Anterior'`` and ``'Posterior'``
             for ``'Dorsal'``, ``'Ventral'``, ``'Rostral'`` and ``'Caudal'``,
             respectively.
+
+        .. note:: If your images are 2D, you can use ``'Top'``, ``'Bottom'``,
+            ``'Left'`` and ``'Right'``.
         """
+        # Top and bottom are used for the vertical 2D axis as the use of
+        # Height vs Horizontal might be ambiguous
+
         if not isinstance(axis, str):
             raise ValueError('Axis must be a string')
         axis = axis[0].upper()
 
-        # Generally, TorchIO tensors are (C, H, W, D)
-        if axis == 'H':
-            return 1
-        elif axis == 'W':
+        # Generally, TorchIO tensors are (C, W, H, D)
+        if axis in 'TB':  # Top, Bottom
             return 2
         else:
             try:
@@ -383,7 +387,7 @@ class Image(dict):
         r"""Load the image from disk.
 
         Returns:
-            Tuple containing a 4D tensor of size :math:`(C, H, W, D)` and a 2D
+            Tuple containing a 4D tensor of size :math:`(C, W, H, D)` and a 2D
             :math:`4 \times 4` affine matrix to convert voxel indices to world
             coordinates.
         """

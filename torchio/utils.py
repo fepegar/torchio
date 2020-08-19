@@ -181,10 +181,10 @@ def nib_to_sitk(
     if data.ndim != 4:
         raise ValueError(f'Input must be 4D, but has shape {tuple(data.shape)}')
     # Possibilities
-    # (1, h, w, 1)
-    # (c, h, w, 1)
-    # (1, h, w, 1)
-    # (c, h, w, d)
+    # (1, w, h, 1)
+    # (c, w, h, 1)
+    # (1, w, h, 1)
+    # (c, w, h, d)
     array = np.asarray(data)
     affine = np.asarray(affine).astype(np.float64)
 
@@ -200,7 +200,7 @@ def nib_to_sitk(
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
     origin = np.dot(FLIP_XY, affine[:3, 3])
     direction = np.dot(FLIP_XY, rotation)
-    if is_2d:  # ignore first dimension if 2D (1, H, W, 1)
+    if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
         direction = direction[:2, :2]
     image.SetOrigin(origin)  # should I add a 4th value if force_4d?
     image.SetSpacing(spacing)
@@ -230,7 +230,7 @@ def sitk_to_nib(
     origin = image.GetOrigin()
     if len(direction) == 9:
         rotation = direction.reshape(3, 3)
-    elif len(direction) == 4:  # ignore first dimension if 2D (1, H, W, 1)
+    elif len(direction) == 4:  # ignore first dimension if 2D (1, W, H, 1)
         rotation_2d = direction.reshape(2, 2)
         rotation = np.eye(3)
         rotation[:2, :2] = rotation_2d
@@ -267,26 +267,26 @@ def ensure_4d(
         if tensor.shape[-1] == 1:
             tensor = tensor[..., 0, :]
     if num_dimensions == 4:  # assume 3D multichannel
-        if channels_last:  # (H, W, D, C)
-            tensor = tensor.permute(3, 0, 1, 2)  # (C, H, W, C)
-    elif num_dimensions == 2:  # assume 2D monochannel (H, W)
-        tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, H, W, 1)
+        if channels_last:  # (W, H, D, C)
+            tensor = tensor.permute(3, 0, 1, 2)  # (C, W, H, C)
+    elif num_dimensions == 2:  # assume 2D monochannel (W, H)
+        tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, W, H, 1)
     elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
         if num_spatial_dims == 2:
-            if channels_last:  # (H, W, C)
-                tensor = tensor.permute(2, 0, 1)  # (C, H, W)
-            tensor = tensor[..., np.newaxis]  # (C, H, W, 1)
-        elif num_spatial_dims == 3:  # (H, W, D)
-            tensor = tensor[np.newaxis]  # (1, H, W, D)
+            if channels_last:  # (W, H, C)
+                tensor = tensor.permute(2, 0, 1)  # (C, W, H)
+            tensor = tensor[..., np.newaxis]  # (C, W, H, 1)
+        elif num_spatial_dims == 3:  # (W, H, D)
+            tensor = tensor[np.newaxis]  # (1, W, H, D)
         else:  # try to guess
             shape = tensor.shape
             maybe_rgb = 3 in (shape[0], shape[-1])
             if maybe_rgb:
-                if shape[-1] == 3:  # (H, W, 3)
-                    tensor = tensor.permute(2, 0, 1)  # (3, H, W)
-                tensor = tensor[..., np.newaxis]  # (3, H, W, 1)
-            else:  # (H, W, D)
-                tensor = tensor[np.newaxis]  # (1, H, W, D)
+                if shape[-1] == 3:  # (W, H, 3)
+                    tensor = tensor.permute(2, 0, 1)  # (3, W, H)
+                tensor = tensor[..., np.newaxis]  # (3, W, H, 1)
+            else:  # (W, H, D)
+                tensor = tensor[np.newaxis]  # (1, W, H, D)
     else:
         message = (
             f'{num_dimensions}D images not supported yet. Please create an'

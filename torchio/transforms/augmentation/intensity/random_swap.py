@@ -15,9 +15,9 @@ class RandomSwap(RandomTransform, IntensityTransform):
     <https://www.sciencedirect.com/science/article/pii/S1361841518304699>`_.
 
     Args:
-        patch_size: Tuple of integers :math:`(h, w, d)` to swap patches
+        patch_size: Tuple of integers :math:`(w, h, d)` to swap patches
             of size :math:`h \times w \times d`.
-            If a single number :math:`n` is provided, :math:`h = w = d = n`.
+            If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
