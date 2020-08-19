@@ -38,8 +38,13 @@ class TestIO(TorchioTestCase):
         writer.Execute(image)
 
     def test_read_image(self):
-        # I need to find something readable by nib but not sitk (MINC?)
+        # I need to find something readable by nib but not sitk
         io.read_image(self.nii_path)
+
+    def test_save_rgb(self):
+        im = ScalarImage(tensor=torch.rand(1, 4, 5, 1))
+        with self.assertWarns(UserWarning):
+            im.save(self.dir / 'test.jpg')
 
     def test_read_dicom_file(self):
         io.read_image(self.dicom_path)
