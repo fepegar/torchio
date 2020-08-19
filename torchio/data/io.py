@@ -111,7 +111,7 @@ def _write_nibabel(
         raise nib.loadsave.ImageFileError
     img.header['qform_code'] = 1
     img.header['sform_code'] = 0
-    img.to_filename(str(path))
+    nib.save(img, str(path))
 
 
 def _write_sitk(
