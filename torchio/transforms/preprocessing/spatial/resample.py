@@ -191,7 +191,9 @@ class Resample(SpatialTransform):
             resampler.SetReferenceImage(reference_image_sitk)
             resampled = resampler.Execute(floating_itk)
 
-            image[DATA], image[AFFINE] = sitk_to_nib(resampled)
+            array, affine = sitk_to_nib(resampled)
+            image[DATA] = torch.from_numpy(array)
+            image[AFFINE] = affine
         return sample
 
     @staticmethod
