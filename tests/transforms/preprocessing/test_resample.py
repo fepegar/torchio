@@ -1,6 +1,7 @@
+import torch
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
-from torchio import DATA, AFFINE
+from torchio import DATA, AFFINE, ScalarImage
 from torchio.transforms import Resample
 from torchio.utils import nib_to_sitk
 from ...utils import TorchioTestCase
@@ -71,6 +72,7 @@ class TestResample(TorchioTestCase):
             transform(self.sample)
 
     def test_2d(self):
-        sample = self.make_2d(self.sample)
-        transform = Resample(2)
-        transform(sample)
+        image = ScalarImage(tensor=torch.rand(1, 2, 3, 1))
+        transform = Resample(0.5)
+        shape = transform(image).shape
+        self.assertEqual(shape, (1, 4, 6, 1))

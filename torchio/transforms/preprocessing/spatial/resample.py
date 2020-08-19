@@ -206,6 +206,7 @@ class Resample(SpatialTransform):
         old_size = np.array(image.GetSize())
         new_size = old_size * old_spacing / new_spacing
         new_size = np.ceil(new_size).astype(np.uint16)
+        new_size[old_size == 1] = 1  # keep singleton dimensions
         new_origin_index = 0.5 * (new_spacing / old_spacing - 1)
         new_origin_lps = image.TransformContinuousIndexToPhysicalPoint(
             new_origin_index)

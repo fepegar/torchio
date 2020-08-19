@@ -17,14 +17,14 @@ class TestTransforms(TorchioTestCase):
         disp = 1 if is_3d else (1, 1, 0.01)
         elastic = torchio.RandomElasticDeformation(max_displacement=disp)
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
-        flip_axes = (0, 1, 2) if is_3d else (0, 1)
+        flip_axes = axes_downsample = (0, 1, 2) if is_3d else (0, 1)
         swap_patch = (2, 3, 4) if is_3d else (3, 4, 1)
         pad_args = (1, 2, 3, 0, 5, 6) if is_3d else (0, 0, 3, 0, 5, 6)
         crop_args = (3, 2, 8, 0, 1, 4) if is_3d else (0, 0, 8, 0, 1, 4)
         transforms = [
             torchio.CropOrPad(cp_args),
             torchio.ToCanonical(),
-            torchio.RandomDownsample(),
+            torchio.RandomDownsample(axes=axes_downsample),
             torchio.Resample((1, 1.1, 1.25)),
             torchio.RandomFlip(axes=flip_axes, flip_probability=1),
             torchio.RandomMotion(),
