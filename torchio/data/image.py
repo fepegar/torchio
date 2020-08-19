@@ -232,12 +232,12 @@ class Image(dict):
     @property
     def height(self) -> int:
         self.check_is_2d()
-        return self.spatial_shape[0]
+        return self.spatial_shape[1]
 
     @property
     def width(self) -> int:
         self.check_is_2d()
-        return self.spatial_shape[1]
+        return self.spatial_shape[0]
 
     @property
     def orientation(self):
@@ -278,7 +278,7 @@ class Image(dict):
 
         # Generally, TorchIO tensors are (C, W, H, D)
         if axis in 'TB':  # Top, Bottom
-            return 2
+            return -2
         else:
             try:
                 index = self.orientation.index(axis)
@@ -286,7 +286,7 @@ class Image(dict):
                 index = self.orientation.index(self.flip_axis(axis))
             # Return negative indices so that it does not matter whether we
             # refer to spatial dimensions or not
-            index = -4 + index
+            index = -3 + index
             return index
 
     # flake8: noqa: E701
@@ -299,9 +299,8 @@ class Image(dict):
         elif axis == 'I': return 'S'
         elif axis == 'S': return 'I'
         else:
-            message = (
-                f'Axis not understood. Please use a value in {tuple("LRAPIS")}'
-            )
+            values = ', '.join('LRPAISTB')
+            message = f'Axis not understood. Please use one of: {values}'
             raise ValueError(message)
 
     def get_spacing_string(self):
