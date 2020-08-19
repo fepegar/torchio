@@ -14,4 +14,4 @@ class UniformSampler(WeightedSampler):
         super().__init__(patch_size)
 
     def get_probability_map(self, sample: Subject) -> torch.Tensor:
-        return torch.ones(sample.shape)
+        return torch.ones(1, *sample.spatial_shape)

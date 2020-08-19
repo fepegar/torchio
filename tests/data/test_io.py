@@ -101,6 +101,8 @@ for save_lib in libs:
     for load_lib in libs:
         for dims in 2, 3:
             parameters.append((save_lib, load_lib, dims))
+
+
 @pytest.mark.parametrize(('save_lib', 'load_lib', 'dims'), parameters)
 def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
     shape = [1, 4, 5, 6]

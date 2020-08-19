@@ -32,4 +32,4 @@ class TestWeightedSampler(TorchioTestCase):
         )
         patch_size = 2
         sampler = torchio.data.WeightedSampler(patch_size, 'im1')
-        patch = next(sampler(sample))
+        next(sampler(sample))

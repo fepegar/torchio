@@ -24,3 +24,13 @@ class TestLabelSampler(TorchioTestCase):
         probabilities = sampler.get_probability_map(sample)
         fixture = torch.Tensor((0, 0, 2 / 12, 2 / 12, 3 / 12, 2 / 12, 0))
         assert torch.all(probabilities.squeeze().eq(fixture))
+
+    def test_incosistent_shape(self):
+        # https://github.com/fepegar/torchio/issues/234#issuecomment-675029767
+        sample = torchio.Subject(
+            im1=torchio.ScalarImage(tensor=torch.rand(2, 4, 5, 6)),
+            im2=torchio.LabelMap(tensor=torch.rand(1, 4, 5, 6)),
+        )
+        patch_size = 2
+        sampler = LabelSampler(patch_size, 'im2')
+        next(sampler(sample))

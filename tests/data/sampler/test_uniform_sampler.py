@@ -23,3 +23,13 @@ class TestUniformSampler(TorchioTestCase):
         fixtures[2:-2, 2:-2, 2:-2] = probabilities[2, 2, 2]
         self.assertAlmostEqual(probabilities.sum(), 1)
         assert np.equal(probabilities, fixtures).all()
+
+    def test_incosistent_shape(self):
+        # https://github.com/fepegar/torchio/issues/234#issuecomment-675029767
+        sample = torchio.Subject(
+            im1=torchio.ScalarImage(tensor=torch.rand(1, 4, 5, 6)),
+            im2=torchio.ScalarImage(tensor=torch.rand(2, 4, 5, 6)),
+        )
+        patch_size = 2
+        sampler = UniformSampler(patch_size)
+        next(sampler(sample))
