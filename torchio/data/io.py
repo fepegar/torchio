@@ -37,16 +37,11 @@ def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     return tensor, affine
 
 
-def _read_sitk(
-        path: TypePath,
-        transpose_2d: bool = True,
-        ) -> Tuple[torch.Tensor, np.ndarray]:
+def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     if Path(path).is_dir():  # assume DICOM
         image = _read_dicom(path)
     else:
         image = sitk.ReadImage(str(path))
-    if image.GetDimension() == 2 and transpose_2d:
-        image = sitk.PermuteAxes(image, (1, 0))
     data, affine = sitk_to_nib(image, keepdim=True)
     if data.dtype != np.float32:
         data = data.astype(np.float32)
@@ -125,7 +120,6 @@ def _write_sitk(
         path: TypePath,
         squeeze: bool = True,
         use_compression: bool = True,
-        transpose_2d: bool = True,
         ) -> None:
     assert tensor.ndim == 4
     path = Path(path)
@@ -133,8 +127,6 @@ def _write_sitk(
         warnings.warn(f'Casting to uint 8 before saving to {path}')
         tensor = tensor.numpy().astype(np.uint8)
     image = nib_to_sitk(tensor, affine, squeeze=squeeze)
-    if image.GetDimension() == 2 and transpose_2d:
-        image = sitk.PermuteAxes(image, (1, 0))
     sitk.WriteImage(image, str(path), use_compression)
 
 
