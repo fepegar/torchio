@@ -6,3 +6,4 @@ from .random_motion import RandomMotion
 from .random_ghosting import RandomGhosting
 from .random_bias_field import RandomBiasField
 from .random_labels_to_image import RandomLabelsToImage
+from .random_gamma import RandomGamma
