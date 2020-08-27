@@ -26,7 +26,7 @@ from . import reference
 CITATION = """If you use TorchIO for your research, please cite the following paper:
 Pérez-García et al., TorchIO: a Python library for efficient loading,
 preprocessing, augmentation and patch-based sampling of medical images
-in deep learning. Link: https://arxiv.org/abs/2003.04696
+in deep learning. Credits instructions: https://torchio.readthedocs.io/#credits
 """
 
 # Thanks for citing torchio. Without citations, researchers will not use TorchIO
