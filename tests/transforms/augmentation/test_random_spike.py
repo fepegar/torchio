@@ -1,5 +1,6 @@
 from torchio import RandomSpike
 from ...utils import TorchioTestCase
+import numpy as np
 from numpy.testing import assert_array_equal
 
 
@@ -8,12 +9,14 @@ class TestRandomSpike(TorchioTestCase):
     def test_with_zero_intensity(self):
         transform = RandomSpike(intensity=0)
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        assert np.allclose(
+            transformed.t1.data, self.sample.t1.data, rtol=0, atol=1e-06)
 
     def test_with_zero_spike(self):
         transform = RandomSpike(num_spikes=0)
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        assert np.allclose(
+            transformed.t1.data, self.sample.t1.data, rtol=0, atol=1e-06)
 
     def test_with_spikes(self):
         transform = RandomSpike()

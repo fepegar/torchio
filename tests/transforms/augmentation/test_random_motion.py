@@ -1,5 +1,6 @@
 from torchio import RandomMotion
 from ...utils import TorchioTestCase
+import numpy as np
 from numpy.testing import assert_array_equal
 
 
@@ -16,7 +17,8 @@ class TestRandomMotion(TorchioTestCase):
             num_transforms=1
         )
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        assert np.allclose(
+            transformed.t1.data, self.sample.t1.data, rtol=0, atol=1e-06)
 
     def test_with_movement(self):
         transform = RandomMotion(
