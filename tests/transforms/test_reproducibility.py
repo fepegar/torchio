@@ -106,16 +106,13 @@ class TestReproducibility(TorchioTestCase):
         seeds = []
 
         for transform_name, params_dict in transformed.history:
-            if transform_name is "Resample": #The resample in the history comes from the DownSampling
+            if transform_name in ["Resample", "Compose"]: #The resample in the history comes from the DownSampling
                 continue
             transform_class = getattr(torchio, transform_name)
 
             if transform_name is "RandomLabelsToImage":
                 transform = transform_class(label_key="seg")
-            elif transform_name is "Compose":
-                continue
             else:
-                print("trsfm_name: {}".format(transform_name))
                 transform = transform_class()
             new_transforms.append(transform)
             seeds.append(params_dict['seed'])

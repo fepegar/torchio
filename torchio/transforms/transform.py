@@ -13,7 +13,9 @@ from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..data.dataset import SubjectsDataset
+
 from ..utils import nib_to_sitk, sitk_to_nib, gen_seed, is_jsonable
+
 from .interpolation import Interpolation
 
 
@@ -43,6 +45,8 @@ class Transform(ABC):
         self.copy = copy
         self.keys = keys
         self.default_image_name = 'default_image_name'
+        self.transform_params = {}
+
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: Union[List[int], int]=None):
         """Transform a sample and return the result.
@@ -63,6 +67,7 @@ class Transform(ABC):
             seed = seed.pop(0)
         #Store the current rng_state to reset it after the execution
         torch_rng_state = torch.random.get_rng_state()
+
         self.transform_params = {}
         self._store_params()
         torch.manual_seed(seed=seed)

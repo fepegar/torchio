@@ -247,7 +247,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
         sample.add_image(final_image, self.image_key)
         #sample.add_transform(self, random_parameters_images_dict)
-        return sample
+
 
     def check_mean_and_std_length(self, labels: Sequence):
         if self.mean is not None:
