@@ -28,10 +28,9 @@ class RandomSwap(RandomTransform, IntensityTransform):
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.patch_size = to_tuple(patch_size)
         self.num_iterations = self.parse_num_iterations(num_iterations)
 

@@ -23,15 +23,9 @@ class RandomTransform(Transform):
     def __init__(
             self,
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self._seed = seed
-
-    def __call__(self, sample: Subject):
-        self.check_seed()
-        return super().__call__(sample)
 
     def parse_degrees(
             self,
@@ -44,10 +38,6 @@ class RandomTransform(Transform):
             translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
         return self.parse_range(translation, 'translation')
-
-    def check_seed(self) -> None:
-        if self._seed is not None:
-            torch.manual_seed(self._seed)
 
     @staticmethod
     def fourier_transform(array: np.ndarray):

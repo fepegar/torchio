@@ -116,10 +116,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
         self.parse_control_points(self.num_control_points)
@@ -235,7 +234,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
                 interpolation,
             )
         random_parameters_dict = {'coarse_grid': bspline_params}
-        sample.add_transform(self, random_parameters_dict)
+        #sample.add_transform(self, random_parameters_dict)
         return sample
 
     def apply_bspline_transform(

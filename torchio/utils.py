@@ -1,5 +1,6 @@
 import ast
 import gzip
+import json
 import shutil
 import tempfile
 from pathlib import Path
@@ -320,3 +321,20 @@ def check_sequence(sequence: Sequence, name: str):
     except TypeError:
         message = f'"{name}" must be a sequence, not {type(name)}'
         raise TypeError(message)
+
+
+def gen_seed():
+    """
+    Random seed generator to avoid overflow
+    :return: a random seed as an int
+    """
+    return torch.randint(0, 2**31, (1,)).item()
+
+
+def is_jsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except (TypeError, OverflowError):
+        return False
+

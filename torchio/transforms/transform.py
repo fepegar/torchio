@@ -13,7 +13,7 @@ from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..data.dataset import SubjectsDataset
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..utils import nib_to_sitk, sitk_to_nib, gen_seed, is_jsonable
 from .interpolation import Interpolation
 
 
@@ -44,7 +44,7 @@ class Transform(ABC):
         self.keys = keys
         self.default_image_name = 'default_image_name'
 
-    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
+    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: Union[List[int], int]=None):
         """Transform a sample and return the result.
 
         Args:
@@ -55,7 +55,22 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
+        #Execution's seed
+        if not seed:
+            seed = gen_seed()
+
+        if isinstance(seed, List):
+            seed = seed.pop(0)
+        #Store the current rng_state to reset it after the execution
+        torch_rng_state = torch.random.get_rng_state()
+        self.transform_params = {}
+        self._store_params()
+        torch.manual_seed(seed=seed)
+        self.transform_params["seed"] = seed
+
         if torch.rand(1).item() > self.probability:
+            if isinstance(data, Subject):
+                data.add_transform(self, parameters_dict=self.transform_params)
             return data
 
         is_tensor = is_array = is_dict = is_image = is_sitk = is_nib = False
@@ -122,7 +137,19 @@ class Transform(ABC):
                 )
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
+
+        if isinstance(transformed, Subject):
+            transformed.add_transform(self, parameters_dict=self.transform_params)
+        torch.random.set_rng_state(torch_rng_state)
+
         return transformed
+
+    def _store_params(self):
+        self.transform_params.update(self.__dict__.copy())
+        del self.transform_params["transform_params"]
+        for key, value in self.transform_params.items():
+            if not is_jsonable(value):
+                self.transform_params[key] = value.__str__()
 
     @abstractmethod
     def apply_transform(self, sample: Subject):

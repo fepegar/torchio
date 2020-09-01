@@ -101,10 +101,9 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             default_std: TypeRangeFloat = (0.01, 0.1),
             discretize: bool = False,
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.label_key = self.parse_label_key(label_key)
         self.used_labels = self.parse_used_labels(used_labels)
         self.mean, self.std = self.parse_mean_and_std(mean, std)
@@ -247,7 +246,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
 
         sample.add_image(final_image, self.image_key)
-        sample.add_transform(self, random_parameters_images_dict)
+        #sample.add_transform(self, random_parameters_images_dict)
         return sample
 
     def check_mean_and_std_length(self, labels: Sequence):
