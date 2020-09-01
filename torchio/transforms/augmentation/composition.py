@@ -27,7 +27,6 @@ class Compose(Transform):
         self.transform = PyTorchCompose(transforms)
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seeds: List = None):
-
         if not self.transform.transforms:
             return data
 
@@ -38,9 +37,7 @@ class Compose(Transform):
 
     def apply_transform(self, sample: Subject):
         for t, s in zip(self.transform.transforms, self.seeds):
-            #print("{}\tType: {}\tShape: {}".format(t.name, type(data), data.shape))
             sample = t(sample, s)
-            #print("{}\tType: {}\tShape: {}".format(t.name, type(data), data.shape))
         return sample
 
 

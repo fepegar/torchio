@@ -70,6 +70,7 @@ class TestReproducibility(TorchioTestCase):
         transformed1 = trsfm(subject1)
         history1 = transformed1.history
         compose_hist, seeds_hist = compose_from_history(history=history1)
+        print("Compose hist: {}\nSeeds_hist: {}".format(history1, seeds_hist))
         transformed2 = compose_hist(subject2, seeds=seeds_hist)
         data1, data2 = transformed1["img"][DATA], transformed2["img"][DATA]
         self.assertTensorEqual(data1, data2)

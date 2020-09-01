@@ -47,7 +47,6 @@ class Transform(ABC):
         self.default_image_name = 'default_image_name'
         self.transform_params = {}
 
-
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: Union[List[int], int]=None):
         """Transform a sample and return the result.
 
@@ -63,18 +62,17 @@ class Transform(ABC):
         if not seed:
             seed = gen_seed()
 
-        if isinstance(seed, List):
-            seed = seed.pop(0)
         #Store the current rng_state to reset it after the execution
         torch_rng_state = torch.random.get_rng_state()
+        if isinstance(seed, int):
+            torch.manual_seed(seed=seed)
 
         self.transform_params = {}
         self._store_params()
-        torch.manual_seed(seed=seed)
         self.transform_params["seed"] = seed
 
         if torch.rand(1).item() > self.probability:
-            if isinstance(data, Subject):
+            if isinstance(data, Subject) and isinstance(seed, int): #if not a compose
                 data.add_transform(self, parameters_dict=self.transform_params)
             return data
 
@@ -143,7 +141,7 @@ class Transform(ABC):
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
 
-        if isinstance(transformed, Subject):
+        if isinstance(transformed, Subject) and isinstance(seed, int): #if not a compose
             transformed.add_transform(self, parameters_dict=self.transform_params)
         torch.random.set_rng_state(torch_rng_state)
 
