@@ -30,5 +30,5 @@ class UniformSampler(RandomSampler):
             raise RuntimeError(message)
 
         valid_range = sample.spatial_shape - self.patch_size
-        corners = np.random.randint(valid_range + 1)
+        corners = np.asarray([torch.randint(x+1,(1,)).item() for x in valid_range])
         yield self.extract_patch(sample, corners)
