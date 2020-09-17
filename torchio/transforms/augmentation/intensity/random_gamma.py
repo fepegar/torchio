@@ -6,11 +6,11 @@ from .. import RandomTransform
 
 
 class RandomGamma(RandomTransform):
-    r"""Change contrast of an image by setting its values to the power
+    r"""Change contrast of an image by raising its values to the power
     :math:`\gamma`.
 
     Args:
-        log_gamma_range: Tuple :math:`(a, b)` to compute the factor
+        log_gamma: Tuple :math:`(a, b)` to compute the factor
             :math:`\gamma` used to set the intensity to the power :math:`gamma`,
             where :math:`\log(\gamma) \sim \mathcal{U}(a, b)`.
             If a single value :math:`d` is provided, then
@@ -19,6 +19,10 @@ class RandomGamma(RandomTransform):
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
         keys: See :py:class:`~torchio.transforms.Transform`.
 
+    .. note:: It is recommended to rescale intensity values between 0 and 1
+        before applying :py:class:`~torchio.transforms.augmentation.RandomGamma`
+        to avoid infinite intensity values when gamma is high.
+
     Example:
         >>> import torchio
         >>> from torchio import RandomGamma, RescaleIntensity, Compose
@@ -26,19 +30,19 @@ class RandomGamma(RandomTransform):
         >>> sample = FPG()
         >>> gamma_transform = RandomGamma(log_gamma_range=(-0.3, 0.3))
         >>> # It's better to rescale data to [0, 1] to avoid exploding values
-        >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))
+        >>> rescale_transform = RescaleIntensity(out_min_max=(0, 1), percentiles=(1, 99))
         >>> transform = Compose([rescale_transform, gamma_transform])
         >>> transformed = transform(sample)
     """
     def __init__(
             self,
-            log_gamma_range: TypeRangeFloat = (-0.3, 0.3),
+            log_gamma: TypeRangeFloat = (-0.3, 0.3),
             p: float = 1,
             seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, seed=seed, keys=keys)
-        self.log_gamma_range = self.parse_range(log_gamma_range, 'log_gamma')
+        self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}

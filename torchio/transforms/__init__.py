@@ -19,11 +19,11 @@ from .augmentation.intensity import RandomSwap
 from .augmentation.intensity import RandomBlur
 from .augmentation.intensity import RandomNoise
 from .augmentation.intensity import RandomSpike
+from .augmentation.intensity import RandomGamma
 from .augmentation.intensity import RandomMotion
 from .augmentation.intensity import RandomGhosting
 from .augmentation.intensity import RandomBiasField
 from .augmentation.intensity import RandomLabelsToImage
-from .augmentation.intensity import RandomGamma
 
 # Preprocessing
 from .preprocessing import Pad
