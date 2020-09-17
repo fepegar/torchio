@@ -29,7 +29,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             making the objects inside look twice as small while preserving
             the physical size and position of the image.
             If only one value :math:`d` is provided,
-            :math:`\s_i \sim \mathcal{U}(0, d)`.
+            :math:`s_i \sim \mathcal{U}(0, d)`.
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
             The rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
