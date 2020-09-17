@@ -54,7 +54,7 @@ class WeightedSampler(RandomSampler):
     def __init__(
             self,
             patch_size: TypePatchSize,
-            probability_map: Optional[str] = None,
+            probability_map: str,
             ):
         super().__init__(patch_size)
         self.probability_map_name = probability_map
