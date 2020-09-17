@@ -309,7 +309,7 @@ class Image(dict):
             raise RuntimeError(message)
 
         if not (path.is_file() or path.is_dir()):   # might be a dir with DICOM
-            raise FileNotFoundError(f'File not found: {path}')
+            raise FileNotFoundError(f'File not found: "{path}"')
         return path
 
     def _parse_path(

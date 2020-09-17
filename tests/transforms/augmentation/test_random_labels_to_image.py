@@ -2,7 +2,6 @@ import numpy as np
 from torchio.transforms import RandomLabelsToImage
 from torchio import DATA
 from ...utils import TorchioTestCase
-from numpy.testing import assert_array_equal
 
 
 class TestRandomLabelsToImage(TorchioTestCase):
@@ -24,11 +23,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             std=[0, 0]
         )
         transformed = transform(self.sample)
-        assert_array_equal(
+        self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 0.5,
             self.sample['label'][DATA] == 0
         )
-        assert_array_equal(
+        self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 2,
             self.sample['label'][DATA] == 1
         )
@@ -44,11 +43,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             discretize=True
         )
         transformed = transform(self.sample)
-        assert_array_equal(
+        self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 0.5,
             self.sample['label'][DATA] == 0
         )
-        assert_array_equal(
+        self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 2,
             self.sample['label'][DATA] == 1
         )
@@ -63,7 +62,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
             std=[0, 0]
         )
         transformed = transform(sample)
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             transformed['image_from_labels'][DATA][0],
             sample['label'][DATA][0] * 0.5 + sample['label'][DATA][1] * 1
         )
@@ -84,7 +83,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
             discretize=True
         )
         transformed = transform(sample)
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             transformed['image_from_labels'][DATA],
             (sample['label'][DATA] > 0) * 0.5
         )
@@ -100,7 +99,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         t1_indices = self.sample['label'][DATA] == 0
         transformed = transform(self.sample)
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             transformed['t1'][DATA][t1_indices],
             self.sample['t1'][DATA][t1_indices]
         )
@@ -117,7 +116,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         t1_indices = self.sample['label'][DATA] < 0.5
         transformed = transform(self.sample)
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             transformed['t1'][DATA][t1_indices],
             self.sample['t1'][DATA][t1_indices]
         )
@@ -135,7 +134,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         t1_indices = sample['label'][DATA].argmax(dim=0) == 0
         transformed = transform(sample)
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             transformed['t1'][DATA][0][t1_indices],
             sample['t1'][DATA][0][t1_indices]
         )
@@ -150,7 +149,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         original_t1 = self.sample.t1.data.clone()
         transformed = transform(self.sample)
-        assert np.not_equal(original_t1, transformed.t1.data).all()
+        self.assertTensorNotEqual(original_t1, transformed.t1.data)
 
     def test_missing_label_key(self):
         """The transform raises an error if no label_key is given."""

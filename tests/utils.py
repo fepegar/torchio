@@ -8,9 +8,10 @@ from pathlib import Path
 import torch
 import numpy as np
 import nibabel as nib
-from numpy.testing import assert_array_equal, assert_raises
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 from torchio.datasets import IXITiny
-from torchio import DATA, AFFINE, ScalarImage, LabelMap, SubjectsDataset, Subject
+from torchio import DATA, AFFINE
+from torchio import ScalarImage, LabelMap, SubjectsDataset, Subject
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -158,7 +159,12 @@ class TorchioTestCase(unittest.TestCase):
         return path
 
     def assertTensorNotEqual(self, *args, **kwargs):
-        assert_raises(AssertionError, assert_array_equal, *args, **kwargs)
+        message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
+        with self.assertRaises(AssertionError, **message_kwarg):
+            self.assertTensorEqual(*args, **kwargs)
 
     def assertTensorEqual(self, *args, **kwargs):
         assert_array_equal(*args, **kwargs)
+
+    def assertTensorAlmostEqual(self, *args, **kwargs):
+        assert_array_almost_equal(*args, **kwargs)

@@ -24,7 +24,7 @@ class TestTransforms(TorchioTestCase):
         transforms = [
             torchio.CropOrPad(cp_args),
             torchio.ToCanonical(),
-            torchio.RandomDownsample(axes=axes_downsample),
+            torchio.RandomDownsample(downsampling=(1.75, 2), axes=axes_downsample),
             torchio.Resample((1, 1.1, 1.25)),
             torchio.RandomFlip(axes=flip_axes, flip_probability=1),
             torchio.RandomMotion(),

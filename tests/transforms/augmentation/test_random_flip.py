@@ -1,5 +1,4 @@
 from torchio import RandomFlip
-from numpy.testing import assert_array_equal
 from ...utils import TorchioTestCase
 
 
@@ -9,7 +8,7 @@ class TestRandomFlip(TorchioTestCase):
         sample = self.make_2d(self.sample)
         transform = RandomFlip(axes=(1, 2), flip_probability=1)
         transformed = transform(sample)
-        assert_array_equal(
+        self.assertTensorEqual(
             sample.t1.data.numpy()[:, :, ::-1, ::-1],
             transformed.t1.data.numpy())
 

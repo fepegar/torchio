@@ -21,7 +21,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             transformed_data = transformed[key].numpy()
             transformed_total = transformed_data.sum()
             # Make sure that intensities have changed
-            assert not np.array_equal(sample_data, transformed_data)
+            self.assertTensorNotEqual(sample_data, transformed_data)
             self.assertAlmostEqual(transformed_total, fixture, places=4)
 
     def test_inputs_pta_gt_one(self):

@@ -1,6 +1,5 @@
 from torchio import RandomGhosting
 from ...utils import TorchioTestCase
-from numpy.testing import assert_array_equal
 
 
 class TestRandomGhosting(TorchioTestCase):
@@ -8,18 +7,17 @@ class TestRandomGhosting(TorchioTestCase):
     def test_with_zero_intensity(self):
         transform = RandomGhosting(intensity=0)
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_with_zero_ghost(self):
         transform = RandomGhosting(num_ghosts=0)
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_with_ghosting(self):
         transform = RandomGhosting()
         transformed = transform(self.sample)
-        with self.assertRaises(AssertionError):
-            assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorNotEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_intensity_range_with_negative_min(self):
         with self.assertRaises(ValueError):
