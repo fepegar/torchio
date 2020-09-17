@@ -1,6 +1,5 @@
 import warnings
 import numpy as np
-from numpy.testing import assert_array_equal
 from torchio.transforms import CropOrPad, CenterCropOrPad
 from torchio import DATA, AFFINE
 from ...utils import TorchioTestCase
@@ -13,8 +12,8 @@ class TestCropOrPad(TorchioTestCase):
         shape = sample_t1.spatial_shape
         transform = CropOrPad(shape)
         transformed = transform(self.sample)
-        assert_array_equal(sample_t1[DATA], transformed['t1'][DATA])
-        assert_array_equal(sample_t1[AFFINE], transformed['t1'][AFFINE])
+        self.assertTensorEqual(sample_t1[DATA], transformed['t1'][DATA])
+        self.assertTensorEqual(sample_t1[AFFINE], transformed['t1'][AFFINE])
 
     def test_no_changes_mask(self):
         sample_t1 = self.sample['t1']
@@ -26,8 +25,8 @@ class TestCropOrPad(TorchioTestCase):
             transformed = transform(self.sample)
         for key in transformed:
             image_dict = self.sample[key]
-            assert_array_equal(image_dict[DATA], transformed[key][DATA])
-            assert_array_equal(image_dict[AFFINE], transformed[key][AFFINE])
+            self.assertTensorEqual(image_dict[DATA], transformed[key][DATA])
+            self.assertTensorEqual(image_dict[AFFINE], transformed[key][AFFINE])
 
     def test_different_shape(self):
         shape = self.sample['t1'].spatial_shape
@@ -152,11 +151,11 @@ class TestCropOrPad(TorchioTestCase):
         transformed_mask = transform_mask(self.sample)
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
-            assert_array_equal(
+            self.assertTensorEqual(
                 image_center[DATA], image_mask[DATA],
                 'Data is different after cropping',
             )
-            assert_array_equal(
+            self.assertTensorEqual(
                 image_center[AFFINE], image_mask[AFFINE],
                 'Physical position is different after cropping',
             )
@@ -175,11 +174,11 @@ class TestCropOrPad(TorchioTestCase):
         transformed_mask = transform_mask(self.sample)
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
-            assert_array_equal(
+            self.assertTensorEqual(
                 image_center[DATA], image_mask[DATA],
                 'Data is different after cropping',
             )
-            assert_array_equal(
+            self.assertTensorEqual(
                 image_center[AFFINE], image_mask[AFFINE],
                 'Physical position is different after cropping',
             )
@@ -198,15 +197,15 @@ class TestCropOrPad(TorchioTestCase):
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
             # Arrays are different
-            assert not np.array_equal(image_center[DATA], image_mask[DATA])
+            self.assertTensorNotEqual(image_center[DATA], image_mask[DATA])
             # Rotation matrix doesn't change
             center_rotation = image_center[AFFINE][:3, :3]
             mask_rotation = image_mask[AFFINE][:3, :3]
-            assert_array_equal(center_rotation, mask_rotation)
+            self.assertTensorEqual(center_rotation, mask_rotation)
             # Origin does change
             center_origin = image_center[AFFINE][:3, 3]
             mask_origin = image_mask[AFFINE][:3, 3]
-            assert not np.array_equal(center_origin, mask_origin)
+            self.assertTensorNotEqual(center_origin, mask_origin)
             # Voxel at origin is center of transformed image
             origin_value = image_center[DATA][0, 0, 0, 0]
             i, j, k = center_voxel

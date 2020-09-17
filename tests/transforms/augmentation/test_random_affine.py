@@ -1,6 +1,5 @@
 from torchio.transforms import RandomAffine
 from ...utils import TorchioTestCase
-from numpy.testing import assert_array_equal
 
 
 class TestRandomAffine(TorchioTestCase):
@@ -41,7 +40,7 @@ class TestRandomAffine(TorchioTestCase):
             center='image',
         )
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
 
         transform = RandomAffine(
             scales=(1, 1),
@@ -51,7 +50,7 @@ class TestRandomAffine(TorchioTestCase):
         )
         transformed = transform(self.sample)
         transformed = transform(transformed)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_translation(self):
         transform = RandomAffine(
@@ -62,13 +61,13 @@ class TestRandomAffine(TorchioTestCase):
         transformed = transform(self.sample)
 
         # I think the right test should be the following one:
-        # assert_array_equal(
+        # self.assertTensorAlmostEqual(
         #     self.sample.t1.data[:, :-5, :-5, :-5],
         #     transformed.t1.data[:, 5:, 5:, 5:]
         # )
 
         # However the passing test is this one:
-        assert_array_equal(
+        self.assertTensorAlmostEqual(
             self.sample.t1.data[:, :-5, :-5, 5:],
             transformed.t1.data[:, 5:, 5:, :-5]
         )

@@ -1,6 +1,5 @@
 from torchio import RandomMotion
 from ...utils import TorchioTestCase
-from numpy.testing import assert_array_equal
 
 
 class TestRandomMotion(TorchioTestCase):
@@ -16,15 +15,14 @@ class TestRandomMotion(TorchioTestCase):
             num_transforms=1
         )
         transformed = transform(self.sample)
-        assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_with_movement(self):
         transform = RandomMotion(
             num_transforms=1
         )
         transformed = transform(self.sample)
-        with self.assertRaises(AssertionError):
-            assert_array_equal(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorNotEqual(self.sample.t1.data, transformed.t1.data)
 
     def test_negative_degrees(self):
         with self.assertRaises(ValueError):
