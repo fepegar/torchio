@@ -26,6 +26,11 @@ class LabelSampler(WeightedSampler):
             labeled as ``1``, 25% of being ``2`` and 25% of being ``3``.
             If ``None``, the label map is binarized and the value is set to
             ``{0: 0, 1: 1}``.
+            If the input has multiple channels, a value of
+            ``{0: 0, 1: 2, 2: 1, 3: 1}`` will create a
+            sampler whose patches centers will have 50% probability of being
+            taken from a non zero value of channel ``1``, 25% from channel
+            ``2`` and 25% from channel ``3``.
 
     Example:
         >>> import torchio
