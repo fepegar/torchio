@@ -19,7 +19,6 @@ class UniformSampler(RandomSampler):
         return torch.ones(1, *sample.spatial_shape)
 
     def __call__(self, sample: Subject) -> Generator[Subject, None, None]:
-
         sample.check_consistent_spatial_shape()
 
         if np.any(self.patch_size > sample.spatial_shape):
@@ -30,5 +29,6 @@ class UniformSampler(RandomSampler):
             raise RuntimeError(message)
 
         valid_range = sample.spatial_shape - self.patch_size
-        corners = np.asarray([torch.randint(x+1,(1,)).item() for x in valid_range])
-        yield self.extract_patch(sample, corners)
+        index_ini = [torch.randint(x + 1, (1,)).item() for x in valid_range]
+        index_ini_array = np.asarray(index_ini)
+        yield self.extract_patch(sample, index_ini_array)
