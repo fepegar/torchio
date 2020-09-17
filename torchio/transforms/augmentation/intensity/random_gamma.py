@@ -10,28 +10,26 @@ class RandomGamma(RandomTransform):
     :math:`\gamma`.
 
     Args:
-        log_gamma: Tuple :math:`(a, b)` to compute the factor
-            :math:`\gamma` used to set the intensity to the power :math:`gamma`,
-            where :math:`\log(\gamma) \sim \mathcal{U}(a, b)`.
+        log_gamma: Tuple :math:`(a, b)` to compute the exponent
+            :math:`\gamma = e ^ \beta`,
+            where :math:`\beta \sim \mathcal{U}(a, b)`.
             If a single value :math:`d` is provided, then
-            :math:`\log(\gamma) \sim \mathcal{U}(-d, d)`.
+            :math:`\beta \sim \mathcal{U}(-d, d)`.
+            Negative and positive values for this argument perform gamma
+            compression and expansion, respectively.
+            See the `Gamma correction`_ Wikipedia entry for more information.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
         keys: See :py:class:`~torchio.transforms.Transform`.
 
-    .. note:: It is recommended to rescale intensity values between 0 and 1
-        before applying :py:class:`~torchio.transforms.augmentation.RandomGamma`
-        to avoid infinite intensity values when gamma is high.
+    .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
     Example:
         >>> import torchio
-        >>> from torchio import RandomGamma, RescaleIntensity, Compose
+        >>> from torchio import RandomGamma
         >>> from torchio.datasets import FPG
         >>> sample = FPG()
-        >>> gamma_transform = RandomGamma(log_gamma_range=(-0.3, 0.3))
-        >>> # It's better to rescale data to [0, 1] to avoid exploding values
-        >>> rescale_transform = RescaleIntensity(out_min_max=(0, 1), percentiles=(1, 99))
-        >>> transform = Compose([rescale_transform, gamma_transform])
+        >>> transform = RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(sample)
     """
     def __init__(
