@@ -20,12 +20,14 @@ class GridAggregator:
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch based sampling.
     """
-    def __init__(self, sampler: GridSampler):
+    def __init__(self, sampler: GridSampler, overlap_mode = 'crop'):
         sample = sampler.sample
         self.volume_padded = sampler.padding_mode is not None
         self.spatial_shape = sample.spatial_shape
         self._output_tensor = None
         self.patch_overlap = sampler.patch_overlap
+        self.overlap_mode = overlap_mode
+        self._avgmask_tensor = None
 
     def crop_batch(
             self,
@@ -76,6 +78,16 @@ class GridAggregator:
             dtype=batch.dtype,
         )
 
+    def initialize_avgmask_tensor(self, batch: torch.Tensor) -> None:
+        if self._avgmask_tensor is not None:
+            return
+        num_channels = batch.shape[CHANNELS_DIMENSION]
+        self._avgmask_tensor = torch.zeros(
+            num_channels,
+            *self.spatial_shape,
+            dtype=batch.dtype,
+        )
+
     def add_batch(
             self,
             batch_tensor: torch.Tensor,
@@ -93,18 +105,33 @@ class GridAggregator:
         batch = batch_tensor.cpu()
         locations = locations.cpu().numpy()
         self.initialize_output_tensor(batch)
-        cropped_patches, crop_locations = self.crop_batch(
-            batch,
-            locations,
-            self.patch_overlap,
-        )
-        for patch, crop_location in zip(cropped_patches, crop_locations):
-            i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = crop_location
-            self._output_tensor[
-                :,
-                i_ini:i_fin,
-                j_ini:j_fin,
-                k_ini:k_fin] = patch
+        if self.overlap_mode == 'crop':
+            cropped_patches, crop_locations = self.crop_batch(
+                batch,
+                locations,
+                self.patch_overlap,
+            )
+            for patch, crop_location in zip(cropped_patches, crop_locations):
+                i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = crop_location
+                self._output_tensor[
+                    :,
+                    i_ini:i_fin,
+                    j_ini:j_fin,
+                    k_ini:k_fin] = patch
+        elif self.overlap_mode == 'average':
+            self.initialize_avgmask_tensor(batch)
+            for patch, location in zip(batch, locations):
+                i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
+                self._output_tensor[
+                    :,
+                    i_ini:i_fin,
+                    j_ini:j_fin,
+                    k_ini:k_fin] += patch
+                self._avgmask_tensor[
+                    :,
+                    i_ini:i_fin,
+                    j_ini:j_fin,
+                    k_ini:k_fin] += 1
 
     def get_output_tensor(self) -> torch.Tensor:
         """Get the aggregated volume after dense inference."""
@@ -115,11 +142,15 @@ class GridAggregator:
             )
             warnings.warn(message)
             self._output_tensor = self._output_tensor.type(torch.int32)
+        if self.overlap_mode == 'average':
+            output = self._output_tensor / self._avgmask_tensor
+        else:
+            output = self._output_tensor
         if self.volume_padded:
             from ...transforms import Crop
             border = self.patch_overlap // 2
             cropping = border.repeat(2)
             crop = Crop(cropping)
-            return crop(self._output_tensor)
+            return crop(output)
         else:
-            return self._output_tensor
+            return output
