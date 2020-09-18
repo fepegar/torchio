@@ -122,7 +122,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
             num_transforms: int,
             perturbation: float = 0.3,
             is_2d: bool = False,
-            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
+            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # If perturbation is 0, time intervals between movements are constant
         degrees_params = get_params_array(
             degrees_range, num_transforms)

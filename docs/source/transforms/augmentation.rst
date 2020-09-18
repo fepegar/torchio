@@ -156,3 +156,9 @@ Intensity
 
 .. autoclass:: RandomLabelsToImage
     :show-inheritance:
+
+:class:`RandomGamma`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: RandomGamma
+    :show-inheritance:
