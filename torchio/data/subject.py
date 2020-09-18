@@ -119,6 +119,9 @@ class Subject(dict):
     def check_consistent_spatial_shape(self) -> None:
         self.check_consistent_attribute('spatial_shape')
 
+    def check_consistent_orientation(self) -> None:
+        self.check_consistent_attribute('orientation')
+
     def get_images_dict(self, intensity_only=True):
         images = {}
         for image_name, image in self.items():
