@@ -59,7 +59,6 @@ class WeightedSampler(RandomSampler):
         super().__init__(patch_size)
         self.probability_map_name = probability_map
         self.cdf = None
-        self.sort_indices = None
 
     def __call__(
             self,
@@ -171,15 +170,11 @@ class WeightedSampler(RandomSampler):
         The cumulative distribution function (CDF) is computed as follows:
 
         1. Flatten probability map
-        2. Compute sorting indices
-        3. Sort flattened map
-        4. Compute cumulative sum
+        2. Compute cumulative sum
 
         For example,
         if the probability map is [0.0, 0.0, 0.1, 0.2, 0.5, 0.1, 0.1, 0.0],
-        the sorting indices are [0, 1, 7, 2, 5, 6, 3, 4],
-        the sorted map is [0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 0.2, 0.5],
-        and the CDF is [0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.5, 1.0].
+        and the CDF is [0.0, 0.0, 0.1, 0.3, 0.8, 0.9, 1.0, 1.0].
         """
         flat_map = probability_map.flatten()
         flat_map_normalized = flat_map / flat_map.sum()
@@ -201,8 +196,7 @@ class WeightedSampler(RandomSampler):
     def get_random_index_ini(
             self,
             probability_map: np.ndarray,
-            cdf: np.ndarray,
-            sort_indices: np.ndarray,
+            cdf: np.ndarray
             ) -> np.ndarray:
         center = self.sample_probability_map(probability_map, cdf)
         assert np.all(center >= 0)
