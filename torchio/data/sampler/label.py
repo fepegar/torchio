@@ -101,7 +101,6 @@ class LabelSampler(WeightedSampler):
             if not label_size:
                 continue
             prob_voxels = label_probability / label_size
-            probability_map[mask] = prob_voxels
             if multichannel:
                 probability_map[label] = prob_voxels * mask
             else:
