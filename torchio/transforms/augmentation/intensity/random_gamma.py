@@ -1,11 +1,13 @@
+import warnings
 from typing import Tuple, Optional, List
 import torch
 from ....torchio import DATA, TypeRangeFloat
 from ....data.subject import Subject
+from ... import IntensityTransform
 from .. import RandomTransform
 
 
-class RandomGamma(RandomTransform):
+class RandomGamma(RandomTransform, IntensityTransform):
     r"""Change contrast of an image by raising its values to the power
     :math:`\gamma`.
 
@@ -23,6 +25,14 @@ class RandomGamma(RandomTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
+
+    .. warning:: Fractional exponentiation of negative values is generally not
+        well-defined for non-complex numbers.
+        If negative values are found in the input image :math:`I`,
+        the applied transform is :math:`\text{sign}(I) |I|^\gamma`,
+        instead of the usual :math:`I^\gamma`. The
+        :py:class:`~torchio.transforms.preprocessing.intensity.rescale.RescaleIntensity`
+        transform may be used to ensure that all values are positive.
 
     Example:
         >>> import torchio
@@ -44,11 +54,22 @@ class RandomGamma(RandomTransform):
 
     def apply_transform(self, sample: Subject) -> dict:
         random_parameters_images_dict = {}
-        for image_name, image_dict in sample.get_images_dict().items():
+        for image_name, image_dict in self.get_images_dict(sample).items():
             gamma = self.get_params(self.log_gamma_range)
             random_parameters_dict = {'gamma': gamma}
             random_parameters_images_dict[image_name] = random_parameters_dict
-            image_dict[DATA] = image_dict[DATA] ** gamma
+            if torch.any(image_dict[DATA] < 0):
+                message = (
+                    'Negative values found in input tensor. See the'
+                    ' documentation for more details on the implemented'
+                    ' workaround:'
+                    ' https://torchio.readthedocs.io/transforms/augmentation.html#randomgamma'
+                )
+                warnings.warn(message)
+                data = image_dict[DATA]
+                image_dict[DATA] = data.sign() * data.abs() ** gamma
+            else:
+                image_dict[DATA] = image_dict[DATA] ** gamma
         sample.add_transform(self, random_parameters_images_dict)
         return sample
 
