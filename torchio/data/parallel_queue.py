@@ -25,7 +25,7 @@ def randomize_queue(queue):
     num_subjects = sum(1 for C,idx in queue if C=='L')
     new_indices = torch.randperm(num_subjects)
     randomized_queue = [(C,new_indices[i].item()) for C,i in queue]
-    return queue
+    return randomized_queue
 
 def optimize_queue(queue):
     """ Very basic load queue optimizer.
