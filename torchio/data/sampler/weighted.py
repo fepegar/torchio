@@ -75,12 +75,11 @@ class WeightedSampler(RandomSampler):
             raise RuntimeError(message)
         probability_map = self.get_probability_map(sample)
         probability_map = self.process_probability_map(probability_map)
-        cdf, sort_indices = self.get_cumulative_distribution_function(
-            probability_map)
+        cdf = self.get_cumulative_distribution_function(probability_map)
 
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
-            yield self.extract_patch(sample, probability_map, cdf, sort_indices)
+            yield self.extract_patch(sample, probability_map, cdf)
             if num_patches is not None:
                 patches_left -= 1
 
@@ -184,20 +183,16 @@ class WeightedSampler(RandomSampler):
         """
         flat_map = probability_map.flatten()
         flat_map_normalized = flat_map / flat_map.sum()
-        # Get the sorting indices to that we can invert the sorting later on
-        sort_indices = np.argsort(flat_map_normalized)
-        flat_map_normalized_sorted = flat_map_normalized[sort_indices]
-        cdf = np.cumsum(flat_map_normalized_sorted)
-        return cdf, sort_indices
+        cdf = np.cumsum(flat_map_normalized)
+        return cdf
 
     def extract_patch(
             self,
             sample: Subject,
             probability_map: np.ndarray,
-            cdf: np.ndarray,
-            sort_indices: np.ndarray,
+            cdf: np.ndarray
             ) -> Subject:
-        index_ini = self.get_random_index_ini(probability_map, cdf, sort_indices)
+        index_ini = self.get_random_index_ini(probability_map, cdf)
         index_fin = index_ini + self.patch_size
         cropped_sample = sample.crop(index_ini, index_fin)
         cropped_sample['index_ini'] = index_ini.astype(int)
@@ -209,7 +204,7 @@ class WeightedSampler(RandomSampler):
             cdf: np.ndarray,
             sort_indices: np.ndarray,
             ) -> np.ndarray:
-        center = self.sample_probability_map(probability_map, cdf, sort_indices)
+        center = self.sample_probability_map(probability_map, cdf)
         assert np.all(center >= 0)
         # See self.clear_probability_borders
         index_ini = center - self.patch_size // 2
@@ -219,8 +214,7 @@ class WeightedSampler(RandomSampler):
     def sample_probability_map(
             self,
             probability_map: np.ndarray,
-            cdf: np.ndarray,
-            sort_indices: np.ndarray,
+            cdf: np.ndarray
             ) -> np.ndarray:
         """Inverse transform sampling.
 
@@ -248,7 +242,7 @@ class WeightedSampler(RandomSampler):
         else:  # proceed as usual
             cdf_index = np.argmax(random_number < cdf)
 
-        random_location_index = sort_indices[cdf_index]
+        random_location_index = cdf_index
         center = np.unravel_index(
             random_location_index,
             probability_map.shape
