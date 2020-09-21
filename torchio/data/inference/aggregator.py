@@ -15,19 +15,35 @@ class GridAggregator:
     Args:
         sampler: Instance of :py:class:`~torchio.data.GridSampler` used to
             extract the patches.
+        overlap_mode: If ``'crop'``, the overlapping predictions will be
+            cropped. If ``'average'``, the predictions in the overlapping areas
+            will be averaged with equal weights. See the
+            `grid aggregator tests`_ for a raw visualization of both modes.
+
+    .. _grid aggregator tests: https://github.com/fepegar/torchio/blob/master/tests/data/inference/test_aggregator.py
 
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
-        information about patch based sampling.
+        information about patch-based sampling.
     """
-    def __init__(self, sampler: GridSampler, overlap_mode = 'crop'):
+    def __init__(self, sampler: GridSampler, overlap_mode: str = 'crop'):
         sample = sampler.sample
         self.volume_padded = sampler.padding_mode is not None
         self.spatial_shape = sample.spatial_shape
         self._output_tensor = None
         self.patch_overlap = sampler.patch_overlap
+        self.parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
         self._avgmask_tensor = None
+
+    @staticmethod
+    def parse_overlap_mode(overlap_mode):
+        if overlap_mode not in ('crop', 'average'):
+            message = (
+                f'Overlap mode must be "crop" or "average" but "{overlap_mode}"'
+                ' was passed'
+            )
+            raise ValueError(message)
 
     def crop_batch(
             self,
