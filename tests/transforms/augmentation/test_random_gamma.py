@@ -1,3 +1,4 @@
+import torch
 from torchio import RandomGamma
 from ...utils import TorchioTestCase
 
@@ -31,3 +32,7 @@ class TestRandomGamma(TorchioTestCase):
     def test_wrong_gamma_type(self):
         with self.assertRaises(ValueError):
             RandomGamma(log_gamma='wrong')
+
+    def test_negative_values(self):
+        with self.assertWarns(UserWarning):
+            RandomGamma()(torch.rand(1, 3, 3, 3) - 1)
