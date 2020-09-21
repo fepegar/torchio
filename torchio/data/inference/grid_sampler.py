@@ -91,7 +91,7 @@ class GridSampler(PatchSampler, Dataset):
         if np.any(patch_overlap >= patch_size):
             message = (
                 f'Patch overlap {tuple(patch_overlap)} must be smaller'
-                f' than patch size {tuple(image_size)}'
+                f' than patch size {tuple(patch_size)}'
             )
             raise ValueError(message)
         if np.any(patch_overlap % 2):
