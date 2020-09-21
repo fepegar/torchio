@@ -2,7 +2,7 @@
 
 __author__ = """Fernando Perez-Garcia"""
 __email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
-__version__ = '0.17.38'
+__version__ = '0.17.34'
 
 import os
 from . import utils
@@ -18,6 +18,7 @@ from .data import (
     ScalarImage,
     LabelMap,
     Queue,
+    ParallelQueue,
     Subject,
 )
 from . import datasets

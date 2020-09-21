@@ -1,4 +1,5 @@
 from .queue import Queue
+from .parallel_queue import ParallelQueue
 from .subject import Subject
 from .dataset import SubjectsDataset, ImagesDataset
 from .image import Image, ScalarImage, LabelMap

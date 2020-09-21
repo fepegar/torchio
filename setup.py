@@ -21,6 +21,8 @@ requirements = [
     'torch>=1.1',
     'torchvision',
     'tqdm',
+    'unsync',
+    'loguru',
 ]
 
 setup(
@@ -58,6 +60,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.17.38',
+    version='0.17.34',
     zip_safe=False,
 )
