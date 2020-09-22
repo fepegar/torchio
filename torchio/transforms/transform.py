@@ -12,7 +12,7 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
 from .interpolation import Interpolation
 
 
@@ -138,6 +138,31 @@ class Transform(ABC):
         raise NotImplementedError
 
     @staticmethod
+    def to_range(n, around):
+        if around is None:
+            return 0, n
+        else:
+            return around - n, around + n
+
+    def parse_params(self, params, around, name, **kwargs):
+        params = to_tuple(params)
+        if len(params) == 1 or len(params) == 2:  # d or (a, b)
+            params *= 3  # (d, d, d) or (a, b, a, b, a, b)
+        if len(params) == 3:  # (a, b, c)
+            items = [self.to_range(n, around) for n in params]
+            # (-a, a, -b, b, -c, c) or (1-a, 1+a, 1-b, 1+b, 1-c, 1+c)
+            params = [n for prange in items for n in prange]
+        if len(params) != 6:
+            message = (
+                f'If "{name}" is a sequence, it must have length 2, 3 or 6,'
+                f' not {len(params)}'
+            )
+            raise ValueError(message)
+        for param_range in zip(params[::2], params[1::2]):
+            self.parse_range(param_range, name, **kwargs)
+        return tuple(params)
+
+    @staticmethod
     def parse_range(
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
@@ -176,7 +201,7 @@ class Transform(ABC):
                 :math:`n_{max}` and :math:`n_{max}` are not of type
                 :attr:`type_constraint`.
         """
-        if isinstance(nums_range, numbers.Number):
+        if isinstance(nums_range, numbers.Number):  # single number given
             if nums_range < 0:
                 raise ValueError(
                     f'If {name} is a single number,'
@@ -201,40 +226,40 @@ class Transform(ABC):
             return (min_range, nums_range)
 
         try:
-            min_degree, max_degree = nums_range
+            min_value, max_value = nums_range
         except (TypeError, ValueError):
             raise ValueError(
                 f'If {name} is not a single number, it must be'
                 f' a sequence of len 2, not {nums_range}'
             )
 
-        min_is_number = isinstance(min_degree, numbers.Number)
-        max_is_number = isinstance(max_degree, numbers.Number)
+        min_is_number = isinstance(min_value, numbers.Number)
+        max_is_number = isinstance(max_value, numbers.Number)
         if not min_is_number or not max_is_number:
             message = (
                 f'{name} values must be numbers, not {nums_range}')
             raise ValueError(message)
 
-        if min_degree > max_degree:
+        if min_value > max_value:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be'
                 f' equal or greater than the first, but it is {nums_range}')
 
-        if min_constraint is not None and min_degree < min_constraint:
+        if min_constraint is not None and min_value < min_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the first value must be greater'
-                f' than {min_constraint}, but it is {min_degree}'
+                f' than {min_constraint}, but it is {min_value}'
             )
 
-        if max_constraint is not None and max_degree > max_constraint:
+        if max_constraint is not None and max_value > max_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be smaller'
-                f' than {max_constraint}, but it is {max_degree}'
+                f' than {max_constraint}, but it is {max_value}'
             )
 
         if type_constraint is not None:
-            min_type_ok = isinstance(min_degree, type_constraint)
-            max_type_ok = isinstance(max_degree, type_constraint)
+            min_type_ok = isinstance(min_value, type_constraint)
+            max_type_ok = isinstance(max_value, type_constraint)
             if not min_type_ok or not max_type_ok:
                 raise ValueError(
                     f'If "{name}" is a sequence, its values must be of'

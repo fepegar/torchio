@@ -50,6 +50,16 @@ class RandomTransform(Transform):
             torch.manual_seed(self._seed)
 
     @staticmethod
+    def sample_uniform(a, b):
+        return torch.FloatTensor(1).uniform_(a, b)
+
+    def sample_uniform_sextet(self, params):
+        results = []
+        for (a, b) in zip(params[::2], params[1::2]):
+            results.append(self.sample_uniform(a, b))
+        return torch.Tensor(results)
+
+    @staticmethod
     def fourier_transform(array: np.ndarray):
         transformed = np.fft.fftn(array)
         fshift = np.fft.fftshift(transformed)
