@@ -11,13 +11,13 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'Click>=7.0',
+    'Click',
     'humanize',
     'nibabel',
     'numpy',
     'Python-Deprecated',
     'scipy',
-    'SimpleITK',
+    'SimpleITK<2',
     'torch>=1.1',
     'torchvision',
     'tqdm',
