@@ -20,7 +20,7 @@ class RescaleIntensity(NormalizationTransform):
         percentiles: Percentile values of the input image that will be mapped
             to :math:`(n_{min}, n_{max})`. They can be used for contrast
             stretching, as in `this scikit-image example`_. For example,
-            Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.
+            Isensee et al. use ``(0.005, 0.995)`` in their `nn-UNet paper`_.
             If only one value :math:`d` is provided,
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
