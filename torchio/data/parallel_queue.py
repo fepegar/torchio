@@ -15,16 +15,29 @@ import multiprocessing as mp
 import torch
 import numpy as np
 from loguru import logger
+import sys
 
+class Counter(object):
+    def __init__(self, initval=0):
+        self.val = mp.Value('i', initval)
+        self.lock = mp.Lock()
+
+    def increment(self):
+        with self.lock:
+            self.val.value += 1
+
+    def value(self):
+        with self.lock:
+            return self.val.value
 
 # these are tools for the command stream, they will not be exported
 def shift_queue(queue, offset):
-    return [(C,i+offset) for (C,i) in queue]
+    return [(C,i+offset,L) for (C,i,L) in queue]
 
 def randomize_queue(queue):
-    num_subjects = sum(1 for C,idx in queue if C=='L')
+    num_subjects = sum(1 for C,idx,locks in queue if C=='L')
     new_indices = torch.randperm(num_subjects)
-    randomized_queue = [(C,new_indices[i].item()) for C,i in queue]
+    randomized_queue = [(C,new_indices[i].item(), tuple(new_indices[l].item() for l in locks)) for C,i,locks in queue]
     return randomized_queue
 
 def optimize_queue(queue):
@@ -37,7 +50,7 @@ def optimize_queue(queue):
     queue = queue[:]
     insert = 0
     for idx in range(1,len(queue)-1):
-        C,V = queue[idx]
+        C,V,L = queue[idx]
         if C != 'D':
             continue
         for pos in range(idx+1, len(queue)):
@@ -49,6 +62,43 @@ def optimize_queue(queue):
                 break
     return queue
 
+def optimize_queue_prefetch(queue, prefetch=5):
+    """ Very basic load queue optimizer.
+        Whenever there is a delete operation,
+        the next volume can be immediately loaded in the background.
+        e.g. ... D P P L P D ... -> ... D L P P P D ...
+    """
+    while True:
+        q_original = queue[:]
+        for idx in range(1,len(queue)-1):
+            C,V,L = queue[idx]
+            C2,V2,L2 = queue[idx+1]
+
+            if C=='P' and C2=='L': # loads can be propagated up
+                queue[idx], queue[idx+1] = queue[idx+1], queue[idx]
+                continue
+
+            if C != 'D':
+                continue
+
+            if C=='D' and C2=='P' and V!=V2: # deletes can be propagated down
+                queue[idx], queue[idx+1] = queue[idx+1], queue[idx]
+                continue
+
+            C,V,L = queue[idx]
+            C2,V2,L2 = queue[idx+1] # idx+1 changed, reload is needed
+
+            if len(L) >= prefetch or len(L2) >= prefetch:
+                continue
+
+            if C2=='L' and len(L2)<prefetch:# and len(L)<prefetch:
+                queue[idx]   = (C2,V2,(V,)+L2)
+                queue[idx+1] = (C, V, (V2,)+L)
+        if q_original == queue:
+            break
+
+    return queue
+
 
 def command_stream_generator(num_subjects, max_num_in_memory, num_patches, strategy='basic', randomize=True, optimize=True):
     if strategy == 'basic':
@@ -57,8 +107,10 @@ def command_stream_generator(num_subjects, max_num_in_memory, num_patches, strat
         queue = merge_last_two(num_subjects, max_num_in_memory, num_patches)
     else:
         raise NotImplementedError
+
     if optimize:
         queue = optimize_queue(queue)
+
     if randomize:
         queue = randomize_queue(queue)
     return queue
@@ -86,23 +138,29 @@ def basic_command_stream_generator(num_subjects, max_num_in_memory, num_patches)
         if len(active_subjects) < max_num_in_memory and len(all_subjects) > len(processed_subjects):
             new_subject = (all_subjects - processed_subjects).pop()
             loaded_subjects[new_subject] = num_patches
-            queue.append(('L',new_subject))
+            locks = tuple()
+            queue.append(('L',new_subject, locks))
         else:
             # create patches when you cannot load new volume
             subject_list = list(active_subjects)
             new_order = torch.randperm(len(subject_list)).numpy().tolist()
             for idx in new_order:
                 s = subject_list[idx]
-                queue.append(('P',s))
+                queue.append(('P',s, tuple()))
                 loaded_subjects[s] -= 1
                 # delete volume when it is exhausted
                 if loaded_subjects[s] == 0:
-                    queue.append(('D',s))
+                    queue.append(('D',s, tuple()))
                     deleted_subjects.add(s)
         # we are done where all volumes are deleted
         if len(all_subjects) == len(deleted_subjects):
             break
     return queue
+
+
+
+
+
 
 def ParallelQueue(subjects_dataset: SubjectsDataset,
                   sampler: PatchSampler,
@@ -110,6 +168,7 @@ def ParallelQueue(subjects_dataset: SubjectsDataset,
                   num_patches: int,
                   patch_queue_size=0,
                   seed=0,
+                  double_buffer=True,
                 ):
     if patch_queue_size == 0:
         patch_queue_size = max_no_subjects_in_mem*num_patches
@@ -119,7 +178,8 @@ def ParallelQueue(subjects_dataset: SubjectsDataset,
                                             strategy='basic',
                                             randomize=True,
                                             optimize=True)
-
+    if double_buffer:
+        cmd_stream = optimize_queue_prefetch(cmd_stream)
     return CommandStreamProcessingQueue(subjects_dataset, sampler, patch_queue_size, cmd_stream)
 
 
@@ -156,7 +216,7 @@ class CommandStreamProcessingQueue(IterableDataset):
     def _pre_process_stream(self):
         self.samples_per_volume = {}
         self.length = 0
-        for C,V in self.command_stream:
+        for C,V,L in self.command_stream:
             if C=='P':
                 self.length += 1
                 self.samples_per_volume[V] = 1 + self.samples_per_volume.get(V,0)
@@ -166,10 +226,14 @@ class CommandStreamProcessingQueue(IterableDataset):
 
     @unsync(cpu_bount=True)
     @logger.catch
-    def load(self, volume_idx, patch_per_volume, seed):
+    def load(self, volume_idx, patch_per_volume, seed, locks):
 
         torch.manual_seed(seed)
         np.random.seed(seed)
+
+        for idx in locks:
+            while self.patch_counter_dict[idx].value()<1:
+                time.sleep(0.1)
 
         logger.warning(f"volume is loading in the background: {volume_idx}")
         queue = self.queue_dict[volume_idx]
@@ -182,6 +246,7 @@ class CommandStreamProcessingQueue(IterableDataset):
                     break
                 logger.warning(f"volume  {volume_idx} patch {idx} is extracted")
                 queue.put(sample)
+                self.patch_counter_dict[volume_idx].increment()
                 cnt += 1
 
     @logger.catch
@@ -196,16 +261,15 @@ class CommandStreamProcessingQueue(IterableDataset):
         pending_jobs = []
         volume_queues = {}
         logger.warning(f"inside the loop")
-        for C,V in self.command_stream:
+        for C,V,locks in self.command_stream:
             logger.warning(f"command {C} {V}")
             if C=='L': # load new volume, start sampler
                 N = self.samples_per_volume[V]
-                J = self.load(V, N, seed)
+                J = self.load(V, N, seed, locks)
                 seed += 1
                 pending_jobs.append(J)
                 logger.warning(f"loaded")
                 volume_queues[V] = J
-
             elif C=='D': # close volume
                 pass
                 # well, actually, the garbage collector will take care of this.
@@ -216,11 +280,8 @@ class CommandStreamProcessingQueue(IterableDataset):
                 #Take a patch from the volume's queue and put it into the global queue
                 x = self.get_patch(V)
                 logger.warning(f"try to insert value from {V}")
-                if x is not None:
-                    self.patch_queue.put(x)
-                    logger.warning(f"{V} is inserted into the main queue")
-                else:
-                    logger.error(f"sampler is exhausted!!!!!!!!!!")
+                self.patch_queue.put(x)
+                logger.warning(f"{V} is inserted into the main queue")
             else:
                 raise NotImplementedError
             logger.warning(f"command {C} {V} finished")
@@ -235,6 +296,8 @@ class CommandStreamProcessingQueue(IterableDataset):
     def __iter__(self):
         logger.warning(f"__iter__ called")
         self.queue_dict = {i:mp.Queue(8) for i in range(len(self.subjects_dataset))}
+        self.patch_counter_dict = {i:Counter() for i in range(len(self.subjects_dataset))}
+
         logger.warning(f"queues set up")
         job = self.fill_queues(self.seed)
         logger.warning(f"iteration starts")
