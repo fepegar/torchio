@@ -54,6 +54,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             If ``'otsu'``, the fill value is the mean of the values at the
             border that lie under an
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
+            If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
