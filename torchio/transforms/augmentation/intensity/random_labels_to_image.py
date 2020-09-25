@@ -15,7 +15,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     Based on the works by Billot et al.: `A Learning Strategy for
     Contrast-agnostic MRI Segmentation <https://arxiv.org/abs/2003.01995>`_
     and `Partial Volume Segmentation of Brain MRI Scans of any Resolution and
-    Contrast <https://arxiv.org/abs/2004.10221>`.
+    Contrast <https://arxiv.org/abs/2004.10221>`_.
 
     Args:
         label_key: String designating the label map in the sample
