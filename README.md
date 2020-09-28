@@ -287,6 +287,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="http://surajpai.tech"><img src="https://avatars1.githubusercontent.com/u/10467804?v=4" width="100px;" alt=""/><br /><sub><b>Suraj Pai</b></sub></a><br /><a href="#ideas-surajpaib" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/bcdarwin"><img src="https://avatars2.githubusercontent.com/u/164148?v=4" width="100px;" alt=""/><br /><sub><b>Ben Darwin</b></sub></a><br /><a href="#ideas-bcdarwin" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/OeslleLucena"><img src="https://avatars0.githubusercontent.com/u/19919194?v=4" width="100px;" alt=""/><br /><sub><b>Oeslle Lucena</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AOeslleLucena" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://www.soumick.com"><img src="https://avatars0.githubusercontent.com/u/20525305?v=4" width="100px;" alt=""/><br /><sub><b>Soumick Chatterjee</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=soumickmj" title="Code">💻</a></td>
   </tr>
 </table>
 
