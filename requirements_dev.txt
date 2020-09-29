@@ -16,4 +16,3 @@ tox
 twine
 watchdog
 wheel
-
