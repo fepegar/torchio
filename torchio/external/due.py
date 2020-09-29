@@ -27,7 +27,7 @@ License:    BSD-2
 __version__ = '0.0.8'
 
 
-class InactiveDueCreditCollector(object):
+class InactiveDueCreditCollector:
     """Just a stub at the Collector which would not do anything"""
     def _donothing(self, *args, **kwargs):
         """Perform no good and no bad"""

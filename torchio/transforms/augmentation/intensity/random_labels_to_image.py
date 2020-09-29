@@ -1,4 +1,3 @@
-
 from typing import Tuple, Optional, Sequence, List
 import torch
 from ....torchio import DATA, AFFINE, TypeData, TypeRangeFloat
@@ -128,8 +127,10 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         check_sequence(used_labels, 'used_labels')
         for e in used_labels:
             if not isinstance(e, int):
-                message = f'"used_labels" elements must be integers, ' \
-                          f'not {used_labels}'
+                message = (
+                    'Items in "used_labels" must be integers,'
+                    f' but some are not: {used_labels}'
+                )
                 raise ValueError(message)
         return used_labels
 
@@ -196,10 +197,11 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
         spatial_shape = label_map.shape[1:]
 
-        # Find out if we face a partial-volume or a label map.
-        # One hot encoded label map is considered as a partial-volume one.
-        is_discretized = label_map.eq(label_map.round()).all() and \
-            label_map.squeeze().dim() < label_map.dim()
+        # Find out if we face a partial-volume image or a label map.
+        # One-hot-encoded label map is considered as a partial-volume image
+        all_discrete = label_map.eq(label_map.round()).all()
+        same_num_dims = label_map.squeeze().dim() < label_map.dim()
+        is_discretized = all_discrete and same_num_dims
 
         if not is_discretized and self.discretize:
             # Take label with highest value in voxel

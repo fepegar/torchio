@@ -14,6 +14,7 @@ import torchio
 from torchio import ScalarImage, LabelMap, Subject, SubjectsDataset, Queue
 from torchio.data import UniformSampler
 
+
 def main():
     # Define training and patches sampling parameters
     num_epochs = 20
@@ -61,9 +62,11 @@ def main():
     model = nn.Identity()
 
     for epoch_index in range(num_epochs):
+        print('Epoch', epoch_index)
         for batch in batch_loader:  # batch is a *list* here, not a dictionary
             logits = model(batch)
             print([batch[idx].keys() for idx in range(batch_size)])
+            print(logits.shape)
     print()
 
 

@@ -1,4 +1,3 @@
-
 from typing import Union, Tuple, Optional, List
 import numpy as np
 import torch
