@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import nib_to_sitk
+from ....utils import nib_to_sitk, get_major_sitk_version
 from ....torchio import (
     INTENSITY,
     DATA,
@@ -226,9 +226,15 @@ class RandomAffine(RandomTransform, SpatialTransform):
             translation_params,
             center_lps=center_lps,
         )
-        transform = sitk.Transform(3, sitk.sitkComposite)
-        transform.AddTransform(scaling_transform)
-        transform.AddTransform(rotation_transform)
+
+        sitk_major_version = get_major_sitk_version()
+        if sitk_major_version == 1:
+            transform = sitk.Transform(3, sitk.sitkComposite)
+            transform.AddTransform(scaling_transform)
+            transform.AddTransform(rotation_transform)
+        elif sitk_major_version == 2:
+            transforms = [scaling_transform, rotation_transform]
+            transform = sitk.CompositeTransform(transforms)
 
         if self.default_pad_value == 'minimum':
             default_value = tensor.min().item()

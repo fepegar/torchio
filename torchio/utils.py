@@ -320,3 +320,12 @@ def check_sequence(sequence: Sequence, name: str):
     except TypeError:
         message = f'"{name}" must be a sequence, not {type(name)}'
         raise TypeError(message)
+
+
+def get_major_sitk_version() -> int:
+    import SimpleITK as sitk
+    # This attribute was added in version 2
+    # https://github.com/SimpleITK/SimpleITK/pull/1171
+    version = getattr(sitk, '__version__', None)
+    major_version = 1 if version is None else 2
+    return major_version
