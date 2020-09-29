@@ -145,8 +145,7 @@ class Resample(SpatialTransform):
         use_pre_affine = self.affine_name is not None
         if use_pre_affine:
             self.check_affine_key_presence(self.affine_name, sample)
-        images_dict = self.get_images_dict(sample).items()
-        for image_name, image in images_dict:
+        for image in self.get_images(sample):
             # Do not resample the reference image if there is one
             if image is self.reference_image:
                 continue

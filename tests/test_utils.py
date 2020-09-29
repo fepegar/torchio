@@ -60,6 +60,7 @@ class TestUtils(TorchioTestCase):
 
 
 class TestNibabelToSimpleITK(TorchioTestCase):
+
     def setUp(self):
         super().setUp()
         self.affine = np.eye(4)

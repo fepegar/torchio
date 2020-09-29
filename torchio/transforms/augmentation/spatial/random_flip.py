@@ -56,13 +56,12 @@ class RandomFlip(RandomTransform, SpatialTransform):
         if any(isinstance(n, str) for n in axes):
             sample.check_consistent_orientation()
             image = sample.get_first_image()
-            axes = sorted([3 + image.axis_name_to_index(n) for n in axes])
+            axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
         for i in range(3):
             if i not in axes:
                 axes_to_flip_hot[i] = False
         random_parameters_dict = {'axes': axes_to_flip_hot}
-        items = self.get_images_dict(sample).items()
-        for image_name, image in items:
+        for image in self.get_images(sample):
             dims = []
             for dim, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:

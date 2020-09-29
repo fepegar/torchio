@@ -63,7 +63,7 @@ class IXI(SubjectsDataset):
         >>> print('Shape of T2 data:', sample_subject['T2'].shape)  # [1, 241, 257, 188]
     """
 
-    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'
+    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
         'T2': 'e3140d78730ecdd32ba92da48c0a9aaa',
@@ -224,10 +224,10 @@ class IXITiny(SubjectsDataset):
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
         if root.is_dir():  # assume it's been downloaded
-            print('Root directory for IXITiny found:', root)
+            print('Root directory for IXITiny found:', root)  # noqa: T001
             return
-        print('Root directory for IXITiny not found:', root)
-        print('Downloading...')
+        print('Root directory for IXITiny not found:', root)  # noqa: T001
+        print('Downloading...')  # noqa: T001
         with NamedTemporaryFile(suffix='.zip') as f:
             download_and_extract_archive(
                 self.url,
@@ -242,7 +242,7 @@ class IXITiny(SubjectsDataset):
 
 
 def sglob(directory, pattern):
-    return sorted(list(Path(directory).glob(pattern)))
+    return sorted(Path(directory).glob(pattern))
 
 
 def get_subject_id(path):

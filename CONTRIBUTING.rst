@@ -58,10 +58,10 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `torchio` for local development.
+Ready to contribute? Here's how to set up ``torchio`` for local development.
 
 1. Create an issue about it on the GitHub repo.
-2. Fork the `torchio` repo on GitHub.
+2. Fork the ``torchio`` repo on GitHub.
 3. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/torchio.git

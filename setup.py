@@ -24,7 +24,7 @@ requirements = [
 ]
 
 setup(
-    author="Fernando Perez-Garcia",
+    author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     python_requires='>=3.6',
     classifiers=[
@@ -38,8 +38,8 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description=(
-        "Tools for loading, augmenting and writing 3D medical images"
-        " on PyTorch."
+        'Tools for loading, augmenting and writing 3D medical images'
+        ' on PyTorch.'
     ),
     entry_points={
         'console_scripts': [
@@ -47,7 +47,7 @@ setup(
         ],
     },
     install_requires=requirements,
-    license="MIT license",
+    license='MIT license',
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
     include_package_data=True,

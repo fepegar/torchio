@@ -12,7 +12,7 @@ class TestToCanonical(TorchioTestCase):
         self.assertTensorEqual(transformed.t1.data, self.sample.t1.data)
         self.assertTensorEqual(transformed.t1.affine, self.sample.t1.affine)
 
-    def test_LAS_to_RAS(self):
+    def test_las_to_ras(self):
         self.sample.t1.affine[0, 0] = -1    # Change orientation to 'LAS'
         transform = ToCanonical()
         transformed = transform(self.sample)

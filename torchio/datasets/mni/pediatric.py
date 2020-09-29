@@ -49,7 +49,7 @@ class Pediatric(SubjectMNI):
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
         download_root = get_torchio_cache_dir() / self.name
         if download_root.is_dir():
-            print(f'Using cache found in {download_root}')
+            print(f'Using cache found in {download_root}')  # noqa: T001
         else:
             download_and_extract_archive(
                 self.url,

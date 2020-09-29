@@ -157,6 +157,7 @@ class TestTransforms(TorchioTestCase):
 
 
 class TestTransform(TorchioTestCase):
+
     def test_abstract_transform(self):
         with self.assertRaises(TypeError):
             torchio.Transform()

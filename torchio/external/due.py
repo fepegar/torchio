@@ -1,5 +1,6 @@
 # emacs: at the end of the file
 # ex: set sts=4 ts=4 sw=4 et:
+# noqa: E800
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 """
 
@@ -55,12 +56,12 @@ try:
     from duecredit import due, BibTeX, Doi, Url, Text
     if 'due' in locals() and not hasattr(due, 'cite'):
         raise RuntimeError(
-            "Imported due lacks .cite. DueCredit is now disabled")
+            'Imported due lacks .cite. DueCredit is now disabled')
 except Exception as e:
     if not isinstance(e, ImportError):
         import logging
-        logging.getLogger("duecredit").error(
-            "Failed to import duecredit due to %s" % str(e))
+        logging.getLogger('duecredit').error(
+            f'Failed to import duecredit due to {e}')
     # Initiate due stub
     due = InactiveDueCreditCollector()
     BibTeX = Doi = Url = Text = _donothing_func

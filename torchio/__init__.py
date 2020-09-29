@@ -31,4 +31,4 @@ in deep learning. Credits instructions: https://torchio.readthedocs.io/#credits
 
 # Thanks for citing torchio. Without citations, researchers will not use TorchIO
 if 'TORCHIO_HIDE_CITATION_PROMPT' not in os.environ:
-    print(CITATION)
+    print(CITATION)  # noqa: T001

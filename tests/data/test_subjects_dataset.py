@@ -56,7 +56,7 @@ class TestSubjectsDataset(TorchioTestCase):
         with self.assertRaises(ValueError):
             SubjectsDataset(
                 self.subjects_list,
-                transform=dict(),
+                transform={},
             )
 
     def test_wrong_transform_arg(self):

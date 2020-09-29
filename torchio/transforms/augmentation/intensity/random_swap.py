@@ -32,7 +32,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, seed=seed, keys=keys)
-        self.patch_size = to_tuple(patch_size)
+        self.patch_size = np.array(to_tuple(patch_size))
         self.num_iterations = self.parse_num_iterations(num_iterations)
 
     @staticmethod
@@ -46,40 +46,51 @@ class RandomSwap(RandomTransform, IntensityTransform):
         return num_iterations
 
     @staticmethod
-    def get_params():
-        # TODO: return locations?
-        return
+    def get_params(
+            tensor: torch.Tensor,
+            patch_size: np.ndarray,
+            num_iterations: int,
+            ) -> List[Tuple[np.ndarray, np.ndarray]]:
+        spatial_shape = tensor.shape[-3:]
+        locations = []
+        for _ in range(num_iterations):
+            first_ini, first_fin = get_random_indices_from_shape(
+                spatial_shape,
+                patch_size,
+            )
+            while True:
+                second_ini, second_fin = get_random_indices_from_shape(
+                    spatial_shape,
+                    patch_size,
+                )
+                larger_than_initial = np.all(second_ini >= first_ini)
+                less_than_final = np.all(second_fin <= first_fin)
+                if larger_than_initial and less_than_final:
+                    continue  # patches overlap
+                else:
+                    break  # patches don't overlap
+            locations.append((first_ini, second_ini))
+        return locations
 
     def apply_transform(self, sample: Subject) -> dict:
         for image in self.get_images(sample):
             tensor = image[DATA]
-            image[DATA] = swap(tensor, self.patch_size, self.num_iterations)
+            locations = self.get_params(
+                tensor, self.patch_size, self.num_iterations)
+            image[DATA] = swap(tensor, self.patch_size, locations)
         return sample
 
 
 def swap(
         tensor: torch.Tensor,
         patch_size: TypeTuple,
-        num_iterations: int,
+        locations: List[Tuple[np.ndarray, np.ndarray]],
         ) -> None:
     tensor = tensor.clone()
-    patch_size = to_tuple(patch_size)
-    for _ in range(num_iterations):
-        first_ini, first_fin = get_random_indices_from_shape(
-            tensor.shape[-3:],
-            patch_size,
-        )
-        while True:
-            second_ini, second_fin = get_random_indices_from_shape(
-                tensor.shape[-3:],
-                patch_size,
-            )
-            larger_than_initial = np.all(second_ini >= first_ini)
-            less_than_final = np.all(second_fin <= first_fin)
-            if larger_than_initial and less_than_final:
-                continue  # patches overlap
-            else:
-                break  # patches don't overlap
+    patch_size = np.array(patch_size)
+    for first_ini, second_ini in locations:
+        first_fin = first_ini + patch_size
+        second_fin = second_ini + patch_size
         first_patch = crop(tensor, first_ini, first_fin)
         second_patch = crop(tensor, second_ini, second_fin).clone()
         insert(tensor, first_patch, second_ini)
