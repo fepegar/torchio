@@ -1,0 +1,61 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-ast                  # Simply check whether the files parse as valid python
+      - id: check-case-conflict        # Check for files that would conflict in case-insensitive filesystems
+      - id: check-builtin-literals     # Require literal syntax when initializing empty or zero Python builtin types
+      - id: check-docstring-first      # Checks a common error of defining a docstring after code
+      - id: check-merge-conflict       # Check for files that contain merge conflict strings
+      - id: check-vcs-permalinks       # Ensures that links to vcs websites are permalinks
+      - id: debug-statements           # Check for debugger imports and py37+ `breakpoint()` calls in python source
+      - id: detect-private-key         # Detects the presence of private keys
+      - id: double-quote-string-fixer  # Replaces double quoted strings with single quoted strings.
+      - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
+      - id: mixed-line-ending          # Replaces or checks mixed line ending
+      - id: trailing-whitespace        # This hook trims trailing whitespace
+      - id: file-contents-sorter       # Sort the lines in specified files
+        files: ^requirements.*\.txt$
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+          flake8-blind-except,      # check for blind, catch-all "except:" statements
+          flake8-breakpoint,        # check forgotten breakpoints
+          flake8-broken-line,       # forbid backslashes for line breaks
+          flake8-bugbear,           # find likely bugs and design problems
+          flake8-builtins,          # check for python builtins being used as variables or parameters
+          flake8-class-newline,     # lint for newline after class definitions
+          flake8-comprehensions,    # write better list/set/dict comprehensions
+          flake8-debugger,          # check for pdb;idbp imports and set traces
+          flake8-fixme,             # check for FIXME, TODO and other temporary developer notes
+          flake8-logging-format,    # validate (lack of) logging format strings
+          flake8-markdown,          # lint Python code blocks in Markdown files using flake8
+          flake8-pep3101,           # check for old string formatting
+          flake8-polyfill,          # help support Flake8 2.x and 3.x simultaneously
+          flake8-print,             # check for Print statements
+          flake8-type-annotations,  # enforce consistent type annotation styles
+          flake8-use-fstring,       # enforce use of f-string
+          flake8-2020,              # check for misuse of `sys.version` or `sys.version_info`
+          pep8-naming,              # check PEP-8 naming conventions
+        ]
+        args: [
+          '--max-line-length=160',
+          '--ignore=E121,E123,E125,E501,F401,F403,W503,N813',
+        ]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.6.0  # Use the ref you want to point at
+    hooks:
+      - id: python-check-blanket-noqa  # enforce that noqa annotations always occur with specific codes
+      - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
+      - id: python-use-type-annotations  # enforce that python3.6+ type annotations are used instead of type comments
+      - id: rst-backticks  # detect common mistake of using single backticks when writing rst
+      - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.7.2
+    hooks:
+      - id: pyupgrade
+        args: ['--py36-plus']

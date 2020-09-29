@@ -68,6 +68,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://codeclimate.com/github/fepegar/torchio/maintainability">
                 <img src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" alt="Code maintainability">
             </a>
+            <a href="https://github.com/pre-commit/pre-commit">
+                <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit">
+            </a>
         </td>
     </tr>
     <tr>

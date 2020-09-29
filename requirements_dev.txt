@@ -6,6 +6,7 @@ coveralls
 flake8
 mypy
 pip
+pre-commit
 pylint
 pytest
 pytest-cov
@@ -15,3 +16,4 @@ tox
 twine
 watchdog
 wheel
+
