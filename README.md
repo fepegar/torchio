@@ -289,6 +289,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://github.com/OeslleLucena"><img src="https://avatars0.githubusercontent.com/u/19919194?v=4" width="100px;" alt=""/><br /><sub><b>Oeslle Lucena</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AOeslleLucena" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://www.soumick.com"><img src="https://avatars0.githubusercontent.com/u/20525305?v=4" width="100px;" alt=""/><br /><sub><b>Soumick Chatterjee</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=soumickmj" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/neuronflow"><img src="https://avatars1.githubusercontent.com/u/7048826?v=4" width="100px;" alt=""/><br /><sub><b>neuronflow</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=neuronflow" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
