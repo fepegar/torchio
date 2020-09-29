@@ -1,5 +1,5 @@
 bump2version
-Click
+click
 codecov
 coverage
 coveralls
@@ -9,7 +9,7 @@ pip
 pylint
 pytest
 pytest-cov
-Sphinx
+sphinx
 sphinx_rtd_theme
 tox
 twine
