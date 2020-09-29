@@ -6,7 +6,7 @@ from ... import ScalarImage, LabelMap, DATA
 from .mni import SubjectMNI
 
 
-class ICBM2009CNonlinearSymmetryc(SubjectMNI):
+class ICBM2009CNonlinearSymmetric(SubjectMNI):
     r"""ICBM template.
 
     More information can be found in the `website
@@ -22,12 +22,12 @@ class ICBM2009CNonlinearSymmetryc(SubjectMNI):
 
     Example:
         >>> import torchio
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetryc()
+        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetric()
         >>> icbm
-        ICBM2009CNonlinearSymmetryc(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'tissues'); images: 7)
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetryc(load_4d_tissues=False)
+        ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'tissues'); images: 7)
+        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetric(load_4d_tissues=False)
         >>> icbm
-        ICBM2009CNonlinearSymmetryc(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
+        ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
 
     """
     def __init__(self, load_4d_tissues: bool = True):

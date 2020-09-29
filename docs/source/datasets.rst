@@ -30,10 +30,10 @@ MNI
 .. currentmodule:: torchio.datasets.mni
 
 
-:class:`ICBM2009CNonlinearSymmetryc`
+:class:`ICBM2009CNonlinearSymmetric`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: ICBM2009CNonlinearSymmetryc
+.. autoclass:: ICBM2009CNonlinearSymmetric
     :members:
     :show-inheritance:
 

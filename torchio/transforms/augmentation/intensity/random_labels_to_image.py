@@ -64,8 +64,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     Example:
         >>> import torchio
         >>> from torchio import RandomLabelsToImage, RescaleIntensity, RandomBlur, Compose
-        >>> from torchio.datasets import ICBM2009CNonlinearSymmetryc
-        >>> sample = ICBM2009CNonlinearSymmetryc()
+        >>> from torchio.datasets import ICBM2009CNonlinearSymmetric
+        >>> sample = ICBM2009CNonlinearSymmetric()
         >>> # Using the default parameters
         >>> transform = RandomLabelsToImage(label_key='tissues')
         >>> # Using custom mean and std
