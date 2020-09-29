@@ -64,7 +64,7 @@ Ready to contribute? Here's how to set up ``torchio`` for local development.
 2. Fork the ``torchio`` repo on GitHub.
 3. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/torchio.git
+    $ git clone git@github.com:your_github_username_here/torchio.git
     $ cd torchio
 
 4. Install your local copy into a virtual environment.
