@@ -4,7 +4,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
-      - id: check-added-large-file     # Prevent giant files from being committed
       - id: check-ast                  # Simply check whether the files parse as valid python
       - id: check-case-conflict        # Check for files that would conflict in case-insensitive filesystems
       - id: check-builtin-literals     # Require literal syntax when initializing empty or zero Python builtin types
@@ -17,6 +16,8 @@ repos:
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
+      - id: file-contents-sorter       # Sort the lines in specified files
+        files: ^requirements.*\.txt$
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.3
     hooks:
