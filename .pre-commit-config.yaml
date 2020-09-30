@@ -53,9 +53,16 @@ repos:
       - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
       - id: python-use-type-annotations  # enforce that python3.6+ type annotations are used instead of type comments
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
-      - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
+      # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.7.2
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']
+  - repo: https://github.com/dvolgyes/pre-commit-sync
+    rev: "v0.2.0"
+    hooks:
+      - id: pre-commit-sync
+        args: [
+          '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/master/.pre-commit-config.yaml',
+        ]
