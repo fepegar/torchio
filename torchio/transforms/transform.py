@@ -20,18 +20,23 @@ from .interpolation import Interpolation
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
-    All classes used to transform a sample from an
-    :py:class:`~torchio.SubjectsDataset` should subclass it.
     All subclasses should overwrite
     :py:meth:`torchio.tranforms.Transform.apply_transform`,
-    which takes a sample, applies some transformation and returns the result.
+    which takes data, applies some transformation and returns the result.
+
+    The input can be an instance of
+    :py:class:`torchio.Subject`,
+    :py:class:`torchio.Image`,
+    :py:class:`numpy.ndarray`,
+    :py:class:`torch.Tensor`,
+    :py:class:`SimpleITK.image`,
+    or a Python dictionary.
 
     Args:
         p: Probability that this transform will be applied.
         copy: Make a shallow copy of the input before applying the transform.
-        keys: If the input is a dictionary, the corresponding values will be
-            converted to :py:class:`torchio.ScalarImage` so that the transform
-            is applied to them only.
+        keys: Mandatory if the input is a Python dictionary. The transform will
+            be applied only to the data in each key.
     """
     def __init__(
             self,

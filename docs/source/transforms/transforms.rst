@@ -5,8 +5,10 @@ The :py:mod:`torchio.transforms` module should remind users of
 :py:mod:`torchvision.transforms`.
 
 TorchIO transforms take as input instances of
-:py:class:`~torchio.data.subject.Subject`, 4D PyTorch tensors
-or 4D NumPy arrays (see :py:class:`~torchio.transforms.Transform`).
+:py:class:`~torchio.data.subject.Subject` or
+:py:class:`~torchio.data.image.Image` (and its subclasses), 4D PyTorch tensors,
+4D NumPy arrays, SimpleITK images or Python dictionaries
+(see :py:class:`~torchio.transforms.Transform`).
 
 For example::
 
