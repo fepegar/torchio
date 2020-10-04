@@ -61,6 +61,11 @@ class Image(dict):
         tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
             :py:class:`torch.Tensor` or NumPy array with dimensions
             :math:`(C, W, H, D)`.
+        h5DS: If both path and tensor aren't supplied, then an HDF5 Dataset has
+            to be supplied. 
+        lazypatch: Only applicable with h5DS. If ``True``, the h5DS won't be 
+            pre-loaded and lazy-loading will be performed while loading part 
+            of the volume as patch. If ``False``, the whole h5DS will be preloaded. 
         affine: If :attr:`path` is not given, :attr:`affine` must be a
             :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
             identity matrix.
@@ -97,6 +102,8 @@ class Image(dict):
             path: Union[TypePath, Sequence[TypePath], None] = None,
             type: str = None,
             tensor: Optional[TypeData] = None,
+            h5DS: Optional[TypeData] = None,
+            lazypatch: bool = False,
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default
             channels_last: bool = False,
@@ -113,8 +120,8 @@ class Image(dict):
             )
             type = INTENSITY
 
-        if path is None and tensor is None:
-            raise ValueError('A value for path or tensor must be given')
+        if path is None and tensor is None and h5DS is None:
+            raise ValueError('A value for path or tensor or h5DS must be given')
         self._loaded = False
 
         tensor = self.parse_tensor(tensor)
@@ -127,6 +134,11 @@ class Image(dict):
             if key in kwargs:
                 message = f'Key "{key}" is reserved. Use a different one'
                 raise ValueError(message)
+
+        self.h5DS = h5DS
+        self.lazypatch = lazypatch
+        if h5DS and not lazypatch:
+            self.load()
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
@@ -194,7 +206,10 @@ class Image(dict):
 
     @property
     def spatial_shape(self) -> TypeTripletInt:
-        return self.shape[1:]
+        if len(self.shape) == 3:
+            return self.shape
+        else:
+            return self.shape[1:]
 
     def check_is_2d(self):
         if not self.is_2d():
@@ -359,34 +374,45 @@ class Image(dict):
         """
         if self._loaded:
             return
-        paths = self.path if isinstance(self.path, list) else [self.path]
-        tensor, affine = self.read_and_check(paths[0])
-        tensors = [tensor]
-        for path in paths[1:]:
-            new_tensor, new_affine = self.read_and_check(path)
-            if not np.array_equal(affine, new_affine):
-                message = (
-                    'Files have different affine matrices.'
-                    f'\nMatrix of {paths[0]}:'
-                    f'\n{affine}'
-                    f'\nMatrix of {path}:'
-                    f'\n{new_affine}'
-                )
-                warnings.warn(message, RuntimeWarning)
-            if not tensor.shape[1:] == new_tensor.shape[1:]:
-                message = (
-                    f'Files shape do not match, found {tensor.shape}'
-                    f'and {new_tensor.shape}'
-                )
-                RuntimeError(message)
-            tensors.append(new_tensor)
-        tensor = torch.cat(tensors)
+        if self.h5DS: #If HDF5 Dataset has been supplied
+            if self.lazypatch:
+                tensor, affine = self.h5DS, self[AFFINE]
+            else:
+                tensor, affine = self.read_and_check(h5DS=self.h5DS)
+        else:
+            paths = self.path if isinstance(self.path, list) else [self.path]
+            tensor, affine = self.read_and_check(paths[0])
+            tensors = [tensor]
+            for path in paths[1:]:
+                new_tensor, new_affine = self.read_and_check(path=path)
+                if not np.array_equal(affine, new_affine):
+                    message = (
+                        'Files have different affine matrices.'
+                        f'\nMatrix of {paths[0]}:'
+                        f'\n{affine}'
+                        f'\nMatrix of {path}:'
+                        f'\n{new_affine}'
+                    )
+                    warnings.warn(message, RuntimeWarning)
+                if not tensor.shape[1:] == new_tensor.shape[1:]:
+                    message = (
+                        f'Files shape do not match, found {tensor.shape}'
+                        f'and {new_tensor.shape}'
+                    )
+                    RuntimeError(message)
+                tensors.append(new_tensor)
+            tensor = torch.cat(tensors)
         self[DATA] = tensor
         self[AFFINE] = affine
         self._loaded = True
 
-    def read_and_check(self, path):
-        tensor, affine = read_image(path)
+    def read_and_check(self, path=None, h5DS=None):
+        if h5DS:
+            tensor, affine = torch.from_numpy(h5DS[()]), self[AFFINE]
+            if len(tensor.shape) == 3: #channel missing
+                tensor = tensor.unsqueeze(0)
+        else:
+            tensor, affine = read_image(path)
         tensor = self.parse_tensor_shape(tensor)
         if self.channels_last:
             tensor = tensor.permute(3, 0, 1, 2)
@@ -445,12 +471,20 @@ class Image(dict):
         new_affine[:3, 3] = new_origin
         i0, j0, k0 = index_ini
         i1, j1, k1 = index_fin
-        patch = self.data[:, i0:i1, j0:j1, k0:k1].clone()
+        if isinstance(self.data, torch.Tensor):
+            patch = self.data[:, i0:i1, j0:j1, k0:k1].clone()
+        else:
+            if len(self.data.shape) == 4:
+                patch = self.data[:, i0:i1, j0:j1, k0:k1]
+            else:
+                patch = np.expand_dims(self.data[i0:i1, j0:j1, k0:k1], 0)
+            patch = torch.from_numpy(patch)
         kwargs = dict(
             tensor=patch,
             affine=new_affine,
             type=self.type,
             path=self.path,
+            h5DS=self.h5DS
         )
         for key, value in self.items():
             if key in PROTECTED_KEYS: continue
