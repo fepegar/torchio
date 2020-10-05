@@ -4,6 +4,7 @@ import random
 import tempfile
 import unittest
 from pathlib import Path
+import h5py
 
 import torch
 import numpy as np
@@ -156,6 +157,33 @@ class TorchioTestCase(unittest.TestCase):
             path = str(path)
         image = ScalarImage(tensor=data, affine=affine, check_nans=not add_nans)
         image.save(path)
+        return path
+
+    def get_h5DS_path(
+            self,
+            stem,
+            binary=False,
+            shape=(10, 20, 30),
+            spacing=(1, 1, 1),
+            components=1,
+            add_nans=False,
+            force_binary_foreground=True,
+            ):
+        shape = (*shape, 1) if len(shape) == 2 else shape
+        data = np.random.rand(components, *shape)
+        if binary:
+            data = (data > 0.5).astype(np.uint8)
+            if not data.sum() and force_binary_foreground:
+                data[..., 0] = 1
+        if add_nans:
+            data[:] = np.nan
+        affine = np.diag((*spacing, 1))
+        suffix=".h5"
+        path = self.dir / f'{stem}{suffix}'
+        if np.random.rand() > 0.5:
+            path = str(path)
+        with h5py.File(path, "w") as f:
+            dset0 = f.create_dataset("data", data=data)
         return path
 
     def assertTensorNotEqual(self, *args, **kwargs):
