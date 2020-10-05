@@ -159,6 +159,17 @@ class TorchioTestCase(unittest.TestCase):
         image.save(path)
         return path
 
+    def assertTensorNotEqual(self, *args, **kwargs):  # noqa: N802
+        message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
+        with self.assertRaises(AssertionError, **message_kwarg):
+            self.assertTensorEqual(*args, **kwargs)
+
+    def assertTensorEqual(self, *args, **kwargs):  # noqa: N802
+        assert_array_equal(*args, **kwargs)
+
+    def assertTensorAlmostEqual(self, *args, **kwargs):  # noqa: N802
+        assert_array_almost_equal(*args, **kwargs)
+
     def get_h5DS_path(
             self,
             stem,
@@ -185,14 +196,3 @@ class TorchioTestCase(unittest.TestCase):
         with h5py.File(path, "w") as f:
             dset0 = f.create_dataset("data", data=data)
         return path
-
-    def assertTensorNotEqual(self, *args, **kwargs):
-        message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
-        with self.assertRaises(AssertionError, **message_kwarg):
-            self.assertTensorEqual(*args, **kwargs)
-
-    def assertTensorEqual(self, *args, **kwargs):
-        assert_array_equal(*args, **kwargs)
-
-    def assertTensorAlmostEqual(self, *args, **kwargs):
-        assert_array_almost_equal(*args, **kwargs)
