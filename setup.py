@@ -21,6 +21,7 @@ requirements = [
     'torch>=1.1',
     'torchvision',
     'tqdm',
+    'h5py'
 ]
 
 setup(
