@@ -194,5 +194,5 @@ class TorchioTestCase(unittest.TestCase):
         if np.random.rand() > 0.5:
             path = str(path)
         with h5py.File(path, "w") as f:
-            dset0 = f.create_dataset("data", data=data)
+            f.create_dataset("data", data=data)
         return path

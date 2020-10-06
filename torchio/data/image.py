@@ -135,6 +135,9 @@ class Image(dict):
                 message = f'Key "{key}" is reserved. Use a different one'
                 raise ValueError(message)
 
+        if h5DS is not None: #as no other affine is currently supplied inside the dataset
+            self[AFFINE] = affine
+            
         self.h5DS = h5DS
         self.lazypatch = lazypatch
         if h5DS and not lazypatch:
@@ -381,7 +384,7 @@ class Image(dict):
                 tensor, affine = self.read_and_check(h5DS=self.h5DS)
         else:
             paths = self.path if isinstance(self.path, list) else [self.path]
-            tensor, affine = self.read_and_check(paths[0])
+            tensor, affine = self.read_and_check(path=paths[0])
             tensors = [tensor]
             for path in paths[1:]:
                 new_tensor, new_affine = self.read_and_check(path=path)

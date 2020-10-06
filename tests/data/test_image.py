@@ -163,19 +163,19 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.width, image.shape[width_idx])
 
     def test_h5ds_nolazypatch_crop(self):
-        path = self.get_image_path('h5ds3D', shape=(10, 10, 10))
-        with h5py.File(path, "r", swmr=True) as f:
-            ds = f["data"]
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10))
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
         image = ScalarImage(h5DS=ds, lazypatch=False)
-        assert image.shape == (10, 10, 10)
+        assert image.spatial_shape == (10, 10, 10)
         cropped_patch = image.crop((1,1,1), (5,5,5))
-        assert cropped_patch.shape == (4, 4, 4)
+        assert cropped_patch.spatial_shape == (4, 4, 4)
 
     def test_h5ds_lazypatch_crop(self):
-        path = self.get_image_path('h5ds3D', shape=(10, 10, 10))
-        with h5py.File(path, "r", swmr=True) as f:
-            ds = f["data"]
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10))
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
         image = ScalarImage(h5DS=ds, lazypatch=True)
-        assert image.shape == (10, 10, 10)
+        assert image.spatial_shape == (10, 10, 10)
         cropped_patch = image.crop((1,1,1), (5,5,5))
-        assert cropped_patch.shape == (4, 4, 4)
+        assert cropped_patch.spatial_shape == (4, 4, 4)
