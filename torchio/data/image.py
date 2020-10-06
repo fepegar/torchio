@@ -137,7 +137,7 @@ class Image(dict):
 
         if h5DS is not None: #as no other affine is currently supplied inside the dataset
             self[AFFINE] = affine
-            
+
         self.h5DS = h5DS
         self.lazypatch = lazypatch
         if h5DS and not lazypatch:
@@ -482,6 +482,8 @@ class Image(dict):
             else:
                 patch = np.expand_dims(self.data[i0:i1, j0:j1, k0:k1], 0)
             patch = torch.from_numpy(patch)
+            if self.check_nans and torch.isnan(patch).any():
+                warnings.warn(f'NaNs found in the dataset')
         kwargs = dict(
             tensor=patch,
             affine=new_affine,

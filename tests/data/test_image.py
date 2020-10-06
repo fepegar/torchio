@@ -179,3 +179,45 @@ class TestImage(TorchioTestCase):
         assert image.spatial_shape == (10, 10, 10)
         cropped_patch = image.crop((1,1,1), (5,5,5))
         assert cropped_patch.spatial_shape == (4, 4, 4)
+        
+    def test_h5ds_lazypatch_channelless(self):
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10), no_channel_dim=True)
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
+        image = ScalarImage(h5DS=ds, lazypatch=True)
+        assert image.spatial_shape == (10, 10, 10)
+        cropped_patch = image.crop((1,1,1), (5,5,5))
+        assert cropped_patch.spatial_shape == (4, 4, 4)
+
+    def test_h5ds_nolazypatch_channelless(self):
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10), no_channel_dim=True)
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
+        image = ScalarImage(h5DS=ds, lazypatch=False)
+        assert image.spatial_shape == (10, 10, 10)
+        cropped_patch = image.crop((1,1,1), (5,5,5))
+        assert cropped_patch.spatial_shape == (4, 4, 4)
+
+    def test_h5ds_nolazypatch_nan(self):
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10), add_nans=True)
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
+        with self.assertWarns(UserWarning):
+            image = ScalarImage(h5DS=ds, lazypatch=False, check_nans=True)
+        image.set_check_nans(False)
+
+    def test_h5ds_lazypatch_crop_nan(self):
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10), add_nans=True)
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
+        image = ScalarImage(h5DS=ds, lazypatch=True, check_nans=True)
+        with self.assertWarns(UserWarning):
+            cropped_patch = image.crop((1,1,1), (5,5,5))
+        image.set_check_nans(False)
+
+    def test_label_map_type_h5ds(self):
+        path = self.get_h5DS_path('h5ds3D', shape=(10, 10, 10), binary=True)
+        f = h5py.File(path, "r", swmr=True)
+        ds = f["data"]
+        label = LabelMap(h5DS=ds)
+        self.assertIs(label.type, LABEL)

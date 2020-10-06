@@ -179,9 +179,13 @@ class TorchioTestCase(unittest.TestCase):
             components=1,
             add_nans=False,
             force_binary_foreground=True,
+            no_channel_dim=False
             ):
         shape = (*shape, 1) if len(shape) == 2 else shape
-        data = np.random.rand(components, *shape)
+        if no_channel_dim:
+            data = np.random.rand(*shape)
+        else:
+            data = np.random.rand(components, *shape)
         if binary:
             data = (data > 0.5).astype(np.uint8)
             if not data.sum() and force_binary_foreground:
