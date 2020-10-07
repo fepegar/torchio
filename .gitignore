@@ -109,3 +109,4 @@ ENV/
 test_scripts/
 
 *DS_Store
+tester.py
