@@ -158,6 +158,9 @@ class TorchioTestCase(unittest.TestCase):
         image.save(path)
         return path
 
+    def get_tests_data_dir(self):
+        return Path(__file__).parent / 'image_data'
+
     def assertTensorNotEqual(self, *args, **kwargs):  # noqa: N802
         message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
         with self.assertRaises(AssertionError, **message_kwarg):
