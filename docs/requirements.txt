@@ -1,6 +1,6 @@
 Click
 Python-deprecated
-SimpleITK<2
+SimpleITK
 humanize
 nibabel
 numpy
