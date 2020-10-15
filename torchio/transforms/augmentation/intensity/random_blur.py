@@ -2,8 +2,8 @@ from typing import Union, Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
-from ....utils import nib_to_sitk, sitk_to_nib
-from ....torchio import DATA, AFFINE, TypeData
+import scipy.ndimage as ndi
+from ....torchio import DATA, AFFINE, TypeData, TypeTripletFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform
@@ -44,7 +44,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 random_parameters_images_dict[key] = random_parameters_dict
                 transformed_tensor = blur(
                     tensor,
-                    image[AFFINE],
+                    image.spacing,
                     std,
                 )
                 transformed_tensors.append(transformed_tensor)
@@ -58,10 +58,13 @@ class RandomBlur(RandomTransform, IntensityTransform):
         return std
 
 
-def blur(data: TypeData, affine: TypeData, std: np.ndarray) -> torch.Tensor:
+def blur(
+        data: TypeData,
+        spacing: TypeTripletFloat,
+        std: np.ndarray,
+        ) -> torch.Tensor:
     assert data.ndim == 3
-    image = nib_to_sitk(data[np.newaxis], affine)
-    image = sitk.DiscreteGaussian(image, std.tolist())
-    array, _ = sitk_to_nib(image)
-    tensor = torch.from_numpy(array[0])
+    sigma = np.array(std) * np.array(spacing)
+    blurred = ndi.gaussian_filter(data, sigma)
+    tensor = torch.from_numpy(blurred)
     return tensor
