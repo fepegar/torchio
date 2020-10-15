@@ -5,6 +5,7 @@ from typing import Any, Dict, Tuple, Optional, Union, Sequence, List
 import torch
 import humanize
 import numpy as np
+from PIL import Image as ImagePIL
 import nibabel as nib
 import SimpleITK as sitk
 
@@ -439,6 +440,11 @@ class Image(dict):
         """Get the image as an instance of :py:class:`sitk.Image`."""
         return nib_to_sitk(self[DATA], self[AFFINE], **kwargs)
 
+    def as_pil(self):
+        """Get the image as an instance of :py:class:`PIL.Image`."""
+        self.check_is_2d()
+        return ImagePIL.open(self.path)
+
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS+ or LPS+ coordinates.
 
@@ -459,9 +465,12 @@ class Image(dict):
         self.check_nans = check_nans
 
     def plot(self, **kwargs) -> None:
-        """Plot central slices of the image."""
-        from ..visualization import plot_volume  # avoid circular import
-        plot_volume(self, **kwargs)
+        """Plot image."""
+        if self.is_2d():
+            self.as_pil().show()
+        else:
+            from ..visualization import plot_volume  # avoid circular import
+            plot_volume(self, **kwargs)
 
     def crop(self, index_ini: TypeTripletInt, index_fin: TypeTripletInt):
         new_origin = nib.affines.apply_affine(self.affine, index_ini)
