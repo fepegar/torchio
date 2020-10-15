@@ -1,10 +1,10 @@
 Click
+Python-deprecated
+SimpleITK<2
 humanize
 nibabel
 numpy
-Python-deprecated
 scipy
-SimpleITK<2
 torch>=1.1
 torchvision
 tqdm

@@ -17,7 +17,7 @@ repos:
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
       - id: file-contents-sorter       # Sort the lines in specified files
-        files: ^requirements.*\.txt$
+        files: .*requirements.*\.txt$
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.3
     hooks:
@@ -59,10 +59,10 @@ repos:
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']
-  - repo: https://github.com/dvolgyes/pre-commit-sync
-    rev: "v0.2.0"
-    hooks:
-      - id: pre-commit-sync
-        args: [
-          '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/master/.pre-commit-config.yaml',
-        ]
+  # - repo: https://github.com/dvolgyes/pre-commit-sync
+  #   rev: "v0.2.0"
+  #   hooks:
+  #     - id: pre-commit-sync
+  #       args: [
+  #         '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/master/.pre-commit-config.yaml',
+  #       ]
