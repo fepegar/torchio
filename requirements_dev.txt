@@ -4,6 +4,7 @@ codecov
 coverage
 coveralls
 flake8
+matplotlib
 mypy
 pip
 pre-commit

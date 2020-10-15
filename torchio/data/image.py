@@ -5,6 +5,7 @@ from typing import Any, Dict, Tuple, Optional, Union, Sequence, List
 import torch
 import humanize
 import numpy as np
+from PIL import Image as ImagePIL
 import nibabel as nib
 import SimpleITK as sitk
 
@@ -117,8 +118,8 @@ class Image(dict):
             raise ValueError('A value for path or tensor must be given')
         self._loaded = False
 
-        tensor = self.parse_tensor(tensor)
-        affine = self.parse_affine(affine)
+        tensor = self._parse_tensor(tensor)
+        affine = self._parse_affine(affine)
         if tensor is not None:
             self[DATA] = tensor
             self[AFFINE] = affine
@@ -173,65 +174,84 @@ class Image(dict):
         return self.__class__(**kwargs)
 
     @property
-    def data(self):
+    def data(self) -> torch.Tensor:
+        """Tensor data. Same as :py:class:`Image.tensor`."""
         return self[DATA]
 
     @property
-    def tensor(self):
+    def tensor(self) -> torch.Tensor:
+        """Tensor data. Same as :py:class:`Image.data`."""
         return self.data
 
     @property
-    def affine(self):
+    def affine(self) -> np.ndarray:
+        """Affine matrix to transform voxel indices into world coordinates."""
         return self[AFFINE]
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self[TYPE]
 
     @property
     def shape(self) -> Tuple[int, int, int, int]:
+        """Tensor shape as :math:`(C, W, H, D)`."""
         return tuple(self.data.shape)
 
     @property
     def spatial_shape(self) -> TypeTripletInt:
+        """Tensor spatial shape as :math:`(W, H, D)`."""
         return self.shape[1:]
 
-    def check_is_2d(self):
+    def check_is_2d(self) -> None:
         if not self.is_2d():
             message = f'Image is not 2D. Spatial shape: {self.spatial_shape}'
             raise RuntimeError(message)
 
     @property
     def height(self) -> int:
+        """Image height, if 2D."""
         self.check_is_2d()
         return self.spatial_shape[1]
 
     @property
     def width(self) -> int:
+        """Image width, if 2D."""
         self.check_is_2d()
         return self.spatial_shape[0]
 
     @property
-    def orientation(self):
+    def orientation(self) -> Tuple[str, str, str]:
+        """Orientation codes."""
         return nib.aff2axcodes(self.affine)
 
     @property
-    def spacing(self):
+    def spacing(self) -> Tuple[float, float, float]:
+        """Voxel spacing in mm."""
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
         return tuple(spacing)
 
     @property
-    def memory(self):
+    def memory(self) -> float:
+        """Number of Bytes that the tensor takes in the RAM."""
         return np.prod(self.shape) * 4  # float32, i.e. 4 bytes per voxel
+
+    @property
+    def bounds(self) -> np.ndarray:
+        """Position of centers of voxels in smallest and largest coordinates."""
+        ini = 0, 0, 0
+        fin = np.array(self.spatial_shape) - 1
+        point_ini = nib.affines.apply_affine(self.affine, ini)
+        point_fin = nib.affines.apply_affine(self.affine, fin)
+        return np.array((point_ini, point_fin))
 
     def axis_name_to_index(self, axis: str):
         """Convert an axis name to an axis index.
 
         Args:
             axis: Possible inputs are ``'Left'``, ``'Right'``, ``'Anterior'``,
-            ``'Posterior'``, ``'Inferior'``, ``'Superior'``. Lower-case versions
-            and first letters are also valid, as only the first letter will be
-            used.
+                ``'Posterior'``, ``'Inferior'``, ``'Superior'``. Lower-case
+                versions and first letters are also valid, as only the first
+                letter will be used.
 
         .. note:: If you are working with animals, you should probably use
             ``'Superior'``, ``'Inferior'``, ``'Anterior'`` and ``'Posterior'``
@@ -323,7 +343,7 @@ class Image(dict):
         else:
             return [self._parse_single_path(p) for p in path]
 
-    def parse_tensor(self, tensor: TypeData) -> torch.Tensor:
+    def _parse_tensor(self, tensor: TypeData) -> torch.Tensor:
         if tensor is None:
             return None
         if isinstance(tensor, np.ndarray):
@@ -340,7 +360,7 @@ class Image(dict):
         return ensure_4d(tensor)
 
     @staticmethod
-    def parse_affine(affine: np.ndarray) -> np.ndarray:
+    def _parse_affine(affine: np.ndarray) -> np.ndarray:
         if affine is None:
             return np.eye(4)
         if not isinstance(affine, np.ndarray):
@@ -420,6 +440,11 @@ class Image(dict):
         """Get the image as an instance of :py:class:`sitk.Image`."""
         return nib_to_sitk(self[DATA], self[AFFINE], **kwargs)
 
+    def as_pil(self):
+        """Get the image as an instance of :py:class:`PIL.Image`."""
+        self.check_is_2d()
+        return ImagePIL.open(self.path)
+
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS+ or LPS+ coordinates.
 
@@ -438,6 +463,14 @@ class Image(dict):
 
     def set_check_nans(self, check_nans: bool):
         self.check_nans = check_nans
+
+    def plot(self, **kwargs) -> None:
+        """Plot image."""
+        if self.is_2d():
+            self.as_pil().show()
+        else:
+            from ..visualization import plot_volume  # avoid circular import
+            plot_volume(self, **kwargs)
 
     def crop(self, index_ini: TypeTripletInt, index_fin: TypeTripletInt):
         new_origin = nib.affines.apply_affine(self.affine, index_ini)

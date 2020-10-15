@@ -48,3 +48,13 @@ class TestSubject(TorchioTestCase):
         )
         with self.assertRaises(RuntimeError):
             subject.spatial_shape
+
+    def test_plot(self):
+        self.sample.plot(
+            show=False,
+            output_path=self.dir / 'figure.png',
+            cmap_dict=dict(
+                t2='viridis',
+                label={0: 'yellow', 1: 'blue'},
+            ),
+        )
