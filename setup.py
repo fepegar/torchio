@@ -46,6 +46,9 @@ setup(
             'torchio-transform=torchio.cli:apply_transform',
         ],
     },
+    extras_require={
+        'plot': ['matplotlib', 'seaborn'],
+    },
     install_requires=requirements,
     license='MIT license',
     long_description=readme + '\n\n' + history,
