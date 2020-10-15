@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Generator
 
 import numpy as np
 
-from ... import TypePatchSize, TypeTripletInt
+from ... import TypePatchSize, TypeTripletInt, TypeSixBounds
 from ...data.subject import Subject
 from ...utils import to_tuple
 
@@ -29,14 +29,38 @@ class PatchSampler:
 
     def extract_patch(
             self,
-            sample: Subject,
+            subject: Subject,
             index_ini: TypeTripletInt,
             ) -> Subject:
-        index_ini = np.array(index_ini)
-        index_fin = index_ini + self.patch_size
-        cropped_sample = sample.crop(index_ini, index_fin)
-        cropped_sample['index_ini'] = index_ini.astype(int)
-        return cropped_sample
+        cropped_subject = self.crop(subject, index_ini, self.patch_size)
+        cropped_subject['index_ini'] = np.array(index_ini).astype(int)
+        return cropped_subject
+
+    def crop(
+            self,
+            subject: Subject,
+            index_ini: TypeTripletInt,
+            patch_size: TypeTripletInt,
+            ) -> Subject:
+        transform = self.get_crop_transform(subject, index_ini, patch_size)
+        return transform(subject)
+
+    @staticmethod
+    def get_crop_transform(
+            subject,
+            index_ini,
+            patch_size: TypePatchSize,
+            ):
+        from ...transforms.preprocessing.spatial.crop import Crop
+        shape = np.array(subject.spatial_shape, dtype=np.uint16)
+        index_ini = np.array(index_ini, dtype=np.uint16)
+        patch_size = np.array(patch_size, dtype=np.uint16)
+        index_fin = index_ini + patch_size
+        crop_ini = index_ini.tolist()
+        crop_fin = (shape - index_fin).tolist()
+        start = ()
+        cropping: TypeSixBounds = sum(zip(crop_ini, crop_fin), start)
+        return Crop(cropping)
 
 
 class RandomSampler(PatchSampler):

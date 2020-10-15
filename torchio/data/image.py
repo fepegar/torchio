@@ -472,24 +472,6 @@ class Image(dict):
             from ..visualization import plot_volume  # avoid circular import
             plot_volume(self, **kwargs)
 
-    def crop(self, index_ini: TypeTripletInt, index_fin: TypeTripletInt):
-        new_origin = nib.affines.apply_affine(self.affine, index_ini)
-        new_affine = self.affine.copy()
-        new_affine[:3, 3] = new_origin
-        i0, j0, k0 = index_ini
-        i1, j1, k1 = index_fin
-        patch = self.data[:, i0:i1, j0:j1, k0:k1].clone()
-        kwargs = dict(
-            tensor=patch,
-            affine=new_affine,
-            type=self.type,
-            path=self.path,
-        )
-        for key, value in self.items():
-            if key in PROTECTED_KEYS: continue
-            kwargs[key] = value  # should I copy? deepcopy?
-        return self.__class__(**kwargs)
-
 
 class ScalarImage(Image):
     """Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.INTENSITY`.

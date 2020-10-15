@@ -155,20 +155,6 @@ class Subject(dict):
         for image in self.get_images(intensity_only=False):
             image.load()
 
-    def crop(self, index_ini, index_fin):
-        """Make a copy of the subject with a reduced field of view (patch)."""
-        result_dict = {}
-        for key, value in self.items():
-            if isinstance(value, Image):
-                # patch.clone() is much faster than copy.deepcopy(patch)
-                value = value.crop(index_ini, index_fin)
-            else:
-                value = copy.deepcopy(value)
-            result_dict[key] = value
-        new = Subject(result_dict)
-        new.history = self.history
-        return new
-
     def update_attributes(self):
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)

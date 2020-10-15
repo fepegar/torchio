@@ -75,7 +75,7 @@ class SubjectsDataset(Dataset):
     def __len__(self):
         return len(self.subjects)
 
-    def __getitem__(self, index: int) -> dict:
+    def __getitem__(self, index: int) -> Subject:
         if not isinstance(index, int):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
