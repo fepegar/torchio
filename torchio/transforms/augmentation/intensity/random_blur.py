@@ -25,7 +25,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
     """
     def __init__(
             self,
-            std: Union[float, Tuple[float, float]] = (0, 4),
+            std: Union[float, Tuple[float, float]] = (0, 2),
             p: float = 1,
             seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
@@ -61,10 +61,10 @@ class RandomBlur(RandomTransform, IntensityTransform):
 def blur(
         data: TypeData,
         spacing: TypeTripletFloat,
-        std: np.ndarray,
+        std_voxel: np.ndarray,
         ) -> torch.Tensor:
     assert data.ndim == 3
-    sigma = np.array(std) * np.array(spacing)
-    blurred = ndi.gaussian_filter(data, sigma)
+    std_physical = np.array(std_voxel) * np.array(spacing)
+    blurred = ndi.gaussian_filter(data, std_physical)
     tensor = torch.from_numpy(blurred)
     return tensor
