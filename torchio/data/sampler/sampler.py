@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Generator
 
 import numpy as np
 
-from ... import TypePatchSize, TypeTripletInt, TypeSixBounds
+from ... import TypePatchSize, TypeTripletInt
 from ...data.subject import Subject
 from ...utils import to_tuple
 
@@ -59,7 +59,7 @@ class PatchSampler:
         crop_ini = index_ini.tolist()
         crop_fin = (shape - index_fin).tolist()
         start = ()
-        cropping: TypeSixBounds = sum(zip(crop_ini, crop_fin), start)
+        cropping = sum(zip(crop_ini, crop_fin), start)
         return Crop(cropping)
 
 
