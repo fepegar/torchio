@@ -256,7 +256,7 @@ See [Getting started](https://torchio.readthedocs.io/quickstart.html) for
 instructions,
 a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world)
 example and a comprehensive Jupyter notebook tutorial on
-[Google Colab](https://torchio.readthedocs.io/quickstart.html#google-colab-jupyter-notebok).
+[Google Colab](https://torchio.readthedocs.io/quickstart.html#google-colab-jupyter-notebook).
 
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).
