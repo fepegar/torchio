@@ -85,8 +85,8 @@ in parallel::
 
 
 
-Google Colab Jupyter Notebok
-============================
+Google Colab Jupyter Notebook
+=============================
 
 |Google-Colab-notebook|
 
