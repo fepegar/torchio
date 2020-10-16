@@ -27,9 +27,9 @@ class GridAggregator:
         information about patch-based sampling.
     """
     def __init__(self, sampler: GridSampler, overlap_mode: str = 'crop'):
-        sample = sampler.sample
+        subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
-        self.spatial_shape = sample.spatial_shape
+        self.spatial_shape = subject.spatial_shape
         self._output_tensor = None
         self.patch_overlap = sampler.patch_overlap
         self.parse_overlap_mode(overlap_mode)

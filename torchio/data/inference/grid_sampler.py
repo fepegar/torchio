@@ -47,7 +47,7 @@ class GridSampler(PatchSampler, Dataset):
             patch_overlap: TypeTuple = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
             ):
-        self.sample = sample
+        self.subject = sample
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
         self.padding_mode = padding_mode
         if padding_mode is not None:
@@ -55,9 +55,9 @@ class GridSampler(PatchSampler, Dataset):
             border = self.patch_overlap // 2
             padding = border.repeat(2)
             pad = Pad(padding, padding_mode=padding_mode)
-            self.sample = pad(self.sample)
+            self.subject = pad(self.subject)
         PatchSampler.__init__(self, patch_size)
-        sizes = self.sample.spatial_shape, self.patch_size, self.patch_overlap
+        sizes = self.subject.spatial_shape, self.patch_size, self.patch_overlap
         self.parse_sizes(*sizes)
         self.locations = self.get_patches_locations(*sizes)
 
@@ -68,10 +68,9 @@ class GridSampler(PatchSampler, Dataset):
         # Assume 3D
         location = self.locations[index]
         index_ini = location[:3]
-        index_fin = location[3:]
-        cropped_sample = self.sample.crop(index_ini, index_fin)
-        cropped_sample[LOCATION] = location
-        return cropped_sample
+        cropped_subject = self.crop(self.subject, index_ini, self.patch_size)
+        cropped_subject[LOCATION] = location
+        return cropped_subject
 
     @staticmethod
     def parse_sizes(

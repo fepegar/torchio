@@ -168,15 +168,14 @@ class WeightedSampler(RandomSampler):
 
     def extract_patch(
             self,
-            sample: Subject,
+            subject: Subject,
             probability_map: np.ndarray,
             cdf: np.ndarray
             ) -> Subject:
         index_ini = self.get_random_index_ini(probability_map, cdf)
-        index_fin = index_ini + self.patch_size
-        cropped_sample = sample.crop(index_ini, index_fin)
-        cropped_sample['index_ini'] = index_ini.astype(int)
-        return cropped_sample
+        cropped_subject = self.crop(subject, index_ini, self.patch_size)
+        cropped_subject['index_ini'] = index_ini.astype(int)
+        return cropped_subject
 
     def get_random_index_ini(
             self,

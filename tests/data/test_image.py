@@ -38,16 +38,6 @@ class TestImage(TorchioTestCase):
         sample_input = torch.ones((4, 10, 10, 10))
         RandomAffine()(sample_input)
 
-    def test_crop_attributes(self):
-        cropped = self.sample.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(self.sample.t1['pre_affine'], cropped.t1['pre_affine'])
-
-    def test_crop_does_not_create_wrong_path(self):
-        data = torch.ones((1, 10, 10, 10))
-        image = ScalarImage(tensor=data)
-        cropped = image.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.path, None)
-
     def test_scalar_image_type(self):
         data = torch.ones((1, 10, 10, 10))
         image = ScalarImage(tensor=data)
@@ -67,18 +57,6 @@ class TestImage(TorchioTestCase):
         data = torch.ones((1, 10, 10, 10))
         with self.assertRaises(ValueError):
             LabelMap(tensor=data, type=INTENSITY)
-
-    def test_crop_scalar_image_type(self):
-        data = torch.ones((1, 10, 10, 10))
-        image = ScalarImage(tensor=data)
-        cropped = image.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.type, INTENSITY)
-
-    def test_crop_label_map_type(self):
-        data = torch.ones((1, 10, 10, 10))
-        label = LabelMap(tensor=data)
-        cropped = label.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.type, LABEL)
 
     def test_no_input(self):
         with self.assertRaises(ValueError):
