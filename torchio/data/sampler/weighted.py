@@ -34,7 +34,7 @@ class WeightedSampler(RandomSampler):
         ... )
         >>> patch_size = 64
         >>> sampler = torchio.data.WeightedSampler(patch_size, 'sampling_map')
-        >>> for patch in sampler(sample):
+        >>> for patch in sampler(subject):
         ...     print(patch['index_ini'])
 
     .. note:: The index of the center of a patch with even size :math:`s` is
@@ -189,8 +189,9 @@ class WeightedSampler(RandomSampler):
         assert np.all(index_ini >= 0)
         return index_ini
 
+    @classmethod
     def sample_probability_map(
-            self,
+            cls,
             probability_map: np.ndarray,
             cdf: np.ndarray
             ) -> np.ndarray:
@@ -205,9 +206,9 @@ class WeightedSampler(RandomSampler):
                    [2, 2, 2, 2, 2, 2, 2, 2, 2]])
             >>> histogram = np.zeros_like(probability_map)
             >>> for _ in range(100000):
-            ...     histogram[sample_probability_map(probability_map)] += 1
+            ...     histogram[WeightedSampler.sample_probability_map(probability_map, cdf)] += 1  # doctest:+SKIP
             ...
-            >>> histogram
+            >>> histogram  # doctest:+SKIP
             array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
 

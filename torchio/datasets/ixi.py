@@ -45,15 +45,15 @@ class IXI(SubjectsDataset):
 
     Example::
 
-        >>> import torchio
+        >>> import torchio as tio
         >>> transforms = [
-        ...     torchio.ToCanonical(),  # to RAS
-        ...     torchio.Resample((1, 1, 1)),  # to 1 mm iso
+        ...     tio.ToCanonical(),  # to RAS
+        ...     tio.Resample((1, 1, 1)),  # to 1 mm iso
         ... ]
-        >>> ixi_dataset = torchio.datasets.IXI(
+        >>> ixi_dataset = tio.datasets.IXI(
         ...     'path/to/ixi_root/',
         ...     modalities=('T1', 'T2'),
-        ...     transform=torchio.Compose(transforms),
+        ...     transform=tio.Compose(transforms),
         ...     download=True,
         ... )
         >>> print('Number of subjects in dataset:', len(ixi_dataset))  # 577

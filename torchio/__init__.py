@@ -5,6 +5,9 @@ __email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
 __version__ = '0.17.48'
 
 import os
+import warnings
+from pathlib import Path
+
 from . import utils
 from .torchio import *
 from .transforms import *

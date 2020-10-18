@@ -23,13 +23,13 @@ class RandomDownsample(RandomTransform, SpatialTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> from torchio import RandomDownsample
-        >>> from torchio.datasets import Colin27
-        >>> transform = RandomDownsample(axes=1, downsampling=2.)   # Multiply spacing of second axis by 2
-        >>> transform = RandomDownsample(
-        ...     axes=(0, 1, 2), downsampling=(2, 5)
+        >>> import torchio as tio
+        >>> transform = tio.RandomDownsample(axes=1, downsampling=2.)   # Multiply spacing of second axis by 2
+        >>> transform = tio.RandomDownsample(
+        ...     axes=(0, 1, 2),
+        ...     downsampling=(2, 5),
         ... )   # Multiply spacing of one of the 3 axes by a factor randomly chosen in [2, 5]
-        >>> colin = Colin27
+        >>> colin = tio.datasets.Colin27()
         >>> transformed = transform(colin)  # images have now anisotropic spacing
     """
 

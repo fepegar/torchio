@@ -20,11 +20,10 @@ inference across a 3D image using small patches::
     ... )
     >>> patch_loader = torch.utils.data.DataLoader(grid_sampler, batch_size=4)
     >>> aggregator = torchio.inference.GridAggregator(grid_sampler)
-    >>> model = nn.Identity()
-    >>> model.eval()
+    >>> model = nn.Identity().eval()
     >>> with torch.no_grad():
     ...     for patches_batch in patch_loader:
-    ...         input_tensor = patches_batch['t1'][torchio.DATA].to(device)
+    ...         input_tensor = patches_batch['t1'][torchio.DATA]
     ...         locations = patches_batch[torchio.LOCATION]
     ...         logits = model(input_tensor)
     ...         labels = logits.argmax(dim=torchio.CHANNELS_DIMENSION, keepdim=True)

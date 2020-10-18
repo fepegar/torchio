@@ -40,14 +40,14 @@ class OneOf(RandomTransform):
         p: Probability that this transform will be applied.
 
     Example:
-        >>> import torchio
-        >>> ixi = torchio.datasets.ixi.IXITiny('ixi', download=True)
-        >>> sample = ixi[0]
+        >>> import torchio as tio
+        >>> colin = tio.datasets.Colin27()
         >>> transforms_dict = {
-        ...     torchio.transforms.RandomAffine(): 0.75,
-        ...     torchio.transforms.RandomElasticDeformation(): 0.25,
+        ...     tio.RandomAffine(): 0.75,
+        ...     tio.RandomElasticDeformation(): 0.25,
         ... }  # Using 3 and 1 as probabilities would have the same effect
         >>> transform = torchio.transforms.OneOf(transforms_dict)
+        >>> transformed = transform(colin)
 
     """
     def __init__(

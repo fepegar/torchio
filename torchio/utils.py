@@ -282,7 +282,7 @@ def get_torchio_cache_dir():
     return Path('~/.cache/torchio').expanduser()
 
 
-def round_up(value: float) -> float:
+def round_up(value: float) -> int:
     """Round half towards infinity.
 
     Args:
@@ -300,7 +300,7 @@ def round_up(value: float) -> float:
         4
 
     """
-    return np.floor(value + 0.5)
+    return int(np.floor(value + 0.5))
 
 
 def compress(input_path, output_path):

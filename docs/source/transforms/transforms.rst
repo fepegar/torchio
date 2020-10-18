@@ -14,25 +14,26 @@ For example::
 
    >>> import torch
    >>> import numpy as np
-   >>> from torchio.transforms import RandomAffine
-   >>> affine_transform = RandomAffine()
+   >>> import torchio as tio
+   >>> affine_transform = tio.RandomAffine()
    >>> tensor = torch.rand(1, 256, 256, 159)
    >>> transformed_tensor = affine_transform(tensor)
    >>> type(transformed_tensor)
-   torch.Tensor
+   <class 'torch.Tensor'>
    >>> array = np.random.rand(1, 256, 256, 159)
    >>> transformed_array = affine_transform(array)
-   >>> transformed_array
-   np.ndarray
-   >>> subject = torchio.datasets.Colin27()
+   >>> type(transformed_array)
+   <class 'numpy.ndarray'>
+   >>> subject = tio.datasets.Colin27()
    >>> transformed_subject = affine_transform(subject)
    >>> transformed_subject
-   Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
-   >>> transformed_subject.history
+   Subject(Keys: ('t1', 'head', 'brain'); images: 3)
+   >>> from pprint import pprint
+   >>> pprint(transformed_subject.history)  # doctest:+ELLIPSIS
    [('RandomAffine',
-      {'scaling': array([1.0208164, 0.9096418, 1.0978225], dtype=float32),
-       'rotation': array([ 8.183947  ,  0.6384735 , -0.82128906], dtype=float32),
-       'translation': array([0., 0., 0.], dtype=float32)})]
+     {'...': array([..., ..., ...], dtype=float32),
+      '...': array([..., ..., ...], dtype=float32),
+      'translation': array([0., 0., 0.], dtype=float32)})]
    >>> subject.history
    []
 

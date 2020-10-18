@@ -17,6 +17,9 @@ from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
 
 
+TypeTransformInput = Union[Subject, torch.Tensor, np.ndarray, dict, sitk.Image]
+
+
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
@@ -49,8 +52,8 @@ class Transform(ABC):
         self.keys = keys
         self.default_image_name = 'default_image_name'
 
-    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray]):
-        """Transform a sample and return the result.
+    def __call__(self, data: TypeTransformInput) -> TypeTransformInput:
+        """Transform data and return a result of the same type.
 
         Args:
             data: Instance of :py:class:`~torchio.Subject`, 4D
@@ -91,6 +94,8 @@ class Transform(ABC):
                 raise RuntimeError(message)
             sample = self._get_subject_from_dict(data, self.keys)
             is_dict = True
+        else:
+            raise ValueError(f'Input type not recognized: {type(data)}')
         self.parse_sample(sample)
 
         if self.copy:

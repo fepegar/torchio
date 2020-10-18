@@ -31,20 +31,20 @@ class CropOrPad(BoundsTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
+        >>> import torchio as tio
         >>> from torchio.transforms import CropOrPad
-        >>> subject = torchio.Subject(
-        ...     torchio.ScalarImage('chest_ct', 'subject_a_ct.nii.gz'),
-        ...     torchio.LabelMap('heart_mask', 'subject_a_heart_seg.nii.gz'),
+        >>> subject = tio.Subject(
+        ...     chest_ct=tio.ScalarImage('subject_a_ct.nii.gz'),
+        ...     heart_mask=tio.LabelMap('subject_a_heart_seg.nii.gz'),
         ... )
-        >>> subject['chest_ct'].shape
+        >>> subject.chest_ct.shape
         torch.Size([1, 512, 512, 289])
         >>> transform = CropOrPad(
         ...     (120, 80, 180),
         ...     mask_name='heart_mask',
         ... )
         >>> transformed = transform(subject)
-        >>> transformed['chest_ct'].shape
+        >>> transformed.chest_ct.shape
         torch.Size([1, 120, 80, 180])
     """
     def __init__(
@@ -122,7 +122,7 @@ class CropOrPad(BoundsTransform):
 
         Example:
             >>> p = np.array((4, 0, 7))
-            >>> _get_six_bounds_parameters(p)
+            >>> CropOrPad._get_six_bounds_parameters(p)
             (2, 2, 0, 0, 4, 3)
         """
         parameters = parameters / 2

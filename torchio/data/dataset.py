@@ -33,13 +33,13 @@ class SubjectsDataset(Dataset):
         >>> import torchio
         >>> from torchio import SubjectsDataset, ScalarImage, LabelMap, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
-        >>> subject_a = Subject([
+        >>> subject_a = Subject(
         ...     t1=ScalarImage('t1.nrrd',),
         ...     t2=ScalarImage('t2.mha',),
         ...     label=LabelMap('t1_seg.nii.gz'),
         ...     age=31,
         ...     name='Fernando Perez',
-        >>> ])
+        ... )
         >>> subject_b = Subject(
         ...     t1=ScalarImage('colin27_t1_tal_lin.minc',),
         ...     t2=ScalarImage('colin27_t2_tal_lin_dicom',),

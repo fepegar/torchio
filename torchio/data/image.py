@@ -511,7 +511,7 @@ class LabelMap(Image):
     Example:
         >>> import torch
         >>> import torchio
-        >>> labels = torchio.LabelMap(tensor=torch.rand(128, 128, 68) > 0.5)
+        >>> labels = torchio.LabelMap(tensor=torch.rand(1, 128, 128, 68) > 0.5)
         >>> labels = torchio.LabelMap('t1_seg.nii.gz')  # loading from a file
         >>> tpm = torchio.LabelMap(                     # loading from files
         ...     'gray_matter.nii.gz',
