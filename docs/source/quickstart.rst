@@ -85,19 +85,20 @@ in parallel::
 
 
 
-Google Colab Jupyter Notebook
-=============================
+Google Colab Jupyter Notebooks
+==============================
 
 |Google-Colab-notebook|
 
 The best way to quickly understand and try the library is the
-`Jupyter Notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_
+`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/examples/README.md>`_
 hosted on Google Colab.
-It includes many examples and visualization of most of the classes and even
+
+They include many examples and visualization of most of the classes and even
 training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for brain
-segmentation of :math:`T_1`-weighted MRI with whole images and
-with image patches.
+segmentation of :math:`T_1`-weighted MRI with full volumes and
+with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
+   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
    :alt: Google Colab notebook

@@ -163,7 +163,7 @@ class IXI(SubjectsDataset):
 
 class IXITiny(SubjectsDataset):
     r"""
-    This is the dataset used in the `notebook`_.
+    This is the dataset used in the main `notebook`_.
     It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR
     images and their corresponding brain segmentations,
     all with size :math:`83 \times 44 \times 55`.
@@ -176,7 +176,7 @@ class IXITiny(SubjectsDataset):
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
 
-    .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
+    .. _notebook: https://github.com/fepegar/torchio/blob/master/examples/README.md
     """
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'

@@ -75,10 +75,10 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     </tr>
     <tr>
         <td align="left">
-            <b>Notebook</b>
+            <b>Notebooks</b>
         </td>
         <td align="center">
-            <a href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">
+            <a href="https://github.com/fepegar/torchio/blob/master/examples/README.md">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Google Colab">
             </a>
         </td>
@@ -253,10 +253,12 @@ BibTeX entry:
 
 See [Getting started](https://torchio.readthedocs.io/quickstart.html) for
 [installation](https://torchio.readthedocs.io/quickstart.html#installation)
-instructions,
-a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world)
-example and a comprehensive Jupyter notebook tutorial on
-[Google Colab](https://torchio.readthedocs.io/quickstart.html#google-colab-jupyter-notebook).
+instructions
+and a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world)
+example.
+
+Longer usage examples can be found in the
+[notebooks](https://github.com/fepegar/torchio/blob/master/examples/README.md).
 
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).
