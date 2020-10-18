@@ -47,3 +47,26 @@ class TestAggregator(TorchioTestCase):
             (4, 5, 5, 6),
         )).reshape(1, 1, 4, 4)
         self.aggregate('average', fixture)
+
+    def run_sampler_aggregator(self, overlap_mode='crop'):
+        patch_size = 10
+        patch_overlap = 2
+        grid_sampler = tio.inference.GridSampler(
+            self.sample,
+            patch_size,
+            patch_overlap,
+        )
+        patch_loader = torch.utils.data.DataLoader(grid_sampler)
+        aggregator = tio.inference.GridAggregator(
+            grid_sampler,
+            overlap_mode=overlap_mode,
+        )
+        for batch in patch_loader:
+            data = batch['t1'][tio.DATA].long()
+            aggregator.add_batch(data, batch[tio.LOCATION])
+        return aggregator
+
+    def test_warning_int64(self):
+        aggregator = self.run_sampler_aggregator()
+        with self.assertWarns(UserWarning):
+            aggregator.get_output_tensor()
