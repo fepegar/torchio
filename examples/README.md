@@ -16,6 +16,6 @@ This tutorial will teach everything about transforms, and how to use them for pr
 
 ## Inference
 
-This is an example of using a pre-trained PyTorch model (HighRes3DNet) and TorchIO to perform a full brain parcellation from a $T_1$-weighted MRI.
+This is an example of using a pre-trained PyTorch model (HighRes3DNet) and TorchIO to perform a full brain parcellation from a T₁-weighted MRI.
 
 [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fepegar/torchio-notebooks/blob/main/notebooks/Brain_parcellation_with_TorchIO_and_HighRes3DNet.ipynb)
