@@ -17,7 +17,7 @@ requirements = [
     'numpy',
     'Python-Deprecated',
     'scipy',
-    'SimpleITK',
+    'SimpleITK<2',
     'torch>=1.1',
     'torchvision',
     'tqdm',
