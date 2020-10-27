@@ -35,9 +35,9 @@ class RandomGamma(RandomTransform, IntensityTransform):
         transform may be used to ensure that all values are positive.
 
     Example:
-        >>> import torchio
+        >>> import torchio as tio
         >>> from torchio import RandomGamma
-        >>> from torchio.datasets import FPG
+        >>> from tio.datasets import FPG
         >>> sample = FPG()
         >>> transform = RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(sample)

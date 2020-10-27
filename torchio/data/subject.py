@@ -14,7 +14,6 @@ class Subject(dict):
 
     Example:
 
-        >>> import torchio
         >>> from torchio import ScalarImage, LabelMap, Subject
         >>> # One way:
         >>> subject = Subject(

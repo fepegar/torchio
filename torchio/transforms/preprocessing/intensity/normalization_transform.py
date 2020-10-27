@@ -22,9 +22,9 @@ class NormalizationTransform(IntensityTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> from torchio.transforms import ZNormalization
-        >>> subject = torchio.datasets.Colin27()
+        >>> import torchio as tio
+        >>> from tio.transforms import ZNormalization
+        >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform

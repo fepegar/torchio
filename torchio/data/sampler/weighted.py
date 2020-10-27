@@ -27,13 +27,13 @@ class WeightedSampler(RandomSampler):
         RuntimeError: If the probability map is empty.
 
     Example:
-        >>> import torchio
-        >>> subject = torchio.Subject(
-        ...     t1=torchio.ScalarImage('t1_mri.nii.gz'),
-        ...     sampling_map=torchio.Image('sampling.nii.gz', type=torchio.SAMPLING_MAP),
+        >>> import torchio as tio
+        >>> subject = tio.Subject(
+        ...     t1=tio.ScalarImage('t1_mri.nii.gz'),
+        ...     sampling_map=tio.Image('sampling.nii.gz', type=tio.SAMPLING_MAP),
         ... )
         >>> patch_size = 64
-        >>> sampler = torchio.data.WeightedSampler(patch_size, 'sampling_map')
+        >>> sampler = tio.data.WeightedSampler(patch_size, 'sampling_map')
         >>> for patch in sampler(subject):
         ...     print(patch['index_ini'])
 

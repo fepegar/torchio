@@ -21,11 +21,11 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             independent images.
 
     Example:
-        >>> import torchio
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetric()
+        >>> import torchio as tio
+        >>> icbm = tio.datasets.ICBM2009CNonlinearSymmetric()
         >>> icbm
         ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'tissues'); images: 7)
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetric(load_4d_tissues=False)
+        >>> icbm = tio.datasets.ICBM2009CNonlinearSymmetric(load_4d_tissues=False)
         >>> icbm
         ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
 

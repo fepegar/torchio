@@ -30,7 +30,6 @@ class SubjectsDataset(Dataset):
             that will be applied to each sample.
 
     Example:
-        >>> import torchio
         >>> from torchio import SubjectsDataset, ScalarImage, LabelMap, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
         >>> subject_a = Subject(

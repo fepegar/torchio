@@ -18,10 +18,10 @@ class Lambda(Transform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> from torchio.transforms import Lambda
-        >>> invert_intensity = Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])
-        >>> invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])
+        >>> import torchio as tio
+        >>> from tio.transforms import Lambda
+        >>> invert_intensity = Lambda(lambda x: -x, types_to_apply=[tio.INTENSITY])
+        >>> invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[tio.LABEL])
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = Lambda(double)

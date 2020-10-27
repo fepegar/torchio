@@ -75,8 +75,8 @@ class Image(dict):
     when needed.
 
     Example:
-        >>> import torchio
-        >>> image = torchio.ScalarImage('t1.nii.gz')  # subclass of Image
+        >>> import torchio as tio
+        >>> image = tio.ScalarImage('t1.nii.gz')  # subclass of Image
         >>> image  # not loaded yet
         ScalarImage(path: t1.nii.gz; type: intensity)
         >>> times_two = 2 * image.data  # data is loaded and cached here
@@ -478,22 +478,22 @@ class ScalarImage(Image):
 
     Example:
         >>> import torch
-        >>> import torchio
+        >>> import torchio as tio
         >>> # Loading from a file
-        >>> t1_image = torchio.ScalarImage('t1.nii.gz')
-        >>> dmri = torchio.ScalarImage(tensor=torch.rand(32, 128, 128, 88))
-        >>> image = torchio.ScalarImage('safe_image.nrrd', check_nans=False)
+        >>> t1_image = tio.ScalarImage('t1.nii.gz')
+        >>> dmri = tio.ScalarImage(tensor=torch.rand(32, 128, 128, 88))
+        >>> image = tio.ScalarImage('safe_image.nrrd', check_nans=False)
         >>> data, affine = image.data, image.affine
         >>> affine.shape
         (4, 4)
-        >>> image.data is image[torchio.DATA]
+        >>> image.data is image[tio.DATA]
         True
         >>> image.data is image.tensor
         True
         >>> type(image.data)
         torch.Tensor
 
-    See :py:class:`~torchio.Image` for more information.
+    See :py:class:`~torchio.data.image.Image` for more information.
 
     Raises:
         ValueError: A :py:attr:`type` is used for instantiation.
@@ -510,10 +510,10 @@ class LabelMap(Image):
 
     Example:
         >>> import torch
-        >>> import torchio
-        >>> labels = torchio.LabelMap(tensor=torch.rand(1, 128, 128, 68) > 0.5)
-        >>> labels = torchio.LabelMap('t1_seg.nii.gz')  # loading from a file
-        >>> tpm = torchio.LabelMap(                     # loading from files
+        >>> import torchio as tio
+        >>> labels = tio.LabelMap(tensor=torch.rand(1, 128, 128, 68) > 0.5)
+        >>> labels = tio.LabelMap('t1_seg.nii.gz')  # loading from a file
+        >>> tpm = tio.LabelMap(                     # loading from files
         ...     'gray_matter.nii.gz',
         ...     'white_matter.nii.gz',
         ...     'csf.nii.gz',

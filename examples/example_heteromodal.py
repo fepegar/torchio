@@ -10,7 +10,6 @@ import logging
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-import torchio
 from torchio import ScalarImage, LabelMap, Subject, SubjectsDataset, Queue
 from torchio.data import UniformSampler
 
@@ -20,7 +19,7 @@ def main():
     num_epochs = 20
     patch_size = 128
     queue_length = 100
-    samples_per_volume = 5
+    patches_per_volume = 5
     batch_size = 2
 
     # Populate a list with images
@@ -45,7 +44,7 @@ def main():
     queue_dataset = Queue(
         subjects_dataset,
         queue_length,
-        samples_per_volume,
+        patches_per_volume,
         UniformSampler(patch_size),
     )
 

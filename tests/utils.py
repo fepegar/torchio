@@ -61,26 +61,26 @@ class TorchioTestCase(unittest.TestCase):
         self.dataset = SubjectsDataset(self.subjects_list)
         self.sample = self.dataset[-1]  # subject_d
 
-    def make_2d(self, sample):
-        sample = copy.deepcopy(sample)
-        for image in sample.get_images(intensity_only=False):
+    def make_2d(self, subject):
+        subject = copy.deepcopy(subject)
+        for image in subject.get_images(intensity_only=False):
             image[DATA] = image[DATA][..., :1]
-        return sample
+        return subject
 
-    def make_multichannel(self, sample):
-        sample = copy.deepcopy(sample)
-        for image in sample.get_images(intensity_only=False):
+    def make_multichannel(self, subject):
+        subject = copy.deepcopy(subject)
+        for image in subject.get_images(intensity_only=False):
             image[DATA] = torch.cat(4 * (image[DATA],))
-        return sample
+        return subject
 
-    def flip_affine_x(self, sample):
-        sample = copy.deepcopy(sample)
-        for image in sample.get_images(intensity_only=False):
+    def flip_affine_x(self, subject):
+        subject = copy.deepcopy(subject)
+        for image in subject.get_images(intensity_only=False):
             image[AFFINE] = np.diag((-1, 1, 1, 1)) @ image[AFFINE]
-        return sample
+        return subject
 
-    def get_inconsistent_sample(self):
-        """Return a sample containing images of different shape."""
+    def get_inconsistent_shape_subject(self):
+        """Return a subject containing images of different shape."""
         subject = Subject(
             t1=ScalarImage(self.get_image_path('t1_inc')),
             t2=ScalarImage(

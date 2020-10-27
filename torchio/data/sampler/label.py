@@ -33,12 +33,12 @@ class LabelSampler(WeightedSampler):
             ``2`` and 25% from channel ``3``.
 
     Example:
-        >>> import torchio
-        >>> subject = torchio.datasets.Colin27()
+        >>> import torchio as tio
+        >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
-        >>> sample = torchio.SubjectsDataset([subject])[0]
-        >>> sampler = torchio.data.LabelSampler(64, 'brain')
+        >>> sample = tio.SubjectsDataset([subject])[0]
+        >>> sampler = tio.data.LabelSampler(64, 'brain')
         >>> generator = sampler(sample)
         >>> for patch in generator:
         ...     print(patch.shape)

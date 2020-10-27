@@ -61,9 +61,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> subject = torchio.datasets.Colin27()
-        >>> transform = torchio.RandomAffine(
+        >>> import torchio as tio
+        >>> subject = tio.datasets.Colin27()
+        >>> transform = tio.RandomAffine(
         ...     scales=(0.9, 1.2),
         ...     degrees=(10),
         ...     isotropic=False,

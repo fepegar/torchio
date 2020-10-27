@@ -40,15 +40,15 @@ class Colin27(SubjectMNI):
         it might take longer than expected.
 
     Example:
-        >>> import torchio
-        >>> colin_1998 = torchio.datasets.Colin27(version=1998)
+        >>> import torchio as tio
+        >>> colin_1998 = tio.datasets.Colin27(version=1998)
         >>> colin_1998
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> colin_1998.load()
         >>> colin_1998.t1
         ScalarImage(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)
         >>>
-        >>> colin_2008 = torchio.datasets.Colin27(version=2008)
+        >>> colin_2008 = tio.datasets.Colin27(version=2008)
         >>> colin_2008
         Colin27(Keys: ('t1', 't2', 'pd', 'cls'); images: 4)
         >>> colin_2008.load()

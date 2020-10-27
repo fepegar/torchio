@@ -45,9 +45,9 @@ class Resample(SpatialTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
+        >>> import torchio as tio
         >>> from torchio import Resample
-        >>> from torchio.datasets import Colin27, FPG
+        >>> from tio.datasets import Colin27, FPG
         >>> transform = Resample(1)                     # resample all images to 1mm iso
         >>> transform = Resample((2, 2, 2))             # resample all images to 2mm iso
         >>> transform = Resample('t1')                  # resample all images to 't1' image space

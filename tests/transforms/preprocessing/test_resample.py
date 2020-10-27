@@ -17,7 +17,7 @@ class TestResample(TorchioTestCase):
             self.assertEqual(image.spacing, 3 * (spacing,))
 
     def test_reference_name(self):
-        sample = self.get_inconsistent_sample()
+        sample = self.get_inconsistent_shape_subject()
         reference_name = 't1'
         transform = Resample(reference_name)
         transformed = transform(sample)
