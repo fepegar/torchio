@@ -1,9 +1,10 @@
 from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
+
 import torch
 import numpy as np
-import nibabel as nib
 from tqdm import tqdm
+
 from ....torchio import DATA, TypePath
 from ....data.io import read_image
 from ....data.subject import Subject

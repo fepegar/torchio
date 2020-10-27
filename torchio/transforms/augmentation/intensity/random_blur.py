@@ -1,9 +1,8 @@
 from typing import Union, Tuple, Optional, List
 import torch
 import numpy as np
-import SimpleITK as sitk
 import scipy.ndimage as ndi
-from ....torchio import DATA, AFFINE, TypeData, TypeTripletFloat
+from ....torchio import DATA, TypeData, TypeTripletFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform

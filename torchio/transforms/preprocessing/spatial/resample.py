@@ -5,11 +5,10 @@ from typing import Union, Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
-from nibabel.processing import resample_to_output, resample_from_to
 
 from ....data.subject import Subject
 from ....data.image import Image, ScalarImage
-from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeData, TypeTripletFloat
+from ....torchio import DATA, AFFINE, TYPE, INTENSITY, TypeTripletFloat
 from ....utils import sitk_to_nib
 from ... import SpatialTransform
 from ... import Interpolation, get_sitk_interpolator

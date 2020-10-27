@@ -1,7 +1,7 @@
 import numpy as np
 import nibabel as nib
+from ....torchio import DATA
 from ....data.subject import Subject
-from ....torchio import TypeTripletInt, DATA
 from .bounds_transform import BoundsTransform
 
 

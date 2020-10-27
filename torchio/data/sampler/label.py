@@ -55,7 +55,7 @@ class LabelSampler(WeightedSampler):
             patch_size: TypePatchSize,
             label_name: Optional[str] = None,
             label_probabilities: Optional[Dict[int, float]] = None,
-        ):
+            ):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
 

@@ -1,8 +1,7 @@
 from typing import Tuple, Optional, Union, List
 import torch
 import numpy as np
-import SimpleITK as sitk
-from ....torchio import DATA, AFFINE
+from ....torchio import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform

@@ -1,8 +1,6 @@
 from typing import Union, Tuple, List, Optional
-import torch
 import numpy as np
-from ....data.subject import Subject
-from ....torchio import DATA, AFFINE, TypeTripletInt
+from ....torchio import TypeTripletInt
 from ... import SpatialTransform
 
 

@@ -1,7 +1,7 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import ScalarImage, LabelMap, LABEL, DATA
+from ... import ScalarImage, LabelMap, DATA
 from .mni import SubjectMNI
 
 

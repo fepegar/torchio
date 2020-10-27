@@ -5,7 +5,6 @@ import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
 
-import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
@@ -124,7 +123,7 @@ def apply_transform_to_file(
         type: str = INTENSITY,  # noqa: A002
         verbose: bool = False,
         ):
-    from . import Image, SubjectsDataset, Subject
+    from . import Image, Subject
     subject = Subject(image=Image(input_path, type=type))
     transformed = transform(subject)
     transformed.image.save(output_path)

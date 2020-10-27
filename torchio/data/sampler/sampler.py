@@ -1,5 +1,4 @@
-import copy
-from typing import Tuple, Optional, Generator
+from typing import Optional, Generator
 
 import numpy as np
 

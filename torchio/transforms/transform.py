@@ -12,7 +12,6 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..data.dataset import SubjectsDataset
 from ..utils import nib_to_sitk, sitk_to_nib
 from .interpolation import Interpolation
 

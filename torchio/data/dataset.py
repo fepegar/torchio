@@ -5,9 +5,7 @@ from typing import Dict, Sequence, Optional, Callable
 from deprecated import deprecated
 from torch.utils.data import Dataset
 
-from ..utils import get_stem
-from ..torchio import DATA, AFFINE, TYPE, PATH, STEM, TypePath
-from .image import Image
+from ..torchio import DATA, AFFINE, TypePath
 from .io import write_image
 from .subject import Subject
 
@@ -132,6 +130,7 @@ class SubjectsDataset(Dataset):
             write_image(tensor, affine, output_path)
 
 
-@deprecated('ImagesDataset is deprecated. Use SubjectsDataset instead.')
+@deprecated(
+    'ImagesDataset is deprecated in v0.18.0. Use SubjectsDataset instead.')
 class ImagesDataset(SubjectsDataset):
     pass

@@ -2,7 +2,7 @@ import torch
 from ...data.subject import Subject
 from ...torchio import TypePatchSize
 from .sampler import RandomSampler
-from typing import Optional, Tuple, Generator
+from typing import Generator
 import numpy as np
 
 
@@ -29,6 +29,7 @@ class UniformSampler(RandomSampler):
             raise RuntimeError(message)
 
         valid_range = subject.spatial_shape - self.patch_size
-        index_ini = [torch.randint(x + 1, (1,)).item() for x in valid_range]
-        index_ini_array = np.asarray(index_ini)
-        yield self.extract_patch(subject, index_ini_array)
+        while True:
+            index_ini = [torch.randint(x + 1, (1,)).item() for x in valid_range]
+            index_ini_array = np.asarray(index_ini)
+            yield self.extract_patch(subject, index_ini_array)

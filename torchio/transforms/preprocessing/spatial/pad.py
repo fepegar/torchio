@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Callable, Union, List, Optional
+from typing import Union, List, Optional
 
 import numpy as np
 import nibabel as nib
