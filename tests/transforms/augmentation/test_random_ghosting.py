@@ -6,18 +6,18 @@ class TestRandomGhosting(TorchioTestCase):
     """Tests for `RandomGhosting`."""
     def test_with_zero_intensity(self):
         transform = RandomGhosting(intensity=0)
-        transformed = transform(self.sample)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_with_zero_ghost(self):
         transform = RandomGhosting(num_ghosts=0)
-        transformed = transform(self.sample)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_with_ghosting(self):
         transform = RandomGhosting()
-        transformed = transform(self.sample)
-        self.assertTensorNotEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorNotEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_intensity_range_with_negative_min(self):
         with self.assertRaises(ValueError):

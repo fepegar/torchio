@@ -59,7 +59,7 @@ class TorchioTestCase(unittest.TestCase):
             subject_d,
         ]
         self.dataset = SubjectsDataset(self.subjects_list)
-        self.sample = self.dataset[-1]  # subject_d
+        self.sample_subject = self.dataset[-1]  # subject_d
 
     def make_2d(self, subject):
         subject = copy.deepcopy(subject)
@@ -108,8 +108,8 @@ class TorchioTestCase(unittest.TestCase):
         image = ScalarImage(path)
         return image, path
 
-    def get_sample_with_partial_volume_label_map(self, components=1):
-        """Return a sample with a partial-volume label map."""
+    def get_subject_with_partial_volume_label_map(self, components=1):
+        """Return a subject with a partial-volume label map."""
         return Subject(
             t1=ScalarImage(
                 self.get_image_path('t1_d'),

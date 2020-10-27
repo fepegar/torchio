@@ -6,18 +6,18 @@ class TestRandomSpike(TorchioTestCase):
     """Tests for `RandomSpike`."""
     def test_with_zero_intensity(self):
         transform = RandomSpike(intensity=0)
-        transformed = transform(self.sample)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_with_zero_spike(self):
         transform = RandomSpike(num_spikes=0)
-        transformed = transform(self.sample)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_with_spikes(self):
         transform = RandomSpike()
-        transformed = transform(self.sample)
-        self.assertTensorNotEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorNotEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_negative_num_spikes(self):
         with self.assertRaises(ValueError):

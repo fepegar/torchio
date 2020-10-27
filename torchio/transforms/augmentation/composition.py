@@ -24,8 +24,8 @@ class Compose(Transform):
         super().__init__(p=p)
         self.transform = PyTorchCompose(transforms)
 
-    def apply_transform(self, sample: Subject):
-        return self.transform(sample)
+    def apply_transform(self, subject: Subject):
+        return self.transform(subject)
 
 
 class OneOf(RandomTransform):
@@ -58,12 +58,12 @@ class OneOf(RandomTransform):
         super().__init__(p=p)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
-    def apply_transform(self, sample: Subject):
+    def apply_transform(self, subject: Subject):
         weights = torch.Tensor(list(self.transforms_dict.values()))
         index = torch.multinomial(weights, 1)
         transforms = list(self.transforms_dict.keys())
         transform = transforms[index]
-        transformed = transform(sample)
+        transformed = transform(subject)
         return transformed
 
     def _get_transforms_dict(self, transforms: Union[dict, Sequence]):

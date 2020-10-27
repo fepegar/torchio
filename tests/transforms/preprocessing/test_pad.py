@@ -8,7 +8,7 @@ from ...utils import TorchioTestCase
 class TestPad(TorchioTestCase):
     """Tests for `Pad`."""
     def test_pad(self):
-        image = self.sample.t1
+        image = self.sample_subject.t1
         padding = 1, 2, 3, 4, 5, 6
         sitk_image = image.as_sitk()
         low, high = padding[::2], padding[1::2]

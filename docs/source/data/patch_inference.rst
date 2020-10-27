@@ -10,11 +10,11 @@ inference across a 3D image using small patches::
     >>> import torchio as tio
     >>> patch_overlap = 4, 4, 4  # or just 4
     >>> patch_size = 88, 88, 60
-    >>> sample = tio.datasets.Colin27()
-    >>> sample
+    >>> subject = tio.datasets.Colin27()
+    >>> subject
     Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
     >>> grid_sampler = tio.inference.GridSampler(
-    ...     sample,
+    ...     subject,
     ...     patch_size,
     ...     patch_overlap,
     ... )

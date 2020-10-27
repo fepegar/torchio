@@ -1,5 +1,6 @@
 import numpy as np
 import nibabel as nib
+from ....data.subject import Subject
 from ....torchio import TypeTripletInt, DATA
 from .bounds_transform import BoundsTransform
 
@@ -23,7 +24,7 @@ class Crop(BoundsTransform):
             :math:`w_{ini} = w_{fin} = h_{ini} = h_{fin}
             = d_{ini} = d_{fin} = n`.
     """
-    def apply_transform(self, sample) -> dict:
+    def apply_transform(self, sample) -> Subject:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
         index_ini = low

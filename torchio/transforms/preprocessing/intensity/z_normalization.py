@@ -24,11 +24,11 @@ class ZNormalization(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: Subject,
+            subject: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
-        image = sample[image_name]
+        image = subject[image_name]
         standardized = self.znorm(
             image[DATA],
             mask,

@@ -29,7 +29,7 @@ class TestSubject(TorchioTestCase):
                 RandomFlip()(subject)
 
     def test_history(self):
-        transformed = RandomFlip()(self.sample)
+        transformed = RandomFlip()(self.sample_subject)
         self.assertIs(len(transformed.history), 1)
 
     def test_inconsistent_shape(self):
@@ -50,7 +50,7 @@ class TestSubject(TorchioTestCase):
             subject.spatial_shape
 
     def test_plot(self):
-        self.sample.plot(
+        self.sample_subject.plot(
             show=False,
             output_path=self.dir / 'figure.png',
             cmap_dict=dict(

@@ -51,9 +51,9 @@ class RandomSpike(RandomTransform, IntensityTransform):
         self.num_spikes_range = self.parse_range(
             num_spikes, 'num_spikes', min_constraint=0, type_constraint=int)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(sample).items():
+        for image_name, image in self.get_images_dict(subject).items():
             transformed_tensors = []
             for channel_idx, channel in enumerate(image[DATA]):
                 params = self.get_params(
@@ -74,8 +74,8 @@ class RandomSpike(RandomTransform, IntensityTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     @staticmethod
     def get_params(

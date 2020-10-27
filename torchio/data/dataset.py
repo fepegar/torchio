@@ -27,7 +27,7 @@ class SubjectsDataset(Dataset):
         subjects: Sequence of instances of
             :class:`~torchio.data.subject.Subject`.
         transform: An instance of :py:class:`torchio.transforms.Transform`
-            that will be applied to each sample.
+            that will be applied to each subject.
 
     Example:
         >>> from torchio import SubjectsDataset, ScalarImage, LabelMap, Subject
@@ -53,7 +53,7 @@ class SubjectsDataset(Dataset):
         ... ]
         >>> transform = Compose(transforms)
         >>> subjects_dataset = SubjectsDataset(subjects_list, transform=transform)
-        >>> subject_sample = subjects_dataset[0]
+        >>> subject = subjects_dataset[0]
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
@@ -78,13 +78,13 @@ class SubjectsDataset(Dataset):
         if not isinstance(index, int):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
-        sample = copy.deepcopy(subject)  # cheap since images not loaded yet
-        sample.load()
+        subject = copy.deepcopy(subject)  # cheap since images not loaded yet
+        subject.load()
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
-            sample = self._transform(sample)
-        return sample
+            subject = self._transform(subject)
+        return subject
 
     def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
@@ -123,12 +123,12 @@ class SubjectsDataset(Dataset):
     )
     def save_sample(
             cls,
-            sample: Subject,
+            subject: Subject,
             output_paths_dict: Dict[str, TypePath],
             ) -> None:
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key][DATA]
-            affine = sample[key][AFFINE]
+            tensor = subject[key][DATA]
+            affine = subject[key][AFFINE]
             write_image(tensor, affine, output_path)
 
 

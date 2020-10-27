@@ -7,7 +7,7 @@ class TestRandomAffine(TorchioTestCase):
     def setUp(self):
         # Set image origin far from center
         super().setUp()
-        affine = self.sample.t1.affine
+        affine = self.sample_subject.t1.affine
         affine[:3, 3] = 1e5
 
     def test_rotation_image(self):
@@ -17,7 +17,7 @@ class TestRandomAffine(TorchioTestCase):
             default_pad_value=0,
             center='image',
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         total = transformed.t1.data.sum()
         self.assertNotEqual(total, 0)
 
@@ -28,7 +28,7 @@ class TestRandomAffine(TorchioTestCase):
             default_pad_value=0,
             center='origin',
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         total = transformed.t1.data.sum()
         self.assertEqual(total, 0)
 
@@ -39,8 +39,8 @@ class TestRandomAffine(TorchioTestCase):
             default_pad_value=0,
             center='image',
         )
-        transformed = transform(self.sample)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        transformed = transform(self.sample_subject)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
         transform = RandomAffine(
             scales=(1, 1),
@@ -48,9 +48,9 @@ class TestRandomAffine(TorchioTestCase):
             default_pad_value=0,
             center='image',
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         transformed = transform(transformed)
-        self.assertTensorAlmostEqual(self.sample.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
 
     def test_translation(self):
         transform = RandomAffine(
@@ -58,17 +58,17 @@ class TestRandomAffine(TorchioTestCase):
             degrees=0,
             translation=(5, 5)
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
 
         # I think the right test should be the following one:
         # self.assertTensorAlmostEqual(
-        #     self.sample.t1.data[:, :-5, :-5, :-5],
+        #     self.sample_subject.t1.data[:, :-5, :-5, :-5],
         #     transformed.t1.data[:, 5:, 5:, 5:]
         # )
 
         # However the passing test is this one:
         self.assertTensorAlmostEqual(
-            self.sample.t1.data[:, :-5, :-5, 5:],
+            self.sample_subject.t1.data[:, :-5, :-5, 5:],
             transformed.t1.data[:, 5:, 5:, :-5]
         )
 

@@ -74,9 +74,9 @@ class RandomMotion(RandomTransform, IntensityTransform):
         self.num_transforms = num_transforms
         self.image_interpolation = self.parse_interpolation(image_interpolation)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(sample).items():
+        for image_name, image in self.get_images_dict(subject).items():
             result_arrays = []
             for channel_idx, data in enumerate(image[DATA]):
                 params = self.get_params(
@@ -112,8 +112,8 @@ class RandomMotion(RandomTransform, IntensityTransform):
                 result_arrays.append(data)
             result = np.stack(result_arrays)
             image[DATA] = torch.from_numpy(result)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     @staticmethod
     def get_params(

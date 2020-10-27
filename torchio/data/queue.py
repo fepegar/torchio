@@ -6,6 +6,7 @@ from typing import List, Iterator
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
+from .subject import Subject
 from .sampler import PatchSampler
 from .dataset import SubjectsDataset
 
@@ -160,22 +161,22 @@ class Queue(Dataset):
         else:
             iterable = range(num_subjects_for_queue)
         for _ in iterable:
-            subject_sample = self.get_next_subject_sample()
-            iterable = self.sampler(subject_sample)
+            subject = self.get_next_subject()
+            iterable = self.sampler(subject)
             patches = list(islice(iterable, self.samples_per_volume))
             self.patches_list.extend(patches)
         if self.shuffle_patches:
             random.shuffle(self.patches_list)
 
-    def get_next_subject_sample(self) -> dict:
+    def get_next_subject(self) -> Subject:
         # A StopIteration exception is expected when the queue is empty
         try:
-            subject_sample = next(self.subjects_iterable)
+            subject = next(self.subjects_iterable)
         except StopIteration as exception:
             self._print('Queue is empty:', exception)
             self.subjects_iterable = self.get_subjects_iterable()
-            subject_sample = next(self.subjects_iterable)
-        return subject_sample
+            subject = next(self.subjects_iterable)
+        return subject
 
     def get_subjects_iterable(self) -> Iterator:
         # I need a DataLoader to handle parallelism

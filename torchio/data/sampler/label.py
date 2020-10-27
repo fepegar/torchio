@@ -15,9 +15,9 @@ class LabelSampler(WeightedSampler):
 
     Args:
         patch_size: See :py:class:`~torchio.data.PatchSampler`.
-        label_name: Name of the label image in the sample that will be used to
+        label_name: Name of the label image in the subject that will be used to
             generate the sampling probability map. If ``None``, the first image
-            of type :py:attr:`torchio.LABEL` found in the subject sample will be
+            of type :py:attr:`torchio.LABEL` found in the subject subject will be
             used.
         label_probabilities: Dictionary containing the probability that each
             class will be sampled. Probabilities do not need to be normalized.
@@ -37,15 +37,15 @@ class LabelSampler(WeightedSampler):
         >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
-        >>> sample = tio.SubjectsDataset([subject])[0]
+        >>> subject = tio.SubjectsDataset([subject])[0]
         >>> sampler = tio.data.LabelSampler(64, 'brain')
-        >>> generator = sampler(sample)
+        >>> generator = sampler(subject)
         >>> for patch in generator:
         ...     print(patch.shape)
 
     If you want a specific number of patches from a volume, e.g. 10:
 
-        >>> generator = sampler(sample, num_patches=10)
+        >>> generator = sampler(subject, num_patches=10)
         >>> for patch in iterator:
         ...     print(patch.shape)
 
@@ -59,18 +59,18 @@ class LabelSampler(WeightedSampler):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
 
-    def get_probability_map(self, sample: Subject) -> torch.Tensor:
+    def get_probability_map(self, subject: Subject) -> torch.Tensor:
         if self.probability_map_name is None:
-            for image in sample.get_images(intensity_only=False):
+            for image in subject.get_images(intensity_only=False):
                 if image[TYPE] == LABEL:
                     label_map_tensor = image[DATA]
                     break
-        elif self.probability_map_name in sample:
-            label_map_tensor = sample[self.probability_map_name][DATA]
+        elif self.probability_map_name in subject:
+            label_map_tensor = subject[self.probability_map_name][DATA]
         else:
             message = (
                 f'Image "{self.probability_map_name}"'
-                f' not found in subject sample: {sample}'
+                f' not found in subject subject: {subject}'
             )
             raise KeyError(message)
         if self.label_probabilities_dict is None:

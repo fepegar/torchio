@@ -38,9 +38,9 @@ class RandomGamma(RandomTransform, IntensityTransform):
         >>> import torchio as tio
         >>> from torchio import RandomGamma
         >>> from tio.datasets import FPG
-        >>> sample = FPG()
+        >>> subject = FPG()
         >>> transform = RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
-        >>> transformed = transform(sample)
+        >>> transformed = transform(subject)
     """
     def __init__(
             self,
@@ -52,9 +52,9 @@ class RandomGamma(RandomTransform, IntensityTransform):
         super().__init__(p=p, seed=seed, keys=keys)
         self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image_dict in self.get_images_dict(sample).items():
+        for image_name, image_dict in self.get_images_dict(subject).items():
             gamma = self.get_params(self.log_gamma_range)
             random_parameters_dict = {'gamma': gamma}
             random_parameters_images_dict[image_name] = random_parameters_dict
@@ -70,8 +70,8 @@ class RandomGamma(RandomTransform, IntensityTransform):
                 image_dict[DATA] = data.sign() * data.abs() ** gamma
             else:
                 image_dict[DATA] = image_dict[DATA] ** gamma
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     @staticmethod
     def get_params(log_gamma_range: Tuple[float, float]) -> torch.Tensor:

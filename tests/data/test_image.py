@@ -67,15 +67,15 @@ class TestImage(TorchioTestCase):
             ScalarImage(path='', data=5)
 
     def test_repr(self):
-        sample = Subject(t1=ScalarImage(self.get_image_path('repr_test')))
-        assert 'shape' not in repr(sample['t1'])
-        sample.load()
-        assert 'shape' in repr(sample['t1'])
+        subject = Subject(t1=ScalarImage(self.get_image_path('repr_test')))
+        assert 'shape' not in repr(subject['t1'])
+        subject.load()
+        assert 'shape' in repr(subject['t1'])
 
     def test_data_tensor(self):
-        sample = copy.deepcopy(self.sample)
-        sample.load()
-        self.assertIs(sample.t1.data, sample.t1.tensor)
+        subject = copy.deepcopy(self.sample_subject)
+        subject.load()
+        self.assertIs(subject.t1.data, subject.t1.tensor)
 
     def test_bad_affine(self):
         with self.assertRaises(ValueError):
@@ -140,5 +140,5 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.width, image.shape[width_idx])
 
     def test_plot(self):
-        image = self.sample.t1
+        image = self.sample_subject.t1
         image.plot(show=False, output_path=self.dir / 'image.png')

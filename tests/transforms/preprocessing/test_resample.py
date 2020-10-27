@@ -12,16 +12,16 @@ class TestResample(TorchioTestCase):
         # Should this raise an error if sizes are different?
         spacing = 2
         transform = Resample(spacing)
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         for image in transformed.get_images(intensity_only=False):
             self.assertEqual(image.spacing, 3 * (spacing,))
 
     def test_reference_name(self):
-        sample = self.get_inconsistent_shape_subject()
+        subject = self.get_inconsistent_shape_subject()
         reference_name = 't1'
         transform = Resample(reference_name)
-        transformed = transform(sample)
-        reference_image = sample[reference_name]
+        transformed = transform(subject)
+        reference_image = subject[reference_name]
         for image in transformed.get_images(intensity_only=False):
             self.assertEqual(reference_image.shape, image.shape)
             self.assertTensorAlmostEqual(reference_image[AFFINE], image[AFFINE])
@@ -30,7 +30,7 @@ class TestResample(TorchioTestCase):
         spacing = 1
         affine_name = 'pre_affine'
         transform = Resample(spacing, pre_affine_name=affine_name)
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         for image in transformed.values():
             if affine_name in image:
                 target_affine = np.eye(4)
@@ -42,12 +42,12 @@ class TestResample(TorchioTestCase):
     def test_missing_affine(self):
         transform = Resample(1, pre_affine_name='missing')
         with self.assertRaises(ValueError):
-            transform(self.sample)
+            transform(self.sample_subject)
 
     def test_reference_path(self):
         reference_image, reference_path = self.get_reference_image_and_path()
         transform = Resample(reference_path)
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         for image in transformed.values():
             self.assertEqual(reference_image.shape, image.shape)
             self.assertTensorAlmostEqual(reference_image.affine, image.affine)
@@ -67,7 +67,7 @@ class TestResample(TorchioTestCase):
     def test_missing_reference(self):
         transform = Resample('missing')
         with self.assertRaises(ValueError):
-            transform(self.sample)
+            transform(self.sample_subject)
 
     def test_2d(self):
         image = ScalarImage(tensor=torch.rand(1, 2, 3, 1))

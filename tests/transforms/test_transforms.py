@@ -53,20 +53,20 @@ class TestTransforms(TorchioTestCase):
 
     def test_transforms_dict(self):
         transform = torchio.RandomNoise(keys=('t1', 't2'))
-        input_dict = {k: v.data for (k, v) in self.sample.items()}
+        input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         transformed = transform(input_dict)
         self.assertIsInstance(transformed, dict)
 
     def test_transforms_dict_no_keys(self):
         transform = torchio.RandomNoise()
-        input_dict = {k: v.data for (k, v) in self.sample.items()}
+        input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         with self.assertRaises(RuntimeError):
             transform(input_dict)
 
     def test_transforms_image(self):
         transform = self.get_transform(
             channels=('default_image_name',), labels=False)
-        transformed = transform(self.sample.t1)
+        transformed = transform(self.sample_subject.t1)
         self.assertIsInstance(transformed, torchio.ScalarImage)
 
     def test_transforms_tensor(self):
@@ -101,56 +101,56 @@ class TestTransforms(TorchioTestCase):
         transformed = transform(image)
         self.assertIsInstance(transformed, nib.Nifti1Image)
 
-    def test_transforms_sample_3d(self):
+    def test_transforms_subject_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         self.assertIsInstance(transformed, torchio.Subject)
 
-    def test_transforms_sample_2d(self):
+    def test_transforms_subject_2d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=False)
-        sample = self.make_2d(self.sample)
-        transformed = transform(sample)
+        subject = self.make_2d(self.sample_subject)
+        transformed = transform(subject)
         self.assertIsInstance(transformed, torchio.Subject)
 
-    def test_transforms_sample_4d(self):
+    def test_transforms_subject_4d(self):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
-        sample = self.make_multichannel(self.sample)
-        sample = self.flip_affine_x(sample)
+        subject = self.make_multichannel(self.sample_subject)
+        subject = self.flip_affine_x(subject)
         for transform in composed.transform.transforms:
-            transformed = transform(sample)
+            transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)
             assert trsf_channels > 1, f'Lost channels in {transform.name}'
             if transform.name != 'RandomLabelsToImage':
                 self.assertEqual(
-                    sample.shape[0],
+                    subject.shape[0],
                     transformed.shape[0],
                     f'Different number of channels after {transform.name}'
                 )
                 self.assertTensorNotEqual(
-                    sample.t1.data[1],
+                    subject.t1.data[1],
                     transformed.t1.data[1],
                     f'No changes after {transform.name}'
                 )
-            sample = transformed
+            subject = transformed
         self.assertIsInstance(transformed, torchio.Subject)
 
     def test_transform_noop(self):
         transform = torchio.RandomMotion(p=0)
-        transformed = transform(self.sample)
-        self.assertIs(transformed, self.sample)
+        transformed = transform(self.sample_subject)
+        self.assertIs(transformed, self.sample_subject)
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transformed = transform(tensor)
         self.assertIs(transformed, tensor)
 
     def test_original_unchanged(self):
-        sample = copy.deepcopy(self.sample)
+        subject = copy.deepcopy(self.sample_subject)
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
-        sample = self.flip_affine_x(sample)
+        subject = self.flip_affine_x(subject)
         for transform in composed.transform.transforms:
-            original_data = copy.deepcopy(sample.t1.data)
-            transform(sample)
+            original_data = copy.deepcopy(subject.t1.data)
+            transform(subject)
             self.assertTensorEqual(
-                sample.t1.data,
+                subject.t1.data,
                 original_data,
                 f'Changes after {transform.name}'
             )

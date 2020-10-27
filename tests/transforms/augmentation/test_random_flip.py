@@ -6,11 +6,11 @@ from ...utils import TorchioTestCase
 class TestRandomFlip(TorchioTestCase):
     """Tests for `RandomFlip`."""
     def test_2d(self):
-        sample = self.make_2d(self.sample)
+        subject = self.make_2d(self.sample_subject)
         transform = RandomFlip(axes=(1, 2), flip_probability=1)
-        transformed = transform(sample)
+        transformed = transform(subject)
         self.assertTensorEqual(
-            sample.t1.data.numpy()[..., ::-1, ::-1],
+            subject.t1.data.numpy()[..., ::-1, ::-1],
             transformed.t1.data.numpy(),
         )
 

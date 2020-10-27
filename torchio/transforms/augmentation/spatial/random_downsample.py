@@ -64,16 +64,16 @@ class RandomDownsample(RandomTransform, SpatialTransform):
                 raise ValueError('All axes must be 0, 1 or 2')
         return axes_tuple
 
-    def apply_transform(self, sample: Subject) -> Subject:
+    def apply_transform(self, subject: Subject) -> Subject:
         axis, downsampling = self.get_params(self.axes, self.downsampling_range)
         random_parameters_dict = {'axis': axis, 'downsampling': downsampling}
 
-        target_spacing = list(sample.spacing)
+        target_spacing = list(subject.spacing)
         target_spacing[axis] *= downsampling
         transform = Resample(
             tuple(target_spacing),
             image_interpolation='nearest',
         )
-        sample = transform(sample)
-        sample.add_transform(self, random_parameters_dict)
-        return sample
+        subject = transform(subject)
+        subject.add_transform(self, random_parameters_dict)
+        return subject

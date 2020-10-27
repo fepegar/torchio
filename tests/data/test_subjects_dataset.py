@@ -38,19 +38,19 @@ class TestSubjectsDataset(TorchioTestCase):
         with self.assertRaises(ValueError):
             self.dataset[:3]
 
-    def test_save_sample(self):
+    def test_save_subject(self):
         dataset = SubjectsDataset(
             self.subjects_list, transform=lambda x: x)
         _ = len(dataset)  # for coverage
-        sample = dataset[0]
+        subject = dataset[0]
         output_path = self.dir / 'test.nii.gz'
         paths_dict = {'t1': output_path}
         with self.assertWarns(DeprecationWarning):
-            dataset.save_sample(sample, paths_dict)
+            dataset.save_sample(subject, paths_dict)
         nii = nib.load(str(output_path))
         ndims_output = len(nii.shape)
-        ndims_sample = len(sample['t1'].shape)
-        assert ndims_sample == ndims_output + 1
+        ndims_subject = len(subject['t1'].shape)
+        assert ndims_subject == ndims_output + 1
 
     def test_wrong_transform_init(self):
         with self.assertRaises(ValueError):

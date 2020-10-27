@@ -16,7 +16,7 @@ class GridSampler(PatchSampler, Dataset):
     volume. It is often used with a :py:class:`~torchio.data.GridAggregator`.
 
     Args:
-        sample: Instance of :py:class:`~torchio.data.subject.Subject`
+        subject: Instance of :py:class:`~torchio.data.subject.Subject`
             from which patches will be extracted.
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
             of size :math:`w \times h \times d`.
@@ -42,12 +42,12 @@ class GridSampler(PatchSampler, Dataset):
     """
     def __init__(
             self,
-            sample: Subject,
+            subject: Subject,
             patch_size: TypeTuple,
             patch_overlap: TypeTuple = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
             ):
-        self.subject = sample
+        self.subject = subject
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
         self.padding_mode = padding_mode
         if padding_mode is not None:

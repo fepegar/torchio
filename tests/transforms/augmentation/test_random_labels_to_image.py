@@ -8,9 +8,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     """Tests for `RandomLabelsToImage`."""
     def test_random_simulation(self):
         """The transform runs without error and an 'image_from_labels' key is
-        present in the transformed sample."""
+        present in the transformed subject."""
         transform = RandomLabelsToImage(label_key='label')
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         self.assertIn('image_from_labels', transformed)
 
     def test_deterministic_simulation(self):
@@ -22,14 +22,14 @@ class TestRandomLabelsToImage(TorchioTestCase):
             mean=[0.5, 2],
             std=[0, 0]
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 0.5,
-            self.sample['label'][DATA] == 0
+            self.sample_subject['label'][DATA] == 0
         )
         self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 2,
-            self.sample['label'][DATA] == 1
+            self.sample_subject['label'][DATA] == 1
         )
 
     def test_deterministic_simulation_with_discretized_label_map(self):
@@ -42,29 +42,29 @@ class TestRandomLabelsToImage(TorchioTestCase):
             std=[0, 0],
             discretize=True
         )
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 0.5,
-            self.sample['label'][DATA] == 0
+            self.sample_subject['label'][DATA] == 0
         )
         self.assertTensorEqual(
             transformed['image_from_labels'][DATA] == 2,
-            self.sample['label'][DATA] == 1
+            self.sample_subject['label'][DATA] == 1
         )
 
     def test_deterministic_simulation_with_pv_map(self):
         """The transform creates an image where values are equal to given
         mean weighted by partial-volume if standard deviation is zero."""
-        sample = self.get_sample_with_partial_volume_label_map(components=2)
+        subject = self.get_subject_with_partial_volume_label_map(components=2)
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5, 1],
             std=[0, 0]
         )
-        transformed = transform(sample)
+        transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['image_from_labels'][DATA][0],
-            sample['label'][DATA][0] * 0.5 + sample['label'][DATA][1] * 1
+            subject['label'][DATA][0] * 0.5 + subject['label'][DATA][1] * 1
         )
         self.assertEqual(
             transformed['image_from_labels'][DATA].shape,
@@ -75,17 +75,17 @@ class TestRandomLabelsToImage(TorchioTestCase):
         """The transform creates an image where values are equal to given mean
         if standard deviation is zero.
         Using a discretized partial-volume label map."""
-        sample = self.get_sample_with_partial_volume_label_map()
+        subject = self.get_subject_with_partial_volume_label_map()
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5],
             std=[0],
             discretize=True
         )
-        transformed = transform(sample)
+        transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['image_from_labels'][DATA],
-            (sample['label'][DATA] > 0) * 0.5
+            (subject['label'][DATA] > 0) * 0.5
         )
 
     def test_filling(self):
@@ -97,11 +97,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             image_key='t1',
             used_labels=[1]
         )
-        t1_indices = self.sample['label'][DATA] == 0
-        transformed = transform(self.sample)
+        t1_indices = self.sample_subject['label'][DATA] == 0
+        transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
             transformed['t1'][DATA][t1_indices],
-            self.sample['t1'][DATA][t1_indices]
+            self.sample_subject['t1'][DATA][t1_indices]
         )
 
     def test_filling_with_discretized_label_map(self):
@@ -114,29 +114,29 @@ class TestRandomLabelsToImage(TorchioTestCase):
             discretize=True,
             used_labels=[1]
         )
-        t1_indices = self.sample['label'][DATA] < 0.5
-        transformed = transform(self.sample)
+        t1_indices = self.sample_subject['label'][DATA] < 0.5
+        transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
             transformed['t1'][DATA][t1_indices],
-            self.sample['t1'][DATA][t1_indices]
+            self.sample_subject['t1'][DATA][t1_indices]
         )
 
     def test_filling_with_discretized_pv_label_map(self):
         """The transform can fill in the generated image with an already
         existing image.
         Using a discretized partial-volume label map."""
-        sample = self.get_sample_with_partial_volume_label_map(components=2)
+        subject = self.get_subject_with_partial_volume_label_map(components=2)
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
             discretize=True,
             used_labels=[1]
         )
-        t1_indices = sample['label'][DATA].argmax(dim=0) == 0
-        transformed = transform(sample)
+        t1_indices = subject['label'][DATA].argmax(dim=0) == 0
+        transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['t1'][DATA][0][t1_indices],
-            sample['t1'][DATA][0][t1_indices]
+            subject['t1'][DATA][0][t1_indices]
         )
 
     def test_filling_without_any_hole(self):
@@ -147,8 +147,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
             default_std=0.,
             default_mean=-1.
         )
-        original_t1 = self.sample.t1.data.clone()
-        transformed = transform(self.sample)
+        original_t1 = self.sample_subject.t1.data.clone()
+        transformed = transform(self.sample_subject)
         self.assertTensorNotEqual(original_t1, transformed.t1.data)
 
     def test_missing_label_key(self):
@@ -240,11 +240,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         does not match label numbers."""
         transform = RandomLabelsToImage(label_key='label', mean=[0])
         with self.assertRaises(AssertionError):
-            transform(self.sample)
+            transform(self.sample_subject)
 
     def test_std_not_matching_number_of_labels(self):
         """The transform raises an error at runtime if std length
         does not match label numbers."""
         transform = RandomLabelsToImage(label_key='label', std=[1, 2, 3])
         with self.assertRaises(AssertionError):
-            transform(self.sample)
+            transform(self.sample_subject)

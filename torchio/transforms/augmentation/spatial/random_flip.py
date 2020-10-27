@@ -50,18 +50,18 @@ class RandomFlip(RandomTransform, SpatialTransform):
             flip_probability,
         )
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         axes = self.axes
         axes_to_flip_hot = self.get_params(self.flip_probability)
         if any(isinstance(n, str) for n in axes):
-            sample.check_consistent_orientation()
-            image = sample.get_first_image()
+            subject.check_consistent_orientation()
+            image = subject.get_first_image()
             axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
         for i in range(3):
             if i not in axes:
                 axes_to_flip_hot[i] = False
         random_parameters_dict = {'axes': axes_to_flip_hot}
-        for image in self.get_images(sample):
+        for image in self.get_images(subject):
             dims = []
             for dim, flip_this in enumerate(axes_to_flip_hot):
                 if not flip_this:
@@ -74,8 +74,8 @@ class RandomFlip(RandomTransform, SpatialTransform):
                 data = data.copy()  # remove negative strides
                 data = torch.from_numpy(data)
                 image[DATA] = data
-        sample.add_transform(self, random_parameters_dict)
-        return sample
+        subject.add_transform(self, random_parameters_dict)
+        return subject
 
     @staticmethod
     def get_params(probability: float) -> List[bool]:

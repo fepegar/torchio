@@ -44,9 +44,9 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             coefficients, 'coefficients_range')
         self.order = self.parse_order(order)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image_dict in self.get_images_dict(sample).items():
+        for image_name, image_dict in self.get_images_dict(subject).items():
             coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,
@@ -57,8 +57,8 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             bias_field = self.generate_bias_field(
                 image_dict[DATA], self.order, coefficients)
             image_dict[DATA] = image_dict[DATA] * torch.from_numpy(bias_field)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     @staticmethod
     def get_params(

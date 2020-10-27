@@ -27,8 +27,8 @@ class ToCanonical(SpatialTransform):
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
     """
 
-    def apply_transform(self, sample: Subject) -> dict:
-        for image in sample.get_images(intensity_only=False):
+    def apply_transform(self, subject: Subject) -> Subject:
+        for image in subject.get_images(intensity_only=False):
             affine = image[AFFINE]
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
@@ -42,4 +42,4 @@ class ToCanonical(SpatialTransform):
             array = array.copy().transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
             image[DATA] = torch.from_numpy(array[0])
             image[AFFINE] = reoriented.affine
-        return sample
+        return subject

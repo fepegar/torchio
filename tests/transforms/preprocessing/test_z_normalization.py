@@ -7,6 +7,6 @@ class TestZNormalization(TorchioTestCase):
 
     def test_z_normalization(self):
         transform = ZNormalization()
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         self.assertAlmostEqual(float(transformed.t1.data.mean()), 0., places=6)
         self.assertAlmostEqual(float(transformed.t1.data.std()), 1.)

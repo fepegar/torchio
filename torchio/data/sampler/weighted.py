@@ -57,33 +57,33 @@ class WeightedSampler(RandomSampler):
 
     def __call__(
             self,
-            sample: Subject,
+            subject: Subject,
             num_patches: Optional[int] = None,
             ) -> Generator[Subject, None, None]:
-        sample.check_consistent_spatial_shape()
-        if np.any(self.patch_size > sample.spatial_shape):
+        subject.check_consistent_spatial_shape()
+        if np.any(self.patch_size > subject.spatial_shape):
             message = (
                 f'Patch size {tuple(self.patch_size)} cannot be'
-                f' larger than image size {tuple(sample.spatial_shape)}'
+                f' larger than image size {tuple(subject.spatial_shape)}'
             )
             raise RuntimeError(message)
-        probability_map = self.get_probability_map(sample)
+        probability_map = self.get_probability_map(subject)
         probability_map = self.process_probability_map(probability_map)
         cdf = self.get_cumulative_distribution_function(probability_map)
 
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
-            yield self.extract_patch(sample, probability_map, cdf)
+            yield self.extract_patch(subject, probability_map, cdf)
             if num_patches is not None:
                 patches_left -= 1
 
-    def get_probability_map(self, sample: Subject) -> torch.Tensor:
-        if self.probability_map_name in sample:
-            data = sample[self.probability_map_name].data
+    def get_probability_map(self, subject: Subject) -> torch.Tensor:
+        if self.probability_map_name in subject:
+            data = subject[self.probability_map_name].data
         else:
             message = (
                 f'Image "{self.probability_map_name}"'
-                f' not found in subject sample: {sample}'
+                f' not found in subject subject: {subject}'
             )
             raise KeyError(message)
         if torch.any(data < 0):

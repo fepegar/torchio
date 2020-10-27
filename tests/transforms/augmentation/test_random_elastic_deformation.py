@@ -15,9 +15,9 @@ class TestRandomElasticDeformation(TorchioTestCase):
         )
         keys = ('t1', 't2', 'label')
         fixtures = 2916.7192, 2955.1265, 2950
-        transformed = transform(self.sample)
+        transformed = transform(self.sample_subject)
         for key, fixture in zip(keys, fixtures):
-            sample_data = self.sample[key].numpy()
+            sample_data = self.sample_subject[key].numpy()
             transformed_data = transformed[key].numpy()
             transformed_total = transformed_data.sum()
             # Make sure that intensities have changed
@@ -76,7 +76,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             max_displacement=6,
         )
         with self.assertWarns(RuntimeWarning):
-            transform(self.sample)
+            transform(self.sample_subject)
 
     def test_num_control_points(self):
         RandomElasticDeformation(num_control_points=5)

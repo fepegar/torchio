@@ -11,7 +11,7 @@ class TestGridSampler(TorchioTestCase):
     def test_locations(self):
         patch_size = 5, 20, 20
         patch_overlap = 2, 4, 6
-        sampler = GridSampler(self.sample, patch_size, patch_overlap)
+        sampler = GridSampler(self.sample_subject, patch_size, patch_overlap)
         fixture = [
             [0, 0, 0, 5, 20, 20],
             [0, 0, 10, 5, 20, 30],
@@ -25,26 +25,26 @@ class TestGridSampler(TorchioTestCase):
 
     def test_large_patch(self):
         with self.assertRaises(ValueError):
-            GridSampler(self.sample, (5, 21, 5), (0, 2, 0))
+            GridSampler(self.sample_subject, (5, 21, 5), (0, 2, 0))
 
     def test_large_overlap(self):
         with self.assertRaises(ValueError):
-            GridSampler(self.sample, (5, 20, 5), (2, 4, 6))
+            GridSampler(self.sample_subject, (5, 20, 5), (2, 4, 6))
 
     def test_odd_overlap(self):
         with self.assertRaises(ValueError):
-            GridSampler(self.sample, (5, 20, 5), (2, 4, 3))
+            GridSampler(self.sample_subject, (5, 20, 5), (2, 4, 3))
 
     def test_single_location(self):
-        sampler = GridSampler(self.sample, (10, 20, 30), 0)
+        sampler = GridSampler(self.sample_subject, (10, 20, 30), 0)
         fixture = [[0, 0, 0, 10, 20, 30]]
         self.assertEqual(sampler.locations.tolist(), fixture)
 
-    def test_sample_shape(self):
+    def test_subject_shape(self):
         patch_size = 5, 20, 20
         patch_overlap = 2, 4, 6
-        initial_shape = copy(self.sample.shape)
+        initial_shape = copy(self.sample_subject.shape)
         GridSampler(
-            self.sample, patch_size, patch_overlap, padding_mode='reflect')
-        final_shape = self.sample.shape
+            self.sample_subject, patch_size, patch_overlap, padding_mode='reflect')
+        final_shape = self.sample_subject.shape
         self.assertEqual(initial_shape, final_shape)

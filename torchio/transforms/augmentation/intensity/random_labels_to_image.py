@@ -17,7 +17,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     Contrast <https://arxiv.org/abs/2004.10221>`_.
 
     Args:
-        label_key: String designating the label map in the sample
+        label_key: String designating the label map in the subject
             that will be used to generate the new image.
         used_labels: Sequence of integers designating the labels used
             to generate the new image. If categorical encoding is used,
@@ -65,7 +65,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         >>> import torchio as tio
         >>> from torchio import RandomLabelsToImage, RescaleIntensity, RandomBlur, Compose
         >>> from tio.datasets import ICBM2009CNonlinearSymmetric
-        >>> sample = ICBM2009CNonlinearSymmetric()
+        >>> subject = ICBM2009CNonlinearSymmetric()
         >>> # Using the default parameters
         >>> transform = RandomLabelsToImage(label_key='tissues')
         >>> # Using custom mean and std
@@ -78,7 +78,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ... )
         >>> blurring_transform = RandomBlur(std=0.3)
         >>> transform = Compose([simulation_transform, blurring_transform])
-        >>> transformed = transform(sample)  # sample has a new key 'image_from_labels' with the simulated image
+        >>> transformed = transform(subject)  # subject has a new key 'image_from_labels' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
         >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = RandomLabelsToImage(
@@ -87,7 +87,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ...     used_labels=[0, 1]
         ... )
         >>> transform = Compose([rescale_transform, simulation_transform])
-        >>> transformed = transform(sample)  # sample's key 't1' has been replaced with the simulated image
+        >>> transformed = transform(subject)  # subject's key 't1' has been replaced with the simulated image
     """
     def __init__(
             self,
@@ -188,12 +188,12 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                 f' equal or greater than the first, not {nums_range}')
         return min_value, max_value
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {'mean': [], 'std': []}
-        original_image = sample.get(self.image_key)
+        original_image = subject.get(self.image_key)
 
-        label_map = sample[self.label_key][DATA]
-        affine = sample[self.label_key][AFFINE]
+        label_map = subject[self.label_key][DATA]
+        affine = subject[self.label_key][AFFINE]
 
         spatial_shape = label_map.shape[1:]
 
@@ -248,9 +248,9 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                 bg_mask = label_map.sum(dim=0, keepdim=True) < 0.5
             final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
 
-        sample.add_image(final_image, self.image_key)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_image(final_image, self.image_key)
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     def check_mean_and_std_length(self, labels: Sequence):
         if self.mean is not None:

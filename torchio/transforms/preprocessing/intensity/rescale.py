@@ -47,11 +47,11 @@ class RescaleIntensity(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: Subject,
+            subject: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
-        image_dict = sample[image_name]
+        image_dict = subject[image_name]
         image_dict[DATA] = self.rescale(image_dict[DATA], mask, image_name)
 
     def rescale(

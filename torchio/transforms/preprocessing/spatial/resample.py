@@ -131,21 +131,21 @@ class Resample(SpatialTransform):
                 raise ValueError(message)
 
     @staticmethod
-    def check_affine_key_presence(affine_name: str, sample: Subject):
-        for image_dict in sample.get_images(intensity_only=False):
+    def check_affine_key_presence(affine_name: str, subject: Subject):
+        for image_dict in subject.get_images(intensity_only=False):
             if affine_name in image_dict:
                 return
         message = (
             f'An affine name was given ("{affine_name}"), but it was not found'
-            ' in any image in the sample'
+            ' in any image in the subject'
         )
         raise ValueError(message)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         use_pre_affine = self.affine_name is not None
         if use_pre_affine:
-            self.check_affine_key_presence(self.affine_name, sample)
-        for image in self.get_images(sample):
+            self.check_affine_key_presence(self.affine_name, subject)
+        for image in self.get_images(subject):
             # Do not resample the reference image if there is one
             if image is self.reference_image:
                 continue
@@ -170,11 +170,11 @@ class Resample(SpatialTransform):
             # Resample
             if isinstance(self.reference_image, str):
                 try:
-                    reference_image_sitk = sample[self.reference_image].as_sitk()
+                    reference_image_sitk = subject[self.reference_image].as_sitk()
                 except KeyError as error:
                     message = (
                         f'Reference name "{self.reference_image}"'
-                        ' not found in sample'
+                        ' not found in subject'
                     )
                     raise ValueError(message) from error
             elif isinstance(self.reference_image, ScalarImage):
@@ -193,7 +193,7 @@ class Resample(SpatialTransform):
             array, affine = sitk_to_nib(resampled)
             image[DATA] = torch.from_numpy(array)
             image[AFFINE] = affine
-        return sample
+        return subject
 
     @staticmethod
     def get_reference_image(

@@ -64,7 +64,7 @@ class PatchSampler:
 
 
 class RandomSampler(PatchSampler):
-    r"""Base class for TorchIO samplers.
+    r"""Base class for random samplers.
 
     Args:
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
@@ -73,10 +73,10 @@ class RandomSampler(PatchSampler):
     """
     def __call__(
             self,
-            sample: Subject,
+            subject: Subject,
             num_patches: Optional[int] = None,
             ) -> Generator[Subject, None, None]:
         raise NotImplementedError
 
-    def get_probability_map(self, sample: Subject):
+    def get_probability_map(self, subject: Subject):
         raise NotImplementedError

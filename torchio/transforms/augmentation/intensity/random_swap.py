@@ -72,13 +72,13 @@ class RandomSwap(RandomTransform, IntensityTransform):
             locations.append((first_ini, second_ini))
         return locations
 
-    def apply_transform(self, sample: Subject) -> dict:
-        for image in self.get_images(sample):
+    def apply_transform(self, subject: Subject) -> Subject:
+        for image in self.get_images(subject):
             tensor = image[DATA]
             locations = self.get_params(
                 tensor, self.patch_size, self.num_iterations)
             image[DATA] = swap(tensor, self.patch_size, locations)
-        return sample
+        return subject
 
 
 def swap(

@@ -29,9 +29,9 @@ class RandomTransform(Transform):
         super().__init__(p=p, keys=keys)
         self._seed = seed
 
-    def __call__(self, sample: Subject):
+    def __call__(self, subject: Subject):
         self.check_seed()
-        return super().__call__(sample)
+        return super().__call__(subject)
 
     def parse_degrees(
             self,

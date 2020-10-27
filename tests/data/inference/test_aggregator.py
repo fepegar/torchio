@@ -52,7 +52,7 @@ class TestAggregator(TorchioTestCase):
         patch_size = 10
         patch_overlap = 2
         grid_sampler = tio.inference.GridSampler(
-            self.sample,
+            self.sample_subject,
             patch_size,
             patch_overlap,
         )

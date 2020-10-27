@@ -157,8 +157,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
             transform.SetCenter(center_lps)
         return transform
 
-    def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_spatial_shape()
+    def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_spatial_shape()
         params = self.get_params(
             self.scales,
             self.degrees,
@@ -166,7 +166,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             self.isotropic,
         )
         scaling_params, rotation_params, translation_params = params
-        for image in self.get_images(sample):
+        for image in self.get_images(subject):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:
@@ -199,8 +199,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'rotation': rotation_params,
             'translation': translation_params,
         }
-        sample.add_transform(self, random_parameters_dict)
-        return sample
+        subject.add_transform(self, random_parameters_dict)
+        return subject
 
     def apply_affine_transform(
             self,

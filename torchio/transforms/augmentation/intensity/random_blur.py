@@ -33,9 +33,9 @@ class RandomBlur(RandomTransform, IntensityTransform):
         super().__init__(p=p, seed=seed, keys=keys)
         self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(sample).items():
+        for image_name, image in self.get_images_dict(subject).items():
             transformed_tensors = []
             for channel_idx, tensor in enumerate(image[DATA]):
                 std = self.get_params(self.std_range)
@@ -49,8 +49,8 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_transform(self, random_parameters_images_dict)
+        return subject
 
     @staticmethod
     def get_params(std_range: Tuple[float, float]) -> np.ndarray:
