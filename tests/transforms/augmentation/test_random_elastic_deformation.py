@@ -1,4 +1,3 @@
-import numpy as np
 from torchio import Interpolation
 from torchio.transforms import RandomElasticDeformation
 from ...utils import TorchioTestCase
@@ -14,7 +13,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
         )
         keys = ('t1', 't2', 'label')
         fixtures = 2916.7192, 2955.1265, 2950
-        transformed = transform(self.sample, seed=42)
+        transformed = transform(self.sample_subject, seed=42)
         for key, fixture in zip(keys, fixtures):
             sample_data = self.sample_subject[key].numpy()
             transformed_data = transformed[key].numpy()

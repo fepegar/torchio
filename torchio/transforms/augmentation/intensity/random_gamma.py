@@ -46,10 +46,9 @@ class RandomGamma(RandomTransform, IntensityTransform):
             self,
             log_gamma: TypeRangeFloat = (-0.3, 0.3),
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -70,7 +69,6 @@ class RandomGamma(RandomTransform, IntensityTransform):
                 image_dict[DATA] = data.sign() * data.abs() ** gamma
             else:
                 image_dict[DATA] = image_dict[DATA] ** gamma
-        subject.add_transform(self, random_parameters_images_dict)
         return subject
 
     @staticmethod

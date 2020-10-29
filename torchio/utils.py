@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
 
+import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
@@ -331,6 +332,7 @@ def is_jsonable(x):
         return True
     except (TypeError, OverflowError):
         return False
+
 
 def get_major_sitk_version() -> int:
     import SimpleITK as sitk
