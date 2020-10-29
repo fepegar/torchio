@@ -67,6 +67,9 @@ def plot_subject(
         ):
     _, plt = import_mpl_plt()
     fig, axes = plt.subplots(len(subject), 3)
+    # The array of axes must be 2D so that it can be indexed correctly within
+    # the plot_volume() function
+    axes = axes.reshape(-1, 3)
     iterable = enumerate(subject.get_images_dict(intensity_only=False).items())
     axes_names = 'sagittal', 'coronal', 'axial'
     for row, (name, image) in iterable:

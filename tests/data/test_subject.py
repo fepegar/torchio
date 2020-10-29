@@ -58,3 +58,7 @@ class TestSubject(TorchioTestCase):
                 label={0: 'yellow', 1: 'blue'},
             ),
         )
+
+    def test_plot_one_image(self):
+        subject = Subject(t1=ScalarImage(self.get_image_path('t1_plot')))
+        subject.plot(show=False)
