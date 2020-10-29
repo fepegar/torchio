@@ -7,7 +7,6 @@ from pathlib import Path
 
 import torch
 import numpy as np
-import nibabel as nib
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 from torchio.datasets import IXITiny
 from torchio import DATA, AFFINE
@@ -166,8 +165,10 @@ class TorchioTestCase(unittest.TestCase):
         with self.assertRaises(AssertionError, **message_kwarg):
             self.assertTensorEqual(*args, **kwargs)
 
-    def assertTensorEqual(self, *args, **kwargs):  # noqa: N802
+    @staticmethod
+    def assertTensorEqual(*args, **kwargs):  # noqa: N802
         assert_array_equal(*args, **kwargs)
 
-    def assertTensorAlmostEqual(self, *args, **kwargs):  # noqa: N802
+    @staticmethod
+    def assertTensorAlmostEqual(*args, **kwargs):  # noqa: N802
         assert_array_almost_equal(*args, **kwargs)

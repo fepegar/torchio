@@ -1,4 +1,3 @@
-import numpy as np
 from torchio.transforms import RandomLabelsToImage
 from torchio import DATA
 from ...utils import TorchioTestCase

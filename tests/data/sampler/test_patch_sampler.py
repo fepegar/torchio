@@ -1,6 +1,3 @@
-import torch
-import torchio
-import numpy as np
 from torchio.data import PatchSampler
 from ...utils import TorchioTestCase
 

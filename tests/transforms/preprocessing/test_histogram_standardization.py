@@ -1,6 +1,5 @@
-from copy import deepcopy
-import numpy as np
 import torch
+import numpy as np
 from torchio.transforms import HistogramStandardization
 from torchio import LabelMap, ScalarImage, Subject, SubjectsDataset
 from ...utils import TorchioTestCase
