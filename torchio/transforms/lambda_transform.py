@@ -13,15 +13,15 @@ class Lambda(Transform):
             :py:class:`torch.Tensor`.
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
-            will be applied to all images in the sample.
+            will be applied to all images in the subject.
         p: Probability that this transform will be applied.
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> from torchio.transforms import Lambda
-        >>> invert_intensity = Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])
-        >>> invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])
+        >>> import torchio as tio
+        >>> from tio.transforms import Lambda
+        >>> invert_intensity = Lambda(lambda x: -x, types_to_apply=[tio.INTENSITY])
+        >>> invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[tio.LABEL])
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = Lambda(double)
@@ -37,8 +37,8 @@ class Lambda(Transform):
         self.function = function
         self.types_to_apply = types_to_apply
 
-    def apply_transform(self, sample: Subject) -> dict:
-        for image in sample.get_images(intensity_only=False):
+    def apply_transform(self, subject: Subject) -> Subject:
+        for image in subject.get_images(intensity_only=False):
 
             image_type = image[TYPE]
             if self.types_to_apply is not None:
@@ -66,4 +66,4 @@ class Lambda(Transform):
                 )
                 raise ValueError(message)
             image[DATA] = result
-        return sample
+        return subject

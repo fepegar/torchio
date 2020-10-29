@@ -31,20 +31,20 @@ class CropOrPad(BoundsTransform):
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
+        >>> import torchio as tio
         >>> from torchio.transforms import CropOrPad
-        >>> subject = torchio.Subject(
-        ...     torchio.ScalarImage('chest_ct', 'subject_a_ct.nii.gz'),
-        ...     torchio.LabelMap('heart_mask', 'subject_a_heart_seg.nii.gz'),
+        >>> subject = tio.Subject(
+        ...     chest_ct=tio.ScalarImage('subject_a_ct.nii.gz'),
+        ...     heart_mask=tio.LabelMap('subject_a_heart_seg.nii.gz'),
         ... )
-        >>> subject['chest_ct'].shape
+        >>> subject.chest_ct.shape
         torch.Size([1, 512, 512, 289])
         >>> transform = CropOrPad(
         ...     (120, 80, 180),
         ...     mask_name='heart_mask',
         ... )
         >>> transformed = transform(subject)
-        >>> transformed['chest_ct'].shape
+        >>> transformed.chest_ct.shape
         torch.Size([1, 120, 80, 180])
     """
     def __init__(
@@ -97,15 +97,6 @@ class CropOrPad(BoundsTransform):
         return bb_min, bb_max
 
     @staticmethod
-    def _get_sample_shape(sample: Subject) -> TypeTripletInt:
-        """Return the shape of the first image in the sample."""
-        sample.check_consistent_spatial_shape()
-        for image_dict in sample.get_images(intensity_only=False):
-            data = image_dict.spatial_shape  # remove channels dimension
-            break
-        return data
-
-    @staticmethod
     def _get_six_bounds_parameters(
             parameters: np.ndarray,
             ) -> TypeSixBounds:
@@ -122,7 +113,7 @@ class CropOrPad(BoundsTransform):
 
         Example:
             >>> p = np.array((4, 0, 7))
-            >>> _get_six_bounds_parameters(p)
+            >>> CropOrPad._get_six_bounds_parameters(p)
             (2, 2, 0, 0, 4, 3)
         """
         parameters = parameters / 2
@@ -155,9 +146,9 @@ class CropOrPad(BoundsTransform):
 
     def _compute_center_crop_or_pad(
             self,
-            sample: Subject,
+            subject: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
-        source_shape = self._get_sample_shape(sample)
+        source_shape = subject.spatial_shape
         # The parent class turns the 3-element shape tuple (w, h, d)
         # into a 6-element bounds tuple (w, w, h, h, d, d)
         target_shape = np.array(self.bounds_parameters[::2])
@@ -168,18 +159,18 @@ class CropOrPad(BoundsTransform):
 
     def _compute_mask_center_crop_or_pad(
             self,
-            sample: Subject,
+            subject: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
-        if self.mask_name not in sample:
+        if self.mask_name not in subject:
             message = (
                 f'Mask name "{self.mask_name}"'
-                f' not found in sample keys "{tuple(sample.keys())}".'
+                f' not found in subject keys "{tuple(subject.keys())}".'
                 ' Using volume center instead'
             )
             warnings.warn(message)
-            return self._compute_center_crop_or_pad(sample=sample)
+            return self._compute_center_crop_or_pad(subject=subject)
 
-        mask = sample[self.mask_name].numpy()
+        mask = subject[self.mask_name].numpy()
 
         if not np.any(mask):
             message = (
@@ -187,10 +178,10 @@ class CropOrPad(BoundsTransform):
                 ' are zero. Using volume center instead'
             )
             warnings.warn(message)
-            return self._compute_center_crop_or_pad(sample=sample)
+            return self._compute_center_crop_or_pad(subject=subject)
 
-        # Original sample shape (from mask shape)
-        sample_shape = self._get_sample_shape(sample)  # remove channels dimension
+        # Original subject shape (from mask shape)
+        sample_shape = subject.spatial_shape
         # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
@@ -224,15 +215,15 @@ class CropOrPad(BoundsTransform):
         cropping_params = tuple(cropping.tolist()) if cropping.any() else None
         return padding_params, cropping_params
 
-    def apply_transform(self, sample: Subject) -> dict:
-        padding_params, cropping_params = self.compute_crop_or_pad(sample)
+    def apply_transform(self, subject: Subject) -> Subject:
+        padding_params, cropping_params = self.compute_crop_or_pad(subject)
         padding_kwargs = dict(
             padding_mode=self.padding_mode)
         if padding_params is not None:
-            sample = Pad(padding_params, **padding_kwargs)(sample)
+            subject = Pad(padding_params, **padding_kwargs)(subject)
         if cropping_params is not None:
-            sample = Crop(cropping_params)(sample)
-        return sample
+            subject = Crop(cropping_params)(subject)
+        return subject
 
 
 @deprecated('CenterCropOrPad is deprecated. Use CropOrPad instead.')

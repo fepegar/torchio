@@ -1,9 +1,8 @@
 from typing import Union, Tuple, Optional, List
 import torch
 import numpy as np
-import SimpleITK as sitk
-from ....utils import nib_to_sitk, sitk_to_nib
-from ....torchio import DATA, AFFINE, TypeData
+import scipy.ndimage as ndi
+from ....torchio import DATA, TypeData, TypeTripletFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform
@@ -25,16 +24,16 @@ class RandomBlur(RandomTransform, IntensityTransform):
     """
     def __init__(
             self,
-            std: Union[float, Tuple[float, float]] = (0, 4),
+            std: Union[float, Tuple[float, float]] = (0, 2),
             p: float = 1,
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.std_range = self.parse_range(std, 'std', min_constraint=0)
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(sample).items():
+        for image_name, image in self.get_images_dict(subject).items():
             transformed_tensors = []
             for channel_idx, tensor in enumerate(image[DATA]):
                 std = self.get_params(self.std_range)
@@ -43,13 +42,12 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 random_parameters_images_dict[key] = random_parameters_dict
                 transformed_tensor = blur(
                     tensor,
-                    image[AFFINE],
+                    image.spacing,
                     std,
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        #sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        return subject
 
     @staticmethod
     def get_params(std_range: Tuple[float, float]) -> np.ndarray:
@@ -57,10 +55,13 @@ class RandomBlur(RandomTransform, IntensityTransform):
         return std
 
 
-def blur(data: TypeData, affine: TypeData, std: np.ndarray) -> torch.Tensor:
+def blur(
+        data: TypeData,
+        spacing: TypeTripletFloat,
+        std_voxel: np.ndarray,
+        ) -> torch.Tensor:
     assert data.ndim == 3
-    image = nib_to_sitk(data[np.newaxis], affine)
-    image = sitk.DiscreteGaussian(image, std.tolist())
-    array, _ = sitk_to_nib(image)
-    tensor = torch.from_numpy(array[0])
+    std_physical = np.array(std_voxel) / np.array(spacing)
+    blurred = ndi.gaussian_filter(data, std_physical)
+    tensor = torch.from_numpy(blurred)
     return tensor

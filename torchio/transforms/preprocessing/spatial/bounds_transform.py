@@ -1,9 +1,6 @@
 from typing import Union, Tuple, List, Optional
-import torch
 import numpy as np
-import SimpleITK as sitk
-from ....data.subject import Subject
-from ....torchio import DATA, AFFINE, TypeTripletInt
+from ....torchio import TypeTripletInt
 from ... import SpatialTransform
 
 
@@ -38,7 +35,7 @@ class BoundsTransform(SpatialTransform):
         raise NotImplementedError
 
     @staticmethod
-    def parse_bounds(bounds_parameters: TypeBounds) -> Tuple[int, ...]:
+    def parse_bounds(bounds_parameters: TypeBounds) -> TypeSixBounds:
         try:
             bounds_parameters = tuple(bounds_parameters)
         except TypeError:
@@ -65,31 +62,3 @@ class BoundsTransform(SpatialTransform):
             f' 3 or 6 integers, not {bounds_parameters}'
         )
         raise ValueError(message)
-
-    def apply_transform(self, sample: Subject) -> dict:
-        low = self.bounds_parameters[::2]
-        high = self.bounds_parameters[1::2]
-        for image in self.get_images(sample):
-            itk_image = image.as_sitk()
-            result = self._apply_bounds_function(itk_image, low, high)
-            data, affine = self.sitk_to_nib(result)
-            tensor = torch.from_numpy(data)
-            image[DATA] = tensor
-            image[AFFINE] = affine
-        return sample
-
-    def _apply_bounds_function(self, image, low, high):
-        num_components = image.GetNumberOfComponentsPerPixel()
-        if self.bounds_function == sitk.Crop or num_components == 1:
-            result = self.bounds_function(image, low, high)
-        else:  # padding not supported for vector images
-            components = [
-                sitk.VectorIndexSelectionCast(image, i)
-                for i in range(num_components)
-            ]
-            components_padded = [
-                self.bounds_function(component, low, high)
-                for component in components
-            ]
-            result = sitk.Compose(components_padded)
-        return result

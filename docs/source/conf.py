@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -14,19 +13,19 @@
 #
 import os
 import sys
+from typing import List
 sys.path.insert(0, os.path.abspath('../..'))
 
-from typing import List
 
 # -- Project information -----------------------------------------------------
 
 project = 'TorchIO'
-copyright = '2020, Fernando Pérez-García'
+copyright = '2020, Fernando Pérez-García'  # noqa: A001
 author = 'Fernando Pérez-García'
 
 # version is the short X.Y version
 # release is the full version, including alpha/beta/rc tags
-version = release = '0.17.34'
+version = release = '0.17.50'
 
 
 # -- General configuration ---------------------------------------------------
@@ -189,8 +188,9 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
+
 def setup(app):
-    app.add_js_file("copybutton.js")
+    app.add_js_file('copybutton.js')
 
 
 # -- Extension configuration -------------------------------------------------

@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import nib_to_sitk
+from ....utils import nib_to_sitk, get_major_sitk_version
 from ....torchio import (
     INTENSITY,
     DATA,
@@ -29,7 +29,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             making the objects inside look twice as small while preserving
             the physical size and position of the image.
             If only one value :math:`d` is provided,
-            :math:`\s_i \sim \mathcal{U}(0, d)`.
+            :math:`s_i \sim \mathcal{U}(0, d)`.
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
             The rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
@@ -54,15 +54,16 @@ class RandomAffine(RandomTransform, SpatialTransform):
             If ``'otsu'``, the fill value is the mean of the values at the
             border that lie under an
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
+            If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
         seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> subject = torchio.datasets.Colin27()
-        >>> transform = torchio.RandomAffine(
+        >>> import torchio as tio
+        >>> subject = tio.datasets.Colin27()
+        >>> transform = tio.RandomAffine(
         ...     scales=(0.9, 1.2),
         ...     degrees=(10),
         ...     isotropic=False,
@@ -155,8 +156,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
             transform.SetCenter(center_lps)
         return transform
 
-    def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_spatial_shape()
+    def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_spatial_shape()
         params = self.get_params(
             self.scales,
             self.degrees,
@@ -164,7 +165,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             self.isotropic,
         )
         scaling_params, rotation_params, translation_params = params
-        for image in self.get_images(sample):
+        for image in self.get_images(subject):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:
@@ -197,8 +198,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'rotation': rotation_params,
             'translation': translation_params,
         }
-        #sample.add_transform(self, random_parameters_dict)
-        return sample
+        return subject
 
     def apply_affine_transform(
             self,
@@ -224,9 +224,15 @@ class RandomAffine(RandomTransform, SpatialTransform):
             translation_params,
             center_lps=center_lps,
         )
-        transform = sitk.Transform(3, sitk.sitkComposite)
-        transform.AddTransform(scaling_transform)
-        transform.AddTransform(rotation_transform)
+
+        sitk_major_version = get_major_sitk_version()
+        if sitk_major_version == 1:
+            transform = sitk.Transform(3, sitk.sitkComposite)
+            transform.AddTransform(scaling_transform)
+            transform.AddTransform(rotation_transform)
+        elif sitk_major_version == 2:
+            transforms = [scaling_transform, rotation_transform]
+            transform = sitk.CompositeTransform(transforms)
 
         if self.default_pad_value == 'minimum':
             default_value = tensor.min().item()

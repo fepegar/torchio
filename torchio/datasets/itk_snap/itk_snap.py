@@ -19,7 +19,7 @@ class SubjectITKSNAP(Subject):
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
         self.download_root = get_torchio_cache_dir() / self.name
         if self.download_root.is_dir():
-            print(f'Using cache found in {self.download_root}')
+            print(f'Using cache found in {self.download_root}')  # noqa: T001
         else:
             download_and_extract_archive(
                 self.url,
@@ -33,6 +33,7 @@ class SubjectITKSNAP(Subject):
 
 
 class BrainTumor(SubjectITKSNAP):
+
     def __init__(self):
         super().__init__('braintumor', '6161')
 
@@ -51,6 +52,7 @@ class BrainTumor(SubjectITKSNAP):
 
 
 class T1T2(SubjectITKSNAP):
+
     def __init__(self):
         super().__init__('ashs_test', '10983')
 
@@ -64,6 +66,7 @@ class T1T2(SubjectITKSNAP):
 
 
 class AorticValve(SubjectITKSNAP):
+
     def __init__(self):
         super().__init__('bav_example', '11021')
 

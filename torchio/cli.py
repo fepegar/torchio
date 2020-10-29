@@ -81,6 +81,6 @@ def get_params_dict_from_kwargs(kwargs):
     return params_dict
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # pylint: disable=no-value-for-parameter
     sys.exit(apply_transform())  # pragma: no cover

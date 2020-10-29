@@ -6,6 +6,7 @@ from .mni import SubjectMNI
 
 
 class Sheep(SubjectMNI):
+
     def __init__(self):
         self.name = 'NIFTI_ovine_05mm'
         self.url_dir = urllib.parse.urljoin(self.url_base, 'sheep/')
@@ -13,7 +14,7 @@ class Sheep(SubjectMNI):
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
         download_root = get_torchio_cache_dir() / self.name
         if download_root.is_dir():
-            print(f'Using cache found in {download_root}')
+            print(f'Using cache found in {download_root}')  # noqa: T001
         else:
             download_and_extract_archive(
                 self.url,

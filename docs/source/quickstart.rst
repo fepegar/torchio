@@ -30,8 +30,8 @@ a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::
 
-    import torchio
-    from torchio.transforms import (
+    import torchio as tio
+    from tio.transforms import (
         RescaleIntensity,
         RandomAffine,
         RandomElasticDeformation,
@@ -39,18 +39,18 @@ in parallel::
     )
     from torch.utils.data import DataLoader
 
-    # Each instance of torchio.Subject is passed arbitrary keyword arguments.
-    # Typically, these arguments will be instances of torchio.Image
-    subject_a = torchio.Subject(
-        t1=torchio.ScalarImage('subject_a.nii.gz'),
-        label=torchio.LabelMap('subject_a.nii'),
+    # Each instance of tio.Subject is passed arbitrary keyword arguments.
+    # Typically, these arguments will be instances of tio.Image
+    subject_a = tio.Subject(
+        t1=tio.ScalarImage('subject_a.nii.gz'),
+        label=tio.LabelMap('subject_a.nii'),
         diagnosis='positive',
     )
 
     # Images can be in any format supported by SimpleITK or NiBabel, including DICOM
-    subject_b = torchio.Subject(
-        t1=torchio.ScalarImage('subject_b_dicom_folder'),
-        label=torchio.LabelMap('subject_b_seg.nrrd'),
+    subject_b = tio.Subject(
+        t1=tio.ScalarImage('subject_b_dicom_folder'),
+        label=tio.LabelMap('subject_b_seg.nrrd'),
         diagnosis='negative',
     )
     subjects_list = [subject_a, subject_b]
@@ -72,32 +72,33 @@ in parallel::
     transform = Compose(transforms)
 
     # SubjectsDataset is a subclass of torch.data.utils.Dataset
-    subjects_dataset = torchio.SubjectsDataset(subjects_list, transform=transform)
+    subjects_dataset = tio.SubjectsDataset(subjects_list, transform=transform)
 
     # Images are processed in parallel thanks to a PyTorch DataLoader
     training_loader = DataLoader(subjects_dataset, batch_size=4, num_workers=4)
 
     # Training epoch
     for subjects_batch in training_loader:
-        inputs = subjects_batch['t1'][torchio.DATA]
-        target = subjects_batch['label'][torchio.DATA]
+        inputs = subjects_batch['t1'][tio.DATA]
+        target = subjects_batch['label'][tio.DATA]
 
 
 
 
-Google Colab Jupyter Notebok
-============================
+Google Colab Jupyter Notebooks
+==============================
 
 |Google-Colab-notebook|
 
 The best way to quickly understand and try the library is the
-`Jupyter Notebook <https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i>`_
+`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/examples/README.md>`_
 hosted on Google Colab.
-It includes many examples and visualization of most of the classes and even
+
+They include many examples and visualization of most of the classes and even
 training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for brain
-segmentation of :math:`T_1`-weighted MRI with whole images and
-with image patches.
+segmentation of :math:`T_1`-weighted MRI with full volumes and
+with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
+   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
    :alt: Google Colab notebook

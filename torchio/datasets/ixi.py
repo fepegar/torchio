@@ -45,25 +45,25 @@ class IXI(SubjectsDataset):
 
     Example::
 
-        >>> import torchio
+        >>> import torchio as tio
         >>> transforms = [
-        ...     torchio.ToCanonical(),  # to RAS
-        ...     torchio.Resample((1, 1, 1)),  # to 1 mm iso
+        ...     tio.ToCanonical(),  # to RAS
+        ...     tio.Resample((1, 1, 1)),  # to 1 mm iso
         ... ]
-        >>> ixi_dataset = torchio.datasets.IXI(
+        >>> ixi_dataset = tio.datasets.IXI(
         ...     'path/to/ixi_root/',
         ...     modalities=('T1', 'T2'),
-        ...     transform=torchio.Compose(transforms),
+        ...     transform=tio.Compose(transforms),
         ...     download=True,
         ... )
         >>> print('Number of subjects in dataset:', len(ixi_dataset))  # 577
         >>> sample_subject = ixi_dataset[0]
-        >>> print('Keys in subject sample:', tuple(sample_subject.keys()))  # ('T1', 'T2')
+        >>> print('Keys in subject:', tuple(sample_subject.keys()))  # ('T1', 'T2')
         >>> print('Shape of T1 data:', sample_subject['T1'].shape)  # [1, 180, 268, 268]
         >>> print('Shape of T2 data:', sample_subject['T2'].shape)  # [1, 241, 257, 188]
     """
 
-    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'
+    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
         'T2': 'e3140d78730ecdd32ba92da48c0a9aaa',
@@ -163,7 +163,7 @@ class IXI(SubjectsDataset):
 
 class IXITiny(SubjectsDataset):
     r"""
-    This is the dataset used in the `notebook`_.
+    This is the dataset used in the main `notebook`_.
     It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR
     images and their corresponding brain segmentations,
     all with size :math:`83 \times 44 \times 55`.
@@ -176,7 +176,7 @@ class IXITiny(SubjectsDataset):
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
 
-    .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
+    .. _notebook: https://github.com/fepegar/torchio/blob/master/examples/README.md
     """
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
@@ -224,10 +224,10 @@ class IXITiny(SubjectsDataset):
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
         if root.is_dir():  # assume it's been downloaded
-            print('Root directory for IXITiny found:', root)
+            print('Root directory for IXITiny found:', root)  # noqa: T001
             return
-        print('Root directory for IXITiny not found:', root)
-        print('Downloading...')
+        print('Root directory for IXITiny not found:', root)  # noqa: T001
+        print('Downloading...')  # noqa: T001
         with NamedTemporaryFile(suffix='.zip') as f:
             download_and_extract_archive(
                 self.url,
@@ -242,7 +242,7 @@ class IXITiny(SubjectsDataset):
 
 
 def sglob(directory, pattern):
-    return sorted(list(Path(directory).glob(pattern)))
+    return sorted(Path(directory).glob(pattern))
 
 
 def get_subject_id(path):

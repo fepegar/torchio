@@ -20,7 +20,7 @@ class RescaleIntensity(NormalizationTransform):
         percentiles: Percentile values of the input image that will be mapped
             to :math:`(n_{min}, n_{max})`. They can be used for contrast
             stretching, as in `this scikit-image example`_. For example,
-            Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.
+            Isensee et al. use ``(0.5, 99.5)`` in their `nn-UNet paper`_.
             If only one value :math:`d` is provided,
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
@@ -47,11 +47,11 @@ class RescaleIntensity(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: Subject,
+            subject: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
-        image_dict = sample[image_name]
+        image_dict = subject[image_name]
         image_dict[DATA] = self.rescale(image_dict[DATA], mask, image_name)
 
     def rescale(
@@ -60,21 +60,21 @@ class RescaleIntensity(NormalizationTransform):
             mask: torch.Tensor,
             image_name: str,
             ) -> torch.Tensor:
-        array = tensor.clone().numpy()
+        array = tensor.clone().numpy()  # we'll use in-place operations later
         mask = mask.numpy()
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
         np.clip(array, *cutoff, out=array)
         array -= array.min()  # [0, max]
-        array_max = array.max()
-        if array_max == 0:
+        array_max = array.max()  # waiting for walrus operator
+        if array_max == 0:  # should this be compared using a tolerance?
             message = (
                 f'Rescaling image "{image_name}" not possible'
                 ' due to division by zero'
             )
             warnings.warn(message)
             return tensor
-        array /= array.max()  # [0, 1]
+        array /= array_max  # [0, 1]
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]
         array += self.out_min  # [out_min, out_max]

@@ -11,20 +11,20 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'Click>=7.0',
+    'Click',
     'humanize',
     'nibabel',
     'numpy',
     'Python-Deprecated',
     'scipy',
-    'SimpleITK',
+    'SimpleITK<2',
     'torch>=1.1',
     'torchvision',
     'tqdm',
 ]
 
 setup(
-    author="Fernando Perez-Garcia",
+    author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     python_requires='>=3.6',
     classifiers=[
@@ -38,16 +38,19 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description=(
-        "Tools for loading, augmenting and writing 3D medical images"
-        " on PyTorch."
+        'Tools for loading, augmenting and writing 3D medical images'
+        ' on PyTorch.'
     ),
     entry_points={
         'console_scripts': [
             'torchio-transform=torchio.cli:apply_transform',
         ],
     },
+    extras_require={
+        'plot': ['matplotlib', 'seaborn'],
+    },
     install_requires=requirements,
-    license="MIT license",
+    license='MIT license',
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
     include_package_data=True,
@@ -58,6 +61,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.17.34',
+    version='0.17.50',
     zip_safe=False,
 )

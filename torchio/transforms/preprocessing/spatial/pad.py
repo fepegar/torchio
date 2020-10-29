@@ -1,6 +1,12 @@
 from numbers import Number
-from typing import Callable, Union, List, Optional
-import SimpleITK as sitk
+from typing import Union, List, Optional
+
+import numpy as np
+import nibabel as nib
+import torch
+
+from ....torchio import DATA, AFFINE
+from ....data.subject import Subject
 from .bounds_transform import BoundsTransform, TypeBounds
 
 
@@ -22,35 +28,27 @@ class Pad(BoundsTransform):
             If only one value :math:`n` is provided, then
             :math:`w_{ini} = w_{fin} = h_{ini} = h_{fin} =
             d_{ini} = d_{fin} = n`.
-        padding_mode:
-            Type of padding. Should be one of:
-
-            - A number. Pad with a constant value.
-
-            - ``reflect`` Pad with reflection of image without repeating the last value on the edge.
-
-            - ``mirror`` Same as ``reflect``.
-
-            - ``edge`` Pad with the last value at the edge of the image.
-
-            - ``replicate`` Same as ``edge``.
-
-            - ``circular`` Pad with the wrap of the vector along the axis. The first values are used to pad the end and the end values are used to pad the beginning.
-
-            - ``wrap`` Same as ``circular``.
-
+        padding_mode: See possible modes in `NumPy docs`_. If it is a number,
+            the mode will be set to ``'constant'``.
         p: Probability that this transform will be applied.
         keys: See :py:class:`~torchio.transforms.Transform`.
+
+    .. _NumPy docs: https://numpy.org/doc/stable/reference/generated/numpy.pad.html
     """
 
-    PADDING_FUNCTIONS = {
-        'reflect': sitk.MirrorPad,
-        'mirror': sitk.MirrorPad,
-        'edge': sitk.ZeroFluxNeumannPad,
-        'replicate': sitk.ZeroFluxNeumannPad,
-        'circular': sitk.WrapPad,
-        'wrap': sitk.WrapPad,
-    }
+    PADDING_MODES = (
+        'empty',
+        'edge',
+        'wrap',
+        'constant',
+        'linear_ramp',
+        'maximum',
+        'mean',
+        'median',
+        'minimum',
+        'reflect',
+        'symmetric',
+    )
 
     def __init__(
             self,
@@ -59,17 +57,12 @@ class Pad(BoundsTransform):
             p: float = 1,
             keys: Optional[List[str]] = None,
             ):
-        """
-        padding_mode can be 'constant', 'reflect', 'replicate' or 'circular'.
-        See https://pytorch.org/docs/stable/nn.functional.html#pad for more
-        information about this transform.
-        """
         super().__init__(padding, p=p, keys=keys)
         self.padding_mode, self.fill = self.parse_padding_mode(padding_mode)
 
     @classmethod
     def parse_padding_mode(cls, padding_mode):
-        if padding_mode in cls.PADDING_FUNCTIONS:
+        if padding_mode in cls.PADDING_MODES:
             fill = None
         elif isinstance(padding_mode, Number):
             fill = padding_mode
@@ -77,21 +70,23 @@ class Pad(BoundsTransform):
         else:
             message = (
                 f'Padding mode "{padding_mode}" not valid. Valid options are'
-                f' {list(cls.PADDING_FUNCTIONS.keys())} or a number'
+                f' {list(cls.PADDING_MODES)} or a number'
             )
             raise KeyError(message)
         return padding_mode, fill
 
-    @property
-    def bounds_function(self) -> Callable:
-        if self.fill is not None:
-            function = _pad_with_fill(self.fill)
-        else:
-            function = self.PADDING_FUNCTIONS[self.padding_mode]
-        return function
-
-
-def _pad_with_fill(fill):
-    def wrapped(image, bounds1, bounds2):
-        return sitk.ConstantPad(image, bounds1, bounds2, fill)
-    return wrapped
+    def apply_transform(self, subject: Subject) -> Subject:
+        low = self.bounds_parameters[::2]
+        for image in self.get_images(subject):
+            new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
+            new_affine = image.affine.copy()
+            new_affine[:3, 3] = new_origin
+            kwargs = dict(mode=self.padding_mode)
+            if self.padding_mode == 'constant':
+                kwargs['constant_values'] = self.fill
+            pad_params = self.bounds_parameters
+            paddings = (0, 0), pad_params[:2], pad_params[2:4], pad_params[4:]
+            padded = np.pad(image[DATA], paddings, **kwargs)
+            image[DATA] = torch.from_numpy(padded)
+            image[AFFINE] = new_affine
+        return subject

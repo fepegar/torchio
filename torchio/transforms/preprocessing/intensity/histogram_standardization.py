@@ -1,9 +1,10 @@
 from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
+
 import torch
 import numpy as np
-import nibabel as nib
 from tqdm import tqdm
+
 from ....torchio import DATA, TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
@@ -25,7 +26,7 @@ class HistogramStandardization(NormalizationTransform):
     Args:
         landmarks: Dictionary (or path to a PyTorch file with ``.pt`` or ``.pth``
             extension in which a dictionary has been saved) whose keys are
-            image names in the sample and values are NumPy arrays or paths to
+            image names in the subject and values are NumPy arrays or paths to
             NumPy arrays defining the landmarks after training with
             :py:meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
@@ -75,7 +76,7 @@ class HistogramStandardization(NormalizationTransform):
 
     def apply_normalization(
             self,
-            sample: Subject,
+            subject: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
@@ -86,7 +87,7 @@ class HistogramStandardization(NormalizationTransform):
                 f' landmarks dictionary, whose keys are {keys}'
             )
             raise KeyError(message)
-        image_dict = sample[image_name]
+        image_dict = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
         image_dict[DATA] = normalize(
             image_dict[DATA],

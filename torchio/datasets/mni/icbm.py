@@ -6,7 +6,7 @@ from ... import ScalarImage, LabelMap, DATA
 from .mni import SubjectMNI
 
 
-class ICBM2009CNonlinearSymmetryc(SubjectMNI):
+class ICBM2009CNonlinearSymmetric(SubjectMNI):
     r"""ICBM template.
 
     More information can be found in the `website
@@ -21,13 +21,13 @@ class ICBM2009CNonlinearSymmetryc(SubjectMNI):
             independent images.
 
     Example:
-        >>> import torchio
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetryc()
+        >>> import torchio as tio
+        >>> icbm = tio.datasets.ICBM2009CNonlinearSymmetric()
         >>> icbm
-        ICBM2009CNonlinearSymmetryc(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'tissues'); images: 7)
-        >>> icbm = torchio.datasets.ICBM2009CNonlinearSymmetryc(load_4d_tissues=False)
+        ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'tissues'); images: 7)
+        >>> icbm = tio.datasets.ICBM2009CNonlinearSymmetric(load_4d_tissues=False)
         >>> icbm
-        ICBM2009CNonlinearSymmetryc(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
+        ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
 
     """
     def __init__(self, load_4d_tissues: bool = True):
@@ -37,7 +37,7 @@ class ICBM2009CNonlinearSymmetryc(SubjectMNI):
         self.url = urllib.parse.urljoin(self.url_base, self.filename)
         download_root = get_torchio_cache_dir() / self.name
         if download_root.is_dir():
-            print(f'Using cache found in {download_root}')
+            print(f'Using cache found in {download_root}')  # noqa: T001
         else:
             download_and_extract_archive(
                 self.url,

@@ -1,17 +1,18 @@
+import torch
 from torchio import RandomFlip
-from numpy.testing import assert_array_equal
 from ...utils import TorchioTestCase
 
 
 class TestRandomFlip(TorchioTestCase):
     """Tests for `RandomFlip`."""
     def test_2d(self):
-        sample = self.make_2d(self.sample)
+        subject = self.make_2d(self.sample_subject)
         transform = RandomFlip(axes=(1, 2), flip_probability=1)
-        transformed = transform(sample)
-        assert_array_equal(
-            sample.t1.data.numpy()[:, :, ::-1, ::-1],
-            transformed.t1.data.numpy())
+        transformed = transform(subject)
+        self.assertTensorEqual(
+            subject.t1.data.numpy()[..., ::-1, ::-1],
+            transformed.t1.data.numpy(),
+        )
 
     def test_out_of_range_axis(self):
         with self.assertRaises(ValueError):
@@ -28,3 +29,12 @@ class TestRandomFlip(TorchioTestCase):
     def test_wrong_flip_probability_type(self):
         with self.assertRaises(ValueError):
             RandomFlip(flip_probability='wrong')
+
+    def test_anatomical_axis(self):
+        transform = RandomFlip(axes=['i'], flip_probability=1)
+        tensor = torch.rand(1, 2, 3, 4)
+        transformed = transform(tensor)
+        self.assertTensorEqual(
+            tensor.numpy()[..., ::-1],
+            transformed.numpy(),
+        )

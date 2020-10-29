@@ -4,7 +4,7 @@ TorchIO
 
 |PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status|
 |Build-status| |Coverage-codecov| |Coverage-coveralls| |Code-Quality|
-|Code-Maintainability| |Slack|
+|Code-Maintainability| |pre-commit| |Slack|
 
 
 TorchIO is a Python library for efficient loading, preprocessing, augmentation
@@ -68,8 +68,8 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
    :alt: PyPI version
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i
-   :alt: Google Colab notebook
+   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
+   :alt: Google Colab notebooks
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
    :target: http://torchio.rtfd.io/?badge=latest
@@ -98,3 +98,7 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
    :target: https://codeclimate.com/github/fepegar/torchio/maintainability
    :alt: Maintainability
+
+.. |pre-commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+   :target: https://github.com/pre-commit/pre-commit
+   :alt: pre-commit

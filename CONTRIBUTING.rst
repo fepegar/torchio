@@ -58,13 +58,13 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `torchio` for local development.
+Ready to contribute? Here's how to set up ``torchio`` for local development.
 
 1. Create an issue about it on the GitHub repo.
-2. Fork the `torchio` repo on GitHub.
+2. Fork the ``torchio`` repo on GitHub.
 3. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/torchio.git
+    $ git clone git@github.com:your_github_username_here/torchio.git
     $ cd torchio
 
 4. Install your local copy into a virtual environment.
@@ -72,7 +72,9 @@ If you use ``conda``, this is how you can set up your fork for local development
 
     $ conda create --name torchioenv python --yes
     $ conda activate torchioenv
-    $ python setup.py develop
+    $ pip install --editable .
+    $ pip install -r requirements-dev.txt
+    $ pre-commit install
 
 5. Create a branch for local development using the issue number. If the issue
 is #55::
@@ -82,9 +84,9 @@ is #55::
    Now you can make your changes locally.
 
 5. When you're done making changes, check that your changes pass the tests
-   using ``tox``::
+   using ``pytest``::
 
-    $ tox
+    $ pytest -x
 
 6. Commit your changes and push your branch to GitHub (`here's some great
 advice to write good commit
@@ -92,7 +94,7 @@ messages <https://chris.beams.io/posts/git-commit>`_, and `here's some
 more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f98891114c4>`_)::
 
     $ git add .
-    $ git commit -m "Your detailed description of your changes."
+    $ git commit -m "Fix nasty bug"
     $ git push origin 55-name-of-your-bugfix-or-feature
 
 7. Submit a pull request through the GitHub website.

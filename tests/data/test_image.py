@@ -38,16 +38,6 @@ class TestImage(TorchioTestCase):
         sample_input = torch.ones((4, 10, 10, 10))
         RandomAffine()(sample_input)
 
-    def test_crop_attributes(self):
-        cropped = self.sample.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(self.sample.t1['pre_affine'], cropped.t1['pre_affine'])
-
-    def test_crop_does_not_create_wrong_path(self):
-        data = torch.ones((1, 10, 10, 10))
-        image = ScalarImage(tensor=data)
-        cropped = image.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.path, None)
-
     def test_scalar_image_type(self):
         data = torch.ones((1, 10, 10, 10))
         image = ScalarImage(tensor=data)
@@ -68,18 +58,6 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(ValueError):
             LabelMap(tensor=data, type=INTENSITY)
 
-    def test_crop_scalar_image_type(self):
-        data = torch.ones((1, 10, 10, 10))
-        image = ScalarImage(tensor=data)
-        cropped = image.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.type, INTENSITY)
-
-    def test_crop_label_map_type(self):
-        data = torch.ones((1, 10, 10, 10))
-        label = LabelMap(tensor=data)
-        cropped = label.crop((1, 1, 1), (5, 5, 5))
-        self.assertIs(cropped.type, LABEL)
-
     def test_no_input(self):
         with self.assertRaises(ValueError):
             ScalarImage()
@@ -89,15 +67,15 @@ class TestImage(TorchioTestCase):
             ScalarImage(path='', data=5)
 
     def test_repr(self):
-        sample = Subject(t1=ScalarImage(self.get_image_path('repr_test')))
-        assert 'shape' not in repr(sample['t1'])
-        sample.load()
-        assert 'shape' in repr(sample['t1'])
+        subject = Subject(t1=ScalarImage(self.get_image_path('repr_test')))
+        assert 'shape' not in repr(subject['t1'])
+        subject.load()
+        assert 'shape' in repr(subject['t1'])
 
     def test_data_tensor(self):
-        sample = copy.deepcopy(self.sample)
-        sample.load()
-        self.assertIs(sample.t1.data, sample.t1.tensor)
+        subject = copy.deepcopy(self.sample_subject)
+        subject.load()
+        self.assertIs(subject.t1.data, subject.t1.tensor)
 
     def test_bad_affine(self):
         with self.assertRaises(ValueError):
@@ -160,3 +138,7 @@ class TestImage(TorchioTestCase):
         width_idx = image.axis_name_to_index('l')
         self.assertEqual(image.height, image.shape[height_idx])
         self.assertEqual(image.width, image.shape[width_idx])
+
+    def test_plot(self):
+        image = self.sample_subject.t1
+        image.plot(show=False, output_path=self.dir / 'image.png')

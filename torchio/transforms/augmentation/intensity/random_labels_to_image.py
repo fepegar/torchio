@@ -1,4 +1,3 @@
-
 from typing import Tuple, Optional, Sequence, List
 import torch
 from ....torchio import DATA, AFFINE, TypeData, TypeRangeFloat
@@ -15,10 +14,10 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     Based on the works by Billot et al.: `A Learning Strategy for
     Contrast-agnostic MRI Segmentation <https://arxiv.org/abs/2003.01995>`_
     and `Partial Volume Segmentation of Brain MRI Scans of any Resolution and
-    Contrast <https://arxiv.org/abs/2004.10221>`.
+    Contrast <https://arxiv.org/abs/2004.10221>`_.
 
     Args:
-        label_key: String designating the label map in the sample
+        label_key: String designating the label map in the subject
             that will be used to generate the new image.
         used_labels: Sequence of integers designating the labels used
             to generate the new image. If categorical encoding is used,
@@ -36,16 +35,16 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         mean: Sequence of means for each label.
             For each value :math:`v`, if a tuple :math:`(a, b)` is
             provided then :math:`v \sim \mathcal{U}(a, b)`.
-            If None, py:attr:`default_mean` range will be used for every label.
-            If not None and py:attr:`label_channels` is not None,
-            py:attr:`mean` and py:attr:`label_channels` must have the
+            If None, :py:attr:`default_mean` range will be used for every label.
+            If not None and :py:attr:`label_channels` is not None,
+            :py:attr:`mean` and :py:attr:`label_channels` must have the
             same length.
         std: Sequence of standard deviations for each label.
             For each value :math:`v`, if a tuple :math:`(a, b)` is
             provided then :math:`v \sim \mathcal{U}(a, b)`.
-            If None, py:attr:`default_std` range will be used for every label.
-            If not None and py:attr:`label_channels` is not None,
-            py:attr:`std` and py:attr:`label_channels` must have the
+            If None, :py:attr:`default_std` range will be used for every label.
+            If not None and :py:attr:`label_channels` is not None,
+            :py:attr:`std` and :py:attr:`label_channels` must have the
             same length.
         default_mean: Default mean range.
         default_std: Default standard deviation range.
@@ -63,10 +62,10 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         :py:class:`~torchio.transforms.augmentation.RandomBlur`.
 
     Example:
-        >>> import torchio
+        >>> import torchio as tio
         >>> from torchio import RandomLabelsToImage, RescaleIntensity, RandomBlur, Compose
-        >>> from torchio.datasets import ICBM2009CNonlinearSymmetryc
-        >>> sample = ICBM2009CNonlinearSymmetryc()
+        >>> from tio.datasets import ICBM2009CNonlinearSymmetric
+        >>> subject = ICBM2009CNonlinearSymmetric()
         >>> # Using the default parameters
         >>> transform = RandomLabelsToImage(label_key='tissues')
         >>> # Using custom mean and std
@@ -79,7 +78,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ... )
         >>> blurring_transform = RandomBlur(std=0.3)
         >>> transform = Compose([simulation_transform, blurring_transform])
-        >>> transformed = transform(sample)  # sample has a new key 'image_from_labels' with the simulated image
+        >>> transformed = transform(subject)  # subject has a new key 'image_from_labels' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
         >>> rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = RandomLabelsToImage(
@@ -88,7 +87,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ...     used_labels=[0, 1]
         ... )
         >>> transform = Compose([rescale_transform, simulation_transform])
-        >>> transformed = transform(sample)  # sample's key 't1' has been replaced with the simulated image
+        >>> transformed = transform(subject)  # subject's key 't1' has been replaced with the simulated image
     """
     def __init__(
             self,
@@ -127,8 +126,10 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         check_sequence(used_labels, 'used_labels')
         for e in used_labels:
             if not isinstance(e, int):
-                message = f'"used_labels" elements must be integers, ' \
-                          f'not {used_labels}'
+                message = (
+                    'Items in "used_labels" must be integers,'
+                    f' but some are not: {used_labels}'
+                )
                 raise ValueError(message)
         return used_labels
 
@@ -186,19 +187,20 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                 f' equal or greater than the first, not {nums_range}')
         return min_value, max_value
 
-    def apply_transform(self, sample: Subject) -> dict:
+    def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {'mean': [], 'std': []}
-        original_image = sample.get(self.image_key)
+        original_image = subject.get(self.image_key)
 
-        label_map = sample[self.label_key][DATA]
-        affine = sample[self.label_key][AFFINE]
+        label_map = subject[self.label_key][DATA]
+        affine = subject[self.label_key][AFFINE]
 
         spatial_shape = label_map.shape[1:]
 
-        # Find out if we face a partial-volume or a label map.
-        # One hot encoded label map is considered as a partial-volume one.
-        is_discretized = label_map.eq(label_map.round()).all() and \
-            label_map.squeeze().dim() < label_map.dim()
+        # Find out if we face a partial-volume image or a label map.
+        # One-hot-encoded label map is considered as a partial-volume image
+        all_discrete = label_map.eq(label_map.round()).all()
+        same_num_dims = label_map.squeeze().dim() < label_map.dim()
+        is_discretized = all_discrete and same_num_dims
 
         if not is_discretized and self.discretize:
             # Take label with highest value in voxel
@@ -245,9 +247,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                 bg_mask = label_map.sum(dim=0, keepdim=True) < 0.5
             final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
 
-        sample.add_image(final_image, self.image_key)
-        #sample.add_transform(self, random_parameters_images_dict)
-        return sample
+        subject.add_image(final_image, self.image_key)
+        return subject
 
     def check_mean_and_std_length(self, labels: Sequence):
         if self.mean is not None:

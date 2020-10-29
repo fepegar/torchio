@@ -213,14 +213,14 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             )
             warnings.warn(message, RuntimeWarning)
 
-    def apply_transform(self, sample: Subject) -> dict:
-        sample.check_consistent_spatial_shape()
+    def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_spatial_shape()
         bspline_params = self.get_params(
             self.num_control_points,
             self.max_displacement,
             self.num_locked_borders,
         )
-        for image in self.get_images(sample):
+        for image in self.get_images(subject):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST
             else:
@@ -234,8 +234,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
                 interpolation,
             )
         random_parameters_dict = {'coarse_grid': bspline_params}
-        #sample.add_transform(self, random_parameters_dict)
-        return sample
+        return subject
 
     def apply_bspline_transform(
             self,

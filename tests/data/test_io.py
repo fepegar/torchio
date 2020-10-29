@@ -15,7 +15,9 @@ class TestIO(TorchioTestCase):
     """Tests for `io` module."""
     def setUp(self):
         super().setUp()
-        self.write_dicom()
+        self.nii_path = self.get_image_path('read_image')
+        self.dicom_dir = self.get_tests_data_dir() / 'dicom'
+        self.dicom_path = self.dicom_dir / 'IMG0001.dcm'
         string = (
             '1.5 0.18088 -0.124887 0.65072 '
             '-0.20025 0.965639 -0.165653 -11.6452 '
@@ -24,18 +26,6 @@ class TestIO(TorchioTestCase):
         )
         tensor = torch.from_numpy(np.fromstring(string, sep=' ').reshape(4, 4))
         self.matrix = tensor
-
-    def write_dicom(self):
-        self.dicom_dir = self.dir / 'dicom'
-        self.dicom_dir.mkdir(exist_ok=True)
-        self.dicom_path = self.dicom_dir / 'dicom.dcm'
-        self.nii_path = self.get_image_path('read_image')
-        writer = sitk.ImageFileWriter()
-        writer.SetFileName(str(self.dicom_path))
-        image = sitk.ReadImage(str(self.nii_path))
-        image = sitk.Cast(image, sitk.sitkUInt16)
-        image = image[0]  # dicom reader supports 2D only
-        writer.Execute(image)
 
     def test_read_image(self):
         # I need to find something readable by nib but not sitk
@@ -47,10 +37,12 @@ class TestIO(TorchioTestCase):
             im.save(self.dir / 'test.jpg')
 
     def test_read_dicom_file(self):
-        io.read_image(self.dicom_path)
+        tensor, _ = io.read_image(self.dicom_path)
+        self.assertEqual(tuple(tensor.shape), (1, 88, 128, 1))
 
     def test_read_dicom_dir(self):
-        io.read_image(self.dicom_dir)
+        tensor, _ = io.read_image(self.dicom_dir)
+        self.assertEqual(tuple(tensor.shape), (1, 88, 128, 17))
 
     def test_dicom_dir_missing(self):
         with self.assertRaises(FileNotFoundError):

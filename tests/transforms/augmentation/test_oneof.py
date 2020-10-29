@@ -26,4 +26,4 @@ class TestOneOf(TorchioTestCase):
             RandomAffine(): 0.2,
             RandomElasticDeformation(max_displacement=0.5): 0.8,
         })
-        transform(self.sample)
+        transform(self.sample_subject)

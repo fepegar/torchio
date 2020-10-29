@@ -16,23 +16,23 @@ class NormalizationTransform(IntensityTransform):
 
             - ``None``: the mask image is all ones, i.e. all values in the image are used
 
-            - A string: the mask image is retrieved from the sample, which is expected the string as a key
+            - A string: the mask image is retrieved from the subject, which is expected the string as a key
 
             - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`
         keys: See :py:class:`~torchio.transforms.Transform`.
 
     Example:
-        >>> import torchio
-        >>> from torchio.transforms import ZNormalization
-        >>> subject = torchio.datasets.Colin27()
+        >>> import torchio as tio
+        >>> from tio.transforms import ZNormalization
+        >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform
-        >>> transformed = transform(sample)  # use all values to compute mean and std
+        >>> transformed = transform(subject)  # use all values to compute mean and std
         >>> transform = ZNormalization(masking_method='brain')
-        >>> transformed = transform(sample)  # use only values within the brain
+        >>> transformed = transform(subject)  # use only values within the brain
         >>> transform = ZNormalization(masking_method=lambda x: x > x.mean())
-        >>> transformed = transform(sample)  # use values above the image mean
+        >>> transformed = transform(subject)  # use values above the image mean
 
     """
     def __init__(
@@ -44,7 +44,7 @@ class NormalizationTransform(IntensityTransform):
         """
         masking_method is used to choose the values used for normalization.
         It can be:
-         - A string: the mask will be retrieved from the sample
+         - A string: the mask will be retrieved from the subject
          - A function: the mask will be computed using the function
          - None: all values are used
         """
@@ -57,21 +57,21 @@ class NormalizationTransform(IntensityTransform):
         elif isinstance(masking_method, str):
             self.mask_name = masking_method
 
-    def get_mask(self, sample: Subject, tensor: torch.Tensor) -> torch.Tensor:
+    def get_mask(self, subject: Subject, tensor: torch.Tensor) -> torch.Tensor:
         if self.mask_name is None:
             return self.masking_method(tensor)
         else:
-            return sample[self.mask_name][DATA].bool()
+            return subject[self.mask_name][DATA].bool()
 
-    def apply_transform(self, sample: Subject) -> dict:
-        for image_name, image_dict in self.get_images_dict(sample).items():
-            mask = self.get_mask(sample, image_dict[DATA])
-            self.apply_normalization(sample, image_name, mask)
-        return sample
+    def apply_transform(self, subject: Subject) -> Subject:
+        for image_name, image_dict in self.get_images_dict(subject).items():
+            mask = self.get_mask(subject, image_dict[DATA])
+            self.apply_normalization(subject, image_name, mask)
+        return subject
 
     def apply_normalization(
             self,
-            sample: Subject,
+            subject: Subject,
             image_name: str,
             mask: torch.Tensor,
             ) -> None:

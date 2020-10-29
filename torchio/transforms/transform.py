@@ -12,28 +12,33 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..data.dataset import SubjectsDataset
-
 from ..utils import nib_to_sitk, sitk_to_nib, gen_seed, is_jsonable
-
 from .interpolation import Interpolation
+
+
+TypeTransformInput = Union[Subject, torch.Tensor, np.ndarray, dict, sitk.Image]
 
 
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
-    All classes used to transform a sample from an
-    :py:class:`~torchio.SubjectsDataset` should subclass it.
     All subclasses should overwrite
     :py:meth:`torchio.tranforms.Transform.apply_transform`,
-    which takes a sample, applies some transformation and returns the result.
+    which takes data, applies some transformation and returns the result.
+
+    The input can be an instance of
+    :py:class:`torchio.Subject`,
+    :py:class:`torchio.Image`,
+    :py:class:`numpy.ndarray`,
+    :py:class:`torch.Tensor`,
+    :py:class:`SimpleITK.image`,
+    or a Python dictionary.
 
     Args:
         p: Probability that this transform will be applied.
         copy: Make a shallow copy of the input before applying the transform.
-        keys: If the input is a dictionary, the corresponding values will be
-            converted to :py:class:`torchio.ScalarImage` so that the transform
-            is applied to them only.
+        keys: Mandatory if the input is a Python dictionary. The transform will
+            be applied only to the data in each key.
     """
     def __init__(
             self,
@@ -48,7 +53,7 @@ class Transform(ABC):
         self.transform_params = {}
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: Union[List[int], int]=None):
-        """Transform a sample and return the result.
+        """Transform data and return a result of the same type.
 
         Args:
             data: Instance of :py:class:`~torchio.Subject`, 4D
@@ -81,19 +86,19 @@ class Transform(ABC):
         if isinstance(data, nib.Nifti1Image):
             tensor = data.get_fdata(dtype=np.float32)
             data = ScalarImage(tensor=tensor, affine=data.affine)
-            sample = self._get_subject_from_image(data)
+            subject = self._get_subject_from_image(data)
             is_nib = True
         elif isinstance(data, (np.ndarray, torch.Tensor)):
-            sample = self.parse_tensor(data)
+            subject = self.parse_tensor(data)
             is_array = isinstance(data, np.ndarray)
             is_tensor = True
         elif isinstance(data, Image):
-            sample = self._get_subject_from_image(data)
+            subject = self._get_subject_from_image(data)
             is_image = True
         elif isinstance(data, Subject):
-            sample = data
+            subject = data
         elif isinstance(data, sitk.Image):
-            sample = self._get_subject_from_sitk_image(data)
+            subject = self._get_subject_from_sitk_image(data)
             is_sitk = True
         elif isinstance(data, dict):  # e.g. Eisen or MONAI dicts
             if self.keys is None:
@@ -102,15 +107,17 @@ class Transform(ABC):
                     ' specified when instantiating the transform'
                 )
                 raise RuntimeError(message)
-            sample = self._get_subject_from_dict(data, self.keys)
+            subject = self._get_subject_from_dict(data, self.keys)
             is_dict = True
-        self.parse_sample(sample)
+        else:
+            raise ValueError(f'Input type not recognized: {type(data)}')
+        self.parse_subject(subject)
 
         if self.copy:
-            sample = copy.copy(sample)
+            subject = copy.copy(subject)
 
         with np.errstate(all='raise'):
-            transformed = self.apply_transform(sample)
+            transformed = self.apply_transform(subject)
 
         for image in transformed.get_images(intensity_only=False):
             ndim = image[DATA].ndim
@@ -155,7 +162,7 @@ class Transform(ABC):
                 self.transform_params[key] = value.__str__()
 
     @abstractmethod
-    def apply_transform(self, sample: Subject):
+    def apply_transform(self, subject: Subject):
         raise NotImplementedError
 
     @staticmethod
@@ -275,11 +282,11 @@ class Transform(ABC):
         return probability
 
     @staticmethod
-    def parse_sample(sample: Subject) -> None:
-        if not isinstance(sample, Subject):
+    def parse_subject(subject: Subject) -> None:
+        if not isinstance(subject, Subject):
             message = (
                 'Input to a transform must be a tensor or an instance'
-                f' of torchio.Subject, not "{type(sample)}"'
+                f' of torchio.Subject, not "{type(subject)}"'
             )
             raise RuntimeError(message)
 

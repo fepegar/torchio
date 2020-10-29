@@ -68,14 +68,17 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://codeclimate.com/github/fepegar/torchio/maintainability">
                 <img src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" alt="Code maintainability">
             </a>
+            <a href="https://github.com/pre-commit/pre-commit">
+                <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit">
+            </a>
         </td>
     </tr>
     <tr>
         <td align="left">
-            <b>Notebook</b>
+            <b>Notebooks</b>
         </td>
         <td align="center">
-            <a href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">
+            <a href="https://github.com/fepegar/torchio/blob/master/examples/README.md">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Google Colab">
             </a>
         </td>
@@ -250,10 +253,12 @@ BibTeX entry:
 
 See [Getting started](https://torchio.readthedocs.io/quickstart.html) for
 [installation](https://torchio.readthedocs.io/quickstart.html#installation)
-instructions,
-a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world)
-example and a comprehensive Jupyter notebook tutorial on
-[Google Colab](https://torchio.readthedocs.io/quickstart.html#google-colab-jupyter-notebok).
+instructions
+and a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world)
+example.
+
+Longer usage examples can be found in the
+[notebooks](https://github.com/fepegar/torchio/blob/master/examples/README.md).
 
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).
@@ -282,11 +287,15 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="http://julianklug.com"><img src="https://avatars0.githubusercontent.com/u/8020367?v=4" width="100px;" alt=""/><br /><sub><b>Julian Klug</b></sub></a><br /><a href="#ideas-MonsieurWave" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/dvolgyes"><img src="https://avatars1.githubusercontent.com/u/425560?v=4" width="100px;" alt=""/><br /><sub><b>David Völgyes</b></sub></a><br /><a href="#ideas-dvolgyes" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/dvolgyes"><img src="https://avatars1.githubusercontent.com/u/425560?v=4" width="100px;" alt=""/><br /><sub><b>David Völgyes</b></sub></a><br /><a href="#ideas-dvolgyes" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/fepegar/torchio/commits?author=dvolgyes" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/jfillionr/"><img src="https://avatars0.githubusercontent.com/u/219043?v=4" width="100px;" alt=""/><br /><sub><b>Jean-Christophe Fillion-Robin</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jcfr" title="Documentation">📖</a></td>
     <td align="center"><a href="http://surajpai.tech"><img src="https://avatars1.githubusercontent.com/u/10467804?v=4" width="100px;" alt=""/><br /><sub><b>Suraj Pai</b></sub></a><br /><a href="#ideas-surajpaib" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/bcdarwin"><img src="https://avatars2.githubusercontent.com/u/164148?v=4" width="100px;" alt=""/><br /><sub><b>Ben Darwin</b></sub></a><br /><a href="#ideas-bcdarwin" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/OeslleLucena"><img src="https://avatars0.githubusercontent.com/u/19919194?v=4" width="100px;" alt=""/><br /><sub><b>Oeslle Lucena</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AOeslleLucena" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://www.soumick.com"><img src="https://avatars0.githubusercontent.com/u/20525305?v=4" width="100px;" alt=""/><br /><sub><b>Soumick Chatterjee</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=soumickmj" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/neuronflow"><img src="https://avatars1.githubusercontent.com/u/7048826?v=4" width="100px;" alt=""/><br /><sub><b>neuronflow</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=neuronflow" title="Documentation">📖</a></td>
   </tr>
 </table>
 

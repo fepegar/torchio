@@ -16,11 +16,11 @@ class TestRandomElasticDeformation(TorchioTestCase):
         fixtures = 2916.7192, 2955.1265, 2950
         transformed = transform(self.sample, seed=42)
         for key, fixture in zip(keys, fixtures):
-            sample_data = self.sample[key].numpy()
+            sample_data = self.sample_subject[key].numpy()
             transformed_data = transformed[key].numpy()
             transformed_total = transformed_data.sum()
             # Make sure that intensities have changed
-            assert not np.array_equal(sample_data, transformed_data)
+            self.assertTensorNotEqual(sample_data, transformed_data)
             self.assertAlmostEqual(transformed_total, fixture, places=4)
 
     def test_inputs_pta_gt_one(self):
@@ -75,7 +75,7 @@ class TestRandomElasticDeformation(TorchioTestCase):
             max_displacement=6,
         )
         with self.assertWarns(RuntimeWarning):
-            transform(self.sample)
+            transform(self.sample_subject)
 
     def test_num_control_points(self):
         RandomElasticDeformation(num_control_points=5)

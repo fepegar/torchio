@@ -16,4 +16,4 @@ class TestPatchSampler(TorchioTestCase):
             PatchSampler(1.5)
 
     def test_extract_patch(self):
-        PatchSampler(1).extract_patch(self.sample, (3, 4, 5))
+        PatchSampler(1).extract_patch(self.sample_subject, (3, 4, 5))

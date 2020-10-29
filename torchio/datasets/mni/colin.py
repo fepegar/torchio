@@ -1,7 +1,7 @@
 import urllib.parse
 from torchvision.datasets.utils import download_and_extract_archive
 from ...utils import get_torchio_cache_dir
-from ... import ScalarImage, LabelMap, LABEL, DATA
+from ... import ScalarImage, LabelMap, DATA
 from .mni import SubjectMNI
 
 
@@ -40,15 +40,15 @@ class Colin27(SubjectMNI):
         it might take longer than expected.
 
     Example:
-        >>> import torchio
-        >>> colin_1998 = torchio.datasets.Colin27(version=1998)
+        >>> import torchio as tio
+        >>> colin_1998 = tio.datasets.Colin27(version=1998)
         >>> colin_1998
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> colin_1998.load()
         >>> colin_1998.t1
         ScalarImage(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)
         >>>
-        >>> colin_2008 = torchio.datasets.Colin27(version=2008)
+        >>> colin_2008 = tio.datasets.Colin27(version=2008)
         >>> colin_2008
         Colin27(Keys: ('t1', 't2', 'pd', 'cls'); images: 4)
         >>> colin_2008.load()
@@ -65,7 +65,7 @@ class Colin27(SubjectMNI):
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
         download_root = get_torchio_cache_dir() / self.name
         if download_root.is_dir():
-            print(f'Using cache found in {download_root}')
+            print(f'Using cache found in {download_root}')  # noqa: T001
         else:
             download_and_extract_archive(
                 self.url,

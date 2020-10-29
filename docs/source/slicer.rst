@@ -38,16 +38,16 @@ of a transform looks like without any coding at all.
 Usage example
 ^^^^^^^^^^^^^
 
-Go to the `Sample Data` module to get an image we can use:
+Go to the ``Sample Data`` module to get an image we can use:
 
 .. image:: https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_1.png
     :alt: Go to Sample Data module
 
 
 Click on an image to download, for example MRHead [#]_,
-and go to the `TorchIO Transforms` module:
+and go to the ``TorchIO Transforms`` module:
 
-.. [#] All the data in `Sample Data` can be downloaded and used in the TorchIO
+.. [#] All the data in ``Sample Data`` can be downloaded and used in the TorchIO
     Python library using the :py:class:`torchio.datasets.slicer.Slicer` class.
 
 .. image:: https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_2.png
@@ -60,7 +60,7 @@ Select the input and output volume nodes:
     :alt: Select volume nodes
 
 
-Modify the transform parameters and click on `Apply transform`.
+Modify the transform parameters and click on ``Apply transform``.
 Hovering the mouse over the transforms will show tooltips extracted from the
 TorchIO documentation.
 
@@ -68,5 +68,5 @@ TorchIO documentation.
     :alt: Select volume nodes
 
 
-You can click on the `Toggle volumes` button to switch between input and output
+You can click on the ``Toggle volumes`` button to switch between input and output
 volumes.

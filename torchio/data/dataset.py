@@ -5,9 +5,7 @@ from typing import Dict, Sequence, Optional, Callable
 from deprecated import deprecated
 from torch.utils.data import Dataset
 
-from ..utils import get_stem
-from ..torchio import DATA, AFFINE, TYPE, PATH, STEM, TypePath
-from .image import Image
+from ..torchio import DATA, AFFINE, TypePath
 from .io import write_image
 from .subject import Subject
 
@@ -27,19 +25,18 @@ class SubjectsDataset(Dataset):
         subjects: Sequence of instances of
             :class:`~torchio.data.subject.Subject`.
         transform: An instance of :py:class:`torchio.transforms.Transform`
-            that will be applied to each sample.
+            that will be applied to each subject.
 
     Example:
-        >>> import torchio
         >>> from torchio import SubjectsDataset, ScalarImage, LabelMap, Subject
         >>> from torchio.transforms import RescaleIntensity, RandomAffine, Compose
-        >>> subject_a = Subject([
+        >>> subject_a = Subject(
         ...     t1=ScalarImage('t1.nrrd',),
         ...     t2=ScalarImage('t2.mha',),
         ...     label=LabelMap('t1_seg.nii.gz'),
         ...     age=31,
         ...     name='Fernando Perez',
-        >>> ])
+        ... )
         >>> subject_b = Subject(
         ...     t1=ScalarImage('colin27_t1_tal_lin.minc',),
         ...     t2=ScalarImage('colin27_t2_tal_lin_dicom',),
@@ -54,7 +51,7 @@ class SubjectsDataset(Dataset):
         ... ]
         >>> transform = Compose(transforms)
         >>> subjects_dataset = SubjectsDataset(subjects_list, transform=transform)
-        >>> subject_sample = subjects_dataset[0]
+        >>> subject = subjects_dataset[0]
 
     .. _NiBabel: https://nipy.org/nibabel/#nibabel
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
@@ -75,17 +72,17 @@ class SubjectsDataset(Dataset):
     def __len__(self):
         return len(self.subjects)
 
-    def __getitem__(self, index: int) -> dict:
+    def __getitem__(self, index: int) -> Subject:
         if not isinstance(index, int):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
-        sample = copy.deepcopy(subject)  # cheap since images not loaded yet
-        sample.load()
+        subject = copy.deepcopy(subject)  # cheap since images not loaded yet
+        subject.load()
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
-            sample = self._transform(sample)
-        return sample
+            subject = self._transform(subject)
+        return subject
 
     def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
@@ -124,15 +121,16 @@ class SubjectsDataset(Dataset):
     )
     def save_sample(
             cls,
-            sample: Subject,
+            subject: Subject,
             output_paths_dict: Dict[str, TypePath],
             ) -> None:
         for key, output_path in output_paths_dict.items():
-            tensor = sample[key][DATA]
-            affine = sample[key][AFFINE]
+            tensor = subject[key][DATA]
+            affine = subject[key][AFFINE]
             write_image(tensor, affine, output_path)
 
 
-@deprecated('ImagesDataset is deprecated. Use SubjectsDataset instead.')
+@deprecated(
+    'ImagesDataset is deprecated in v0.18.0. Use SubjectsDataset instead.')
 class ImagesDataset(SubjectsDataset):
     pass
