@@ -16,7 +16,14 @@ from ..utils import nib_to_sitk, sitk_to_nib, gen_seed, is_jsonable
 from .interpolation import Interpolation
 
 
-TypeTransformInput = Union[Subject, torch.Tensor, np.ndarray, dict, sitk.Image]
+TypeTransformInput = Union[
+    Subject,
+    Image,
+    torch.Tensor,
+    np.ndarray,
+    sitk.Image,
+    dict,
+]
 
 
 class Transform(ABC):
@@ -52,7 +59,11 @@ class Transform(ABC):
         self.default_image_name = 'default_image_name'
         self.transform_params = {}
 
-    def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seed: Union[List[int], int]=None):
+    def __call__(
+            self,
+            data: TypeTransformInput,
+            seed: Union[List[int], int, None] = None,
+            ) -> TypeTransformInput:
         """Transform data and return a result of the same type.
 
         Args:
@@ -63,21 +74,21 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
-        #Execution's seed
         if not seed:
             seed = gen_seed()
 
-        #Store the current rng_state to reset it after the execution
+        # Store the current rng_state to reset it after the execution
         torch_rng_state = torch.random.get_rng_state()
         if isinstance(seed, int):
             torch.manual_seed(seed=seed)
 
         self.transform_params = {}
         self._store_params()
-        self.transform_params["seed"] = seed
+        self.transform_params['seed'] = seed
 
         if torch.rand(1).item() > self.probability:
-            if isinstance(data, Subject) and isinstance(seed, int): #if not a compose
+            # If not a Compose
+            if isinstance(data, Subject) and isinstance(seed, int):
                 data.add_transform(self, parameters_dict=self.transform_params)
             return data
 
@@ -148,15 +159,19 @@ class Transform(ABC):
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
 
-        if isinstance(transformed, Subject) and isinstance(seed, int): #if not a compose
-            transformed.add_transform(self, parameters_dict=self.transform_params)
+        # If not a Compose
+        if isinstance(transformed, Subject) and isinstance(seed, int):
+            transformed.add_transform(
+                self,
+                parameters_dict=self.transform_params,
+            )
         torch.random.set_rng_state(torch_rng_state)
 
         return transformed
 
     def _store_params(self):
         self.transform_params.update(self.__dict__.copy())
-        del self.transform_params["transform_params"]
+        del self.transform_params['transform_params']
         for key, value in self.transform_params.items():
             if not is_jsonable(value):
                 self.transform_params[key] = value.__str__()

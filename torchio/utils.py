@@ -335,7 +335,6 @@ def is_jsonable(x):
 
 
 def get_major_sitk_version() -> int:
-    import SimpleITK as sitk
     # This attribute was added in version 2
     # https://github.com/SimpleITK/SimpleITK/pull/1171
     version = getattr(sitk, '__version__', None)
