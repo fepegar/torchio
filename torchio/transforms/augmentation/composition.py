@@ -1,4 +1,4 @@
-from typing import Union, Sequence, List
+from typing import Union, Sequence, List, Optional
 
 import torch
 import torchio
@@ -22,8 +22,13 @@ class Compose(Transform):
     .. note::
         This is a thin wrapper of :py:class:`torchvision.transforms.Compose`.
     """
-    def __init__(self, transforms: Sequence[Transform] = [], p: float = 1):
+    def __init__(
+            self,
+            transforms: Optional[Sequence[Transform]] = None,
+            p: float = 1,
+            ):
         super().__init__(p=p)
+        transforms = [] if transforms is None else transforms
         self.transform = PyTorchCompose(transforms)
 
     def __call__(self, data: Union[Subject, torch.Tensor, np.ndarray], seeds: List = None):
@@ -33,7 +38,7 @@ class Compose(Transform):
         if not seeds:
             seeds = [gen_seed() for _ in range(len(self.transform.transforms))]
         self.seeds = seeds
-        return super(Compose, self).__call__(data, seeds)
+        return super().__call__(data, seeds)
 
     def apply_transform(self, sample: Subject):
         for t, s in zip(self.transform.transforms, self.seeds):
@@ -132,7 +137,7 @@ def compose_from_history(history: List):
     for trsfm_history in history:
         trsfm_name, trsfm_params = trsfm_history[0], (trsfm_history[1])
         seed_list.append(trsfm_params['seed'])
-        trsfm_no_seed = {key: value for key, value in trsfm_params.items() if key != "seed"}
+        trsfm_no_seed = {key: value for key, value in trsfm_params.items() if key != 'seed'}
         trsfm_func = getattr(torchio, trsfm_name)()
         trsfm_func.__dict__ = trsfm_no_seed
         trsfm_list.append(trsfm_func)
