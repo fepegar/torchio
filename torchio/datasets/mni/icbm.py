@@ -73,7 +73,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             pd=ScalarImage(f'{p}_csf_{m}{s}'),
         )
         if load_4d_tissues:
-            subject_dict['tissues'] = LabelMap(tissues_path)
+            subject_dict['tissues'] = LabelMap(tissues_path, channels_last=True)
         else:
             subject_dict['gm'] = LabelMap(f'{p}_gm_{m}{s}')
             subject_dict['wm'] = LabelMap(f'{p}_wm_{m}{s}')
