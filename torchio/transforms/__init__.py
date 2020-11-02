@@ -1,4 +1,4 @@
-from .transform import Transform
+from .transform import Transform, TypeTransformInput
 from .spatial_transform import SpatialTransform
 from .intensity_transform import IntensityTransform
 from .interpolation import Interpolation, get_sitk_interpolator
@@ -39,6 +39,7 @@ from .preprocessing.intensity.histogram_standardization import train as train_hi
 
 __all__ = [
     'Transform',
+    'TypeTransformInput',
     'SpatialTransform',
     'IntensityTransform',
     'Interpolation',
@@ -46,6 +47,7 @@ __all__ = [
     'Lambda',
     'OneOf',
     'Compose',
+    'compose_from_history',
     'RandomFlip',
     'RandomAffine',
     'RandomDownsample',

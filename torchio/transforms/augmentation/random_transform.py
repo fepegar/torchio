@@ -7,9 +7,9 @@ from typing import Optional, Tuple, List
 import torch
 import numpy as np
 
-from ...data.subject import Subject
+from ...utils import gen_seed
 from ... import TypeRangeFloat
-from .. import Transform
+from .. import Transform, TypeTransformInput
 
 
 class RandomTransform(Transform):
@@ -17,7 +17,6 @@ class RandomTransform(Transform):
 
     Args:
         p: Probability that this transform will be applied.
-        seed: Seed for :py:mod:`torch` random number generator.
         keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
@@ -26,6 +25,35 @@ class RandomTransform(Transform):
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
+
+    def __call__(
+        self,
+        data: TypeTransformInput,
+        seed: int = None,
+    ) -> TypeTransformInput:
+        """Transform data and return a result of the same type.
+
+        Args:
+            data: Instance of :py:class:`~torchio.Subject`, 4D
+                :py:class:`torch.Tensor` or 4D NumPy array with dimensions
+                :math:`(C, W, H, D)`, where :math:`C` is the number of channels
+                and :math:`W, H, D` are the spatial dimensions. If the input is
+                a tensor, the affine matrix is an identity and a tensor will be
+                also returned.
+            seed: Seed for :py:mod:`torch` random number generator.
+        """
+        if not seed:
+            seed = gen_seed()
+
+        # Store the current rng_state to reset it after the execution
+        torch_rng_state = torch.random.get_rng_state()
+        torch.manual_seed(seed=seed)
+        self.seed = seed
+
+        transformed = super().__call__(data=data)
+
+        torch.random.set_rng_state(torch_rng_state)
+        return transformed
 
     def parse_degrees(
             self,

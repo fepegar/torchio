@@ -319,14 +319,23 @@ def check_sequence(sequence: Sequence, name: str):
 
 
 def gen_seed():
-    """
-    Random seed generator to avoid overflow
-    :return: a random seed as an int
+    """Random seed generator to avoid overflow
+
+    Returns
+        A random seed as an int
     """
     return torch.randint(0, 2**31, (1,)).item()
 
 
 def is_jsonable(x):
+    """Tests whether an object is convertible to json
+
+    Args:
+        x: object to test
+
+    Returns:
+        Boolean stating whether the object x is convertible to json
+    """
     try:
         json.dumps(x)
         return True

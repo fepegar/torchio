@@ -12,7 +12,7 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..utils import nib_to_sitk, sitk_to_nib, gen_seed, is_jsonable
+from ..utils import nib_to_sitk, sitk_to_nib, is_jsonable
 from .interpolation import Interpolation
 
 
@@ -62,7 +62,6 @@ class Transform(ABC):
     def __call__(
             self,
             data: TypeTransformInput,
-            seed: Union[List[int], int, None] = None,
             ) -> TypeTransformInput:
         """Transform data and return a result of the same type.
 
@@ -74,22 +73,10 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
-        if not seed:
-            seed = gen_seed()
-
-        # Store the current rng_state to reset it after the execution
-        torch_rng_state = torch.random.get_rng_state()
-        if isinstance(seed, int):
-            torch.manual_seed(seed=seed)
-
         self.transform_params = {}
         self._store_params()
-        self.transform_params['seed'] = seed
 
         if torch.rand(1).item() > self.probability:
-            # If not a Compose
-            if isinstance(data, Subject) and isinstance(seed, int):
-                data.add_transform(self, parameters_dict=self.transform_params)
             return data
 
         is_tensor = is_array = is_dict = is_image = is_sitk = is_nib = False
@@ -160,12 +147,11 @@ class Transform(ABC):
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
 
         # If not a Compose
-        if isinstance(transformed, Subject) and isinstance(seed, int):
+        if isinstance(transformed, Subject) and not (self.name in ['Compose', 'OneOf']):
             transformed.add_transform(
                 self,
                 parameters_dict=self.transform_params,
             )
-        torch.random.set_rng_state(torch_rng_state)
 
         return transformed
 

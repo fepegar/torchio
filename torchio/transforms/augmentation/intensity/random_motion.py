@@ -71,7 +71,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
             )
             raise ValueError(message)
         self.num_transforms = num_transforms
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
@@ -106,7 +106,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
                     sitk_image,
                     transforms,
                     times_params,
-                    self.image_interpolation,
+                    self.interpolation,
                 )
                 result_arrays.append(data)
             result = np.stack(result_arrays)

@@ -3,7 +3,7 @@ import torch
 import torchio
 import numpy as np
 from torchio import Subject, ScalarImage, LabelMap
-from torchio.transforms import RandomNoise, compose_from_history, Compose, RandomSpike
+from torchio.transforms import RandomNoise, compose_from_history, Compose, RandomSpike, OneOf
 from ..utils import TorchioTestCase
 
 
@@ -13,6 +13,15 @@ class TestReproducibility(TorchioTestCase):
         subject1 = Subject(img=ScalarImage(tensor=torch.ones(1, 4, 4, 4)))
         subject2 = Subject(img=ScalarImage(tensor=torch.ones(1, 4, 4, 4)))
         return subject1, subject2
+
+    def apply_transforms(self, subject, trsfm_list, seeds_list):
+        s = subject
+        for trsfm, seed in zip(trsfm_list, seeds_list):
+            if seed:
+                s = trsfm(s, seed=seed)
+            else:
+                s = trsfm(s)
+        return s
 
     def random_stuff(self, seed=42):
         transform = RandomNoise(std=(100, 100))
@@ -60,8 +69,8 @@ class TestReproducibility(TorchioTestCase):
         subject1, subject2 = self.get_subjects()
         transformed1 = trsfm(subject1)
         history1 = transformed1.history
-        compose_hist, seeds_hist = compose_from_history(history=history1)
-        transformed2 = compose_hist(subject2, seeds=seeds_hist)
+        trsfm_hist, seeds_hist = compose_from_history(history=history1)
+        transformed2 = self.apply_transforms(subject2, trsfm_list=trsfm_hist, seeds_list=seeds_hist)
         data1, data2 = transformed1.img.data, transformed2.img.data
         self.assertTensorEqual(data1, data2)
 
@@ -70,8 +79,18 @@ class TestReproducibility(TorchioTestCase):
         subject1, subject2 = self.get_subjects()
         transformed1 = trsfm(subject1)
         history1 = transformed1.history
-        compose_hist, seeds_hist = compose_from_history(history=history1)
-        transformed2 = compose_hist(subject2, seeds=seeds_hist)
+        trsfm_hist, seeds_hist = compose_from_history(history=history1)
+        transformed2 = self.apply_transforms(subject2, trsfm_list=trsfm_hist, seeds_list=seeds_hist)
+        data1, data2 = transformed1.img.data, transformed2.img.data
+        self.assertTensorEqual(data1, data2)
+
+    def test_reproducibility_oneof(self):
+        subject1, subject2 = self.get_subjects()
+        trsfm = Compose([OneOf([RandomNoise(p=1.0), RandomSpike(num_spikes=3, p=1.0)]), RandomNoise(p=.5)])
+        transformed1 = trsfm(subject1)
+        history1 = transformed1.history
+        trsfm_hist, seeds_hist = compose_from_history(history=history1)
+        transformed2 = self.apply_transforms(subject2, trsfm_list=trsfm_hist, seeds_list=seeds_hist)
         data1, data2 = transformed1.img.data, transformed2.img.data
         self.assertTensorEqual(data1, data2)
 
@@ -104,6 +123,9 @@ class TestReproducibility(TorchioTestCase):
             warnings.simplefilter('ignore', RuntimeWarning)
             transformed = composed_transform(sample)
 
+        new_transforms, seeds = compose_from_history(transformed.history)
+        new_transformed = self.apply_transforms(subject=sample, trsfm_list=new_transforms, seeds_list=seeds)
+        """
         new_transforms = []
         seeds = []
 
@@ -124,5 +146,7 @@ class TestReproducibility(TorchioTestCase):
         with warnings.catch_warnings():  # ignore elastic deformation warning
             warnings.simplefilter('ignore', RuntimeWarning)
             new_transformed = composed_transform(sample, seeds=seeds)
+        """
+
         self.assertTensorEqual(transformed.t1.data, new_transformed.t1.data)
         self.assertTensorEqual(transformed.seg.data, new_transformed.seg.data)
