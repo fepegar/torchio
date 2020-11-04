@@ -1,4 +1,4 @@
-<!-- Replace issue_number with the issue that will be closed after merging this PR -->
+<!-- Replace {issue_number} with the issue that will be closed after merging this PR -->
 Fixes #{issue_number}.
 
 **Description**
@@ -6,10 +6,10 @@ A few sentences describing the changes proposed in this pull request.
 
 **Checklist**
 
-You do not need to complete all the items by the time you submit the pull
+<!-- You do not need to complete all the items by the time you submit the pull
 request, but most likely the changes will only be merged if all the tasks are
 done. See more information about the submission process in the
-[`CONTRIBUTING`](https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst) docs.
+CONTRIBUTING (https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst) docs. -->
 
 <!-- Write an `x` in all the boxes that apply -->
 - [ ] I have read the [`CONTRIBUTING`](https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst) docs and have a developer setup (especially important are `pre-commit`and `pytest`)
