@@ -18,6 +18,13 @@ Intensity
     :show-inheritance:
 
 
+:class:`ThresholdIntensity`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ThresholdIntensity
+    :show-inheritance:
+
+
 :class:`ZNormalization`
 ~~~~~~~~~~~~~~~~~~~~~~~
 

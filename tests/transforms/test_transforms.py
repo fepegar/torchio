@@ -36,6 +36,7 @@ class TestTransforms(TorchioTestCase):
             torchio.Lambda(lambda x: 2 * x, types_to_apply=torchio.INTENSITY),
             torchio.RandomBiasField(),
             torchio.RescaleIntensity((0, 1)),
+            torchio.ThresholdIntensity((50, 100)),
             torchio.ZNormalization(),
             torchio.HistogramStandardization(landmarks_dict),
             elastic,

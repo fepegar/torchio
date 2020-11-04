@@ -33,6 +33,7 @@ from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import HistogramStandardization
 from .preprocessing import RescaleIntensity, Rescale
+from .preprocessing import ThresholdIntensity
 from .preprocessing import CropOrPad, CenterCropOrPad
 from .preprocessing.intensity.histogram_standardization import train as train_histogram
 
@@ -67,6 +68,7 @@ __all__ = [
     'HistogramStandardization',
     'Rescale',
     'RescaleIntensity',
+    'ThresholdIntensity',
     'CenterCropOrPad',
     'CropOrPad',
     'train_histogram',

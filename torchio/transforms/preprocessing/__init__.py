@@ -5,6 +5,7 @@ from .spatial.to_canonical import ToCanonical
 from .spatial.crop_or_pad import CropOrPad, CenterCropOrPad
 
 from .intensity.rescale import Rescale, RescaleIntensity
+from .intensity.threshold import ThresholdIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
@@ -18,6 +19,7 @@ __all__ = [
     'CenterCropOrPad',
     'Rescale',
     'RescaleIntensity',
+    'ThresholdIntensity',
     'ZNormalization',
     'HistogramStandardization',
 ]
