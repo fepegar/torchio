@@ -101,7 +101,7 @@ Now you can make your changes locally.
 ~~~~~~~~~~~~~~~~~
 
 When you're done making changes, check that your changes pass the tests
-   using ``pytest``::
+using ``pytest``::
 
     pytest -x
 
