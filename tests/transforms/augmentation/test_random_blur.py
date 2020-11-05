@@ -25,3 +25,11 @@ class TestRandomBlur(TorchioTestCase):
     def test_wrong_std_type(self):
         with self.assertRaises(ValueError):
             RandomBlur(std='wrong')
+
+    def test_parse_stds(self):
+        def do_assert(transform):
+            self.assertEqual(transform.std_ranges, 3 * (0, 1))
+        do_assert(RandomBlur(std=1))
+        do_assert(RandomBlur(std=(0, 1)))
+        do_assert(RandomBlur(std=3 * (1,)))
+        do_assert(RandomBlur(std=3 * [0, 1]))
