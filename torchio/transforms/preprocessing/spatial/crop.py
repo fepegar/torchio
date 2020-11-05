@@ -1,6 +1,6 @@
 import numpy as np
 import nibabel as nib
-from ....torchio import DATA
+from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .bounds_transform import BoundsTransform
 
@@ -36,4 +36,5 @@ class Crop(BoundsTransform):
             i0, j0, k0 = index_ini
             i1, j1, k1 = index_fin
             image[DATA] = image[DATA][:, i0:i1, j0:j1, k0:k1].clone()
+            image[AFFINE] = new_affine
         return sample
