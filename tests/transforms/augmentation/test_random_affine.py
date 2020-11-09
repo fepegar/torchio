@@ -76,21 +76,17 @@ class TestRandomAffine(TorchioTestCase):
         with self.assertRaises(ValueError):
             RandomAffine(scales=-1.)
 
+    def test_scale_too_large(self):
+        with self.assertRaises(ValueError):
+            RandomAffine(scales=1.5)
+
     def test_scales_range_with_negative_min(self):
         with self.assertRaises(ValueError):
             RandomAffine(scales=(-1., 4.))
 
-    def test_too_many_scales_values(self):
-        with self.assertRaises(ValueError):
-            RandomAffine(scales=(1., 4., 12.))
-
     def test_wrong_scales_type(self):
         with self.assertRaises(ValueError):
             RandomAffine(scales='wrong')
-
-    def test_too_many_degrees_values(self):
-        with self.assertRaises(ValueError):
-            RandomAffine(degrees=(-10., 4., 42.))
 
     def test_wrong_degrees_type(self):
         with self.assertRaises(ValueError):
@@ -119,3 +115,31 @@ class TestRandomAffine(TorchioTestCase):
     def test_wrong_image_interpolation_value(self):
         with self.assertRaises(AttributeError):
             RandomAffine(image_interpolation='wrong')
+
+    def test_incompatible_args_isotropic(self):
+        with self.assertRaises(ValueError):
+            RandomAffine(scales=(0.8, 0.5, 0.1), isotropic=True)
+
+    def test_parse_scales(self):
+        def do_assert(transform):
+            self.assertEqual(transform.scales, 3 * (0.9, 1.1))
+        do_assert(RandomAffine(scales=0.1))
+        do_assert(RandomAffine(scales=(0.9, 1.1)))
+        do_assert(RandomAffine(scales=3 * (0.1,)))
+        do_assert(RandomAffine(scales=3 * [0.9, 1.1]))
+
+    def test_parse_degrees(self):
+        def do_assert(transform):
+            self.assertEqual(transform.degrees, 3 * (-10, 10))
+        do_assert(RandomAffine(degrees=10))
+        do_assert(RandomAffine(degrees=(-10, 10)))
+        do_assert(RandomAffine(degrees=3 * (10,)))
+        do_assert(RandomAffine(degrees=3 * [-10, 10]))
+
+    def test_parse_translation(self):
+        def do_assert(transform):
+            self.assertEqual(transform.translation, 3 * (-10, 10))
+        do_assert(RandomAffine(translation=10))
+        do_assert(RandomAffine(translation=(-10, 10)))
+        do_assert(RandomAffine(translation=3 * (10,)))
+        do_assert(RandomAffine(translation=3 * [-10, 10]))

@@ -1,8 +1,7 @@
 import torch
 import numpy as np
-from torchio import DATA, AFFINE, ScalarImage
+from torchio import ScalarImage
 from torchio.transforms import Resample
-from torchio.utils import nib_to_sitk
 from ...utils import TorchioTestCase
 
 
@@ -24,7 +23,7 @@ class TestResample(TorchioTestCase):
         reference_image = subject[reference_name]
         for image in transformed.get_images(intensity_only=False):
             self.assertEqual(reference_image.shape, image.shape)
-            self.assertTensorAlmostEqual(reference_image[AFFINE], image[AFFINE])
+            self.assertTensorAlmostEqual(reference_image.affine, image.affine)
 
     def test_affine(self):
         spacing = 1
@@ -35,9 +34,9 @@ class TestResample(TorchioTestCase):
             if affine_name in image:
                 target_affine = np.eye(4)
                 target_affine[:3, 3] = 10, 0, -0.1
-                self.assertTensorAlmostEqual(image[AFFINE], target_affine)
+                self.assertTensorAlmostEqual(image.affine, target_affine)
             else:
-                self.assertTensorEqual(image[AFFINE], np.eye(4))
+                self.assertTensorEqual(image.affine, np.eye(4))
 
     def test_missing_affine(self):
         transform = Resample(1, pre_affine_name='missing')

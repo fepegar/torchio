@@ -19,7 +19,11 @@ To upgrade to the latest published version, use::
 
     $ pip install --upgrade torchio
 
-
+If you are on Windows and have
+`trouble installing TorchIO<https://github.com/fepegar/torchio/issues/343>`_,
+try `installing PyTorch <https://pytorch.org/get-started/locally/>`_ with
+`conda <https://docs.conda.io/en/latest/miniconda.html>`_ before pip-installing
+TorchIO.
 
 Hello, World!
 =============
@@ -27,7 +31,7 @@ Hello, World!
 This example shows the basic usage of TorchIO, where an instance of
 :py:class:`~torchio.data.dataset.SubjectsDataset` is passed to
 a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
-of 3D images that are loaded, preprocessed and augmented in on the fly,
+of 3D images that are loaded, preprocessed and augmented on the fly,
 in parallel::
 
     import torchio as tio

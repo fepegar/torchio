@@ -4,7 +4,6 @@
 
 import copy
 import torch
-import pytest
 import numpy as np
 from torchio import ScalarImage, LabelMap, Subject, INTENSITY, LABEL, STEM
 from ..utils import TorchioTestCase

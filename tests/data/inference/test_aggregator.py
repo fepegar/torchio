@@ -1,6 +1,6 @@
 import torch
 import torchio as tio
-from torchio import LOCATION, DATA, Subject, ScalarImage
+from torchio import LOCATION, DATA
 from ...utils import TorchioTestCase
 
 

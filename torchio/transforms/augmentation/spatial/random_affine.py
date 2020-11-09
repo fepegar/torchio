@@ -4,13 +4,14 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 from ....data.subject import Subject
-from ....utils import nib_to_sitk, get_major_sitk_version
+from ....utils import nib_to_sitk, get_major_sitk_version, to_tuple
 from ....torchio import (
     INTENSITY,
     DATA,
     AFFINE,
     TYPE,
     TypeRangeFloat,
+    TypeSextetFloat,
     TypeTripletFloat,
 )
 from ... import SpatialTransform
@@ -18,30 +19,47 @@ from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
 
+TypeOneToSixFloat = Union[TypeRangeFloat, TypeTripletFloat, TypeSextetFloat]
+
+
 class RandomAffine(RandomTransform, SpatialTransform):
     r"""Random affine transformation.
 
     Args:
-        scales: Tuple :math:`(a, b)` defining the scaling
-            magnitude. The scaling values along each dimension are
-            :math:`(s_1, s_2, s_3)`, where :math:`s_i \sim \mathcal{U}(a, b)`.
+        scales: Tuple :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` defining the
+            scaling ranges.
+            The scaling values along each dimension are :math:`(s_1, s_2, s_3)`,
+            where :math:`s_i \sim \mathcal{U}(a_i, b_i)`.
+            If two values :math:`(a, b)` are provided,
+            then :math:`s_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`x` is provided,
+            then :math:`s_i \sim \mathcal{U}(1 - x, 1 + x)`.
+            If three values :math:`(x_1, x_2, x_3)` are provided,
+            then :math:`s_i \sim \mathcal{U}(1 - x_i, 1 + x_i)`.
             For example, using ``scales=(0.5, 0.5)`` will zoom out the image,
             making the objects inside look twice as small while preserving
-            the physical size and position of the image.
-            If only one value :math:`d` is provided,
-            :math:`s_i \sim \mathcal{U}(0, d)`.
-        degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.
-            The rotation angles around each axis are
+            the physical size and position of the image bounds.
+        degrees: Tuple :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` defining the
+            rotation ranges in degrees.
+            Rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
-            where :math:`\theta_i \sim \mathcal{U}(a, b)`.
-            If only one value :math:`d` is provided,
-            :math:`\theta_i \sim \mathcal{U}(-d, d)`.
-        translation: Tuple :math:`(a, b)` defining the translation in mm.
-            Translation along each axis is
-            :math:`(x_1, x_2, x_3)`,
-            where :math:`x_i \sim \mathcal{U}(a, b)`.
-            If only one value :math:`d` is provided,
-            :math:`x_i \sim \mathcal{U}(-d, d)`.
+            where :math:`\theta_i \sim \mathcal{U}(a_i, b_i)`.
+            If two values :math:`(a, b)` are provided,
+            then :math:`\theta_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`x` is provided,
+            then :math:`\theta_i \sim \mathcal{U}(-x, x)`.
+            If three values :math:`(x_1, x_2, x_3)` are provided,
+            then :math:`\theta_i \sim \mathcal{U}(-x_i, x_i)`.
+        translation: Tuple :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` defining the
+            translation ranges in mm.
+            Translation along each axis is :math:`(t_1, t_2, t_3)`,
+            where :math:`t_i \sim \mathcal{U}(a_i, b_i)`.
+            If two values :math:`(a, b)` are provided,
+            then :math:`t_i \sim \mathcal{U}(a, b)`.
+            If only one value :math:`x` is provided,
+            then :math:`t_i \sim \mathcal{U}(-x, x)`.
+            If three values :math:`(x_1, x_2, x_3)` are provided,
+            then :math:`t_i \sim \mathcal{U}(-x_i, x_i)`.
         isotropic: If ``True``, the scaling factor along all dimensions is the
             same, i.e. :math:`s_1 = s_2 = s_3`.
         center: If ``'image'``, rotations and scaling will be performed around
@@ -79,9 +97,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
     """
     def __init__(
             self,
-            scales: TypeRangeFloat = (0.9, 1.1),
-            degrees: TypeRangeFloat = 10,
-            translation: TypeRangeFloat = 0,
+            scales: TypeOneToSixFloat = 0.1,
+            degrees: TypeOneToSixFloat = 10,
+            translation: TypeOneToSixFloat = 0,
             isotropic: bool = False,
             center: str = 'image',
             default_pad_value: Union[str, float] = 'otsu',
@@ -90,10 +108,11 @@ class RandomAffine(RandomTransform, SpatialTransform):
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self.scales = self.parse_range(scales, 'scales', min_constraint=0)
-        self.degrees = self.parse_degrees(degrees)
-        self.translation = self.parse_range(translation, 'translation')
         self.isotropic = isotropic
+        self.parse_scales_isotropic(scales, isotropic)
+        self.scales = self.parse_params(scales, 1, 'scales', min_constraint=0)
+        self.degrees = self.parse_params(degrees, 0, 'degrees')
+        self.translation = self.parse_params(translation, 0, 'translation')
         if center not in ('image', 'origin'):
             message = (
                 'Center argument must be "image" or "origin",'
@@ -105,6 +124,16 @@ class RandomAffine(RandomTransform, SpatialTransform):
         self.interpolation = self.parse_interpolation(image_interpolation)
 
     @staticmethod
+    def parse_scales_isotropic(scales, isotropic):
+        params = to_tuple(scales)
+        if isotropic and len(scales) in (3, 6):
+            message = (
+                'If "isotropic" is True, the value for "scales" must have'
+                f' length 1 or 2, but "{scales}" was passed'
+            )
+            raise ValueError(message)
+
+    @staticmethod
     def parse_default_value(value: Union[str, float]) -> Union[str, float]:
         if isinstance(value, Number) or value in ('minimum', 'otsu', 'mean'):
             return value
@@ -114,19 +143,19 @@ class RandomAffine(RandomTransform, SpatialTransform):
         )
         raise ValueError(message)
 
-    @staticmethod
     def get_params(
-            scales: Tuple[float, float],
-            degrees: Tuple[float, float],
-            translation: Tuple[float, float],
+            self,
+            scales: TypeSextetFloat,
+            degrees: TypeSextetFloat,
+            translation: TypeSextetFloat,
             isotropic: bool,
-            ) -> Tuple[np.ndarray, np.ndarray]:
-        scaling_params = torch.FloatTensor(3).uniform_(*scales)
+            ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        scaling_params = self.sample_uniform_sextet(scales)
         if isotropic:
             scaling_params.fill_(scaling_params[0])
-        rotation_params = torch.FloatTensor(3).uniform_(*degrees).numpy()
-        translation_params = torch.FloatTensor(3).uniform_(*translation).numpy()
-        return scaling_params.numpy(), rotation_params, translation_params
+        rotation_params = self.sample_uniform_sextet(degrees)
+        translation_params = self.sample_uniform_sextet(translation)
+        return scaling_params, rotation_params, translation_params
 
     @staticmethod
     def get_scaling_transform(
@@ -158,13 +187,12 @@ class RandomAffine(RandomTransform, SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         subject.check_consistent_spatial_shape()
-        params = self.get_params(
+        scaling_params, rotation_params, translation_params = self.get_params(
             self.scales,
             self.degrees,
             self.translation,
             self.isotropic,
         )
-        scaling_params, rotation_params, translation_params = params
         for image in self.get_images(subject):
             if image[TYPE] != INTENSITY:
                 interpolation = Interpolation.NEAREST

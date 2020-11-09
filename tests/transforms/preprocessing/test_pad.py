@@ -1,4 +1,3 @@
-import torch
 import SimpleITK as sitk
 from torchio.utils import sitk_to_nib
 from torchio.transforms import Pad

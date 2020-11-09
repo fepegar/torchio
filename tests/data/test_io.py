@@ -1,12 +1,10 @@
 import tempfile
-import unittest
 from pathlib import Path
+
 import torch
 import pytest
 import numpy as np
-from numpy.testing import assert_array_equal
-import nibabel as nib
-import SimpleITK as sitk
+
 from ..utils import TorchioTestCase
 from torchio.data import io, ScalarImage
 
@@ -93,8 +91,8 @@ def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
     load_function = getattr(io, f'_read_{save_lib}')
     save_function(tensor, affine, path)
     loaded_tensor, loaded_affine = load_function(path)
-    assert_array_equal(
+    TorchioTestCase.assertTensorEqual(
         tensor.squeeze(), loaded_tensor.squeeze(),
         f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}'
     )
-    assert_array_equal(affine, loaded_affine)
+    TorchioTestCase.assertTensorEqual(affine, loaded_affine)

@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from torchio.transforms import CropOrPad, CenterCropOrPad
 from torchio import DATA, AFFINE

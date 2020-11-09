@@ -1,4 +1,3 @@
-import numpy as np
 from torchio.transforms import RandomDownsample
 from ...utils import TorchioTestCase
 

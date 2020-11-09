@@ -1,6 +1,5 @@
 import torch
 import torchio
-import numpy as np
 from torchio.data import UniformSampler
 from ...utils import TorchioTestCase
 

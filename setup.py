@@ -4,10 +4,10 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
+with open('README.md', encoding='utf8') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open('HISTORY.rst', encoding='utf8') as history_file:
     history = history_file.read()
 
 requirements = [
@@ -61,6 +61,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.17.50',
+    version='0.17.53',
     zip_safe=False,
 )

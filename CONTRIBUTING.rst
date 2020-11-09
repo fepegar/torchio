@@ -60,60 +60,69 @@ Get Started!
 
 Ready to contribute? Here's how to set up ``torchio`` for local development.
 
-1. Create an issue about it on the GitHub repo.
-2. Fork the ``torchio`` repo on GitHub.
-3. Clone your fork locally::
+1) Create an issue about it on the GitHub repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    $ git clone git@github.com:your_github_username_here/torchio.git
-    $ cd torchio
+It's good practice to first discuss the proposed changes as the feature might
+already be implemented.
 
-4. Install your local copy into a virtual environment.
+2) Fork the ``torchio`` repo on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+3) Clone your fork locally
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    git clone git@github.com:your_github_username_here/torchio.git
+    cd torchio
+
+4) Install your local copy into a virtual environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 If you use ``conda``, this is how you can set up your fork for local development::
 
-    $ conda create --name torchioenv python --yes
-    $ conda activate torchioenv
-    $ pip install --editable .
-    $ pip install -r requirements-dev.txt
-    $ pre-commit install
+    conda create --name torchioenv python --yes
+    conda activate torchioenv
+    pip install --editable .
+    pip install -r requirements-dev.txt
+    pre-commit install
 
-5. Create a branch for local development using the issue number. If the issue
-is #55::
+5) Create a branch for local development using the issue number
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    $ git checkout -b 55-name-of-your-bugfix-or-feature
+For example, if the issue nu ber is 55::
 
-   Now you can make your changes locally.
+    git checkout -b 55-name-of-your-bugfix-or-feature
 
-5. When you're done making changes, check that your changes pass the tests
-   using ``pytest``::
+Now you can make your changes locally.
 
-    $ pytest -x
+6) Run unit tests
+~~~~~~~~~~~~~~~~~
 
-6. Commit your changes and push your branch to GitHub (`here's some great
+When you're done making changes, check that your changes pass the tests
+using ``pytest``::
+
+    pytest -x
+
+7) Commit your changes and push your branch to GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`Here's some great
 advice to write good commit
 messages <https://chris.beams.io/posts/git-commit>`_, and `here's some
 more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f98891114c4>`_)::
 
-    $ git add .
-    $ git commit -m "Fix nasty bug"
-    $ git push origin 55-name-of-your-bugfix-or-feature
+    git add .
+    git commit -m "Fix nasty bug"
+    git push origin 55-name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
-
-Pull Request Guidelines
------------------------
-
-Before you submit a pull request, check that it meets these guidelines:
-
-1. The pull request should include tests.
-2. If the pull request adds functionality, the docs should be updated. You can
-   put your new functionality into a function with a docstring.
-3. The pull request should work for Python 3.6, 3.7 and 3.8. Check
-   https://travis-ci.org/fepegar/torchio/
-   and make sure that the tests pass for all supported Python versions.
+8) Submit a pull request on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tips
 ----
 
 To run a subset of tests::
 
-    $ pytest tests/data/test_image.py
+    pytest tests/data/test_image.py

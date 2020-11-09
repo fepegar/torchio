@@ -1,4 +1,3 @@
-import torch
 from torch.utils.data import DataLoader
 from torchio import LOCATION, DATA
 from torchio.data.inference import GridSampler, GridAggregator

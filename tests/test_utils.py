@@ -2,8 +2,6 @@
 
 """Tests for `utils` package."""
 
-import unittest
-import torch
 import numpy as np
 import SimpleITK as sitk
 from torchio import RandomFlip
