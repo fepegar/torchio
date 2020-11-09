@@ -16,4 +16,8 @@ generated-members=numpy.*,torch.*
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=arguments-differ,bad-continuation,missing-module-docstring,missing-function-docstring
+disable =
+    arguments-differ,
+    bad-continuation,
+    missing-module-docstring,
+    missing-function-docstring

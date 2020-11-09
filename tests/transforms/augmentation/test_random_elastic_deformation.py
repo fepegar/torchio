@@ -10,11 +10,10 @@ class TestRandomElasticDeformation(TorchioTestCase):
         transform = RandomElasticDeformation(
             num_control_points=5,
             max_displacement=(2, 3, 5),  # half grid spacing is (3.3, 3.3, 5)
-            seed=42,
         )
         keys = ('t1', 't2', 'label')
         fixtures = 2916.7192, 2955.1265, 2950
-        transformed = transform(self.sample_subject)
+        transformed = transform(self.sample_subject, seed=42)
         for key, fixture in zip(keys, fixtures):
             sample_data = self.sample_subject[key].numpy()
             transformed_data = transformed[key].numpy()

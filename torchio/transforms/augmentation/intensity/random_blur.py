@@ -31,7 +31,6 @@ class RandomBlur(RandomTransform, IntensityTransform):
             self,
             std: Union[float, Tuple[float, float]] = (0, 2),
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
         super().__init__(p=p, seed=seed, keys=keys)
@@ -53,7 +52,6 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        subject.add_transform(self, random_parameters_images_dict)
         return subject
 
     def get_params(self, std_ranges: TypeSextetFloat) -> TypeTripletFloat:

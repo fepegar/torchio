@@ -59,10 +59,9 @@ class RandomMotion(RandomTransform, IntensityTransform):
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         if not 0 < num_transforms or not isinstance(num_transforms, int):
@@ -72,7 +71,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
             )
             raise ValueError(message)
         self.num_transforms = num_transforms
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, subject: Subject) -> Subject:
         random_parameters_images_dict = {}
@@ -107,12 +106,11 @@ class RandomMotion(RandomTransform, IntensityTransform):
                     sitk_image,
                     transforms,
                     times_params,
-                    self.image_interpolation,
+                    self.interpolation,
                 )
                 result_arrays.append(data)
             result = np.stack(result_arrays)
             image[DATA] = torch.from_numpy(result)
-        subject.add_transform(self, random_parameters_images_dict)
         return subject
 
     @staticmethod

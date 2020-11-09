@@ -12,11 +12,18 @@ import SimpleITK as sitk
 from .. import TypeData, DATA, AFFINE, TypeNumber
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
+from ..utils import nib_to_sitk, sitk_to_nib, is_jsonable, to_tuple
 from .interpolation import Interpolation
 
 
-TypeTransformInput = Union[Subject, torch.Tensor, np.ndarray, dict, sitk.Image]
+TypeTransformInput = Union[
+    Subject,
+    Image,
+    torch.Tensor,
+    np.ndarray,
+    sitk.Image,
+    dict,
+]
 
 
 class Transform(ABC):
@@ -50,8 +57,12 @@ class Transform(ABC):
         self.copy = copy
         self.keys = keys
         self.default_image_name = 'default_image_name'
+        self.transform_params = {}
 
-    def __call__(self, data: TypeTransformInput) -> TypeTransformInput:
+    def __call__(
+            self,
+            data: TypeTransformInput,
+            ) -> TypeTransformInput:
         """Transform data and return a result of the same type.
 
         Args:
@@ -62,6 +73,9 @@ class Transform(ABC):
                 a tensor, the affine matrix is an identity and a tensor will be
                 also returned.
         """
+        self.transform_params = {}
+        self._store_params()
+
         if torch.rand(1).item() > self.probability:
             return data
 
@@ -131,7 +145,22 @@ class Transform(ABC):
                 )
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
+
+        # If not a Compose
+        if isinstance(transformed, Subject) and not (self.name in ['Compose', 'OneOf']):
+            transformed.add_transform(
+                self,
+                parameters_dict=self.transform_params,
+            )
+
         return transformed
+
+    def _store_params(self):
+        self.transform_params.update(self.__dict__.copy())
+        del self.transform_params['transform_params']
+        for key, value in self.transform_params.items():
+            if not is_jsonable(value):
+                self.transform_params[key] = value.__str__()
 
     @abstractmethod
     def apply_transform(self, subject: Subject):

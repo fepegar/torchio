@@ -41,10 +41,9 @@ class RandomSpike(RandomTransform, IntensityTransform):
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (1, 3),
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
         self.num_spikes_range = self.parse_range(
@@ -73,7 +72,6 @@ class RandomSpike(RandomTransform, IntensityTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        subject.add_transform(self, random_parameters_images_dict)
         return subject
 
     @staticmethod

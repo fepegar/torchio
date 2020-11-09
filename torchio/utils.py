@@ -1,10 +1,12 @@
 import ast
 import gzip
+import json
 import shutil
 import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
 
+import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
@@ -316,8 +318,32 @@ def check_sequence(sequence: Sequence, name: str):
         raise TypeError(message)
 
 
+def gen_seed():
+    """Random seed generator to avoid overflow
+
+    Returns
+        A random seed as an int
+    """
+    return torch.randint(0, 2**31, (1,)).item()
+
+
+def is_jsonable(x):
+    """Tests whether an object is convertible to json
+
+    Args:
+        x: object to test
+
+    Returns:
+        Boolean stating whether the object x is convertible to json
+    """
+    try:
+        json.dumps(x)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
+
 def get_major_sitk_version() -> int:
-    import SimpleITK as sitk
     # This attribute was added in version 2
     # https://github.com/SimpleITK/SimpleITK/pull/1171
     version = getattr(sitk, '__version__', None)

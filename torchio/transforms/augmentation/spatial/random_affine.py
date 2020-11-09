@@ -105,10 +105,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
             default_pad_value: Union[str, float] = 'otsu',
             image_interpolation: str = 'linear',
             p: float = 1,
-            seed: Optional[int] = None,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.isotropic = isotropic
         self.parse_scales_isotropic(scales, isotropic)
         self.scales = self.parse_params(scales, 1, 'scales', min_constraint=0)
@@ -227,7 +226,6 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'rotation': rotation_params,
             'translation': translation_params,
         }
-        subject.add_transform(self, random_parameters_dict)
         return subject
 
     def apply_affine_transform(
