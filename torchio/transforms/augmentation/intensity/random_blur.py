@@ -24,7 +24,6 @@ class RandomBlur(RandomTransform, IntensityTransform):
             If three values :math:`(x_1, x_2, x_3)` are provided,
             then :math:`\sigma_i \sim \mathcal{U}(0, x_i)`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
         keys: See :py:class:`~torchio.transforms.Transform`.
     """
     def __init__(
@@ -33,7 +32,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
             p: float = 1,
             keys: Optional[List[str]] = None,
             ):
-        super().__init__(p=p, seed=seed, keys=keys)
+        super().__init__(p=p, keys=keys)
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
