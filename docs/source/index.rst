@@ -2,22 +2,50 @@
 .. include:: README.rst
 
 .. toctree::
-   :caption: Contents
-   :maxdepth: 2
+    :caption: Getting started
+    :maxdepth: 2
+    :hidden:
 
-   quickstart.rst
-   data/image.rst
-   data/subject.rst
-   data/dataset.rst
-   data/patch_based.rst
-   transforms/transforms.rst
-   datasets.rst
-   cli.rst
-   slicer.rst
+    quickstart
+
+.. toctree::
+    :caption: Data structures
+    :maxdepth: 2
+    :hidden:
+
+    data/image
+    data/subject
+    data/dataset
+    data/patch_based
+
+.. toctree::
+    :caption: Transforms
+    :maxdepth: 2
+    :hidden:
+
+    transforms/transforms
+
+.. toctree::
+    :caption: Medical image datasets
+    :maxdepth: 2
+    :hidden:
+
+    datasets
+
+.. toctree::
+    :caption: Interfaces
+    :maxdepth: 2
+    :hidden:
+
+    interfaces/index
+    interfaces/cli
+    interfaces/slicer
 
 
 See also
 ********
 
-* `PyTorch implementation of 2D and 3D HighResNet <https://www.github.com/fepegar/highresnet>`_
-* `PyTorch implementation of 2D and 3D U-Net <https://www.github.com/fepegar/unet>`_
+PyTorch implementations of 2D and 3D network architectures:
+
+* `HighResNet <https://www.github.com/fepegar/highresnet>`_
+* `U-Net <https://www.github.com/fepegar/unet>`_

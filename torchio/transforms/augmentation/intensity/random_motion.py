@@ -1,25 +1,18 @@
-"""
-Custom implementation of
+from collections import defaultdict
+from typing import Tuple, Optional, Sequence, List, Union, Dict
 
-    Shaw et al., 2019
-    MRI k-Space Motion Artefact Augmentation:
-    Model Robustness and Task-Specific Uncertainty
-
-"""
-
-from typing import Tuple, Optional, List
 import torch
 import numpy as np
 import SimpleITK as sitk
+
 from ....utils import nib_to_sitk
-from ....torchio import DATA, AFFINE
+from ....torchio import DATA, AFFINE, TypeTripletFloat
 from ....data.subject import Subject
-from .. import Interpolation, get_sitk_interpolator
-from ... import IntensityTransform
+from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
 
 
-class RandomMotion(RandomTransform, IntensityTransform):
+class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
     r"""Add random MRI motion artifact.
 
     Magnetic resonance images suffer from motion artifacts when the subject
@@ -46,8 +39,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -59,7 +51,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.degrees_range = self.parse_degrees(degrees)
@@ -71,50 +63,28 @@ class RandomMotion(RandomTransform, IntensityTransform):
             )
             raise ValueError(message)
         self.num_transforms = num_transforms
-        self.interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(subject).items():
-            result_arrays = []
-            for channel_idx, data in enumerate(image[DATA]):
-                params = self.get_params(
-                    self.degrees_range,
-                    self.translation_range,
-                    self.num_transforms,
-                    is_2d=image.is_2d(),
-                )
-                times_params, degrees_params, translation_params = params
-                random_parameters_dict = {
-                    'times': times_params,
-                    'degrees': degrees_params,
-                    'translation': translation_params,
-                }
-                key = f'{image_name}_channel_{channel_idx}'
-                random_parameters_images_dict[key] = random_parameters_dict
-                sitk_image = nib_to_sitk(
-                    data[np.newaxis],
-                    image[AFFINE],
-                    force_3d=True,
-                )
-                transforms = self.get_rigid_transforms(
-                    degrees_params,
-                    translation_params,
-                    sitk_image,
-                )
-                data = self.add_artifact(
-                    sitk_image,
-                    transforms,
-                    times_params,
-                    self.interpolation,
-                )
-                result_arrays.append(data)
-            result = np.stack(result_arrays)
-            image[DATA] = torch.from_numpy(result)
-        return subject
+        arguments = defaultdict(dict)
+        for name, image in self.get_images_dict(subject).items():
+            params = self.get_params(
+                self.degrees_range,
+                self.translation_range,
+                self.num_transforms,
+                is_2d=image.is_2d(),
+            )
+            times_params, degrees_params, translation_params = params
+            arguments['times'][name] = times_params
+            arguments['degrees'][name] = degrees_params
+            arguments['translation'][name] = translation_params
+            arguments['image_interpolation'][name] = self.image_interpolation
+        transform = Motion(**arguments)
+        transformed = transform(subject)
+        return transformed
 
-    @staticmethod
     def get_params(
+            self,
             degrees_range: Tuple[float, float],
             translation_range: Tuple[float, float],
             num_transforms: int,
@@ -122,9 +92,9 @@ class RandomMotion(RandomTransform, IntensityTransform):
             is_2d: bool = False,
             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # If perturbation is 0, time intervals between movements are constant
-        degrees_params = get_params_array(
+        degrees_params = self.get_params_array(
             degrees_range, num_transforms)
-        translation_params = get_params_array(
+        translation_params = self.get_params_array(
             translation_range, num_transforms)
         if is_2d:  # imagine sagittal (1, A, S)
             degrees_params[:, :-1] = 0  # rotate around Z axis only
@@ -136,6 +106,81 @@ class RandomMotion(RandomTransform, IntensityTransform):
         times += noise
         times_params = times.numpy()
         return times_params, degrees_params, translation_params
+
+    @staticmethod
+    def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
+        tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
+        return tensor.numpy()
+
+
+class Motion(IntensityTransform, FourierTransform):
+    r"""Add MRI motion artifact.
+
+    Magnetic resonance images suffer from motion artifacts when the subject
+    moves during image acquisition. This transform follows
+    `Shaw et al., 2019 <http://proceedings.mlr.press/v102/shaw19a.html>`_ to
+    simulate motion artifacts for data augmentation.
+
+    Args:
+        degrees: Sequence of rotations :math:`(\theta_1, \theta_2, \theta_3)`.
+        translation: Sequence of translations :math:`(t_1, t_2, t_3)` in mm.
+        times: Sequence of times from 0 to 1 at which the motions happen.
+        image_interpolation: See :ref:`Interpolation`.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+    def __init__(
+            self,
+            degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+            translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+            times: Union[Sequence[float], Dict[str, Sequence[float]]],
+            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.degrees = degrees
+        self.translation = translation
+        self.times = times
+        self.image_interpolation = image_interpolation
+        self.args_names = (
+            'degrees',
+            'translation',
+            'times',
+            'image_interpolation',
+        )
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        degrees = self.degrees
+        translation = self.translation
+        times = self.times
+        image_interpolation = self.image_interpolation
+        for image_name, image in self.get_images_dict(subject).items():
+            if self.arguments_are_dict():
+                degrees = self.degrees[image_name]
+                translation = self.translation[image_name]
+                times = self.times[image_name]
+                image_interpolation = self.image_interpolation[image_name]
+            result_arrays = []
+            for data in image[DATA]:
+                sitk_image = nib_to_sitk(
+                    data[np.newaxis],
+                    image[AFFINE],
+                    force_3d=True,
+                )
+                transforms = self.get_rigid_transforms(
+                    degrees,
+                    translation,
+                    sitk_image,
+                )
+                data = self.add_artifact(
+                    sitk_image,
+                    transforms,
+                    times,
+                    image_interpolation,
+                )
+                result_arrays.append(data)
+            result = np.stack(result_arrays)
+            image[DATA] = torch.from_numpy(result)
+        return subject
 
     def get_rigid_transforms(
             self,
@@ -174,11 +219,11 @@ class RandomMotion(RandomTransform, IntensityTransform):
         transform.SetTranslation(matrix[:3, 3])
         return transform
 
-    @staticmethod
     def resample_images(
+            self,
             image: sitk.Image,
-            transforms: List[sitk.Euler3DTransform],
-            interpolation: Interpolation,
+            transforms: Sequence[sitk.Euler3DTransform],
+            interpolation: str,
             ) -> List[sitk.Image]:
         floating = reference = image
         default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
@@ -186,7 +231,7 @@ class RandomMotion(RandomTransform, IntensityTransform):
         images = [image]  # first is identity
         for transform in transforms:
             resampler = sitk.ResampleImageFilter()
-            resampler.SetInterpolator(get_sitk_interpolator(interpolation))
+            resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
             resampler.SetReferenceImage(reference)
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampler.SetDefaultPixelValue(default_value)
@@ -208,9 +253,9 @@ class RandomMotion(RandomTransform, IntensityTransform):
     def add_artifact(
             self,
             image: sitk.Image,
-            transforms: List[sitk.Euler3DTransform],
+            transforms: Sequence[sitk.Euler3DTransform],
             times: np.ndarray,
-            interpolation: Interpolation,
+            interpolation: str,
             ):
         images = self.resample_images(image, transforms, interpolation)
         arrays = [sitk.GetArrayViewFromImage(im) for im in images]
@@ -227,8 +272,3 @@ class RandomMotion(RandomTransform, IntensityTransform):
             ini = fin
         result_image = np.real(self.inv_fourier_transform(result_spectrum))
         return result_image.astype(np.float32)
-
-
-def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
-    tensor = torch.FloatTensor(num_transforms, 3).uniform_(*nums_range)
-    return tensor.numpy()

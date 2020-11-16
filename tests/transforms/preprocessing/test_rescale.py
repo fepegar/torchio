@@ -4,7 +4,7 @@ from ...utils import TorchioTestCase
 
 
 class TestRescaleIntensity(TorchioTestCase):
-    """Tests for :py:class:`RescaleIntensity` class."""
+    """Tests for :class:`RescaleIntensity` class."""
 
     def test_rescale_to_same_intentisy(self):
         min_t1 = float(self.sample_subject.t1.data.min())

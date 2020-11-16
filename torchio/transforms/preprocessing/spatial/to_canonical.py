@@ -22,10 +22,12 @@ class ToCanonical(SpatialTransform):
         p: Probability that this transform will be applied.
 
     .. note:: The reorientation is performed using
-        :py:meth:`nibabel.as_closest_canonical`.
+        :meth:`nibabel.as_closest_canonical`.
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
     """
+
+    args_names = ()
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):
@@ -39,7 +41,8 @@ class ToCanonical(SpatialTransform):
             reoriented = nib.as_closest_canonical(nii)
             array = reoriented.get_fdata(dtype=np.float32)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
-            array = array.copy().transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
+            array = array.copy()
+            array = array.transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
             image[DATA] = torch.from_numpy(array[0])
             image[AFFINE] = reoriented.affine
         return subject

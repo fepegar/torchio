@@ -33,8 +33,11 @@ class Slicer(Subject):
     See `the Slicer wiki <https://www.slicer.org/wiki/SampleData>`_
     for more information.
 
+    For information about licensing and permissions, check the `Sample Data
+    module <https://github.com/Slicer/Slicer/blob/31c89f230919a953e56f6722718281ce6da49e06/Modules/Scripted/SampleData/SampleData.py#L75-L81>`_.
+
     Args:
-        name: One of the keys in :py:attr:`torchio.datasets.slicer.URLS_DICT`.
+        name: One of the keys in :attr:`torchio.datasets.slicer.URLS_DICT`.
     """
     def __init__(self, name='MRHead'):
         filenames, url_files = URLS_DICT[name]

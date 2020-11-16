@@ -1,5 +1,5 @@
 import warnings
-from typing import Union, Tuple, Optional, List
+from typing import Union, Tuple, Optional, Sequence
 
 import numpy as np
 from deprecated import deprecated
@@ -21,14 +21,14 @@ class CropOrPad(BoundsTransform):
         target_shape: Tuple :math:`(W, H, D)`. If a single value :math:`N` is
             provided, then :math:`H = W = D = N`.
         padding_mode: Same as :attr:`padding_mode` in
-            :py:class:`~torchio.transforms.Pad`.
+            :class:`~torchio.transforms.Pad`.
         mask_name: If ``None``, the centers of the input and output volumes
             will be the same.
             If a string is given, the output volume center will be the center
             of the bounding box of non-zero values in the image named
-            :py:attr:`mask_name`.
+            :attr:`mask_name`.
         p: Probability that this transform will be applied.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
@@ -53,7 +53,7 @@ class CropOrPad(BoundsTransform):
             padding_mode: Union[str, float] = 0,
             mask_name: Optional[str] = None,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(target_shape, p=p, keys=keys)
         self.padding_mode = padding_mode
@@ -217,8 +217,7 @@ class CropOrPad(BoundsTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         padding_params, cropping_params = self.compute_crop_or_pad(subject)
-        padding_kwargs = dict(
-            padding_mode=self.padding_mode)
+        padding_kwargs = {'padding_mode': self.padding_mode}
         if padding_params is not None:
             subject = Pad(padding_params, **padding_kwargs)(subject)
         if cropping_params is not None:

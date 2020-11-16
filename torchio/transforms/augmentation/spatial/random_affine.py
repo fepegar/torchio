@@ -1,8 +1,11 @@
+import copy
 from numbers import Number
-from typing import Tuple, Optional, List, Union
+from typing import Tuple, Optional, Sequence, Union
+
 import torch
 import numpy as np
 import SimpleITK as sitk
+
 from ....data.subject import Subject
 from ....utils import nib_to_sitk, get_major_sitk_version, to_tuple
 from ....torchio import (
@@ -15,7 +18,6 @@ from ....torchio import (
     TypeTripletFloat,
 )
 from ... import SpatialTransform
-from .. import Interpolation, get_sitk_interpolator
 from .. import RandomTransform
 
 
@@ -75,24 +77,22 @@ class RandomAffine(RandomTransform, SpatialTransform):
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
         >>> subject = tio.datasets.Colin27()
         >>> transform = tio.RandomAffine(
         ...     scales=(0.9, 1.2),
-        ...     degrees=(10),
-        ...     isotropic=False,
-        ...     default_pad_value='otsu',
-        ...     image_interpolation='bspline',
+        ...     degrees=10,
+        ...     isotropic=True,
+        ...     image_interpolation='nearest',
         ... )
         >>> transformed = transform(subject)
 
     From the command line::
 
-        $ torchio-transform t1.nii.gz RandomAffine --kwargs "degrees=30 default_pad_value=minimum" --seed 42 affine_min.nii.gz
+        $ torchio-transform t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=10 isotropic=True image_interpolation=nearest" --seed 42 affine_min.nii.gz
 
     """
     def __init__(
@@ -102,14 +102,14 @@ class RandomAffine(RandomTransform, SpatialTransform):
             translation: TypeOneToSixFloat = 0,
             isotropic: bool = False,
             center: str = 'image',
-            default_pad_value: Union[str, float] = 'otsu',
+            default_pad_value: Union[str, float] = 'minimum',
             image_interpolation: str = 'linear',
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.isotropic = isotropic
-        self.parse_scales_isotropic(scales, isotropic)
+        _parse_scales_isotropic(scales, isotropic)
         self.scales = self.parse_params(scales, 1, 'scales', min_constraint=0)
         self.degrees = self.parse_params(degrees, 0, 'degrees')
         self.translation = self.parse_params(translation, 0, 'translation')
@@ -119,29 +119,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
                 f' not "{center}"'
             )
             raise ValueError(message)
-        self.use_image_center = center == 'image'
-        self.default_pad_value = self.parse_default_value(default_pad_value)
-        self.interpolation = self.parse_interpolation(image_interpolation)
-
-    @staticmethod
-    def parse_scales_isotropic(scales, isotropic):
-        params = to_tuple(scales)
-        if isotropic and len(scales) in (3, 6):
-            message = (
-                'If "isotropic" is True, the value for "scales" must have'
-                f' length 1 or 2, but "{scales}" was passed'
-            )
-            raise ValueError(message)
-
-    @staticmethod
-    def parse_default_value(value: Union[str, float]) -> Union[str, float]:
-        if isinstance(value, Number) or value in ('minimum', 'otsu', 'mean'):
-            return value
-        message = (
-            'Value for default_pad_value must be "minimum", "otsu", "mean"'
-            ' or a number'
-        )
-        raise ValueError(message)
+        self.center = center
+        self.default_pad_value = _parse_default_value(default_pad_value)
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
 
     def get_params(
             self,
@@ -157,9 +137,104 @@ class RandomAffine(RandomTransform, SpatialTransform):
         translation_params = self.sample_uniform_sextet(translation)
         return scaling_params, rotation_params, translation_params
 
+    def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_spatial_shape()
+        scaling_params, rotation_params, translation_params = self.get_params(
+            self.scales,
+            self.degrees,
+            self.translation,
+            self.isotropic,
+        )
+        arguments = dict(
+            scales=scaling_params.tolist(),
+            degrees=rotation_params.tolist(),
+            translation=translation_params.tolist(),
+            center=self.center,
+            default_pad_value=self.default_pad_value,
+            image_interpolation=self.image_interpolation,
+        )
+        transform = Affine(**arguments)
+        transformed = transform(subject)
+        return transformed
+
+
+class Affine(SpatialTransform):
+    r"""Apply affine transformation.
+
+    Args:
+        scales: Tuple :math:`(s_1, s_2, s_3)` defining the
+            scaling values along each dimension.
+        degrees: Tuple :math:`(\theta_1, \theta_2, \theta_3)` defining the
+            rotation around each axis.
+        translation: Tuple :math:`(t_1, t_2, t_3)` defining the
+            translation in mm along each axis.
+        center: If ``'image'``, rotations and scaling will be performed around
+            the image center. If ``'origin'``, rotations and scaling will be
+            performed around the origin in world coordinates.
+        default_pad_value: As the image is rotated, some values near the
+            borders will be undefined.
+            If ``'minimum'``, the fill value will be the image minimum.
+            If ``'mean'``, the fill value is the mean of the border values.
+            If ``'otsu'``, the fill value is the mean of the values at the
+            border that lie under an
+            `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
+            If it is a number, that value will be used.
+        image_interpolation: See :ref:`Interpolation`.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+    def __init__(
+            self,
+            scales: TypeTripletFloat,
+            degrees: TypeTripletFloat,
+            translation: TypeTripletFloat,
+            center: str = 'image',
+            default_pad_value: Union[str, float] = 'minimum',
+            image_interpolation: str = 'linear',
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.scales = self.parse_params(
+            scales,
+            None,
+            'scales',
+            make_ranges=False,
+            min_constraint=0,
+        )
+        self.degrees = self.parse_params(
+            degrees,
+            None,
+            'degrees',
+            make_ranges=False,
+        )
+        self.translation = self.parse_params(
+            translation,
+            None,
+            'translation',
+            make_ranges=False,
+        )
+        if center not in ('image', 'origin'):
+            message = (
+                'Center argument must be "image" or "origin",'
+                f' not "{center}"'
+            )
+            raise ValueError(message)
+        self.center = center
+        self.use_image_center = center == 'image'
+        self.default_pad_value = _parse_default_value(default_pad_value)
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.invert_transform = False
+        self.args_names = (
+            'scales',
+            'degrees',
+            'translation',
+            'center',
+            'default_pad_value',
+            'image_interpolation',
+        )
+
     @staticmethod
     def get_scaling_transform(
-            scaling_params: List[float],
+            scaling_params: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.ScaleTransform:
         # scaling_params are inverted so that they are more intuitive
@@ -173,8 +248,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
 
     @staticmethod
     def get_rotation_transform(
-            degrees: List[float],
-            translation: List[float],
+            degrees: Sequence[float],
+            translation: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.Euler3DTransform:
         transform = sitk.Euler3DTransform()
@@ -186,18 +261,15 @@ class RandomAffine(RandomTransform, SpatialTransform):
         return transform
 
     def apply_transform(self, subject: Subject) -> Subject:
+        scaling_params = np.array(self.scales).copy()
+        rotation_params = np.array(self.degrees).copy()
+        translation_params = np.array(self.translation).copy()
         subject.check_consistent_spatial_shape()
-        scaling_params, rotation_params, translation_params = self.get_params(
-            self.scales,
-            self.degrees,
-            self.translation,
-            self.isotropic,
-        )
         for image in self.get_images(subject):
             if image[TYPE] != INTENSITY:
-                interpolation = Interpolation.NEAREST
+                interpolation = 'nearest'
             else:
-                interpolation = self.interpolation
+                interpolation = self.image_interpolation
 
             if image.is_2d():
                 scaling_params[2] = 1
@@ -221,21 +293,16 @@ class RandomAffine(RandomTransform, SpatialTransform):
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
-        random_parameters_dict = {
-            'scaling': scaling_params,
-            'rotation': rotation_params,
-            'translation': translation_params,
-        }
         return subject
 
     def apply_affine_transform(
             self,
             tensor: torch.Tensor,
             affine: np.ndarray,
-            scaling_params: List[float],
-            rotation_params: List[float],
-            translation_params: List[float],
-            interpolation: Interpolation,
+            scaling_params: Sequence[float],
+            rotation_params: Sequence[float],
+            translation_params: Sequence[float],
+            interpolation: str,
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
         assert tensor.ndim == 3
@@ -262,6 +329,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
             transforms = [scaling_transform, rotation_transform]
             transform = sitk.CompositeTransform(transforms)
 
+        if self.invert_transform:
+            transform = transform.GetInverse()
+
         if self.default_pad_value == 'minimum':
             default_value = tensor.min().item()
         elif self.default_pad_value == 'mean':
@@ -272,7 +342,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             default_value = self.default_pad_value
 
         resampler = sitk.ResampleImageFilter()
-        resampler.SetInterpolator(get_sitk_interpolator(interpolation))
+        resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
         resampler.SetReferenceImage(reference)
         resampler.SetDefaultPixelValue(float(default_value))
         resampler.SetOutputPixelType(sitk.sitkFloat32)
@@ -283,6 +353,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         np_array = np_array.transpose()  # ITK to NumPy
         tensor = torch.from_numpy(np_array)
         return tensor
+
 
 # flake8: noqa: E201, E203, E243
 def get_borders_mean(image, filter_otsu=True):
@@ -310,3 +381,21 @@ def get_borders_mean(image, filter_otsu=True):
     else:
         default_value = borders_flat.mean()
     return default_value
+
+def _parse_scales_isotropic(scales, isotropic):
+    params = to_tuple(scales)
+    if isotropic and len(scales) in (3, 6):
+        message = (
+            'If "isotropic" is True, the value for "scales" must have'
+            f' length 1 or 2, but "{scales}" was passed'
+        )
+        raise ValueError(message)
+
+def _parse_default_value(value: Union[str, float]) -> Union[str, float]:
+    if isinstance(value, Number) or value in ('minimum', 'otsu', 'mean'):
+        return value
+    message = (
+        'Value for default_pad_value must be "minimum", "otsu", "mean"'
+        ' or a number'
+    )
+    raise ValueError(message)

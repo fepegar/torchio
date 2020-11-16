@@ -74,7 +74,7 @@ class TestRandomAffine(TorchioTestCase):
 
     def test_negative_scales(self):
         with self.assertRaises(ValueError):
-            RandomAffine(scales=-1.)
+            RandomAffine(scales=(-1, 1))
 
     def test_scale_too_large(self):
         with self.assertRaises(ValueError):
@@ -82,7 +82,7 @@ class TestRandomAffine(TorchioTestCase):
 
     def test_scales_range_with_negative_min(self):
         with self.assertRaises(ValueError):
-            RandomAffine(scales=(-1., 4.))
+            RandomAffine(scales=(-1, 4))
 
     def test_wrong_scales_type(self):
         with self.assertRaises(ValueError):
@@ -94,7 +94,7 @@ class TestRandomAffine(TorchioTestCase):
 
     def test_too_many_translation_values(self):
         with self.assertRaises(ValueError):
-            RandomAffine(translation=(-10., 4., 42.))
+            RandomAffine(translation=(-10, 4, 42))
 
     def test_wrong_translation_type(self):
         with self.assertRaises(ValueError):
@@ -113,7 +113,7 @@ class TestRandomAffine(TorchioTestCase):
             RandomAffine(image_interpolation=0)
 
     def test_wrong_image_interpolation_value(self):
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             RandomAffine(image_interpolation='wrong')
 
     def test_incompatible_args_isotropic(self):

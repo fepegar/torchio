@@ -2,7 +2,7 @@ Augmentation
 ============
 
 Augmentation transforms generate different results every time they are called.
-The result can be made deterministic using the :py:attr:`seed` parameter.
+The result can be made deterministic using the :attr:`seed` parameter.
 
 .. contents::
     :local:
@@ -71,13 +71,13 @@ Spatial
     :show-inheritance:
 
 
-:class:`RandomDownsample`
+:class:`RandomAnisotropy`
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. image:: https://user-images.githubusercontent.com/12688084/87075276-fe9d9d00-c217-11ea-81a4-db0cac163ce7.png
     :alt: Simulation of an image with highly anisotropic spacing
 
-.. autoclass:: RandomDownsample
+.. autoclass:: RandomAnisotropy
     :show-inheritance:
 
 

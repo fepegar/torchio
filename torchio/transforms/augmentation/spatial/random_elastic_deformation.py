@@ -1,13 +1,15 @@
 import warnings
 from numbers import Number
-from typing import Tuple, Optional, Union, List
+from typing import Tuple, Optional, Union, Sequence
+
 import torch
 import numpy as np
 import SimpleITK as sitk
+
+from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....utils import to_tuple, nib_to_sitk
-from ....torchio import INTENSITY, DATA, AFFINE, TYPE, TypeTripletInt
-from .. import Interpolation, get_sitk_interpolator
+from ....torchio import DATA, AFFINE, TypeTripletInt, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform
 
@@ -44,9 +46,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             :math:`D_{max} = \sqrt{D_x^2 + D_y^2 + D_z^2}`.
         locked_borders: If ``0``, all displacement vectors are kept.
             If ``1``, displacement of control points at the
-            border of the coarse grid will also be set to ``0``.
+            border of the coarse grid will be set to ``0``.
             If ``2``, displacement of control points at the border of the image
-            will also be set to ``0``.
+            (red dots in the image below) will also be set to ``0``.
         image_interpolation: See :ref:`Interpolation`.
             Note that this is the interpolation used to compute voxel
             intensities when resampling using the dense displacement field.
@@ -54,8 +56,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
     can also be used to better understand the meaning of the parameters.
@@ -76,7 +77,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         ... )
 
     Note that control points outside the image bounds are not showed in the
-    example image (they would also be red as we set :py:attr:`locked_borders`
+    example image (they would also be red as we set :attr:`locked_borders`
     to ``2``).
 
     .. warning:: Image folding may occur if the maximum displacement is larger
@@ -101,8 +102,8 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             >>> potential_folding
             array([39.0, 39.0, 43.4])  # mm
 
-        Using a :py:attr:`max_displacement` larger than the computed
-        :py:attr:`potential_folding` will raise a :py:class:`RuntimeWarning`.
+        Using a :attr:`max_displacement` larger than the computed
+        :attr:`potential_folding` will raise a :class:`RuntimeWarning`.
 
         .. [#] Technically, :math:`2 \epsilon` should be added to the
             image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
@@ -116,14 +117,14 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
-        self.parse_control_points(self.num_control_points)
+        _parse_num_control_points(self.num_control_points)
         self.max_displacement = to_tuple(max_displacement, length=3)
-        self.parse_max_displacement(self.max_displacement)
+        _parse_max_displacement(self.max_displacement)
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
             raise ValueError('locked_borders must be 0, 1, or 2')
@@ -134,39 +135,14 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
                 ' or use more control points.'
             )
             raise ValueError(message)
-        self.interpolation = self.parse_interpolation(image_interpolation)
-
-    @staticmethod
-    def parse_control_points(
-            num_control_points: TypeTripletInt,
-            ) -> None:
-        for axis, number in enumerate(num_control_points):
-            if not isinstance(number, int) or number < 4:
-                message = (
-                    f'The number of control points for axis {axis} must be'
-                    f' an integer greater than 3, not {number}'
-                )
-                raise ValueError(message)
-
-    @staticmethod
-    def parse_max_displacement(
-            max_displacement: Tuple[float, float, float],
-            ) -> None:
-        for axis, number in enumerate(max_displacement):
-            if not isinstance(number, Number) or number < 0:
-                message = (
-                    'The maximum displacement at each control point'
-                    f' for axis {axis} must be'
-                    f' a number greater or equal to 0, not {number}'
-                )
-                raise ValueError(message)
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
 
     @staticmethod
     def get_params(
             num_control_points: TypeTripletInt,
             max_displacement: Tuple[float, float, float],
             num_locked_borders: int,
-            ) -> Tuple:
+            ) -> np.ndarray:
         grid_shape = num_control_points
         num_dimensions = 3
         coarse_field = torch.rand(*grid_shape, num_dimensions)  # [0, 1)
@@ -185,20 +161,67 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
 
         return coarse_field.numpy()
 
+    def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_spatial_shape()
+        control_points = self.get_params(
+            self.num_control_points,
+            self.max_displacement,
+            self.num_locked_borders,
+        )
+        transform = ElasticDeformation(
+            control_points,
+            self.max_displacement,
+            self.image_interpolation,
+        )
+        transformed = transform(subject)
+        return transformed
+
+
+class ElasticDeformation(SpatialTransform):
+    r"""Apply dense elastic deformation.
+
+    Args:
+        control_points:
+        max_displacement:
+        image_interpolation: See :ref:`Interpolation`.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+
+    def __init__(
+            self,
+            control_points: np.ndarray,
+            max_displacement: TypeTripletFloat,
+            image_interpolation: str = 'linear',
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.control_points = control_points
+        self.max_displacement = max_displacement
+        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.invert_transform = False
+        self.args_names = (
+            'control_points',
+            'image_interpolation',
+            'max_displacement',
+        )
+
     @staticmethod
     def get_bspline_transform(
             image: sitk.Image,
-            num_control_points: TypeTripletInt,
-            coarse_field: np.ndarray,
+            control_points: np.ndarray,
             ) -> sitk.BSplineTransformInitializer:
+        num_control_points = control_points.shape[:-1]
         mesh_shape = [n - SPLINE_ORDER for n in num_control_points]
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
-        parameters = coarse_field.flatten(order='F').tolist()
+        parameters = control_points.flatten(order='F').tolist()
         bspline_transform.SetParameters(parameters)
         return bspline_transform
 
     @staticmethod
-    def parse_free_form_transform(transform, max_displacement):
+    def parse_free_form_transform(
+            transform: sitk.Transform,
+            max_displacement: Sequence[TypeTripletInt],
+            ) -> None:
         """Issue a warning is possible folding is detected."""
         coefficient_images = transform.GetCoefficientImages()
         grid_spacing = coefficient_images[0].GetSpacing()
@@ -214,34 +237,34 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             warnings.warn(message, RuntimeWarning)
 
     def apply_transform(self, subject: Subject) -> Subject:
+        no_displacement = not any(self.max_displacement)
+        if no_displacement:
+            return subject
         subject.check_consistent_spatial_shape()
-        bspline_params = self.get_params(
-            self.num_control_points,
-            self.max_displacement,
-            self.num_locked_borders,
-        )
+        control_points = self.control_points.copy()
+        if self.invert_transform:
+            control_points *= -1
         for image in self.get_images(subject):
-            if image[TYPE] != INTENSITY:
-                interpolation = Interpolation.NEAREST
+            if not isinstance(image, ScalarImage):
+                interpolation = 'nearest'
             else:
-                interpolation = self.interpolation
+                interpolation = self.image_interpolation
             if image.is_2d():
-                bspline_params[..., -1] = 0  # no displacement in IS axis
+                control_points[..., -1] = 0  # no displacement in IS axis
             image[DATA] = self.apply_bspline_transform(
                 image[DATA],
                 image[AFFINE],
-                bspline_params,
+                control_points,
                 interpolation,
             )
-        random_parameters_dict = {'coarse_grid': bspline_params}
         return subject
 
     def apply_bspline_transform(
             self,
             tensor: torch.Tensor,
             affine: np.ndarray,
-            bspline_params: np.ndarray,
-            interpolation: Interpolation,
+            control_points: np.ndarray,
+            interpolation: str,
             ) -> torch.Tensor:
         assert tensor.dim() == 4
         results = []
@@ -250,15 +273,16 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             floating = reference = image
             bspline_transform = self.get_bspline_transform(
                 image,
-                self.num_control_points,
-                bspline_params,
+                control_points,
             )
             self.parse_free_form_transform(
-                bspline_transform, self.max_displacement)
+                bspline_transform,
+                self.max_displacement,
+            )
             resampler = sitk.ResampleImageFilter()
             resampler.SetReferenceImage(reference)
             resampler.SetTransform(bspline_transform)
-            resampler.SetInterpolator(get_sitk_interpolator(interpolation))
+            resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
             resampler.SetDefaultPixelValue(component.min().item())
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampled = resampler.Execute(floating)
@@ -266,3 +290,28 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             results.append(torch.from_numpy(result))
         tensor = torch.cat(results)
         return tensor
+
+
+def _parse_num_control_points(
+        num_control_points: TypeTripletInt,
+        ) -> None:
+    for axis, number in enumerate(num_control_points):
+        if not isinstance(number, int) or number < 4:
+            message = (
+                f'The number of control points for axis {axis} must be'
+                f' an integer greater than 3, not {number}'
+            )
+            raise ValueError(message)
+
+
+def _parse_max_displacement(
+        max_displacement: Tuple[float, float, float],
+        ) -> None:
+    for axis, number in enumerate(max_displacement):
+        if not isinstance(number, Number) or number < 0:
+            message = (
+                'The maximum displacement at each control point'
+                f' for axis {axis} must be'
+                f' a number greater or equal to 0, not {number}'
+            )
+            raise ValueError(message)

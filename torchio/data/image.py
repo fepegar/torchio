@@ -32,6 +32,8 @@ from .io import read_image, write_image
 
 
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
+TypeBound = Tuple[float, float]
+TypeBounds = Tuple[TypeBound, TypeBound, TypeBound]
 
 
 class Image(dict):
@@ -44,8 +46,8 @@ class Image(dict):
     Args:
         path: Path to a file or sequence of paths to files that can be read by
             :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing
-            DICOM files. If :py:attr:`tensor` is given, the data in
-            :py:attr:`path` will not be read.
+            DICOM files. If :attr:`tensor` is given, the data in
+            :attr:`path` will not be read.
             If a sequence of paths is given, data
             will be concatenated on the channel dimension so spatial
             dimensions must match.
@@ -58,9 +60,9 @@ class Image(dict):
             all types, and nearest neighbor interpolation is always used to
             resample images with type :attr:`torchio.LABEL`.
             The type :attr:`torchio.SAMPLING_MAP` may be used with instances of
-            :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.
-        tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D
-            :py:class:`torch.Tensor` or NumPy array with dimensions
+            :class:`~torchio.data.sampler.weighted.WeightedSampler`.
+        tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
+            :class:`torch.Tensor` or NumPy array with dimensions
             :math:`(C, W, H, D)`.
         affine: If :attr:`path` is not given, :attr:`affine` must be a
             :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
@@ -175,12 +177,12 @@ class Image(dict):
 
     @property
     def data(self) -> torch.Tensor:
-        """Tensor data. Same as :py:class:`Image.tensor`."""
+        """Tensor data. Same as :class:`Image.tensor`."""
         return self[DATA]
 
     @property
     def tensor(self) -> torch.Tensor:
-        """Tensor data. Same as :py:class:`Image.data`."""
+        """Tensor data. Same as :class:`Image.data`."""
         return self.data
 
     @property
@@ -244,7 +246,7 @@ class Image(dict):
         point_fin = nib.affines.apply_affine(self.affine, fin)
         return np.array((point_ini, point_fin))
 
-    def axis_name_to_index(self, axis: str):
+    def axis_name_to_index(self, axis: str) -> int:
         """Convert an axis name to an axis index.
 
         Args:
@@ -283,7 +285,7 @@ class Image(dict):
 
     # flake8: noqa: E701
     @staticmethod
-    def flip_axis(axis):
+    def flip_axis(axis: str) -> str:
         if axis == 'R': return 'L'
         elif axis == 'L': return 'R'
         elif axis == 'A': return 'P'
@@ -295,13 +297,13 @@ class Image(dict):
             message = f'Axis not understood. Please use one of: {values}'
             raise ValueError(message)
 
-    def get_spacing_string(self):
+    def get_spacing_string(self) -> str:
         strings = [f'{n:.2f}' for n in self.spacing]
         string = f'({", ".join(strings)})'
         return string
 
-    def get_bounds(self):
-        """Get image bounds in mm."""
+    def get_bounds(self) -> TypeBounds:
+        """Get minimum and maximum world coordinates occupied by the image."""
         first_index = 3 * (-0.5,)
         last_index = np.array(self.spatial_shape) - 0.5
         first_point = nib.affines.apply_affine(self.affine, first_index)
@@ -405,7 +407,7 @@ class Image(dict):
         self[AFFINE] = affine
         self._loaded = True
 
-    def read_and_check(self, path):
+    def read_and_check(self, path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         tensor, affine = read_image(path)
         tensor = self.parse_tensor_shape(tensor)
         if self.channels_last:
@@ -414,12 +416,12 @@ class Image(dict):
             warnings.warn(f'NaNs found in file "{path}"')
         return tensor, affine
 
-    def save(self, path: TypePath, squeeze: bool = True):
+    def save(self, path: TypePath, squeeze: bool = True) -> None:
         """Save image to disk.
 
         Args:
-            path: String or instance of :py:class:`pathlib.Path`.
-            squeeze: If ``True``, the singleton dimensions will be removed
+            path: String or instance of :class:`pathlib.Path`.
+            squeeze: If ``True``, singleton dimensions will be removed
                 before saving.
         """
         write_image(
@@ -437,11 +439,11 @@ class Image(dict):
         return np.asarray(self)
 
     def as_sitk(self, **kwargs) -> sitk.Image:
-        """Get the image as an instance of :py:class:`sitk.Image`."""
+        """Get the image as an instance of :class:`sitk.Image`."""
         return nib_to_sitk(self[DATA], self[AFFINE], **kwargs)
 
-    def as_pil(self):
-        """Get the image as an instance of :py:class:`PIL.Image`."""
+    def as_pil(self) -> ImagePIL:
+        """Get the image as an instance of :class:`PIL.Image`."""
         self.check_is_2d()
         return ImagePIL.open(self.path)
 
@@ -461,7 +463,7 @@ class Image(dict):
         else:
             return (r, a, s)
 
-    def set_check_nans(self, check_nans: bool):
+    def set_check_nans(self, check_nans: bool) -> None:
         self.check_nans = check_nans
 
     def plot(self, **kwargs) -> None:
@@ -474,7 +476,7 @@ class Image(dict):
 
 
 class ScalarImage(Image):
-    """Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.INTENSITY`.
+    """Image whose pixel values represent scalars.
 
     Example:
         >>> import torch
@@ -493,10 +495,7 @@ class ScalarImage(Image):
         >>> type(image.data)
         torch.Tensor
 
-    See :py:class:`~torchio.data.image.Image` for more information.
-
-    Raises:
-        ValueError: A :py:attr:`type` is used for instantiation.
+    See :class:`~torchio.data.image.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != INTENSITY:
@@ -506,7 +505,9 @@ class ScalarImage(Image):
 
 
 class LabelMap(Image):
-    """Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.LABEL`.
+    """Image whose pixel values represent categorical labels.
+
+    Intensity transforms are not applied to these images.
 
     Example:
         >>> import torch
@@ -519,10 +520,7 @@ class LabelMap(Image):
         ...     'csf.nii.gz',
         ... )
 
-    See :py:class:`~torchio.data.image.Image` for more information.
-
-    Raises:
-        ValueError: If a value for :py:attr:`type` is given.
+    See :class:`~torchio.data.image.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != LABEL:

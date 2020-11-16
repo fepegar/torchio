@@ -65,7 +65,7 @@ setup(
         ],
     },
     extras_require={
-        'plot': ['matplotlib', 'seaborn'],
+        'plot': ['matplotlib'],
     },
     install_requires=requirements,
     license='MIT license',

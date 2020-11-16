@@ -16,7 +16,7 @@ preprocessing.
 These transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
-`MRI magnetic field inhomogeneity <http://mriquestions.com/why-homogeneity.html>`_
+`MRI magnetic field inhomogeneity (bias) <http://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.

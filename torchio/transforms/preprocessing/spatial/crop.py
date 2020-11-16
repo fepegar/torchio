@@ -1,8 +1,11 @@
+from typing import Sequence, Optional
+
 import numpy as np
 import nibabel as nib
+
 from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
-from .bounds_transform import BoundsTransform
+from .bounds_transform import BoundsTransform, TypeBounds
 
 
 class Crop(BoundsTransform):
@@ -24,6 +27,16 @@ class Crop(BoundsTransform):
             :math:`w_{ini} = w_{fin} = h_{ini} = h_{fin}
             = d_{ini} = d_{fin} = n`.
     """
+    def __init__(
+            self,
+            cropping: TypeBounds,
+            p: float = 1,
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(cropping, p=p, keys=keys)
+        self.cropping = cropping
+        self.args_names = ('cropping',)
+
     def apply_transform(self, sample) -> Subject:
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
@@ -38,3 +51,7 @@ class Crop(BoundsTransform):
             image[DATA] = image[DATA][:, i0:i1, j0:j1, k0:k1].clone()
             image[AFFINE] = new_affine
         return sample
+
+    def inverse(self):
+        from .pad import Pad
+        return Pad(self.cropping)

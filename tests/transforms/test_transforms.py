@@ -1,8 +1,8 @@
 import copy
 import torch
-import torchio
 import numpy as np
 import nibabel as nib
+import torchio as tio
 import SimpleITK as sitk
 from ..utils import TorchioTestCase
 
@@ -15,50 +15,50 @@ class TestTransforms(TorchioTestCase):
             channel: np.linspace(0, 100, 13) for channel in channels
         }
         disp = 1 if is_3d else (1, 1, 0.01)
-        elastic = torchio.RandomElasticDeformation(max_displacement=disp)
+        elastic = tio.RandomElasticDeformation(max_displacement=disp)
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
         flip_axes = axes_downsample = (0, 1, 2) if is_3d else (0, 1)
         swap_patch = (2, 3, 4) if is_3d else (3, 4, 1)
         pad_args = (1, 2, 3, 0, 5, 6) if is_3d else (0, 0, 3, 0, 5, 6)
         crop_args = (3, 2, 8, 0, 1, 4) if is_3d else (0, 0, 8, 0, 1, 4)
         transforms = [
-            torchio.CropOrPad(cp_args),
-            torchio.ToCanonical(),
-            torchio.RandomDownsample(downsampling=(1.75, 2), axes=axes_downsample),
-            torchio.Resample((1, 1.1, 1.25)),
-            torchio.RandomFlip(axes=flip_axes, flip_probability=1),
-            torchio.RandomMotion(),
-            torchio.RandomGhosting(axes=(0, 1, 2)),
-            torchio.RandomSpike(),
-            torchio.RandomNoise(),
-            torchio.RandomBlur(),
-            torchio.RandomSwap(patch_size=swap_patch, num_iterations=5),
-            torchio.Lambda(lambda x: 2 * x, types_to_apply=torchio.INTENSITY),
-            torchio.RandomBiasField(),
-            torchio.RescaleIntensity((0, 1)),
-            torchio.ZNormalization(),
-            torchio.HistogramStandardization(landmarks_dict),
+            tio.CropOrPad(cp_args),
+            tio.ToCanonical(),
+            tio.RandomAnisotropy(downsampling=(1.75, 2), axes=axes_downsample),
+            tio.Resample((1, 1.1, 1.25)),
+            tio.RandomFlip(axes=flip_axes, flip_probability=1),
+            tio.RandomMotion(),
+            tio.RandomGhosting(axes=(0, 1, 2)),
+            tio.RandomSpike(),
+            tio.RandomNoise(),
+            tio.RandomBlur(),
+            tio.RandomSwap(patch_size=swap_patch, num_iterations=5),
+            tio.Lambda(lambda x: 2 * x, types_to_apply=tio.INTENSITY),
+            tio.RandomBiasField(),
+            tio.RescaleIntensity((0, 1)),
+            tio.ZNormalization(),
+            tio.HistogramStandardization(landmarks_dict),
             elastic,
-            torchio.RandomAffine(),
-            torchio.OneOf({
-                torchio.RandomAffine(): 3,
+            tio.RandomAffine(),
+            tio.OneOf({
+                tio.RandomAffine(): 3,
                 elastic: 1,
             }),
-            torchio.Pad(pad_args, padding_mode=3),
-            torchio.Crop(crop_args),
+            tio.Pad(pad_args, padding_mode=3),
+            tio.Crop(crop_args),
         ]
         if labels:
-            transforms.append(torchio.RandomLabelsToImage(label_key='label'))
-        return torchio.Compose(transforms)
+            transforms.append(tio.RandomLabelsToImage(label_key='label'))
+        return tio.Compose(transforms)
 
     def test_transforms_dict(self):
-        transform = torchio.RandomNoise(keys=('t1', 't2'))
+        transform = tio.RandomNoise(keys=('t1', 't2'))
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         transformed = transform(input_dict)
         self.assertIsInstance(transformed, dict)
 
     def test_transforms_dict_no_keys(self):
-        transform = torchio.RandomNoise()
+        transform = tio.RandomNoise()
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         with self.assertRaises(RuntimeError):
             transform(input_dict)
@@ -67,7 +67,7 @@ class TestTransforms(TorchioTestCase):
         transform = self.get_transform(
             channels=('default_image_name',), labels=False)
         transformed = transform(self.sample_subject.t1)
-        self.assertIsInstance(transformed, torchio.ScalarImage)
+        self.assertIsInstance(transformed, tio.ScalarImage)
 
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
@@ -86,7 +86,7 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_sitk(self):
         tensor = torch.rand(2, 4, 5, 8)
         affine = np.diag((-1, 2, -3, 1))
-        image = torchio.utils.nib_to_sitk(tensor, affine)
+        image = tio.utils.nib_to_sitk(tensor, affine)
         transform = self.get_transform(
             channels=('default_image_name',), labels=False)
         transformed = transform(image)
@@ -104,13 +104,13 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_subject_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
         transformed = transform(self.sample_subject)
-        self.assertIsInstance(transformed, torchio.Subject)
+        self.assertIsInstance(transformed, tio.Subject)
 
     def test_transforms_subject_2d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=False)
         subject = self.make_2d(self.sample_subject)
         transformed = transform(subject)
-        self.assertIsInstance(transformed, torchio.Subject)
+        self.assertIsInstance(transformed, tio.Subject)
 
     def test_transforms_subject_4d(self):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
@@ -132,10 +132,10 @@ class TestTransforms(TorchioTestCase):
                     f'No changes after {transform.name}'
                 )
             subject = transformed
-        self.assertIsInstance(transformed, torchio.Subject)
+        self.assertIsInstance(transformed, tio.Subject)
 
     def test_transform_noop(self):
-        transform = torchio.RandomMotion(p=0)
+        transform = tio.RandomMotion(p=0)
         transformed = transform(self.sample_subject)
         self.assertIs(transformed, self.sample_subject)
         tensor = torch.rand(2, 4, 5, 8).numpy()
@@ -160,4 +160,17 @@ class TestTransform(TorchioTestCase):
 
     def test_abstract_transform(self):
         with self.assertRaises(TypeError):
-            torchio.Transform()
+            tio.Transform()
+
+    def test_arguments_are_not_dict(self):
+        transform = tio.Noise(0, 1, 0)
+        assert not transform.arguments_are_dict()
+
+    def test_arguments_are_dict(self):
+        transform = tio.Noise({'im': 0}, {'im': 1}, {'im': 0})
+        assert transform.arguments_are_dict()
+
+    def test_arguments_are_and_are_not_dict(self):
+        transform = tio.Noise(0, {'im': 1}, {'im': 0})
+        with self.assertRaises(ValueError):
+            transform.arguments_are_dict()

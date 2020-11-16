@@ -150,11 +150,6 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transformed = transform(self.sample_subject)
         self.assertTensorNotEqual(original_t1, transformed.t1.data)
 
-    def test_missing_label_key(self):
-        """The transform raises an error if no label_key is given."""
-        with self.assertRaises(TypeError):
-            RandomLabelsToImage()
-
     def test_with_bad_default_mean_range(self):
         """The transform raises an error if default_mean is not a
         single value nor a tuple of two values."""
@@ -238,12 +233,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
         """The transform raises an error at runtime if mean length
         does not match label numbers."""
         transform = RandomLabelsToImage(label_key='label', mean=[0])
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(RuntimeError):
             transform(self.sample_subject)
 
     def test_std_not_matching_number_of_labels(self):
         """The transform raises an error at runtime if std length
         does not match label numbers."""
         transform = RandomLabelsToImage(label_key='label', std=[1, 2, 3])
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(RuntimeError):
             transform(self.sample_subject)
