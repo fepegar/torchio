@@ -33,11 +33,9 @@ def is_slicer_python():
     return python_home is not None and 'Slicer' in python_home
 
 
-# New versions of Slicer need SimpleITK 2, but SimpleITK as preferred normally
+# New versions of Slicer need SimpleITK 2, but SimpleITK is preferred
 # because of https://github.com/SimpleITK/SimpleITK/issues/1239
-if is_slicer_python():
-    requirements.append('SimpleITK')
-else:
+if not is_slicer_python():
     requirements.append('SimpleITK<2')
 
 
