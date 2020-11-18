@@ -32,11 +32,13 @@ Credits
   From https://stackoverflow.com/a/10766650/3956024
 
 If you use this library for your research,
-please cite our preprint: |paper-url|_.
+please cite our preprint:
+
+|paper-url|_
 
 .. _paper-url: https://arxiv.org/abs/2003.04696
 
-.. |paper-url| replace:: Pérez-García et al., 2020, *TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning*
+.. |paper-url| replace:: Pérez-García, F., Sparks, R., Ourselin, S.: TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning. arXiv:2003.04696 [cs, eess, stat] (Mar 2020), http://arxiv.org/abs/2003.04696, arXiv: 2003.04696
 
 
 BibTeX:
