@@ -1,6 +1,3 @@
-Medical image datasets
-======================
-
 IXI
 ---
 
@@ -41,6 +38,12 @@ MNI
 :class:`Colin27`
 ~~~~~~~~~~~~~~~~
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.Colin27()
+    subject.plot()
+
 .. autoclass:: Colin27
     :members:
     :show-inheritance:
@@ -53,9 +56,21 @@ MNI
     :members:
     :show-inheritance:
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.Pediatric((4.5, 8.5))
+    subject.plot()
+
 
 :class:`Sheep`
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
+
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.Sheep()
+    subject.plot()
 
 .. autoclass:: Sheep
     :members:
@@ -72,6 +87,12 @@ ITK-SNAP
 :class:`BrainTumor`
 ~~~~~~~~~~~~~~~~~~~
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.BrainTumor()
+    subject.plot()
+
 .. autoclass:: BrainTumor
     :members:
     :show-inheritance:
@@ -80,6 +101,12 @@ ITK-SNAP
 :class:`T1T2`
 ~~~~~~~~~~~~~
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.T1T2()
+    subject.plot()
+
 .. autoclass:: T1T2
     :members:
     :show-inheritance:
@@ -87,6 +114,12 @@ ITK-SNAP
 
 :class:`AorticValve`
 ~~~~~~~~~~~~~~~~~~~~
+
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.AorticValve()
+    subject.plot()
 
 .. autoclass:: AorticValve
     :members:
@@ -102,6 +135,12 @@ ITK-SNAP
 :class:`Slicer`
 ~~~~~~~~~~~~~~~
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.Slicer()
+    subject.plot()
+
 .. autoclass:: Slicer
     :members:
     :show-inheritance:
@@ -109,6 +148,12 @@ ITK-SNAP
 
 FPG
 ---
+
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.FPG()
+    subject.plot()
 
 .. currentmodule:: torchio.datasets.fpg
 

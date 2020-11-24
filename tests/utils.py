@@ -4,13 +4,15 @@ import random
 import tempfile
 import unittest
 from pathlib import Path
+from random import shuffle
 
 import torch
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
+import torchio.transforms as tio_trsf
 from torchio.datasets import IXITiny
 from torchio import DATA, AFFINE
-from torchio import ScalarImage, LabelMap, SubjectsDataset, Subject
+from torchio import ScalarImage, LabelMap, SubjectsDataset, Subject, Compose
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -172,3 +174,24 @@ class TorchioTestCase(unittest.TestCase):
     @staticmethod
     def assertTensorAlmostEqual(*args, **kwargs):  # noqa: N802
         assert_array_almost_equal(*args, **kwargs)
+
+    def get_large_composed_transform(self):
+        all_classes = get_all_random_transforms()
+        shuffle(all_classes)
+        transforms = [t() for t in all_classes]
+        # Hack as default patch size for RandomSwap is 15 and sample_subject
+        # is (10, 20, 30)
+        for tr in transforms:
+            if tr.name == 'RandomSwap':
+                tr.patch_size = np.array((10, 10, 10))
+        return Compose(transforms)
+
+
+def get_all_random_transforms():
+    transforms_names = [
+        name
+        for name in dir(tio_trsf)
+        if name.startswith('Random')
+    ]
+    classes = [getattr(tio_trsf, name) for name in transforms_names]
+    return classes

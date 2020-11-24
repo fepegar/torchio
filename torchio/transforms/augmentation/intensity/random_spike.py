@@ -1,13 +1,16 @@
-from typing import Tuple, Optional, Union, List
+from collections import defaultdict
+from typing import Tuple, Optional, Union, Sequence, Dict
+
 import torch
 import numpy as np
+
 from ....torchio import DATA
 from ....data.subject import Subject
-from ... import IntensityTransform
+from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
 
 
-class RandomSpike(RandomTransform, IntensityTransform):
+class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
     r"""Add random MRI spike artifacts.
 
     Also known as `Herringbone artifact
@@ -30,8 +33,7 @@ class RandomSpike(RandomTransform, IntensityTransform):
             :math:`r \sim \mathcal{U}(-d, d)`.
             Larger values generate more distorted images.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -41,7 +43,7 @@ class RandomSpike(RandomTransform, IntensityTransform):
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (1, 3),
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.intensity_range = self.parse_range(
@@ -50,40 +52,76 @@ class RandomSpike(RandomTransform, IntensityTransform):
             num_spikes, 'num_spikes', min_constraint=0, type_constraint=int)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        random_parameters_images_dict = {}
+        arguments = defaultdict(dict)
+        for image_name in self.get_images_dict(subject):
+            spikes_positions_param, intensity_param = self.get_params(
+                self.num_spikes_range,
+                self.intensity_range,
+            )
+            arguments['spikes_positions'][image_name] = spikes_positions_param
+            arguments['intensity'][image_name] = intensity_param
+        transform = Spike(**arguments)
+        transformed = transform(subject)
+        return transformed
+
+    def get_params(
+            self,
+            num_spikes_range: Tuple[int, int],
+            intensity_range: Tuple[float, float],
+            ) -> Tuple[np.ndarray, float]:
+        ns_min, ns_max = num_spikes_range
+        num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
+        intensity_param = self.sample_uniform(*intensity_range)
+        spikes_positions = torch.rand(num_spikes_param, 3).numpy()
+        return spikes_positions, intensity_param.item()
+
+
+class Spike(IntensityTransform, FourierTransform):
+    r"""Add MRI spike artifacts.
+
+    Also known as `Herringbone artifact
+    <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
+    crisscross artifact or corduroy artifact, it creates stripes in different
+    directions in image space due to spikes in k-space.
+
+    Args:
+        spikes_positions:
+        intensity: Ratio :math:`r` between the spike intensity and the maximum
+            of the spectrum.
+        keys: See :class:`~torchio.transforms.Transform`.
+
+    .. note:: The execution time of this transform does not depend on the
+        number of spikes.
+    """
+    def __init__(
+            self,
+            spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
+            intensity: Union[float, Dict[str, float]],
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.spikes_positions = spikes_positions
+        self.intensity = intensity
+        self.args_names = 'spikes_positions', 'intensity'
+        self.invert_transform = False
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        spikes_positions = self.spikes_positions
+        intensity = self.intensity
         for image_name, image in self.get_images_dict(subject).items():
+            if self.arguments_are_dict():
+                spikes_positions = self.spikes_positions[image_name]
+                intensity = self.intensity[image_name]
             transformed_tensors = []
-            for channel_idx, channel in enumerate(image[DATA]):
-                params = self.get_params(
-                    self.num_spikes_range,
-                    self.intensity_range,
-                )
-                spikes_positions_param, intensity_param = params
-                random_parameters_dict = {
-                    'intensity': intensity_param,
-                    'spikes_positions': spikes_positions_param,
-                }
-                key = f'{image_name}_channel_{channel_idx}'
-                random_parameters_images_dict[key] = random_parameters_dict
+            for channel in image[DATA]:
                 transformed_tensor = self.add_artifact(
                     channel,
-                    spikes_positions_param,
-                    intensity_param,
+                    spikes_positions,
+                    intensity,
                 )
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
         return subject
-
-    @staticmethod
-    def get_params(
-            num_spikes_range: Tuple[int, int],
-            intensity_range: Tuple[float, float],
-            ) -> Tuple:
-        ns_min, ns_max = num_spikes_range
-        num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
-        intensity_param = torch.FloatTensor(1).uniform_(*intensity_range)
-        spikes_positions = torch.rand(num_spikes_param, 3).numpy()
-        return spikes_positions, intensity_param.item()
 
     def add_artifact(
             self,
@@ -99,7 +137,11 @@ class RandomSpike(RandomTransform, IntensityTransform):
         for index in indices:
             diff = index - mid_shape
             i, j, k = mid_shape + diff
-            spectrum[i, j, k] += spectrum.max() * intensity_factor
+            artifact = spectrum.max() * intensity_factor
+            if self.invert_transform:
+                spectrum[i, j, k] -= artifact
+            else:
+                spectrum[i, j, k] += artifact
             # If we wanted to add a pure cosine, we should add spikes to both
             # sides of k-space. However, having only one is a better
             # representation og the actual cause of the artifact in real

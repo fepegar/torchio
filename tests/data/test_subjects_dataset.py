@@ -3,7 +3,6 @@
 """Tests for SubjectsDataset."""
 
 import nibabel as nib
-import torchio
 from torchio import DATA, SubjectsDataset
 from ..utils import TorchioTestCase
 
@@ -71,9 +70,9 @@ class TestSubjectsDataset(TorchioTestCase):
 
     def test_data_loader(self):
         from torch.utils.data import DataLoader
-        subj_list = [torchio.datasets.Colin27()]
+        subj_list = [self.sample_subject]
         dataset = SubjectsDataset(subj_list)
         loader = DataLoader(dataset, batch_size=1, shuffle=True)
         for batch in loader:
             batch['t1'][DATA]
-            batch['brain'][DATA]
+            batch['label'][DATA]

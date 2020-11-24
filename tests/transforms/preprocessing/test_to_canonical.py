@@ -4,7 +4,7 @@ from ...utils import TorchioTestCase
 
 
 class TestToCanonical(TorchioTestCase):
-    """Tests for :py:class:`ToCanonical` class."""
+    """Tests for :class:`ToCanonical` class."""
 
     def test_no_changes(self):
         transform = ToCanonical()

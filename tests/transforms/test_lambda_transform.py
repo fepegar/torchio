@@ -5,7 +5,7 @@ from ..utils import TorchioTestCase
 
 
 class TestLambda(TorchioTestCase):
-    """Tests for :py:class:`Lambda` class."""
+    """Tests for :class:`Lambda` class."""
 
     def test_wrong_return_type(self):
         transform = Lambda(lambda x: 'Not a tensor')

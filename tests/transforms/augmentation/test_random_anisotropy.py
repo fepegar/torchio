@@ -1,34 +1,39 @@
-from torchio.transforms import RandomDownsample
+import torch
+from torchio import ScalarImage, RandomAnisotropy
 from ...utils import TorchioTestCase
 
 
-class TestRandomDownsample(TorchioTestCase):
-    """Tests for `RandomDownsample`."""
+class TestRandomAnisotropy(TorchioTestCase):
+    """Tests for `RandomAnisotropy`."""
 
     def test_downsample(self):
-        transform = RandomDownsample(
+        transform = RandomAnisotropy(
             axes=1,
             downsampling=(2., 2.)
         )
         transformed = transform(self.sample_subject)
-        self.assertEqual(self.sample_subject.spacing[1] * 2, transformed.spacing[1])
+        self.assertEqual(self.sample_subject.spacing[1], transformed.spacing[1])
 
     def test_out_of_range_axis(self):
         with self.assertRaises(ValueError):
-            RandomDownsample(axes=3)
+            RandomAnisotropy(axes=3)
 
     def test_out_of_range_axis_in_tuple(self):
         with self.assertRaises(ValueError):
-            RandomDownsample(axes=(0, -1, 2))
+            RandomAnisotropy(axes=(0, -1, 2))
 
     def test_wrong_axes_type(self):
         with self.assertRaises(ValueError):
-            RandomDownsample(axes='wrong')
+            RandomAnisotropy(axes='wrong')
 
     def test_wrong_downsampling_type(self):
         with self.assertRaises(ValueError):
-            RandomDownsample(downsampling='wrong')
+            RandomAnisotropy(downsampling='wrong')
 
     def test_below_one_downsampling(self):
         with self.assertRaises(ValueError):
-            RandomDownsample(downsampling=0.2)
+            RandomAnisotropy(downsampling=0.2)
+
+    def test_2d_rgb(self):
+        image = ScalarImage(tensor=torch.rand(3, 4, 5, 6))
+        RandomAnisotropy()(image)

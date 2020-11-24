@@ -1,16 +1,16 @@
 import ast
 import gzip
-import json
 import shutil
 import tempfile
 from pathlib import Path
 from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
 
-import torch
+from torch.utils.data._utils.collate import default_collate
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
+
 from .torchio import (
     INTENSITY,
     TypeData,
@@ -130,7 +130,7 @@ def apply_transform_to_file(
     transformed = transform(subject)
     transformed.image.save(output_path)
     if verbose and transformed.history:
-        print(transformed.history[0])  # noqa: T001
+        print('Applied transform:', transformed.history[0])  # noqa: T001
 
 
 def guess_type(string: str) -> Any:
@@ -250,9 +250,12 @@ def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
     num_dimensions = tensor.ndim
     if num_dimensions == 4:
         pass
-    elif num_dimensions == 5:  # hope (X, X, X, 1, X)
-        if tensor.shape[-1] == 1:
+    elif num_dimensions == 5:  # hope (W, H, D, 1, C)
+        if tensor.shape[-2] == 1:
             tensor = tensor[..., 0, :]
+            tensor = tensor.permute(3, 0, 1, 2)
+        else:
+            raise ValueError('5D is not supported for shape[-2] > 1')
     elif num_dimensions == 2:  # assume 2D monochannel (W, H)
         tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, W, H, 1)
     elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
@@ -318,34 +321,25 @@ def check_sequence(sequence: Sequence, name: str):
         raise TypeError(message)
 
 
-def gen_seed():
-    """Random seed generator to avoid overflow
-
-    Returns
-        A random seed as an int
-    """
-    return torch.randint(0, 2**31, (1,)).item()
-
-
-def is_jsonable(x):
-    """Tests whether an object is convertible to json
-
-    Args:
-        x: object to test
-
-    Returns:
-        Boolean stating whether the object x is convertible to json
-    """
-    try:
-        json.dumps(x)
-        return True
-    except (TypeError, OverflowError):
-        return False
-
-
 def get_major_sitk_version() -> int:
     # This attribute was added in version 2
     # https://github.com/SimpleITK/SimpleITK/pull/1171
     version = getattr(sitk, '__version__', None)
     major_version = 1 if version is None else 2
     return major_version
+
+
+def history_collate(batch: Sequence, collate_transforms=True):
+    attr = 'history' if collate_transforms else 'applied_transforms'
+    # Adapted from
+    # https://github.com/romainVala/torchQC/blob/master/segmentation/collate_functions.py
+    from .data import Subject
+    first_element = batch[0]
+    if isinstance(first_element, Subject):
+        dictionary = {
+            key: default_collate([d[key] for d in batch])
+            for key in first_element
+        }
+        if hasattr(first_element, attr):
+            dictionary.update({attr: [getattr(d, attr) for d in batch]})
+        return dictionary

@@ -1,29 +1,29 @@
-from .transform import Transform, TypeTransformInput
+from .transform import Transform
+from .fourier import FourierTransform
 from .spatial_transform import SpatialTransform
 from .intensity_transform import IntensityTransform
-from .interpolation import Interpolation, get_sitk_interpolator
 
 # Generic
 from .lambda_transform import Lambda
 
 # Augmentation
 from .augmentation.composition import OneOf
-from .augmentation.composition import Compose, compose_from_history
+from .augmentation.composition import Compose
 
-from .augmentation.spatial import RandomFlip
-from .augmentation.spatial import RandomAffine
-from .augmentation.spatial import RandomDownsample
-from .augmentation.spatial import RandomElasticDeformation
+from .augmentation.spatial import RandomFlip, Flip
+from .augmentation.spatial import RandomAffine, Affine
+from .augmentation.spatial import RandomAnisotropy
+from .augmentation.spatial import RandomElasticDeformation, ElasticDeformation
 
-from .augmentation.intensity import RandomSwap
-from .augmentation.intensity import RandomBlur
-from .augmentation.intensity import RandomNoise
-from .augmentation.intensity import RandomSpike
-from .augmentation.intensity import RandomGamma
-from .augmentation.intensity import RandomMotion
-from .augmentation.intensity import RandomGhosting
-from .augmentation.intensity import RandomBiasField
-from .augmentation.intensity import RandomLabelsToImage
+from .augmentation.intensity import RandomSwap, Swap
+from .augmentation.intensity import RandomBlur, Blur
+from .augmentation.intensity import RandomNoise, Noise
+from .augmentation.intensity import RandomSpike, Spike
+from .augmentation.intensity import RandomGamma, Gamma
+from .augmentation.intensity import RandomMotion, Motion
+from .augmentation.intensity import RandomGhosting, Ghosting
+from .augmentation.intensity import RandomBiasField, BiasField
+from .augmentation.intensity import RandomLabelsToImage, LabelsToImage
 
 # Preprocessing
 from .preprocessing import Pad
@@ -39,28 +39,37 @@ from .preprocessing.intensity.histogram_standardization import train as train_hi
 
 __all__ = [
     'Transform',
-    'TypeTransformInput',
+    'FourierTransform',
     'SpatialTransform',
     'IntensityTransform',
-    'Interpolation',
-    'get_sitk_interpolator',
     'Lambda',
     'OneOf',
     'Compose',
-    'compose_from_history',
     'RandomFlip',
+    'Flip',
     'RandomAffine',
-    'RandomDownsample',
+    'Affine',
+    'RandomAnisotropy',
     'RandomElasticDeformation',
+    'ElasticDeformation',
     'RandomSwap',
+    'Swap',
     'RandomBlur',
+    'Blur',
     'RandomNoise',
+    'Noise',
     'RandomSpike',
+    'Spike',
     'RandomGamma',
+    'Gamma',
     'RandomMotion',
+    'Motion',
     'RandomGhosting',
+    'Ghosting',
     'RandomBiasField',
+    'BiasField',
     'RandomLabelsToImage',
+    'LabelsToImage',
     'Pad',
     'Crop',
     'Resample',

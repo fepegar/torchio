@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Optional, List
+from typing import Union, Tuple, Optional, List, Sequence
 import torch
 import numpy as np
 from ....torchio import DATA
@@ -24,13 +24,12 @@ class RandomFlip(RandomTransform, SpatialTransform):
         flip_probability: Probability that the image will be flipped. This is
             computed on a per-axis basis.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
         >>> fpg = tio.datasets.FPG()
-        >>> flip = tio.RandomFlip(axes=('LR'))  # flip along lateral axis only
+        >>> flip = tio.RandomFlip(axes=('LR',))  # flip along lateral axis only
 
     .. tip:: It is handy to specify the axes as anatomical labels when the image
         orientation is not known.
@@ -41,51 +40,88 @@ class RandomFlip(RandomTransform, SpatialTransform):
             axes: Union[int, Tuple[int, ...]] = 0,
             flip_probability: float = 0.5,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self.axes = self.parse_axes(axes)
-        self.flip_probability = self.parse_probability(
-            flip_probability,
-        )
+        self.axes = _parse_axes(axes)
+        self.flip_probability = self.parse_probability(flip_probability)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        axes = self.axes
+        potential_axes = _ensure_axes_indices(subject, self.axes)
         axes_to_flip_hot = self.get_params(self.flip_probability)
-        if any(isinstance(n, str) for n in axes):
-            subject.check_consistent_orientation()
-            image = subject.get_first_image()
-            axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
         for i in range(3):
-            if i not in axes:
+            if i not in potential_axes:
                 axes_to_flip_hot[i] = False
-        random_parameters_dict = {'axes': axes_to_flip_hot}
-        for image in self.get_images(subject):
-            dims = []
-            for dim, flip_this in enumerate(axes_to_flip_hot):
-                if not flip_this:
-                    continue
-                actual_dim = dim + 1  # images are 4D
-                dims.append(actual_dim)
-            if dims:
-                data = image.numpy()
-                data = np.flip(data, axis=dims)
-                data = data.copy()  # remove negative strides
-                data = torch.from_numpy(data)
-                image[DATA] = data
-        return subject
+        axes, = np.where(axes_to_flip_hot)
+        transform = Flip(axes=axes.tolist())
+        transformed = transform(subject)
+        return transformed
 
     @staticmethod
     def get_params(probability: float) -> List[bool]:
         return (probability > torch.rand(3)).tolist()
 
+
+class Flip(SpatialTransform):
+    """Reverse the order of elements in an image along the given axes.
+
+    Args:
+        axes: Index or tuple of indices of the spatial dimensions along which
+            the image will be flipped. See
+            :class:`~torchio.transforms.augmentation.spatial.random_flip.RandomFlip`
+            for more information.
+        keys: See :class:`~torchio.transforms.Transform`.
+
+    .. tip:: It is handy to specify the axes as anatomical labels when the image
+        orientation is not known.
+    """
+
+    def __init__(self, axes, keys: Optional[Sequence[str]] = None):
+        super().__init__(keys=keys)
+        self.axes = _parse_axes(axes)
+        self.args_names = ('axes',)
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        axes = _ensure_axes_indices(subject, self.axes)
+        for image in self.get_images(subject):
+            _flip_image(image, axes)
+        return subject
+
     @staticmethod
-    def parse_axes(axes: Union[int, Tuple[int, ...]]):
-        axes_tuple = to_tuple(axes)
-        for axis in axes_tuple:
-            is_int = isinstance(axis, int)
-            is_string = isinstance(axis, str)
-            if not is_string and not (is_int and axis in (0, 1, 2)):
-                message = f'All axes must be 0, 1 or 2, but found "{axis}"'
-                raise ValueError(message)
-        return axes_tuple
+    def is_invertible():
+        return True
+
+    def inverse(self):
+        return self
+
+
+def _parse_axes(axes: Union[int, Tuple[int, ...]]):
+    axes_tuple = to_tuple(axes)
+    for axis in axes_tuple:
+        is_int = isinstance(axis, int)
+        is_string = isinstance(axis, str)
+        valid_number = is_int and axis in (0, 1, 2)
+        if not is_string and not valid_number:
+            message = (
+                f'All axes must be 0, 1 or 2, but found "{axis}"'
+                f' with type {type(axis)}'
+            )
+            raise ValueError(message)
+    return axes_tuple
+
+
+def _ensure_axes_indices(subject, axes):
+    if any(isinstance(n, str) for n in axes):
+        subject.check_consistent_orientation()
+        image = subject.get_first_image()
+        axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
+    return axes
+
+
+def _flip_image(image, axes):
+    spatial_axes = np.array(axes) + 1
+    data = image.numpy()
+    data = np.flip(data, axis=spatial_axes)
+    data = data.copy()  # remove negative strides
+    data = torch.from_numpy(data)
+    image[DATA] = data

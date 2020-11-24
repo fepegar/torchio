@@ -11,13 +11,13 @@ class LabelSampler(WeightedSampler):
     r"""Extract random patches with labeled voxels at their center.
 
     This sampler yields patches whose center value is greater than 0
-    in the :py:attr:`label_name`.
+    in the :attr:`label_name`.
 
     Args:
-        patch_size: See :py:class:`~torchio.data.PatchSampler`.
+        patch_size: See :class:`~torchio.data.PatchSampler`.
         label_name: Name of the label image in the subject that will be used to
             generate the sampling probability map. If ``None``, the first image
-            of type :py:attr:`torchio.LABEL` found in the subject subject will be
+            of type :attr:`torchio.LABEL` found in the subject subject will be
             used.
         label_probabilities: Dictionary containing the probability that each
             class will be sampled. Probabilities do not need to be normalized.

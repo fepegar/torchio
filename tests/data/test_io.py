@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 
 from ..utils import TorchioTestCase
+from torchio.utils import ensure_4d
 from torchio.data import io, ScalarImage
 
 
@@ -64,6 +65,44 @@ class TestIO(TorchioTestCase):
 
     def test_matrix_txt(self):
         self.write_read_matrix('.txt')
+
+    def test_ensure_4d_5d(self):
+        tensor = torch.rand(3, 4, 5, 1, 2)
+        assert ensure_4d(tensor).shape == (2, 3, 4, 5)
+
+    def test_ensure_4d_5d_t_gt_1(self):
+        tensor = torch.rand(3, 4, 5, 2, 2)
+        with self.assertRaises(ValueError):
+            ensure_4d(tensor)
+
+    def test_ensure_4d_2d(self):
+        tensor = torch.rand(4, 5)
+        assert ensure_4d(tensor).shape == (1, 4, 5, 1)
+
+    def test_ensure_4d_2d_3dims_rgb_first(self):
+        tensor = torch.rand(3, 4, 5)
+        assert ensure_4d(tensor).shape == (3, 4, 5, 1)
+
+    def test_ensure_4d_2d_3dims_rgb_last(self):
+        tensor = torch.rand(4, 5, 3)
+        assert ensure_4d(tensor).shape == (3, 4, 5, 1)
+
+    def test_ensure_4d_3d(self):
+        tensor = torch.rand(4, 5, 6)
+        assert ensure_4d(tensor).shape == (1, 4, 5, 6)
+
+    def test_ensure_4d_2_spatial_dims(self):
+        tensor = torch.rand(4, 5, 6)
+        assert ensure_4d(tensor, num_spatial_dims=2).shape == (4, 5, 6, 1)
+
+    def test_ensure_4d_3_spatial_dims(self):
+        tensor = torch.rand(4, 5, 6)
+        assert ensure_4d(tensor, num_spatial_dims=3).shape == (1, 4, 5, 6)
+
+    def test_ensure_4d_nd_not_supported(self):
+        tensor = torch.rand(1, 2, 3, 4, 5)
+        with self.assertRaises(ValueError):
+            ensure_4d(tensor)
 
 
 # This doesn't work as a method of the class

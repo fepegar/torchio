@@ -15,3 +15,19 @@ class TestCLI(TorchioTestCase):
         help_result = runner.invoke(cli.apply_transform, ['--help'])
         assert help_result.exit_code == 0
         assert 'Show this message and exit.' in help_result.output
+
+    def test_cli(self):
+        image = str(self.get_image_path('cli'))
+        runner = CliRunner()
+        args = [image, 'RandomFlip', image]
+        result = runner.invoke(cli.apply_transform, args)
+        assert result.exit_code == 0
+        assert result.output == ''
+
+    def test_bad_transform(self):
+        ValueError
+        image = str(self.get_image_path('cli'))
+        runner = CliRunner()
+        args = [image, 'RandomRandom', image]
+        result = runner.invoke(cli.apply_transform, args)
+        assert result.exit_code == 1

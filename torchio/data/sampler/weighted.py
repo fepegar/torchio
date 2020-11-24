@@ -19,7 +19,7 @@ class WeightedSampler(RandomSampler):
     with a value of 1.
 
     Args:
-        patch_size: See :py:class:`~torchio.data.PatchSampler`.
+        patch_size: See :class:`~torchio.data.PatchSampler`.
         probability_map: Name of the image in the input subject that will be
             used as a sampling probability map.
 

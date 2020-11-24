@@ -1,6 +1,7 @@
 import copy
 import pprint
 from typing import Any, Dict, List, Tuple
+
 from ..torchio import TYPE, INTENSITY
 from .image import Image
 
@@ -14,24 +15,24 @@ class Subject(dict):
 
     Example:
 
-        >>> from torchio import ScalarImage, LabelMap, Subject
+        >>> import torchio as tio
         >>> # One way:
-        >>> subject = Subject(
-        ...     one_image=ScalarImage('path_to_image.nii.gz'),
-        ...     a_segmentation=LabelMap('path_to_seg.nii.gz'),
+        >>> subject = tio.Subject(
+        ...     one_image=tio.ScalarImage('path_to_image.nii.gz'),
+        ...     a_segmentation=tio.LabelMap('path_to_seg.nii.gz'),
         ...     age=45,
         ...     name='John Doe',
         ...     hospital='Hospital Juan Negrín',
         ... )
         >>> # If you want to create the mapping before, or have spaces in the keys:
         >>> subject_dict = {
-        ...     'one image': ScalarImage('path_to_image.nii.gz'),
-        ...     'a segmentation': LabelMap('path_to_seg.nii.gz'),
+        ...     'one image': tio.ScalarImage('path_to_image.nii.gz'),
+        ...     'a segmentation': tio.LabelMap('path_to_seg.nii.gz'),
         ...     'age': 45,
         ...     'name': 'John Doe',
         ...     'hospital': 'Hospital Juan Negrín',
         ... }
-        >>> Subject(subject_dict)
+        >>> subject = tio.Subject(subject_dict)
 
     """
 
@@ -46,7 +47,7 @@ class Subject(dict):
         super().__init__(**kwargs)
         self._parse_images(self.get_images(intensity_only=False))
         self.update_attributes()  # this allows me to do e.g. subject.t1
-        self.history = []
+        self.applied_transforms = []
 
     def __repr__(self):
         num_images = len(self.get_images(intensity_only=False))
@@ -65,7 +66,7 @@ class Subject(dict):
                 value = copy.deepcopy(value)
             result_dict[key] = value
         new = Subject(result_dict)
-        new.history = self.history[:]
+        new.applied_transforms = self.applied_transforms[:]
         return new
 
     def __len__(self):
@@ -105,6 +106,28 @@ class Subject(dict):
         self.check_consistent_attribute('spacing')
         return self.get_first_image().spacing
 
+    @property
+    def history(self):
+        from .. import transforms
+        transforms_list = []
+        for transform_name, arguments in self.applied_transforms:
+            transform = getattr(transforms, transform_name)(**arguments)
+            transforms_list.append(transform)
+        return transforms_list
+
+    def get_composed_history(self) -> 'Transform':
+        from ..transforms.augmentation.composition import Compose
+        return Compose(self.history)
+
+    def get_inverse_transform(self) -> 'Transform':
+        return self.get_composed_history().inverse()
+
+    def apply_inverse_transform(self) -> 'Subject':
+        return self.get_inverse_transform()(self)
+
+    def clear_history(self) -> None:
+        self.applied_transforms = []
+
     def check_consistent_attribute(self, attribute: str) -> None:
         values_dict = {}
         iterable = self.get_images_dict(intensity_only=False).items()
@@ -124,7 +147,7 @@ class Subject(dict):
     def check_consistent_orientation(self) -> None:
         self.check_consistent_attribute('orientation')
 
-    def get_images_dict(self, intensity_only=True):
+    def get_images_dict(self, intensity_only=True) -> Dict[str, Image]:
         images = {}
         for image_name, image in self.items():
             if not isinstance(image, Image):
@@ -134,11 +157,11 @@ class Subject(dict):
             images[image_name] = image
         return images
 
-    def get_images(self, intensity_only=True):
+    def get_images(self, intensity_only=True) -> List[Image]:
         images_dict = self.get_images_dict(intensity_only=intensity_only)
         return list(images_dict.values())
 
-    def get_first_image(self):
+    def get_first_image(self) -> Image:
         return self.get_images(intensity_only=False)[0]
 
     # flake8: noqa: F821
@@ -147,14 +170,14 @@ class Subject(dict):
             transform: 'Transform',
             parameters_dict: dict,
             ) -> None:
-        self.history.append((transform.name, parameters_dict))
+        self.applied_transforms.append((transform.name, parameters_dict))
 
-    def load(self):
+    def load(self) -> None:
         """Load images in subject."""
         for image in self.get_images(intensity_only=False):
             image.load()
 
-    def update_attributes(self):
+    def update_attributes(self) -> None:
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)
 

@@ -1,6 +1,9 @@
-from typing import Union, Tuple, Optional, List
-import numpy as np
+from collections import defaultdict
+from typing import Union, Tuple, Optional, Sequence, Dict, List
+
 import torch
+import numpy as np
+
 from ....torchio import DATA, TypeData
 from ....data.subject import Subject
 from ... import IntensityTransform
@@ -23,55 +26,93 @@ class RandomBiasField(RandomTransform, IntensityTransform):
     <https://www.sciencedirect.com/science/article/pii/S1361841517300257?via%3Dihub>`_.
 
     Args:
-        coefficients: Magnitude :math:`n` of polynomial coefficients.
+        coefficients: Maximum magnitude :math:`n` of polynomial coefficients.
             If a tuple :math:`(a, b)` is specified, then
             :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             coefficients: Union[float, Tuple[float, float]] = 0.5,
             order: int = 3,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.coefficients_range = self.parse_range(
             coefficients, 'coefficients_range')
-        self.order = self.parse_order(order)
+        self.order = _parse_order(order)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        random_parameters_images_dict = {}
-        for image_name, image_dict in self.get_images_dict(subject).items():
+        arguments = defaultdict(dict)
+        for image_name in self.get_images_dict(subject):
             coefficients = self.get_params(
                 self.order,
                 self.coefficients_range,
             )
-            random_parameters_dict = {'coefficients': coefficients}
-            random_parameters_images_dict[image_name] = random_parameters_dict
+            arguments['coefficients'][image_name] = coefficients
+            arguments['order'][image_name] = self.order
+        transform = BiasField(**arguments)
+        transformed = transform(subject)
+        return transformed
 
-            bias_field = self.generate_bias_field(
-                image_dict[DATA], self.order, coefficients)
-            image_dict[DATA] = image_dict[DATA] * torch.from_numpy(bias_field)
-        return subject
-
-    @staticmethod
     def get_params(
+            self,
             order: int,
             coefficients_range: Tuple[float, float],
-            ) -> Tuple[bool, np.ndarray]:
+            ) -> List[float]:
         # Sampling of the appropriate number of coefficients for the creation
         # of the bias field map
         random_coefficients = []
         for x_order in range(0, order + 1):
             for y_order in range(0, order + 1 - x_order):
                 for _ in range(0, order + 1 - (x_order + y_order)):
-                    number = torch.FloatTensor(1).uniform_(*coefficients_range)
+                    number = self.sample_uniform(*coefficients_range)
                     random_coefficients.append(number.item())
-        return np.asarray(random_coefficients)
+        return random_coefficients
+
+
+class BiasField(IntensityTransform):
+    r"""Add MRI bias field artifact.
+
+    Args:
+        coefficients: Magnitudes of the polinomial coefficients.
+        order: Order of the basis polynomial functions.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+    def __init__(
+            self,
+            coefficients: Union[List[float], Dict[str, List[float]]],
+            order: Union[int, Dict[str, int]],
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.coefficients = coefficients
+        self.order = order
+        self.invert_transform = False
+        self.args_names = 'coefficients', 'order'
+
+    def arguments_are_dict(self):
+        coefficients_dict = isinstance(self.coefficients, dict)
+        order_dict = isinstance(self.order, dict)
+        if coefficients_dict != order_dict:
+            message = 'If one of the arguments is a dict, all must be'
+            raise ValueError(message)
+        return coefficients_dict and order_dict
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        coefficients, order = self.coefficients, self.order
+        for name, image in self.get_images_dict(subject).items():
+            if self.arguments_are_dict():
+                coefficients, order = self.coefficients[name], self.order[name]
+            bias_field = self.generate_bias_field(
+                image.data, order, coefficients)
+            if self.invert_transform:
+                np.divide(1, bias_field, out=bias_field)
+            image[DATA] = image[DATA] * torch.from_numpy(bias_field)
+        return subject
 
     @staticmethod
     def generate_bias_field(
@@ -97,9 +138,9 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         for x_order in range(order + 1):
             for y_order in range(order + 1 - x_order):
                 for z_order in range(order + 1 - (x_order + y_order)):
-                    random_coefficient = coefficients[i]
+                    coefficient = coefficients[i]
                     new_map = (
-                        random_coefficient
+                        coefficient
                         * x_mesh ** x_order
                         * y_mesh ** y_order
                         * z_mesh ** z_order
@@ -109,10 +150,10 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         bias_field = np.exp(bias_field).astype(np.float32)
         return bias_field
 
-    @staticmethod
-    def parse_order(order):
-        if not isinstance(order, int):
-            raise TypeError(f'Order must be an int, not {order}')
-        if order < 0:
-            raise ValueError(f'Ordre must be a positive int, not {order}')
-        return order
+
+def _parse_order(order):
+    if not isinstance(order, int):
+        raise TypeError(f'Order must be an int, not {type(order)}')
+    if order < 0:
+        raise ValueError(f'Order must be a positive int, not {order}')
+    return order

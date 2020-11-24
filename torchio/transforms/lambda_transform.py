@@ -1,4 +1,4 @@
-from typing import Sequence, Optional, List
+from typing import Sequence, Optional
 import torch
 from ..data.subject import Subject
 from ..torchio import DATA, TYPE, TypeCallable
@@ -10,12 +10,12 @@ class Lambda(Transform):
 
     Args:
         function: Callable that receives and returns a 4D
-            :py:class:`torch.Tensor`.
+            :class:`torch.Tensor`.
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
             will be applied to all images in the subject.
         p: Probability that this transform will be applied.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
@@ -31,11 +31,12 @@ class Lambda(Transform):
             function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.function = function
         self.types_to_apply = types_to_apply
+        self.args_names = 'function', 'types_to_apply'
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):

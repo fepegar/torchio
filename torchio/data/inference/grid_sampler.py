@@ -13,10 +13,10 @@ class GridSampler(PatchSampler, Dataset):
     r"""Extract patches across a whole volume.
 
     Grid samplers are useful to perform inference using all patches from a
-    volume. It is often used with a :py:class:`~torchio.data.GridAggregator`.
+    volume. It is often used with a :class:`~torchio.data.GridAggregator`.
 
     Args:
-        subject: Instance of :py:class:`~torchio.data.subject.Subject`
+        subject: Instance of :class:`~torchio.data.subject.Subject`
             from which patches will be extracted.
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
             of size :math:`w \times h \times d`.
@@ -26,18 +26,18 @@ class GridSampler(PatchSampler, Dataset):
             the overlap between patches for dense inference. If a single number
             :math:`n` is provided, :math:`w_o = h_o = d_o = n`.
         padding_mode: Same as :attr:`padding_mode` in
-            :py:class:`~torchio.transforms.Pad`. If ``None``, the volume will
+            :class:`~torchio.transforms.Pad`. If ``None``, the volume will
             not be padded before sampling and patches at the border will not be
             cropped by the aggregator. Otherwise, the volume will be padded with
             :math:`\left(\frac{w_o}{2}, \frac{h_o}{2}, \frac{d_o}{2} \right)`
             on each side before sampling. If the sampler is passed to a
-            :py:class:`~torchio.data.GridAggregator`, it will crop the output
+            :class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
 
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch based sampling. Note that
-        :py:attr:`patch_overlap` is twice :py:attr:`border` in NiftyNet
+        :attr:`patch_overlap` is twice :attr:`border` in NiftyNet
         tutorial.
     """
     def __init__(

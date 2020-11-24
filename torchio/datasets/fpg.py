@@ -6,7 +6,7 @@ from ..data.io import read_matrix
 
 
 class FPG(Subject):
-    """Some images of myself for testing."""
+    """3T :math:`T_1`-weighted brain MRI and corresponding parcellation."""
     def __init__(self):
         repo_dir = urllib.parse.urljoin(DATA_REPO, 'fernando/')
 

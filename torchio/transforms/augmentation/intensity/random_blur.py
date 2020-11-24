@@ -1,7 +1,11 @@
-from typing import Union, Tuple, Optional, List
+from collections import defaultdict
+from typing import Union, Tuple, Optional, Sequence, Dict
+
 import torch
 import numpy as np
 import scipy.ndimage as ndi
+
+from ....utils import to_tuple
 from ....torchio import DATA, TypeData, TypeTripletFloat, TypeSextetFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
@@ -24,26 +28,57 @@ class RandomBlur(RandomTransform, IntensityTransform):
             If three values :math:`(x_1, x_2, x_3)` are provided,
             then :math:`\sigma_i \sim \mathcal{U}(0, x_i)`.
         p: Probability that this transform will be applied.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             std: Union[float, Tuple[float, float]] = (0, 2),
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        random_parameters_images_dict = {}
-        for image_name, image in self.get_images_dict(subject).items():
+        arguments = defaultdict(dict)
+        for name, image in self.get_images_dict(subject).items():
+            stds = [self.get_params(self.std_ranges) for _ in image.data]
+            arguments['std'][name] = stds
+        transform = Blur(**arguments)
+        transformed = transform(subject)
+        return transformed
+
+    def get_params(self, std_ranges: TypeSextetFloat) -> TypeTripletFloat:
+        std = self.sample_uniform_sextet(std_ranges)
+        return std
+
+
+class Blur(IntensityTransform):
+    r"""Blur an image using a Gaussian filter.
+
+    Args:
+        std: Tuple :math:`(\sigma_1, \sigma_2, \sigma_3)` representing the
+            the standard deviations (in mm) of the standard deviations
+            of the Gaussian kernels used to blur the image along each axis.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+    def __init__(
+            self,
+            std: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.std = std
+        self.args_names = ('std',)
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        std = self.std
+        for name, image in self.get_images_dict(subject).items():
+            if self.arguments_are_dict():
+                std = self.std[name]
+            stds = to_tuple(std, length=len(image.data))
             transformed_tensors = []
-            for channel_idx, tensor in enumerate(image[DATA]):
-                std = self.get_params(self.std_ranges)
-                random_parameters_dict = {'std': std}
-                key = f'{image_name}_channel_{channel_idx}'
-                random_parameters_images_dict[key] = random_parameters_dict
+            for std, tensor in zip(stds, image.data):
                 transformed_tensor = blur(
                     tensor,
                     image.spacing,
@@ -52,10 +87,6 @@ class RandomBlur(RandomTransform, IntensityTransform):
                 transformed_tensors.append(transformed_tensor)
             image[DATA] = torch.stack(transformed_tensors)
         return subject
-
-    def get_params(self, std_ranges: TypeSextetFloat) -> TypeTripletFloat:
-        std = self.sample_uniform_sextet(std_ranges)
-        return std
 
 
 def blur(

@@ -1,3 +1,5 @@
+.. _3d slicer gui:
+
 #############
 3D Slicer GUI
 #############
@@ -48,7 +50,7 @@ Click on an image to download, for example MRHead [#]_,
 and go to the ``TorchIO Transforms`` module:
 
 .. [#] All the data in ``Sample Data`` can be downloaded and used in the TorchIO
-    Python library using the :py:class:`torchio.datasets.slicer.Slicer` class.
+    Python library using the :class:`torchio.datasets.slicer.Slicer` class.
 
 .. image:: https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_2.png
     :alt: Download MRHead and go to TorchIO Transforms module

@@ -1,4 +1,4 @@
-from torchio import Interpolation
+import torch
 from torchio.transforms import RandomElasticDeformation
 from ...utils import TorchioTestCase
 
@@ -13,7 +13,10 @@ class TestRandomElasticDeformation(TorchioTestCase):
         )
         keys = ('t1', 't2', 'label')
         fixtures = 2916.7192, 2955.1265, 2950
-        transformed = transform(self.sample_subject, seed=42)
+        torch_rng_state = torch.random.get_rng_state()
+        torch.manual_seed(42)
+        transformed = transform(self.sample_subject)
+        torch.random.set_rng_state(torch_rng_state)
         for key, fixture in zip(keys, fixtures):
             sample_data = self.sample_subject[key].numpy()
             transformed_data = transformed[key].numpy()
@@ -35,8 +38,8 @@ class TestRandomElasticDeformation(TorchioTestCase):
             RandomElasticDeformation(image_interpolation=1)
 
     def test_inputs_interpolation(self):
-        with self.assertWarns(FutureWarning):
-            RandomElasticDeformation(image_interpolation=Interpolation.LINEAR)
+        with self.assertRaises(TypeError):
+            RandomElasticDeformation(image_interpolation=0)
 
     def test_num_control_points_noint(self):
         with self.assertRaises(ValueError):
@@ -83,3 +86,15 @@ class TestRandomElasticDeformation(TorchioTestCase):
     def test_max_displacement(self):
         RandomElasticDeformation(max_displacement=5)
         RandomElasticDeformation(max_displacement=(5, 6, 7))
+
+    def test_no_displacement(self):
+        transform = RandomElasticDeformation(max_displacement=0)
+        transformed = transform(self.sample_subject)
+        self.assertTensorEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
+        self.assertTensorEqual(
+            self.sample_subject.label.data,
+            transformed.label.data,
+        )

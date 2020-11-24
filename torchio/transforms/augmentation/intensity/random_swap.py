@@ -1,11 +1,17 @@
-from typing import Optional, Tuple, Union, List
+from collections import defaultdict
+from typing import Optional, Tuple, Union, List, Sequence, Dict
+
 import torch
 import numpy as np
+
 from ....data.subject import Subject
 from ....utils import to_tuple
 from ....torchio import DATA, TypeTuple, TypeData, TypeTripletInt
 from ... import IntensityTransform
 from .. import RandomTransform
+
+
+TypeLocations = Sequence[Tuple[TypeTripletInt, TypeTripletInt]]
 
 
 class RandomSwap(RandomTransform, IntensityTransform):
@@ -20,22 +26,21 @@ class RandomSwap(RandomTransform, IntensityTransform):
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
         p: Probability that this transform will be applied.
-        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
         self.patch_size = np.array(to_tuple(patch_size))
-        self.num_iterations = self.parse_num_iterations(num_iterations)
+        self.num_iterations = self._parse_num_iterations(num_iterations)
 
     @staticmethod
-    def parse_num_iterations(num_iterations):
+    def _parse_num_iterations(num_iterations):
         if not isinstance(num_iterations, int):
             raise TypeError('num_iterations must be an int,'
                             f'not {num_iterations}')
@@ -49,7 +54,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             tensor: torch.Tensor,
             patch_size: np.ndarray,
             num_iterations: int,
-            ) -> List[Tuple[np.ndarray, np.ndarray]]:
+            ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
         spatial_shape = tensor.shape[-3:]
         locations = []
         for _ in range(num_iterations):
@@ -68,15 +73,59 @@ class RandomSwap(RandomTransform, IntensityTransform):
                     continue  # patches overlap
                 else:
                     break  # patches don't overlap
-            locations.append((first_ini, second_ini))
+            location = tuple(first_ini), tuple(second_ini)
+            locations.append(location)
         return locations
 
     def apply_transform(self, subject: Subject) -> Subject:
-        for image in self.get_images(subject):
-            tensor = image[DATA]
+        arguments = defaultdict(dict)
+        for name, image in self.get_images_dict(subject).items():
             locations = self.get_params(
-                tensor, self.patch_size, self.num_iterations)
-            image[DATA] = swap(tensor, self.patch_size, locations)
+                image.data,
+                self.patch_size,
+                self.num_iterations,
+            )
+            arguments['locations'][name] = locations
+            arguments['patch_size'][name] = self.patch_size
+        transform = Swap(**arguments)
+        transformed = transform(subject)
+        return transformed
+
+
+class Swap(IntensityTransform):
+    r"""Swap patches within an image.
+
+    This is typically used in `context restoration for self-supervised learning
+    <https://www.sciencedirect.com/science/article/pii/S1361841518304699>`_.
+
+    Args:
+        patch_size: Tuple of integers :math:`(w, h, d)` to swap patches
+            of size :math:`h \times w \times d`.
+            If a single number :math:`n` is provided, :math:`w = h = d = n`.
+        num_iterations: Number of times that two patches will be swapped.
+        keys: See :class:`~torchio.transforms.Transform`.
+    """
+    def __init__(
+            self,
+            patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
+            locations: Union[TypeLocations, Dict[str, TypeLocations]],
+            keys: Optional[Sequence[str]] = None,
+            ):
+        super().__init__(keys=keys)
+        self.locations = locations
+        self.patch_size = patch_size
+        self.args_names = 'locations', 'patch_size'
+        self.invert_transform = False
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        locations, patch_size = self.locations, self.patch_size
+        for name, image in self.get_images_dict(subject).items():
+            if self.arguments_are_dict():
+                locations = self.locations[name]
+                patch_size = self.patch_size[name]
+            if self.invert_transform:
+                locations.reverse()
+            image[DATA] = swap(image.data, patch_size, locations)
         return subject
 
 

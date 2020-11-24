@@ -7,8 +7,8 @@ class Interpolation(enum.Enum):
     """Interpolation techniques available in ITK.
 
     Example:
-        >>> from torchio.transforms import RandomAffine
-        >>> transform = RandomAffine(image_interpolation='nearest')
+        >>> import torchio as tio
+        >>> transform = tio.RandomAffine(image_interpolation='nearest')
     """
     #: Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.
     NEAREST: str = 'sitkNearestNeighbor'
@@ -29,5 +29,11 @@ class Interpolation(enum.Enum):
     BLACKMAN: str = 'sitkBlackmanWindowedSinc'
 
 
-def get_sitk_interpolator(interpolation: Interpolation):
-    return getattr(sitk, interpolation.value)
+def get_sitk_interpolator(interpolation: str) -> int:
+    if not isinstance(interpolation, str):
+        message = (
+            f'Interpolation must be a string, not {type(interpolation)}'
+        )
+        raise ValueError(message)
+    string = getattr(Interpolation, interpolation.upper()).value
+    return getattr(sitk, string)

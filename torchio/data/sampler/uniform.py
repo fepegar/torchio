@@ -10,7 +10,7 @@ class UniformSampler(RandomSampler):
     """Randomly extract patches from a volume with uniform probability.
 
     Args:
-        patch_size: See :py:class:`~torchio.data.PatchSampler`.
+        patch_size: See :class:`~torchio.data.PatchSampler`.
     """
     def __init__(self, patch_size: TypePatchSize):
         super().__init__(patch_size)

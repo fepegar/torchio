@@ -42,8 +42,8 @@ def apply_transform(
     """
     os.environ['TORCHIO_HIDE_CITATION_PROMPT'] = '1'
     # Imports are placed here so that the tool loads faster if not being run
+    import torch
     import torchio.transforms as transforms
-    from torchio.transforms.augmentation import RandomTransform
     from torchio.utils import apply_transform_to_file
 
     try:
@@ -53,9 +53,9 @@ def apply_transform(
         raise ValueError(message) from error
 
     params_dict = get_params_dict_from_kwargs(kwargs)
-    if issubclass(transform_class, RandomTransform):
-        params_dict['seed'] = seed
     transform = transform_class(**params_dict)
+    if seed is not None:
+        torch.manual_seed(seed)
     apply_transform_to_file(
         input_path,
         transform,

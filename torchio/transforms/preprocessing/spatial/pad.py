@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Union, List, Optional
+from typing import Union, Sequence, Optional
 
 import numpy as np
 import nibabel as nib
@@ -31,7 +31,7 @@ class Pad(BoundsTransform):
         padding_mode: See possible modes in `NumPy docs`_. If it is a number,
             the mode will be set to ``'constant'``.
         p: Probability that this transform will be applied.
-        keys: See :py:class:`~torchio.transforms.Transform`.
+        keys: See :class:`~torchio.transforms.Transform`.
 
     .. _NumPy docs: https://numpy.org/doc/stable/reference/generated/numpy.pad.html
     """
@@ -55,10 +55,12 @@ class Pad(BoundsTransform):
             padding: TypeBounds,
             padding_mode: Union[str, float] = 0,
             p: float = 1,
-            keys: Optional[List[str]] = None,
+            keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(padding, p=p, keys=keys)
+        self.padding = padding
         self.padding_mode, self.fill = self.parse_padding_mode(padding_mode)
+        self.args_names = 'padding', 'padding_mode'
 
     @classmethod
     def parse_padding_mode(cls, padding_mode):
@@ -81,7 +83,7 @@ class Pad(BoundsTransform):
             new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
             new_affine = image.affine.copy()
             new_affine[:3, 3] = new_origin
-            kwargs = dict(mode=self.padding_mode)
+            kwargs = {'mode': self.padding_mode}
             if self.padding_mode == 'constant':
                 kwargs['constant_values'] = self.fill
             pad_params = self.bounds_parameters
@@ -90,3 +92,7 @@ class Pad(BoundsTransform):
             image[DATA] = torch.from_numpy(padded)
             image[AFFINE] = new_affine
         return subject
+
+    def inverse(self):
+        from .crop import Crop
+        return Crop(self.padding)

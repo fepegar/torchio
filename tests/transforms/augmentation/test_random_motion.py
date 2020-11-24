@@ -45,5 +45,5 @@ class TestRandomMotion(TorchioTestCase):
             RandomMotion(image_interpolation=0)
 
     def test_wrong_image_interpolation_value(self):
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             RandomMotion(image_interpolation='wrong')

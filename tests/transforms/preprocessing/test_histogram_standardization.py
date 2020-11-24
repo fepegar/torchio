@@ -6,7 +6,7 @@ from ...utils import TorchioTestCase
 
 
 class TestHistogramStandardization(TorchioTestCase):
-    """Tests for :py:class:`HistogramStandardization` class."""
+    """Tests for :class:`HistogramStandardization` class."""
 
     def setUp(self):
         super().setUp()
