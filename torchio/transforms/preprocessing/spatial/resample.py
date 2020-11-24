@@ -43,15 +43,13 @@ class Resample(SpatialTransform):
 
     Example:
         >>> import torchio as tio
-        >>> from torchio import Resample
-        >>> from tio.datasets import Colin27, FPG
-        >>> transform = Resample(1)                     # resample all images to 1mm iso
-        >>> transform = Resample((2, 2, 2))             # resample all images to 2mm iso
-        >>> transform = Resample('t1')                  # resample all images to 't1' image space
-        >>> colin = Colin27()  # this images are in the MNI space
-        >>> fpg = FPG()  # matrices to the MNI space are included here
+        >>> transform = tio.Resample(1)                     # resample all images to 1mm iso
+        >>> transform = tio.Resample((2, 2, 2))             # resample all images to 2mm iso
+        >>> transform = tio.Resample('t1')                  # resample all images to 't1' image space
+        >>> colin = tio.datasets.Colin27()  # this images are in the MNI space
+        >>> fpg = tio.datasets.FPG()  # matrices to the MNI space are included here
         >>> # Resample all images into the MNI space
-        >>> transform = Resample(colin.t1.path, pre_affine_name='affine_matrix')
+        >>> transform = tio.Resample(colin.t1.path, pre_affine_name='affine_matrix')
         >>> transformed = transform(fpg)  # images in fpg are now in MNI space
     """
     def __init__(

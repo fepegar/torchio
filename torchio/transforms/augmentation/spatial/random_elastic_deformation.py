@@ -86,21 +86,22 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         points::
 
             >>> import numpy as np
-            >>> import SimpleITK as sitk
-            >>> image = sitk.ReadImage('my_image.nii.gz')
-            >>> image.GetSize()
-            (512, 512, 139)  # voxels
-            >>> image.GetSpacing()
-            (0.76, 0.76, 2.50)  # mm
+            >>> import torchio as tio
+            >>> image = tio.datasets.Slicer().MRHead.as_sitk()
+            >>> image.GetSize()  # in voxels
+            (256, 256, 130)
+            >>> image.GetSpacing()  # in mm
+            (1.0, 1.0, 1.2999954223632812)
             >>> bounds = np.array(image.GetSize()) * np.array(image.GetSpacing())
-            array([390.0, 390.0, 347.5])  # mm
+            >>> bounds  # mm
+            array([256.        , 256.        , 168.99940491])
             >>> num_control_points = np.array((7, 7, 6))
             >>> grid_spacing = bounds / (num_control_points - 2)
             >>> grid_spacing
-            array([78.0, 78.0, 86.9])  # mm
+            array([51.2       , 51.2       , 42.24985123])
             >>> potential_folding = grid_spacing / 2
-            >>> potential_folding
-            array([39.0, 39.0, 43.4])  # mm
+            >>> potential_folding  # mm
+            array([25.6       , 25.6       , 21.12492561])
 
         Using a :attr:`max_displacement` larger than the computed
         :attr:`potential_folding` will raise a :class:`RuntimeWarning`.

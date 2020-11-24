@@ -23,15 +23,14 @@ class NormalizationTransform(IntensityTransform):
 
     Example:
         >>> import torchio as tio
-        >>> from tio.transforms import ZNormalization
         >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
-        >>> transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform
+        >>> transform = tio.ZNormalization()  # ZNormalization is a subclass of NormalizationTransform
         >>> transformed = transform(subject)  # use all values to compute mean and std
-        >>> transform = ZNormalization(masking_method='brain')
+        >>> transform = tio.ZNormalization(masking_method='brain')
         >>> transformed = transform(subject)  # use only values within the brain
-        >>> transform = ZNormalization(masking_method=lambda x: x > x.mean())
+        >>> transform = tio.ZNormalization(masking_method=lambda x: x > x.mean())
         >>> transformed = transform(subject)  # use values above the image mean
 
     """

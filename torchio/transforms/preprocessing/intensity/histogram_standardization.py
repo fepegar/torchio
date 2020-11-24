@@ -35,17 +35,14 @@ class HistogramStandardization(NormalizationTransform):
 
     Example:
         >>> import torch
-        >>> from pathlib import Path
-        >>> from torchio.transforms import HistogramStandardization
-        >>>
+        >>> import torchio as tio
         >>> landmarks = {
         ...     't1': 't1_landmarks.npy',
         ...     't2': 't2_landmarks.npy',
         ... }
-        >>> transform = HistogramStandardization(landmarks)
-        >>>
+        >>> transform = tio.HistogramStandardization(landmarks)
         >>> torch.save(landmarks, 'path_to_landmarks.pth')
-        >>> transform = HistogramStandardization('path_to_landmarks.pth')
+        >>> transform = tio.HistogramStandardization('path_to_landmarks.pth')
     """
     def __init__(
             self,
