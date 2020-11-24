@@ -1,7 +1,10 @@
 import urllib.parse
 import torch
-from torchvision.datasets.utils import download_and_extract_archive
-from ...utils import get_torchio_cache_dir, compress
+from ...utils import (
+    get_torchio_cache_dir,
+    compress,
+    download_and_extract_archive,
+)
 from ... import ScalarImage, LabelMap, DATA
 from .mni import SubjectMNI
 
@@ -36,9 +39,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
         self.filename = f'{self.name}.zip'
         self.url = urllib.parse.urljoin(self.url_base, self.filename)
         download_root = get_torchio_cache_dir() / self.name
-        if download_root.is_dir():
-            print(f'Using cache found in {download_root}')  # noqa: T001
-        else:
+        if not download_root.is_dir():
             download_and_extract_archive(
                 self.url,
                 download_root=download_root,

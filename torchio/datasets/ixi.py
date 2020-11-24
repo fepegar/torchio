@@ -22,7 +22,7 @@ import shutil
 from pathlib import Path
 from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
-from torchvision.datasets.utils import download_and_extract_archive
+from ..utils import download_and_extract_archive
 from ..transforms import Transform
 from .. import SubjectsDataset, Subject, ScalarImage, LabelMap, TypePath
 

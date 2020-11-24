@@ -39,10 +39,8 @@ class RandomGamma(RandomTransform, IntensityTransform):
 
     Example:
         >>> import torchio as tio
-        >>> from torchio import RandomGamma
-        >>> from tio.datasets import FPG
-        >>> subject = FPG()
-        >>> transform = RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
+        >>> subject = tio.datasets.FPG()
+        >>> transform = tio.RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(subject)
     """
     def __init__(
@@ -91,10 +89,8 @@ class Gamma(IntensityTransform):
 
     Example:
         >>> import torchio as tio
-        >>> from torchio import Gamma
-        >>> from tio.datasets import FPG
-        >>> subject = FPG()
-        >>> transform = Gamma(0.8)
+        >>> subject = tio.datasets.FPG()
+        >>> transform = tio.Gamma(0.8)
         >>> transformed = transform(subject)
     """
     def __init__(

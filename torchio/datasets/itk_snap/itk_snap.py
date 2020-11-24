@@ -1,6 +1,5 @@
 import urllib.parse
-from torchvision.datasets.utils import download_and_extract_archive
-from ...utils import get_torchio_cache_dir
+from ...utils import get_torchio_cache_dir, download_and_extract_archive
 from ... import Subject, ScalarImage, LabelMap
 
 
@@ -18,9 +17,7 @@ class SubjectITKSNAP(Subject):
         self.filename = f'{self.name}.zip'
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
         self.download_root = get_torchio_cache_dir() / self.name
-        if self.download_root.is_dir():
-            print(f'Using cache found in {self.download_root}')  # noqa: T001
-        else:
+        if not self.download_root.is_dir():
             download_and_extract_archive(
                 self.url,
                 download_root=self.download_root,

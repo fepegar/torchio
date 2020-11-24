@@ -83,7 +83,7 @@ class OneOf(RandomTransform):
         ...     tio.RandomAffine(): 0.75,
         ...     tio.RandomElasticDeformation(): 0.25,
         ... }  # Using 3 and 1 as probabilities would have the same effect
-        >>> transform = torchio.transforms.OneOf(transforms_dict)
+        >>> transform = tio.OneOf(transforms_dict)
         >>> transformed = transform(colin)
 
     """

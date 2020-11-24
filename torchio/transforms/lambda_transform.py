@@ -19,12 +19,11 @@ class Lambda(Transform):
 
     Example:
         >>> import torchio as tio
-        >>> from tio.transforms import Lambda
-        >>> invert_intensity = Lambda(lambda x: -x, types_to_apply=[tio.INTENSITY])
-        >>> invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[tio.LABEL])
+        >>> invert_intensity = tio.Lambda(lambda x: -x, types_to_apply=[tio.INTENSITY])
+        >>> invert_mask = tio.Lambda(lambda x: 1 - x, types_to_apply=[tio.LABEL])
         >>> def double(x):
         ...     return 2 * x
-        >>> double_transform = Lambda(double)
+        >>> double_transform = tio.Lambda(double)
     """
     def __init__(
             self,

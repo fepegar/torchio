@@ -1,7 +1,6 @@
 import urllib.parse
-from torchvision.datasets.utils import download_url
 from .. import Subject, ScalarImage, LabelMap, DATA_REPO
-from ..utils import get_torchio_cache_dir
+from ..utils import get_torchio_cache_dir, download_url
 from ..data.io import read_matrix
 
 
