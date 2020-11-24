@@ -20,7 +20,7 @@ class TestCropOrPad(TorchioTestCase):
         sample_mask *= 0
         shape = sample_t1.spatial_shape
         transform = CropOrPad(shape, mask_name='label')
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             transformed = transform(self.sample_subject)
         for key in transformed:
             image_dict = self.sample_subject[key]
@@ -81,7 +81,7 @@ class TestCropOrPad(TorchioTestCase):
 
     def test_wrong_mask_name(self):
         cop = CropOrPad(1, mask_name='wrong')
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             cop(self.sample_subject)
 
     def test_empty_mask(self):
@@ -89,7 +89,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = CropOrPad(target_shape, mask_name='label')
         mask = self.sample_subject['label'][DATA]
         mask *= 0
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             transform(self.sample_subject)
 
     def test_mask_only_pad(self):

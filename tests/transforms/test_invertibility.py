@@ -13,15 +13,11 @@ class TestInvertibility(TorchioTestCase):
                 transform.transforms.remove(t)
                 break
         # Ignore elastic deformation and gamma warnings during execution
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', (RuntimeWarning, UserWarning))
-            transformed = transform(self.sample_subject)
         # Ignore some transforms not invertible
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore', UserWarning)
+            warnings.simplefilter('ignore', RuntimeWarning)
+            transformed = transform(self.sample_subject)
             inverting_transform = transformed.get_inverse_transform()
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', (RuntimeWarning, UserWarning))
             transformed_back = inverting_transform(transformed)
         self.assertEqual(
             transformed.t1.shape,

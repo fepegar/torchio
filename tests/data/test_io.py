@@ -32,7 +32,7 @@ class TestIO(TorchioTestCase):
 
     def test_save_rgb(self):
         im = ScalarImage(tensor=torch.rand(1, 4, 5, 1))
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             im.save(self.dir / 'test.jpg')
 
     def test_read_dicom_file(self):

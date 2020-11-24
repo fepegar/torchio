@@ -83,7 +83,7 @@ class TestImage(TorchioTestCase):
     def test_nans_tensor(self):
         tensor = np.random.rand(1, 2, 3, 4)
         tensor[0, 0, 0, 0] = np.nan
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             image = ScalarImage(tensor=tensor, check_nans=True)
         image.set_check_nans(False)
 

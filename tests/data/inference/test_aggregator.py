@@ -68,5 +68,5 @@ class TestAggregator(TorchioTestCase):
 
     def test_warning_int64(self):
         aggregator = self.run_sampler_aggregator()
-        with self.assertWarns(UserWarning):
+        with self.assertWarns(RuntimeWarning):
             aggregator.get_output_tensor()
