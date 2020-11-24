@@ -1,12 +1,9 @@
 import copy
 import collections
-from typing import Dict, Sequence, Optional, Callable
+from typing import Sequence, Optional, Callable
 
-from deprecated import deprecated
 from torch.utils.data import Dataset
 
-from ..torchio import DATA, AFFINE, TypePath
-from .io import write_image
 from .subject import Subject
 
 
@@ -113,23 +110,3 @@ class SubjectsDataset(Dataset):
                     f' not "{type(subject)}"'
                 )
                 raise TypeError(message)
-
-    @classmethod
-    @deprecated(
-        'SubjectsDataset.save_sample is deprecated. Use Image.save instead'
-    )
-    def save_sample(
-            cls,
-            subject: Subject,
-            output_paths_dict: Dict[str, TypePath],
-            ) -> None:
-        for key, output_path in output_paths_dict.items():
-            tensor = subject[key][DATA]
-            affine = subject[key][AFFINE]
-            write_image(tensor, affine, output_path)
-
-
-@deprecated(
-    'ImagesDataset is deprecated in v0.18.0. Use SubjectsDataset instead.')
-class ImagesDataset(SubjectsDataset):
-    pass

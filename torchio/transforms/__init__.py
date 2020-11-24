@@ -29,11 +29,11 @@ from .augmentation.intensity import RandomLabelsToImage, LabelsToImage
 from .preprocessing import Pad
 from .preprocessing import Crop
 from .preprocessing import Resample
+from .preprocessing import CropOrPad
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
+from .preprocessing import RescaleIntensity
 from .preprocessing import HistogramStandardization
-from .preprocessing import RescaleIntensity, Rescale
-from .preprocessing import CropOrPad, CenterCropOrPad
 from .preprocessing.intensity.histogram_standardization import train as train_histogram
 
 
@@ -76,9 +76,7 @@ __all__ = [
     'ToCanonical',
     'ZNormalization',
     'HistogramStandardization',
-    'Rescale',
     'RescaleIntensity',
-    'CenterCropOrPad',
     'CropOrPad',
     'train_histogram',
 ]

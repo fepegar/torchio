@@ -1,5 +1,5 @@
 import numpy as np
-from torchio.transforms import CropOrPad, CenterCropOrPad
+from torchio.transforms import CropOrPad
 from torchio import DATA, AFFINE
 from ...utils import TorchioTestCase
 
@@ -83,10 +83,6 @@ class TestCropOrPad(TorchioTestCase):
         cop = CropOrPad(1, mask_name='wrong')
         with self.assertWarns(UserWarning):
             cop(self.sample_subject)
-
-    def test_deprecation(self):
-        with self.assertWarns(DeprecationWarning):
-            CenterCropOrPad(1)
 
     def test_empty_mask(self):
         target_shape = 8, 22, 30

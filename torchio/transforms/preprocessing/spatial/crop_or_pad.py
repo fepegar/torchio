@@ -2,7 +2,6 @@ import warnings
 from typing import Union, Tuple, Optional, Sequence
 
 import numpy as np
-from deprecated import deprecated
 
 from .pad import Pad
 from .crop import Crop
@@ -166,7 +165,7 @@ class CropOrPad(BoundsTransform):
                 f' not found in subject keys "{tuple(subject.keys())}".'
                 ' Using volume center instead'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
             return self._compute_center_crop_or_pad(subject=subject)
 
         mask = subject[self.mask_name].numpy()
@@ -176,7 +175,7 @@ class CropOrPad(BoundsTransform):
                 f'All values found in the mask "{self.mask_name}"'
                 ' are zero. Using volume center instead'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
             return self._compute_center_crop_or_pad(subject=subject)
 
         # Original subject shape (from mask shape)
@@ -222,8 +221,3 @@ class CropOrPad(BoundsTransform):
         if cropping_params is not None:
             subject = Crop(cropping_params)(subject)
         return subject
-
-
-@deprecated('CenterCropOrPad is deprecated. Use CropOrPad instead.')
-class CenterCropOrPad(CropOrPad):
-    """Crop or pad around image center."""

@@ -156,7 +156,7 @@ class GridAggregator:
                 'Medical image frameworks such as ITK do not support int64.'
                 ' Casting to int32...'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
             self._output_tensor = self._output_tensor.type(torch.int32)
         if self.overlap_mode == 'average':
             output = self._output_tensor / self._avgmask_tensor

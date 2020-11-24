@@ -60,7 +60,7 @@ class Compose(Transform):
                 transforms.append(transform.inverse())
             else:
                 message = f'Skipping {transform.name} as it is not invertible'
-                warnings.warn(message, UserWarning)
+                warnings.warn(message, RuntimeWarning)
         transforms.reverse()
         return Compose(transforms)
 

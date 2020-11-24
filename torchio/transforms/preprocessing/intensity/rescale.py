@@ -3,7 +3,6 @@ from typing import Optional, Sequence
 
 import torch
 import numpy as np
-from deprecated import deprecated
 
 from ....data.subject import Subject
 from ....torchio import DATA, TypeRangeFloat
@@ -74,15 +73,10 @@ class RescaleIntensity(NormalizationTransform):
                 f'Rescaling image "{image_name}" not possible'
                 ' due to division by zero'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
             return tensor
         array /= array_max  # [0, 1]
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]
         array += self.out_min  # [out_min, out_max]
         return torch.from_numpy(array)
-
-
-@deprecated('Rescale is deprecated. Use RescaleIntensity instead')
-class Rescale(RescaleIntensity):
-    pass

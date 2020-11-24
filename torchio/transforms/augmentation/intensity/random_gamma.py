@@ -128,7 +128,7 @@ def power(tensor, gamma):
             ' more details on the implemented workaround:'
             ' https://torchio.readthedocs.io/transforms/augmentation.html#randomgamma'
         )
-        warnings.warn(message)
+        warnings.warn(message, RuntimeWarning)
         output = tensor.sign() * tensor.abs() ** gamma
     else:
         output = tensor ** gamma

@@ -147,7 +147,7 @@ class Queue(Dataset):
                 ' not divisible by the number of'
                 f' patches per volume ({self.samples_per_volume})'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning)
 
         # If there are e.g. 4 subjects and 1 sample per volume and max_length
         # is 6, we just need to load 4 subjects, not 6

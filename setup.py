@@ -16,7 +16,6 @@ requirements = [
     'humanize',
     'nibabel',
     'numpy',
-    'Python-Deprecated',
     'scipy',
     'torch>=1.1',
     'torchvision',

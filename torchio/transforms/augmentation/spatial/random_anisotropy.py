@@ -81,7 +81,10 @@ class RandomAnisotropy(RandomTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         is_2d = subject.get_first_image().is_2d()
         if is_2d and 2 in self.axes:
-            warnings.warn(f'Input image is 2D, but "2" is in axes: {self.axes}')
+            warnings.warn(
+                f'Input image is 2D, but "2" is in axes: {self.axes}',
+                RuntimeWarning,
+            )
             self.axes = list(self.axes)
             self.axes.remove(2)
         axis, downsampling = self.get_params(

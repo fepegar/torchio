@@ -119,7 +119,10 @@ def _write_sitk(
     assert tensor.ndim == 4
     path = Path(path)
     if path.suffix in ('.png', '.jpg', '.jpeg'):
-        warnings.warn(f'Casting to uint 8 before saving to {path}')
+        warnings.warn(
+            f'Casting to uint 8 before saving to {path}',
+            RuntimeWarning,
+        )
         tensor = tensor.numpy().astype(np.uint8)
     image = nib_to_sitk(tensor, affine, squeeze=squeeze)
     sitk.WriteImage(image, str(path), use_compression)

@@ -111,8 +111,8 @@ class Image(dict):
         if type is None:
             warnings.warn(
                 'Not specifying the image type is deprecated and will be'
-                ' mandatory in the future. You can probably use ScalarImage or'
-                ' LabelMap instead'
+                ' mandatory in the future. You can probably use tio.ScalarImage'
+                'or LabelMap instead', DeprecationWarning,
             )
             type = INTENSITY
 
@@ -355,7 +355,7 @@ class Image(dict):
         if tensor.ndim != 4:
             raise ValueError('Input tensor must be 4D')
         if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in tensor')
+            warnings.warn(f'NaNs found in tensor', RuntimeWarning)
         return tensor
 
     def parse_tensor_shape(self, tensor: torch.Tensor) -> torch.Tensor:
@@ -413,7 +413,7 @@ class Image(dict):
         if self.channels_last:
             tensor = tensor.permute(3, 0, 1, 2)
         if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in file "{path}"')
+            warnings.warn(f'NaNs found in file "{path}"', RuntimeWarning)
         return tensor, affine
 
     def save(self, path: TypePath, squeeze: bool = True) -> None:

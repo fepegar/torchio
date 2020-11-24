@@ -1,5 +1,4 @@
 Click
-Python-deprecated
 SimpleITK<2
 humanize
 nibabel
