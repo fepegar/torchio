@@ -297,6 +297,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/neuronflow"><img src="https://avatars1.githubusercontent.com/u/7048826?v=4" width="100px;" alt=""/><br /><sub><b>neuronflow</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=neuronflow" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/jwitos"><img src="https://avatars2.githubusercontent.com/u/948674?v=4" width="100px;" alt=""/><br /><sub><b>Jan Witowski</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jwitos" title="Documentation">📖</a></td>
   </tr>
 </table>
 

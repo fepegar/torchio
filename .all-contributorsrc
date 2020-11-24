@@ -145,6 +145,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jwitos",
+      "name": "Jan Witowski",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/948674?v=4",
+      "profile": "https://github.com/jwitos",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
