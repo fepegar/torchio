@@ -1,6 +1,6 @@
-#####
-Image
-#####
+#######
+Subject
+#######
 
 The :class:`~torchio.data.subject.Subject` is a data structure used to store
 images associated with a subject and any other metadata necessary for
