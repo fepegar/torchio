@@ -1,5 +1,5 @@
 #####
-Image
+Subject
 #####
 
 The :class:`~torchio.data.subject.Subject` is a data structure used to store
