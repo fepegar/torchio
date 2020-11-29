@@ -1,6 +1,33 @@
 History
 =======
 
+0.18.0 (29-11-2020)
+-------------------
+
+* Add ``FPG`` dataset
+* Optimize cropping in samplers
+* Optimize implementation of ``UniformSampler`` and ``WeightedSampler``
+* Fix non integer labels in Colin 27 version 2008 (#223)
+* Add ``RandomAnisotropy`` transform
+* Add ``RandomGamma`` transform
+* Add ``ScalarImage`` and ``LabelMap`` classes
+* Add ``RandomLabelsToImage`` transform
+* Add support for more input types in ``Transform``
+* Add support for 4D images
+* Add ICBM dataset
+* Add support to specify axes as anatomical labels
+* Add ``SpatialTransform`` and ``IntensityTransform``
+* Replace ``ImagesDataset`` with ``SubjectsDataset``
+* Add support to pass multiple paths to ``Image``
+* Refactor reproducibility features
+* Add deterministic versions of all random transforms
+* Add support to invert transforms
+* Add support for SimpleITK > 1
+* Add ``pre-commit`` to help contributions and improve coda quality
+* Add DICOM data for testing
+* Add some visualization support (``Subject.plot``, ``Image.plot``)
+* Add support to pass parameters per axis, e.g. for ``RandomAffine`` (#346)
+* Remove deprecated transforms ``Resample`` and ``CenterCropOrPad``
 
 0.17.0 (23-06-2020)
 -------------------
