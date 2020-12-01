@@ -12,8 +12,12 @@ class PatchSampler:
 
     Args:
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
-            of size :math:`h \times w \times d`.
+            of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
+
+    .. warning:: This is an abstract class that should only be instantiated
+        using child classes such as :class:`~torchio.data.UniformSampler` and
+        :class:`~torchio.data.WeightedSampler`.
     """
     def __init__(self, patch_size: TypePatchSize):
         patch_size_array = np.array(to_tuple(patch_size, length=3))
@@ -67,7 +71,7 @@ class RandomSampler(PatchSampler):
 
     Args:
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
-            of size :math:`h \times w \times d`.
+            of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
     """
     def __call__(
