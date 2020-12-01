@@ -18,7 +18,7 @@ class CropOrPad(BoundsTransform):
 
     Args:
         target_shape: Tuple :math:`(W, H, D)`. If a single value :math:`N` is
-            provided, then :math:`H = W = D = N`.
+            provided, then :math:`W = H = D = N`.
         padding_mode: Same as :attr:`padding_mode` in
             :class:`~torchio.transforms.Pad`.
         mask_name: If ``None``, the centers of the input and output volumes

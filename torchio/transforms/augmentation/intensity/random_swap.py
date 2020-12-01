@@ -22,7 +22,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
 
     Args:
         patch_size: Tuple of integers :math:`(w, h, d)` to swap patches
-            of size :math:`h \times w \times d`.
+            of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
         p: Probability that this transform will be applied.
@@ -100,7 +100,7 @@ class Swap(IntensityTransform):
 
     Args:
         patch_size: Tuple of integers :math:`(w, h, d)` to swap patches
-            of size :math:`h \times w \times d`.
+            of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
         keys: See :class:`~torchio.transforms.Transform`.

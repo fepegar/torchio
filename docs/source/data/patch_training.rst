@@ -47,9 +47,6 @@ For more information about patch-based training, see
 Queue
 -----
 
-
-.. currentmodule:: torchio.data
-
 :class:`Queue`
 ^^^^^^^^^^^^^^
 

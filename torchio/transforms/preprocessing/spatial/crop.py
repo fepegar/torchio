@@ -16,7 +16,7 @@ class Crop(BoundsTransform):
             :math:`(w_{ini}, w_{fin}, h_{ini}, h_{fin}, d_{ini}, d_{fin})`
             defining the number of values cropped from the edges of each axis.
             If the initial shape of the image is
-            :math:`H \times W \times D`, the final shape will be
+            :math:`W \times H \times D`, the final shape will be
             :math:`(- w_{ini} + W - w_{fin}) \times (- h_{ini} + H - h_{fin})
             \times (- d_{ini} + D - d_{fin})`.
             If only three values :math:`(w, h, d)` are provided, then
