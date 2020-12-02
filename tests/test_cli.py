@@ -3,7 +3,7 @@
 """Tests for CLI tool package."""
 
 from click.testing import CliRunner
-from torchio import cli
+from torchio.cli import apply_transform
 from .utils import TorchioTestCase
 
 
@@ -12,7 +12,7 @@ class TestCLI(TorchioTestCase):
     def test_help(self):
         """Test the CLI."""
         runner = CliRunner()
-        help_result = runner.invoke(cli.apply_transform, ['--help'])
+        help_result = runner.invoke(apply_transform.main, ['--help'])
         assert help_result.exit_code == 0
         assert 'Show this message and exit.' in help_result.output
 
@@ -20,7 +20,7 @@ class TestCLI(TorchioTestCase):
         image = str(self.get_image_path('cli'))
         runner = CliRunner()
         args = [image, 'RandomFlip', image]
-        result = runner.invoke(cli.apply_transform, args)
+        result = runner.invoke(apply_transform.main, args)
         assert result.exit_code == 0
         assert result.output == ''
 
@@ -29,5 +29,5 @@ class TestCLI(TorchioTestCase):
         image = str(self.get_image_path('cli'))
         runner = CliRunner()
         args = [image, 'RandomRandom', image]
-        result = runner.invoke(cli.apply_transform, args)
+        result = runner.invoke(apply_transform.main, args)
         assert result.exit_code == 1
