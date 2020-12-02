@@ -58,7 +58,8 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'torchio-transform=torchio.cli:apply_transform',
+            'torchio-transform=torchio.cli.apply_transform:main',
+            'tiohd=torchio.cli.print_info:main',
         ],
     },
     extras_require={

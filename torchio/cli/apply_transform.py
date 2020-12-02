@@ -26,7 +26,7 @@ import click
     default=False,
     help='Print random transform parameters.',
 )
-def apply_transform(
+def main(
         input_path,
         transform_name,
         output_path,
@@ -83,4 +83,4 @@ def get_params_dict_from_kwargs(kwargs):
 
 if __name__ == '__main__':
     # pylint: disable=no-value-for-parameter
-    sys.exit(apply_transform())  # pragma: no cover
+    sys.exit(main())  # pragma: no cover
