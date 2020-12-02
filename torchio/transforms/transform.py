@@ -9,7 +9,7 @@ import numpy as np
 import SimpleITK as sitk
 
 from ..data.subject import Subject
-from .. import TypeData, DATA, TypeNumber
+from .. import TypeData, TypeNumber
 from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
@@ -72,8 +72,11 @@ class Transform(ABC):
             transformed = self.apply_transform(subject)
         self.add_transform_to_subject_history(transformed)
         for image in transformed.get_images(intensity_only=False):
-            ndim = image[DATA].ndim
+            ndim = image.data.ndim
             assert ndim == 4, f'Output of {self.name} is {ndim}D'
+            dtype = image.data.dtype
+            assert dtype is torch.float32, f'Output of {self.name} is {dtype}'
+
         output = data_parser.get_output(transformed)
         return output
 
