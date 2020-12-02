@@ -1,7 +1,6 @@
 # pylint: disable=import-outside-toplevel
 
 """Console script for torchio."""
-import os
 import sys
 import click
 
@@ -15,7 +14,6 @@ def main(input_path):
     Example:
     $ tiohd input.nii.gz
     """
-    os.environ['TORCHIO_HIDE_CITATION_PROMPT'] = '1'
     # Imports are placed here so that the tool loads faster if not being run
     import torchio as tio
     image = tio.ScalarImage(input_path)

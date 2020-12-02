@@ -1,7 +1,6 @@
 # pylint: disable=import-outside-toplevel
 
 """Console script for torchio."""
-import os
 import sys
 import click
 
@@ -40,7 +39,6 @@ def main(
     Example:
     $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
     """
-    os.environ['TORCHIO_HIDE_CITATION_PROMPT'] = '1'
     # Imports are placed here so that the tool loads faster if not being run
     import torch
     import torchio.transforms as transforms
