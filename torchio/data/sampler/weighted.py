@@ -60,7 +60,7 @@ class WeightedSampler(RandomSampler):
             subject: Subject,
             num_patches: Optional[int] = None,
             ) -> Generator[Subject, None, None]:
-        subject.check_consistent_spatial_shape()
+        subject.check_consistent_space()
         if np.any(self.patch_size > subject.spatial_shape):
             message = (
                 f'Patch size {tuple(self.patch_size)} cannot be'

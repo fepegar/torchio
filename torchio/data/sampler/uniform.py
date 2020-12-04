@@ -19,7 +19,7 @@ class UniformSampler(RandomSampler):
         return torch.ones(1, *subject.spatial_shape)
 
     def __call__(self, subject: Subject) -> Generator[Subject, None, None]:
-        subject.check_consistent_spatial_shape()
+        subject.check_consistent_space()
 
         if np.any(self.patch_size > subject.spatial_shape):
             message = (
