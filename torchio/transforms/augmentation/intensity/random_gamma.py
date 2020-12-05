@@ -24,8 +24,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
@@ -46,10 +45,9 @@ class RandomGamma(RandomTransform, IntensityTransform):
     def __init__(
             self,
             log_gamma: TypeRangeFloat = (-0.3, 0.3),
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -75,7 +73,7 @@ class Gamma(IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
@@ -96,9 +94,9 @@ class Gamma(IntensityTransform):
     def __init__(
             self,
             gamma: float,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.gamma = gamma
         self.args_names = ('gamma',)
         self.invert_transform = False

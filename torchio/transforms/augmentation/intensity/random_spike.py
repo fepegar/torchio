@@ -32,8 +32,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             If only one value :math:`d` is provided,
             :math:`r \sim \mathcal{U}(-d, d)`.
             Larger values generate more distorted images.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -42,10 +41,9 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             self,
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (1, 3),
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.intensity_range = self.parse_range(
             intensity, 'intensity_range')
         self.num_spikes_range = self.parse_range(
@@ -88,7 +86,7 @@ class Spike(IntensityTransform, FourierTransform):
         spikes_positions:
         intensity: Ratio :math:`r` between the spike intensity and the maximum
             of the spectrum.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -97,9 +95,9 @@ class Spike(IntensityTransform, FourierTransform):
             self,
             spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
             intensity: Union[float, Dict[str, float]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.spikes_positions = spikes_positions
         self.intensity = intensity
         self.args_names = 'spikes_positions', 'intensity'

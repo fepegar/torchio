@@ -18,7 +18,7 @@ class ToCanonical(SpatialTransform):
     See `NiBabel docs about image orientation`_ for more information.
 
     Args:
-        p: Probability that this transform will be applied.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note:: The reorientation is performed using
         :meth:`nibabel.as_closest_canonical`.

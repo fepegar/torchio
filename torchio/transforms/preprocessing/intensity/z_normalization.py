@@ -11,16 +11,14 @@ class ZNormalization(NormalizationTransform):
     Args:
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             masking_method: TypeMaskingMethod = None,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(masking_method=masking_method, p=p, keys=keys)
+        super().__init__(masking_method=masking_method, **kwargs)
         self.args_names = ('masking_method',)
 
     def apply_normalization(

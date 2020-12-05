@@ -58,8 +58,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             Discretization is done taking the class of the highest value per
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -101,10 +100,9 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             default_mean: TypeRangeFloat = (0.1, 0.9),
             default_std: TypeRangeFloat = (0.01, 0.1),
             discretize: bool = False,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.label_key = _parse_label_key(label_key)
         self.used_labels = _parse_used_labels(used_labels)
         self.mean, self.std = self.parse_mean_and_std(mean, std)
@@ -268,7 +266,7 @@ class LabelsToImage(IntensityTransform):
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
         seed: Seed for the random number generator.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -282,9 +280,9 @@ class LabelsToImage(IntensityTransform):
             image_key: str = 'image_from_labels',
             used_labels: Optional[Sequence[int]] = None,
             discretize: bool = False,
-            keys: Optional[List[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.label_key = _parse_label_key(label_key)
         self.used_labels = _parse_used_labels(used_labels)
         self.mean, self.std = mean, std

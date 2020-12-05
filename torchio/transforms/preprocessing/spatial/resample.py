@@ -38,8 +38,7 @@ class Resample(SpatialTransform):
             Supported interpolation techniques for resampling
             are ``'nearest'``, ``'linear'`` and ``'bspline'``.
         scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
@@ -58,10 +57,9 @@ class Resample(SpatialTransform):
             image_interpolation: str = 'linear',
             pre_affine_name: Optional[str] = None,
             scalars_only: bool = False,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.target = target
         self.reference_image, self.target_spacing = self.parse_target(target)
         self.image_interpolation = self.parse_interpolation(image_interpolation)

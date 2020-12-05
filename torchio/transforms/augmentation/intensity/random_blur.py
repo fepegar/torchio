@@ -27,16 +27,14 @@ class RandomBlur(RandomTransform, IntensityTransform):
             then :math:`\sigma_i \sim \mathcal{U}(0, x)`.
             If three values :math:`(x_1, x_2, x_3)` are provided,
             then :math:`\sigma_i \sim \mathcal{U}(0, x_i)`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             std: Union[float, Tuple[float, float]] = (0, 2),
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -60,14 +58,14 @@ class Blur(IntensityTransform):
         std: Tuple :math:`(\sigma_1, \sigma_2, \sigma_3)` representing the
             the standard deviations (in mm) of the standard deviations
             of the Gaussian kernels used to blur the image along each axis.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
             self,
             std: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.std = std
         self.args_names = ('std',)
 
