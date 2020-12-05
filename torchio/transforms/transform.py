@@ -134,11 +134,11 @@ class Transform(ABC):
                 )
                 raise ValueError(message)
             for param_range in zip(params[::2], params[1::2]):
-                self.parse_range(param_range, name, **kwargs)
+                self._parse_range(param_range, name, **kwargs)
         return tuple(params)
 
     @staticmethod
-    def parse_range(
+    def _parse_range(
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             min_constraint: TypeNumber = None,

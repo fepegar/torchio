@@ -61,9 +61,9 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             if not isinstance(axis, str) and axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
-        self.num_ghosts_range = self.parse_range(
+        self.num_ghosts_range = self._parse_range(
             num_ghosts, 'num_ghosts', min_constraint=0, type_constraint=int)
-        self.intensity_range = self.parse_range(
+        self.intensity_range = self._parse_range(
             intensity, 'intensity_range', min_constraint=0)
         self.restore = _parse_restore(restore)
 

@@ -38,9 +38,9 @@ class RescaleIntensity(NormalizationTransform):
             ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.out_min_max = out_min_max
-        self.out_min, self.out_max = self.parse_range(
+        self.out_min, self.out_max = self._parse_range(
             out_min_max, 'out_min_max')
-        self.percentiles = self.parse_range(
+        self.percentiles = self._parse_range(
             percentiles, 'percentiles', min_constraint=0, max_constraint=100)
         self.args_names = 'out_min_max', 'percentiles', 'masking_method'
 

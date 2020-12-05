@@ -26,13 +26,13 @@ class RandomTransform(Transform):
             self,
             degrees: TypeRangeFloat,
             ) -> Tuple[float, float]:
-        return self.parse_range(degrees, 'degrees')
+        return self._parse_range(degrees, 'degrees')
 
     def parse_translation(
             self,
             translation: TypeRangeFloat,
             ) -> Tuple[float, float]:
-        return self.parse_range(translation, 'translation')
+        return self._parse_range(translation, 'translation')
 
     @staticmethod
     def sample_uniform(a, b):

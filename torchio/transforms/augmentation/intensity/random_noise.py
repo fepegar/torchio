@@ -35,8 +35,8 @@ class RandomNoise(RandomTransform, IntensityTransform):
             **kwargs
             ):
         super().__init__(**kwargs)
-        self.mean_range = self.parse_range(mean, 'mean')
-        self.std_range = self.parse_range(std, 'std', min_constraint=0)
+        self.mean_range = self._parse_range(mean, 'mean')
+        self.std_range = self._parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)

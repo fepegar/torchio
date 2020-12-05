@@ -39,7 +39,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             **kwargs
             ):
         super().__init__(**kwargs)
-        self.coefficients_range = self.parse_range(
+        self.coefficients_range = self._parse_range(
             coefficients, 'coefficients_range')
         self.order = _parse_order(order)
 
