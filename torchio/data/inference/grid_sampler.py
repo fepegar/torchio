@@ -16,7 +16,7 @@ class GridSampler(PatchSampler, Dataset):
     volume. It is often used with a :class:`~torchio.data.GridAggregator`.
 
     Args:
-        subject: Instance of :class:`~torchio.data.subject.Subject`
+        subject: Instance of :class:`~torchio.data.Subject`
             from which patches will be extracted.
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
             of size :math:`w \times h \times d`.

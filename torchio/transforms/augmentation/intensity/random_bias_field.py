@@ -41,7 +41,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self.coefficients_range = self.parse_range(
+        self.coefficients_range = self._parse_range(
             coefficients, 'coefficients_range')
         self.order = _parse_order(order)
 

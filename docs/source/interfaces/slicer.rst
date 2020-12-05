@@ -1,8 +1,5 @@
-.. _3d slicer gui:
-
-#############
 3D Slicer GUI
-#############
+=============
 
 `3D Slicer <https://www.slicer.org/>`_ is an open-source software platform for
 medical image informatics, image processing,
@@ -22,8 +19,6 @@ The TorchIO extension can be easily installed using the
 The code and installation instructions are available on
 `GitHub <https://github.com/fepegar/SlicerTorchIO>`_.
 
-Modules
-=======
 
 TorchIO Transforms
 ------------------

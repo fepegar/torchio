@@ -2,8 +2,8 @@ Transforms
 ----------
 
 TorchIO transforms take as input instances of
-:class:`~torchio.data.subject.Subject` or
-:class:`~torchio.data.image.Image` (and its subclasses), 4D PyTorch tensors,
+:class:`~torchio.Subject` or
+:class:`~torchio.Image` (and its subclasses), 4D PyTorch tensors,
 4D NumPy arrays, SimpleITK images, NiBabel images, or Python dictionaries
 (see :class:`~torchio.transforms.Transform`).
 
@@ -148,7 +148,7 @@ invertibility:
   :class:`~torchio.transforms.RandomBlur`.
 
 Non-invertible transforms will be ignored by the :meth:`apply_inverse_transform`
-method of :class:`~torchio.data.subject.Subject`.
+method of :class:`~torchio.Subject`.
 
 
 .. _Interpolation:

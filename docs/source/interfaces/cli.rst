@@ -1,12 +1,8 @@
-.. _command-line tools:
-
 Command-line tools
-******************
-
-.. _torchio-transform:
+==================
 
 ``torchio-transform``
-=====================
+---------------------
 
 A transform can be quickly applied to an image file using the command-line
 tool ``torchio-transform``, which is automatically installed by ``pip``

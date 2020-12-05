@@ -30,7 +30,7 @@ Hello, World!
 =============
 
 This example shows the basic usage of TorchIO, where an instance of
-:class:`~torchio.data.dataset.SubjectsDataset` is passed to
+:class:`~torchio.SubjectsDataset` is passed to
 a PyTorch :class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented on the fly,
 in parallel::
@@ -105,9 +105,9 @@ The best way to quickly understand and try the library is the
 `Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/examples/README.md>`_
 hosted on Google Colab.
 
-They include many examples and visualization of most of the classes and even
-training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for brain
-segmentation of :math:`T_1`-weighted MRI with full volumes and
+They include multiple examples and visualization of most of the classes,
+including training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for
+brain segmentation on :math:`T_1`-weighted MRI with full volumes and
 with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg

@@ -46,9 +46,9 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self.intensity_range = self.parse_range(
+        self.intensity_range = self._parse_range(
             intensity, 'intensity_range')
-        self.num_spikes_range = self.parse_range(
+        self.num_spikes_range = self._parse_range(
             num_spikes, 'num_spikes', min_constraint=0, type_constraint=int)
 
     def apply_transform(self, subject: Subject) -> Subject:

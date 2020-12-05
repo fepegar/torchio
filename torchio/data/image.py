@@ -513,7 +513,7 @@ class ScalarImage(Image):
         >>> type(image.data)
         torch.Tensor
 
-    See :class:`~torchio.data.image.Image` for more information.
+    See :class:`~torchio.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != INTENSITY:
@@ -538,7 +538,7 @@ class LabelMap(Image):
         ...     'csf.nii.gz',
         ... )
 
-    See :class:`~torchio.data.image.Image` for more information.
+    See :class:`~torchio.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != LABEL:
