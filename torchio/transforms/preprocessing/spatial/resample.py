@@ -8,7 +8,7 @@ import SimpleITK as sitk
 
 from ....data.subject import Subject
 from ....data.image import Image, ScalarImage
-from ....torchio import DATA, AFFINE, TypeTripletFloat
+from ....torchio import TypeTripletFloat
 from ....utils import sitk_to_nib
 from ... import SpatialTransform
 
@@ -172,7 +172,7 @@ class Resample(SpatialTransform):
                 matrix = image[self.pre_affine_name]
                 if isinstance(matrix, torch.Tensor):
                     matrix = matrix.numpy()
-                image[AFFINE] = matrix @ image[AFFINE]
+                image.affine = matrix @ image.affine
 
             floating_itk = image.as_sitk(force_3d=True)
 
@@ -205,8 +205,8 @@ class Resample(SpatialTransform):
             resampled = resampler.Execute(floating_itk)
 
             array, affine = sitk_to_nib(resampled)
-            image[DATA] = torch.from_numpy(array)
-            image[AFFINE] = affine
+            image.data = torch.from_numpy(array)
+            image.affine = affine
         return subject
 
     @staticmethod

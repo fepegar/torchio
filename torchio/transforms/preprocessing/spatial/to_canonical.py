@@ -2,7 +2,6 @@ import torch
 import numpy as np
 import nibabel as nib
 from ....data.subject import Subject
-from ....torchio import DATA, AFFINE
 from ... import SpatialTransform
 
 
@@ -31,10 +30,10 @@ class ToCanonical(SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):
-            affine = image[AFFINE]
+            affine = image.affine
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
-            array = image[DATA].numpy()[np.newaxis]  # (1, C, W, H, D)
+            array = image.data.numpy()[np.newaxis]  # (1, C, W, H, D)
             # NIfTI images should have channels in 5th dimension
             array = array.transpose(2, 3, 4, 0, 1)  # (W, H, D, 1, C)
             nii = nib.Nifti1Image(array, affine)
@@ -43,6 +42,6 @@ class ToCanonical(SpatialTransform):
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
             array = array.copy()
             array = array.transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
-            image[DATA] = torch.from_numpy(array[0])
-            image[AFFINE] = reoriented.affine
+            image.data = torch.from_numpy(array[0])
+            image.affine = reoriented.affine
         return subject

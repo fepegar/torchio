@@ -9,7 +9,7 @@ import SimpleITK as sitk
 from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....utils import to_tuple, nib_to_sitk
-from ....torchio import DATA, AFFINE, TypeTripletInt, TypeTripletFloat
+from ....torchio import TypeTripletInt, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform
 
@@ -252,9 +252,9 @@ class ElasticDeformation(SpatialTransform):
                 interpolation = self.image_interpolation
             if image.is_2d():
                 control_points[..., -1] = 0  # no displacement in IS axis
-            image[DATA] = self.apply_bspline_transform(
-                image[DATA],
-                image[AFFINE],
+            image.data = self.apply_bspline_transform(
+                image.data,
+                image.affine,
                 control_points,
                 interpolation,
             )

@@ -5,7 +5,7 @@ from typing import Tuple, Optional, Sequence
 import torch
 
 from ....utils import to_tuple
-from ....torchio import DATA, TypeRangeFloat
+from ....torchio import TypeRangeFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform
@@ -117,7 +117,7 @@ class Gamma(IntensityTransform):
                 else:
                     transformed_tensor = power(tensor, gamma)
                 transformed_tensors.append(transformed_tensor)
-            image[DATA] = torch.stack(transformed_tensors)
+            image.data = torch.stack(transformed_tensors)
         return subject
 
 

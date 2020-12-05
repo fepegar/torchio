@@ -284,7 +284,7 @@ class Affine(SpatialTransform):
             for tensor in image[DATA]:
                 transformed_tensor = self.apply_affine_transform(
                     tensor,
-                    image[AFFINE],
+                    image.affine,
                     scaling_params.tolist(),
                     rotation_params.tolist(),
                     translation_params.tolist(),
@@ -292,7 +292,7 @@ class Affine(SpatialTransform):
                     center_lps=center,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image[DATA] = torch.stack(transformed_tensors)
+            image.data = torch.stack(transformed_tensors)
         return subject
 
     def apply_affine_transform(

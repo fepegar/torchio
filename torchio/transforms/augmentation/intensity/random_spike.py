@@ -120,7 +120,7 @@ class Spike(IntensityTransform, FourierTransform):
                     intensity,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image[DATA] = torch.stack(transformed_tensors)
+            image.data = torch.stack(transformed_tensors)
         return subject
 
     def add_artifact(

@@ -40,7 +40,7 @@ class ZNormalization(NormalizationTransform):
                 f' in image "{image_name}" ({image.path})'
             )
             raise RuntimeError(message)
-        image[DATA] = standardized
+        image.data = standardized
 
     @staticmethod
     def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:

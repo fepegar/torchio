@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 
-from .. import TypeData, DATA, AFFINE
+from .. import TypeData
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..utils import nib_to_sitk, sitk_to_nib
@@ -73,11 +73,11 @@ class DataParser:
     def get_output(self, transformed):
         if self.is_tensor or self.is_sitk:
             image = transformed[self.default_image_name]
-            transformed = image[DATA]
+            transformed = image.data
             if self.is_array:
                 transformed = transformed.numpy()
             elif self.is_sitk:
-                transformed = nib_to_sitk(image[DATA], image[AFFINE])
+                transformed = nib_to_sitk(image.data, image.affine)
         elif self.is_image:
             transformed = transformed[self.default_image_name]
         elif self.is_dict:
@@ -87,14 +87,14 @@ class DataParser:
                     transformed[key] = value.data
         elif self.is_nib:
             image = transformed[self.default_image_name]
-            data = image[DATA]
+            data = image.data
             if len(data) > 1:
                 message = (
                     'Multichannel images not supported for input of type'
                     ' nibabel.nifti.Nifti1Image'
                 )
                 raise RuntimeError(message)
-            transformed = nib.Nifti1Image(data[0].numpy(), image[AFFINE])
+            transformed = nib.Nifti1Image(data[0].numpy(), image.affine)
         return transformed
 
     @staticmethod

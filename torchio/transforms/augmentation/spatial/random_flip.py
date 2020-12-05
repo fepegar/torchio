@@ -1,7 +1,6 @@
 from typing import Union, Tuple, Optional, List, Sequence
 import torch
 import numpy as np
-from ....torchio import DATA
 from ....data.subject import Subject
 from ....utils import to_tuple
 from ... import SpatialTransform
@@ -124,4 +123,4 @@ def _flip_image(image, axes):
     data = np.flip(data, axis=spatial_axes)
     data = data.copy()  # remove negative strides
     data = torch.from_numpy(data)
-    image[DATA] = data
+    image.data = data

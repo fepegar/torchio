@@ -88,7 +88,7 @@ class HistogramStandardization(NormalizationTransform):
             raise KeyError(message)
         image_dict = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
-        image_dict[DATA] = normalize(
+        image_dict.data = normalize(
             image_dict[DATA],
             landmarks,
             mask=mask,

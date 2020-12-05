@@ -6,7 +6,7 @@ import numpy as np
 import scipy.ndimage as ndi
 
 from ....utils import to_tuple
-from ....torchio import DATA, TypeData, TypeTripletFloat, TypeSextetFloat
+from ....torchio import TypeData, TypeTripletFloat, TypeSextetFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform
@@ -85,7 +85,7 @@ class Blur(IntensityTransform):
                     std,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image[DATA] = torch.stack(transformed_tensors)
+            image.data = torch.stack(transformed_tensors)
         return subject
 
 

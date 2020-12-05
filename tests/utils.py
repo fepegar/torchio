@@ -9,10 +9,7 @@ from random import shuffle
 import torch
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
-import torchio.transforms as tio_trsf
-from torchio.datasets import IXITiny
-from torchio import DATA, AFFINE
-from torchio import ScalarImage, LabelMap, SubjectsDataset, Subject, Compose
+import torchio as tio
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -31,26 +28,26 @@ class TorchioTestCase(unittest.TestCase):
             [0, 0, 0, 1]
         ])
 
-        subject_a = Subject(
-            t1=ScalarImage(self.get_image_path('t1_a')),
+        subject_a = tio.Subject(
+            t1=tio.ScalarImage(self.get_image_path('t1_a')),
         )
-        subject_b = Subject(
-            t1=ScalarImage(self.get_image_path('t1_b')),
-            label=LabelMap(self.get_image_path('label_b', binary=True)),
+        subject_b = tio.Subject(
+            t1=tio.ScalarImage(self.get_image_path('t1_b')),
+            label=tio.LabelMap(self.get_image_path('label_b', binary=True)),
         )
-        subject_c = Subject(
-            label=LabelMap(self.get_image_path('label_c', binary=True)),
+        subject_c = tio.Subject(
+            label=tio.LabelMap(self.get_image_path('label_c', binary=True)),
         )
-        subject_d = Subject(
-            t1=ScalarImage(
+        subject_d = tio.Subject(
+            t1=tio.ScalarImage(
                 self.get_image_path('t1_d'),
                 pre_affine=registration_matrix,
             ),
-            t2=ScalarImage(self.get_image_path('t2_d')),
-            label=LabelMap(self.get_image_path('label_d', binary=True)),
+            t2=tio.ScalarImage(self.get_image_path('t2_d')),
+            label=tio.LabelMap(self.get_image_path('label_d', binary=True)),
         )
-        subject_a4 = Subject(
-            t1=ScalarImage(self.get_image_path('t1_a'), components=2),
+        subject_a4 = tio.Subject(
+            t1=tio.ScalarImage(self.get_image_path('t1_a'), components=2),
         )
         self.subjects_list = [
             subject_a,
@@ -59,41 +56,41 @@ class TorchioTestCase(unittest.TestCase):
             subject_c,
             subject_d,
         ]
-        self.dataset = SubjectsDataset(self.subjects_list)
+        self.dataset = tio.SubjectsDataset(self.subjects_list)
         self.sample_subject = self.dataset[-1]  # subject_d
 
     def make_2d(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image[DATA] = image[DATA][..., :1]
+            image.data = image.data[..., :1]
         return subject
 
     def make_multichannel(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image[DATA] = torch.cat(4 * (image[DATA],))
+            image.data = torch.cat(4 * (image.data,))
         return subject
 
     def flip_affine_x(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image[AFFINE] = np.diag((-1, 1, 1, 1)) @ image[AFFINE]
+            image.affine = np.diag((-1, 1, 1, 1)) @ image.affine
         return subject
 
     def get_inconsistent_shape_subject(self):
         """Return a subject containing images of different shape."""
-        subject = Subject(
-            t1=ScalarImage(self.get_image_path('t1_inc')),
-            t2=ScalarImage(
+        subject = tio.Subject(
+            t1=tio.ScalarImage(self.get_image_path('t1_inc')),
+            t2=tio.ScalarImage(
                 self.get_image_path('t2_inc', shape=(10, 20, 31))),
-            label=LabelMap(
+            label=tio.LabelMap(
                 self.get_image_path(
                     'label_inc',
                     shape=(8, 17, 25),
                     binary=True,
                 ),
             ),
-            label2=LabelMap(
+            label2=tio.LabelMap(
                 self.get_image_path(
                     'label2_inc',
                     shape=(18, 17, 25),
@@ -106,16 +103,16 @@ class TorchioTestCase(unittest.TestCase):
     def get_reference_image_and_path(self):
         """Return a reference image and its path"""
         path = self.get_image_path('ref', shape=(10, 20, 31), spacing=(1, 1, 2))
-        image = ScalarImage(path)
+        image = tio.ScalarImage(path)
         return image, path
 
     def get_subject_with_partial_volume_label_map(self, components=1):
         """Return a subject with a partial-volume label map."""
-        return Subject(
-            t1=ScalarImage(
+        return tio.Subject(
+            t1=tio.ScalarImage(
                 self.get_image_path('t1_d'),
             ),
-            label=LabelMap(
+            label=tio.LabelMap(
                 self.get_image_path(
                     'label_d2', binary=False, components=components
                 )
@@ -128,7 +125,7 @@ class TorchioTestCase(unittest.TestCase):
 
     def get_ixi_tiny(self):
         root_dir = Path(tempfile.gettempdir()) / 'torchio' / 'ixi_tiny'
-        return IXITiny(root_dir, download=True)
+        return tio.datasets.IXITiny(root_dir, download=True)
 
     def get_image_path(
             self,
@@ -155,7 +152,7 @@ class TorchioTestCase(unittest.TestCase):
         path = self.dir / f'{stem}{suffix}'
         if np.random.rand() > 0.5:
             path = str(path)
-        image = ScalarImage(tensor=data, affine=affine, check_nans=not add_nans)
+        image = tio.ScalarImage(tensor=data, affine=affine, check_nans=not add_nans)
         image.save(path)
         return path
 
@@ -184,14 +181,14 @@ class TorchioTestCase(unittest.TestCase):
         for tr in transforms:
             if tr.name == 'RandomSwap':
                 tr.patch_size = np.array((10, 10, 10))
-        return Compose(transforms)
+        return tio.Compose(transforms)
 
 
 def get_all_random_transforms():
     transforms_names = [
         name
-        for name in dir(tio_trsf)
+        for name in dir(tio.transforms)
         if name.startswith('Random')
     ]
-    classes = [getattr(tio_trsf, name) for name in transforms_names]
+    classes = [getattr(tio.transforms, name) for name in transforms_names]
     return classes

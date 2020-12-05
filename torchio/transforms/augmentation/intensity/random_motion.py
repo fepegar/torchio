@@ -6,7 +6,7 @@ import numpy as np
 import SimpleITK as sitk
 
 from ....utils import nib_to_sitk
-from ....torchio import DATA, AFFINE, TypeTripletFloat
+from ....torchio import TypeTripletFloat
 from ....data.subject import Subject
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
@@ -160,10 +160,10 @@ class Motion(IntensityTransform, FourierTransform):
                 times = self.times[image_name]
                 image_interpolation = self.image_interpolation[image_name]
             result_arrays = []
-            for data in image[DATA]:
+            for channel in image.data:
                 sitk_image = nib_to_sitk(
-                    data[np.newaxis],
-                    image[AFFINE],
+                    channel[np.newaxis],
+                    image.affine,
                     force_3d=True,
                 )
                 transforms = self.get_rigid_transforms(
@@ -171,15 +171,15 @@ class Motion(IntensityTransform, FourierTransform):
                     translation,
                     sitk_image,
                 )
-                data = self.add_artifact(
+                transformed_channel = self.add_artifact(
                     sitk_image,
                     transforms,
                     times,
                     image_interpolation,
                 )
-                result_arrays.append(data)
+                result_arrays.append(transformed_channel)
             result = np.stack(result_arrays)
-            image[DATA] = torch.from_numpy(result)
+            image.data = torch.from_numpy(result)
         return subject
 
     def get_rigid_transforms(

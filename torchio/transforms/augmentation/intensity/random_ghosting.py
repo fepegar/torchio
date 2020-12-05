@@ -4,7 +4,6 @@ from typing import Tuple, Optional, Union, Sequence, Dict
 import torch
 import numpy as np
 
-from ....torchio import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
@@ -164,7 +163,7 @@ class Ghosting(IntensityTransform, FourierTransform):
                     restore,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image[DATA] = torch.stack(transformed_tensors)
+            image.data = torch.stack(transformed_tensors)
         return subject
 
     def add_artifact(

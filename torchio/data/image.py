@@ -123,8 +123,8 @@ class Image(dict):
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
         if tensor is not None:
-            self[DATA] = tensor
-            self[AFFINE] = affine
+            self.data = tensor
+            self.affine = affine
             self._loaded = True
         for key in PROTECTED_KEYS:
             if key in kwargs:
@@ -180,6 +180,10 @@ class Image(dict):
         """Tensor data. Same as :class:`Image.tensor`."""
         return self[DATA]
 
+    @data.setter
+    def data(self, tensor: TypeData):
+        self[DATA] = self._parse_tensor(tensor, none_ok=False)
+
     @property
     def tensor(self) -> torch.Tensor:
         """Tensor data. Same as :class:`Image.data`."""
@@ -189,6 +193,10 @@ class Image(dict):
     def affine(self) -> np.ndarray:
         """Affine matrix to transform voxel indices into world coordinates."""
         return self[AFFINE]
+
+    @affine.setter
+    def affine(self, matrix):
+        self[AFFINE] = self._parse_affine(matrix)
 
     @property
     def type(self) -> str:
@@ -345,13 +353,23 @@ class Image(dict):
         else:
             return [self._parse_single_path(p) for p in path]
 
-    def _parse_tensor(self, tensor: TypeData) -> torch.Tensor:
+    def _parse_tensor(
+            self,
+            tensor: TypeData,
+            none_ok: bool = True,
+            ) -> torch.Tensor:
         if tensor is None:
-            return None
+            if none_ok:
+                return None
+            else:
+                raise RuntimeError('Input tensor cannot be None')
         if isinstance(tensor, np.ndarray):
             tensor = torch.from_numpy(tensor.astype(np.float32))
         elif isinstance(tensor, torch.Tensor):
             tensor = tensor.float()
+        else:
+            message = 'Input tensor must be a PyTorch tensor or NumPy array'
+            raise TypeError(message)
         if tensor.ndim != 4:
             raise ValueError('Input tensor must be 4D')
         if self.check_nans and torch.isnan(tensor).any():
@@ -403,8 +421,8 @@ class Image(dict):
                 RuntimeError(message)
             tensors.append(new_tensor)
         tensor = torch.cat(tensors)
-        self[DATA] = tensor
-        self[AFFINE] = affine
+        self.data = tensor
+        self.affine = affine
         self._loaded = True
 
     def read_and_check(self, path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
@@ -426,7 +444,7 @@ class Image(dict):
         """
         write_image(
             self[DATA],
-            self[AFFINE],
+            self.affine,
             path,
             squeeze=squeeze,
         )
@@ -440,7 +458,7 @@ class Image(dict):
 
     def as_sitk(self, **kwargs) -> sitk.Image:
         """Get the image as an instance of :class:`sitk.Image`."""
-        return nib_to_sitk(self[DATA], self[AFFINE], **kwargs)
+        return nib_to_sitk(self[DATA], self.affine, **kwargs)
 
     def as_pil(self) -> ImagePIL:
         """Get the image as an instance of :class:`PIL.Image`."""

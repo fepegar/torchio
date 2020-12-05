@@ -3,7 +3,6 @@ from typing import Sequence, Optional
 import numpy as np
 import nibabel as nib
 
-from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .bounds_transform import BoundsTransform, TypeBounds
 
@@ -48,8 +47,8 @@ class Crop(BoundsTransform):
             new_affine[:3, 3] = new_origin
             i0, j0, k0 = index_ini
             i1, j1, k1 = index_fin
-            image[DATA] = image[DATA][:, i0:i1, j0:j1, k0:k1].clone()
-            image[AFFINE] = new_affine
+            image.data = image.data[:, i0:i1, j0:j1, k0:k1].clone()
+            image.affine = new_affine
         return sample
 
     def inverse(self):

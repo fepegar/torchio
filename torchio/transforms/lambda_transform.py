@@ -65,5 +65,5 @@ class Lambda(Transform):
                     f' be {function_arg.ndim}, not {result.ndim}'
                 )
                 raise ValueError(message)
-            image[DATA] = result
+            image.data = result
         return subject

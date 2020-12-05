@@ -5,7 +5,6 @@ import numpy as np
 import nibabel as nib
 import torch
 
-from ....torchio import DATA, AFFINE
 from ....data.subject import Subject
 from .bounds_transform import BoundsTransform, TypeBounds
 
@@ -88,9 +87,9 @@ class Pad(BoundsTransform):
                 kwargs['constant_values'] = self.fill
             pad_params = self.bounds_parameters
             paddings = (0, 0), pad_params[:2], pad_params[2:4], pad_params[4:]
-            padded = np.pad(image[DATA], paddings, **kwargs)
-            image[DATA] = torch.from_numpy(padded)
-            image[AFFINE] = new_affine
+            padded = np.pad(image.data, paddings, **kwargs)
+            image.data = torch.from_numpy(padded)
+            image.affine = new_affine
         return subject
 
     def inverse(self):

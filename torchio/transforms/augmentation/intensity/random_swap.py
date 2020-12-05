@@ -6,7 +6,7 @@ import numpy as np
 
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ....torchio import DATA, TypeTuple, TypeData, TypeTripletInt
+from ....torchio import TypeTuple, TypeData, TypeTripletInt
 from ... import IntensityTransform
 from .. import RandomTransform
 
@@ -125,7 +125,7 @@ class Swap(IntensityTransform):
                 patch_size = self.patch_size[name]
             if self.invert_transform:
                 locations.reverse()
-            image[DATA] = swap(image.data, patch_size, locations)
+            image.data = swap(image.data, patch_size, locations)
         return subject
 
 
