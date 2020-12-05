@@ -26,6 +26,8 @@ from ..utils import download_and_extract_archive
 from ..transforms import Transform
 from .. import SubjectsDataset, Subject, ScalarImage, LabelMap, TypePath
 
+SubjectsDataset.__module__ = 'torchio.data'
+
 
 class IXI(SubjectsDataset):
     """
@@ -34,7 +36,7 @@ class IXI(SubjectsDataset):
     Args:
         root: Root directory to which the dataset will be downloaded.
         transform: An instance of
-            :class:`~torchio.transforms.transform.Transform`.
+            :class:`~torchio.transforms.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
         modalities: List of modalities to be downloaded. They must be in
             ``('T1', 'T2', 'PD', 'MRA', 'DTI')``.
@@ -173,7 +175,7 @@ class IXITiny(SubjectsDataset):
     Args:
         root: Root directory to which the dataset will be downloaded.
         transform: An instance of
-            :class:`~torchio.transforms.transform.Transform`.
+            :class:`~torchio.transforms.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
 
     .. _notebook: https://github.com/fepegar/torchio/blob/master/examples/README.md

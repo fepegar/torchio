@@ -19,15 +19,15 @@ class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
     All subclasses should overwrite
-    :meth:`torchio.tranforms.Transform.apply_transform`,
+    :meth:`torchio.transforms.Transform.apply_transform`,
     which takes data, applies some transformation and returns the result.
 
     The input can be an instance of
-    :class:`torchio.Subject`,
-    :class:`torchio.Image`,
+    :class:`~torchio.data.Subject`,
+    :class:`~torchio.data.Image`,
     :class:`numpy.ndarray`,
     :class:`torch.Tensor`,
-    :class:`SimpleITK.image`,
+    :class:`SimpleITK.Image`,
     or a Python dictionary.
 
     Args:
@@ -53,13 +53,13 @@ class Transform(ABC):
         """Transform data and return a result of the same type.
 
         Args:
-            data: Instance of 1) :class:`~torchio.Subject`, 4D
+            data: Instance of :class:`~torchio.data.Subject`, 4D
                 :class:`torch.Tensor` or NumPy array with dimensions
                 :math:`(C, W, H, D)`, where :math:`C` is the number of channels
                 and :math:`W, H, D` are the spatial dimensions. If the input is
                 a tensor, the affine matrix will be set to identity. Other
                 valid input types are a SimpleITK image, a
-                :class:`torch.Image`, a NiBabel Nifti1 Image or a Python
+                :class:`~torchio.data.Image`, a NiBabel :class:`~nibabel.nifti1.Nifti1Image` or a Python
                 dictionary. The output type is the same as te input type.
         """
         if torch.rand(1).item() > self.probability:

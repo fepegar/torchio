@@ -5,6 +5,7 @@ from .image import Image, ScalarImage, LabelMap
 from .inference import GridSampler, GridAggregator
 from .sampler import PatchSampler, LabelSampler, WeightedSampler, UniformSampler
 
+Image.__module__ = "torchio.data"
 
 __all__ = [
     'Queue',

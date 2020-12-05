@@ -3,6 +3,8 @@ from ..utils import download_url
 from .. import Subject, ScalarImage
 from ..utils import get_torchio_cache_dir
 
+Subject.__module__ = 'torchio.data'
+
 
 SLICER_URL = 'https://github.com/Slicer/SlicerTestingData/releases/download/'
 URLS_DICT = {

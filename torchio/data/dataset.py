@@ -6,22 +6,24 @@ from torch.utils.data import Dataset
 
 from .subject import Subject
 
+Dataset.__module__ = "torch.utils.data"
+
 
 class SubjectsDataset(Dataset):
     """Base TorchIO dataset.
 
-    :class:`~torchio.data.dataset.SubjectsDataset`
+    :class:`~torchio.data.SubjectsDataset`
     is a reader of 3D medical images that directly
     inherits from :class:`torch.utils.data.Dataset`.
     It can be used with a :class:`torch.utils.data.DataLoader`
     for efficient loading and augmentation.
     It receives a list of instances of
-    :class:`torchio.data.subject.Subject`.
+    :class:`~torchio.data.Subject`.
 
     Args:
         subjects: List of instances of
-            :class:`~torchio.data.subject.Subject`.
-        transform: An instance of :class:`torchio.transforms.Transform`
+            :class:`~torchio.data.Subject`.
+        transform: An instance of :class:`~torchio.transforms.Transform`
             that will be applied to each subject.
 
     Example:
@@ -84,7 +86,7 @@ class SubjectsDataset(Dataset):
         """Set the :attr:`transform` attribute.
 
         Args:
-            transform: An instance of :class:`torchio.transforms.Transform`.
+            transform: An instance of :class:`~torchio.transforms.Transform`.
         """
         if transform is not None and not callable(transform):
             raise ValueError(

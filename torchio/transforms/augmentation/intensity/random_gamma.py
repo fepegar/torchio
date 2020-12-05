@@ -84,7 +84,7 @@ class Gamma(IntensityTransform):
         If negative values are found in the input image :math:`I`,
         the applied transform is :math:`\text{sign}(I) |I|^\gamma`,
         instead of the usual :math:`I^\gamma`. The
-        :class:`~torchio.transforms.preprocessing.intensity.rescale.RescaleIntensity`
+        :class:`~torchio.transforms.RescaleIntensity`
         transform may be used to ensure that all values are positive.
 
     Example:

@@ -10,13 +10,15 @@ from .subject import Subject
 from .sampler import PatchSampler
 from .dataset import SubjectsDataset
 
+Dataset.__module__ = 'torch.utils.data'
+
 
 class Queue(Dataset):
     r"""Patches queue used for patch-based training.
 
     Args:
         subjects_dataset: Instance of
-            :class:`~torchio.data.dataset.SubjectsDataset`.
+            :class:`~torchio.data.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.

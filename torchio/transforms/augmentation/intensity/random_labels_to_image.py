@@ -63,7 +63,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
-        :class:`~torchio.transforms.augmentation.RandomBlur`.
+        :class:`~torchio.transforms.RandomBlur`.
 
     Example:
         >>> import torchio as tio

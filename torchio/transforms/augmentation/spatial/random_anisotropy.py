@@ -28,7 +28,7 @@ class RandomAnisotropy(RandomTransform):
             to its initial spacing. Downsampling is performed using nearest
             neighbor interpolation. See :ref:`Interpolation` for supported
             interpolation types.
-        scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
+        scalars_only: Apply only to instances of :class:`torchio.data.ScalarImage`.
         p: Probability that this transform will be applied.
         keys: See :class:`~torchio.transforms.Transform`.
 

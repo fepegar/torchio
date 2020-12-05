@@ -29,7 +29,7 @@ class Resample(SpatialTransform):
             If a string or :class:`~pathlib.Path` is given,
             all images will be resampled using the image
             with that name as reference or found at the path.
-            An instance of :class:`torchio.Image` can also be passed.
+            An instance of :class:`~torchio.data.Image` can also be passed.
         pre_affine_name: Name of the *image key* (not subject key) storing an
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
@@ -37,7 +37,7 @@ class Resample(SpatialTransform):
         image_interpolation: String that defines the interpolation technique.
             Supported interpolation techniques for resampling
             are ``'nearest'``, ``'linear'`` and ``'bspline'``.
-        scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
+        scalars_only: Apply only to instances of :class:`~torchio.data.ScalarImage`.
         p: Probability that this transform will be applied.
         keys: See :class:`~torchio.transforms.Transform`.
 

@@ -9,6 +9,8 @@ import torch
 from ... import TypeRangeFloat
 from .. import Transform
 
+Transform.__module__ = 'torchio.transforms'
+
 
 class RandomTransform(Transform):
     """Base class for stochastic augmentation transforms.

@@ -30,7 +30,7 @@ class HistogramStandardization(NormalizationTransform):
             NumPy arrays defining the landmarks after training with
             :meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         p: Probability that this transform will be applied.
 
     Example:

@@ -10,7 +10,7 @@ class ZNormalization(NormalizationTransform):
 
     Args:
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         p: Probability that this transform will be applied.
         keys: See :class:`~torchio.transforms.Transform`.
     """

@@ -29,7 +29,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         axes: Axis along which the ghosts will be created. If
             :attr:`axes` is a tuple, the axis will be randomly chosen
             from the passed values. Anatomical labels may also be used (see
-            :class:`~torchio.transforms.augmentation.RandomFlip`).
+            :class:`~torchio.transforms.RandomFlip`).
         intensity: Positive number representing the artifact strength
             :math:`s` with respect to the maximum of the :math:`k`-space.
             If ``0``, the ghosts will not be visible. If a tuple

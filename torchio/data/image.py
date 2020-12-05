@@ -60,7 +60,7 @@ class Image(dict):
             all types, and nearest neighbor interpolation is always used to
             resample images with type :attr:`torchio.LABEL`.
             The type :attr:`torchio.SAMPLING_MAP` may be used with instances of
-            :class:`~torchio.data.sampler.weighted.WeightedSampler`.
+            :class:`~torchio.data.WeightedSampler`.
         tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
             :class:`torch.Tensor` or NumPy array with dimensions
             :math:`(C, W, H, D)`.
@@ -495,7 +495,7 @@ class ScalarImage(Image):
         >>> type(image.data)
         torch.Tensor
 
-    See :class:`~torchio.data.image.Image` for more information.
+    See :class:`~torchio.data.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != INTENSITY:
@@ -520,7 +520,7 @@ class LabelMap(Image):
         ...     'csf.nii.gz',
         ... )
 
-    See :class:`~torchio.data.image.Image` for more information.
+    See :class:`~torchio.data.Image` for more information.
     """
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != LABEL:

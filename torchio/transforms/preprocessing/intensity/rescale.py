@@ -8,6 +8,8 @@ from ....data.subject import Subject
 from ....torchio import DATA, TypeRangeFloat
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
+NormalizationTransform.__module__ = 'torchio.transforms.preprocessing.intensity'
+
 
 class RescaleIntensity(NormalizationTransform):
     """Rescale intensity values to a certain range.
@@ -23,7 +25,7 @@ class RescaleIntensity(NormalizationTransform):
             If only one value :math:`d` is provided,
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         p: Probability that this transform will be applied.
         keys: See :class:`~torchio.transforms.Transform`.
 

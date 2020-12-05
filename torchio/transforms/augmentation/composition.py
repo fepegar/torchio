@@ -10,6 +10,8 @@ from .. import Transform
 from . import RandomTransform
 
 
+RandomTransform.__module__ = 'torchio.transforms.augmentation'
+
 TypeTransformsDict = Union[Dict[Transform, float], Sequence[Transform]]
 
 
@@ -18,7 +20,7 @@ class Compose(Transform):
 
     Args:
         transforms: Sequence of instances of
-            :class:`~torchio.transforms.transform.Transform`.
+            :class:`~torchio.transforms.Transform`.
         p: Probability that this transform will be applied.
 
     .. note::
@@ -70,7 +72,7 @@ class OneOf(RandomTransform):
 
     Args:
         transforms: Dictionary with instances of
-            :class:`~torchio.transforms.transform.Transform` as keys and
+            :class:`~torchio.transforms.Transform` as keys and
             probabilities as values. Probabilities are normalized so they sum
             to one. If a sequence is given, the same probability will be
             assigned to each transform.
