@@ -39,7 +39,7 @@ class RandomTransform(Transform):
         return torch.FloatTensor(1).uniform_(a, b)
 
     @staticmethod
-    def get_random_seed():
+    def _get_random_seed():
         """Generate a random seed.
 
         Returns:

@@ -23,7 +23,7 @@ class RescaleIntensity(NormalizationTransform):
             If only one value :math:`d` is provided,
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py

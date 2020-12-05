@@ -56,7 +56,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
             ) -> Tuple[float, float]:
         mean = self.sample_uniform(*mean_range).item()
         std = self.sample_uniform(*std_range).item()
-        seed = self.get_random_seed()
+        seed = self._get_random_seed()
         return mean, std, seed
 
 

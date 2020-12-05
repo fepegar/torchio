@@ -10,7 +10,7 @@ class ZNormalization(NormalizationTransform):
 
     Args:
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         **kwargs: See :class:`~torchio.transforms.Transform`.
     """
     def __init__(
