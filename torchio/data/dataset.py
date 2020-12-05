@@ -10,18 +10,16 @@ from .subject import Subject
 class SubjectsDataset(Dataset):
     """Base TorchIO dataset.
 
-    :class:`~torchio.data.dataset.SubjectsDataset`
-    is a reader of 3D medical images that directly
-    inherits from :class:`torch.utils.data.Dataset`.
-    It can be used with a :class:`torch.utils.data.DataLoader`
-    for efficient loading and augmentation.
-    It receives a list of instances of
-    :class:`torchio.data.subject.Subject`.
+    Reader of 3D medical images that directly inherits from the PyTorch
+    :class:`~torch.utils.data.Dataset`. It can be used with a PyTorch
+    :class:`~torch.utils.data.DataLoader` for efficient loading and
+    augmentation. It receives a list of instances of :class:`~torchio.Subject`
+    and an optional transform applied to the volumes after loading.
 
     Args:
         subjects: List of instances of
-            :class:`~torchio.data.subject.Subject`.
-        transform: An instance of :class:`torchio.transforms.Transform`
+            :class:`~torchio.Subject`.
+        transform: An instance of :class:`~torchio.transforms.Transform`
             that will be applied to each subject.
 
     Example:

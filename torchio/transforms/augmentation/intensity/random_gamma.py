@@ -50,7 +50,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
             keys: Optional[Sequence[str]] = None,
             ):
         super().__init__(p=p, keys=keys)
-        self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
+        self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)

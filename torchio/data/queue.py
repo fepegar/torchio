@@ -12,11 +12,50 @@ from .dataset import SubjectsDataset
 
 
 class Queue(Dataset):
-    r"""Patches queue used for patch-based training.
+    r"""Queue used for stochastic patch-based training.
+
+    A training iteration (i.e., forward and backward pass) performed on a
+    GPU is usually faster than loading, preprocessing, augmenting, and cropping
+    a volume on a CPU.
+    Most preprocessing operations could be performed using a GPU,
+    but these devices are typically reserved for training the CNN so that batch
+    size and input tensor size can be as large as possible.
+    Therefore, it is beneficial to prepare (i.e., load, preprocess and augment)
+    the volumes using multiprocessing CPU techniques in parallel with the
+    forward-backward passes of a training iteration.
+    Once a volume is appropriately prepared, it is computationally beneficial to
+    sample multiple patches from a volume rather than having to prepare the same
+    volume each time a patch needs to be extracted.
+    The sampled patches are then stored in a buffer or *queue* until
+    the next training iteration, at which point they are loaded onto the GPU
+    for inference.
+    For this, TorchIO provides the :class:`~torchio.data.Queue` class, which also
+    inherits from the PyTorch :class:`~torch.utils.data.Dataset`.
+    In this queueing system,
+    samplers behave as generators that yield patches from random locations
+    in volumes contained in the :class:`~torchio.data.SubjectsDataset`.
+
+    The end of a training epoch is defined as the moment after which patches
+    from all subjects have been used for training.
+    At the beginning of each training epoch,
+    the subjects list in the :class:`~torchio.data.SubjectsDataset` is shuffled,
+    as is typically done in machine learning pipelines to increase variance
+    of training instances during model optimization.
+    A PyTorch loader queries the datasets copied in each process,
+    which load and process the volumes in parallel on the CPU.
+    A patches list is filled with patches extracted by the sampler,
+    and the queue is shuffled once it has reached a specified maximum length so
+    that batches are composed of patches from different subjects.
+    The internal data loader continues querying the
+    :class:`~torchio.data.SubjectsDataset` using multiprocessing.
+    The patches list, when emptied, is refilled with new patches.
+    A second data loader, external to the queue,
+    may be used to collate batches of patches stored in the queue,
+    which are passed to the neural network.
 
     Args:
         subjects_dataset: Instance of
-            :class:`~torchio.data.dataset.SubjectsDataset`.
+            :class:`~torchio.data.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
@@ -33,6 +72,15 @@ class Queue(Dataset):
         shuffle_patches: If ``True``, patches are shuffled after filling the
             queue.
         verbose: If ``True``, some debugging messages are printed.
+
+    This diagram represents the connection between
+    a :class:`~torchio.data.SubjectsDataset`,
+    a :class:`~torchio.data.Queue`
+    and the :class:`~torch.utils.data.DataLoader` used to pop batches from the
+    queue.
+
+    .. image:: https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/diagram_patches.svg
+        :alt: Training with patches
 
     This sketch can be used to experiment and understand how the queue works.
     In this case, :attr:`shuffle_subjects` is ``False``

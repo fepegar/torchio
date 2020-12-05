@@ -2,6 +2,8 @@
 Image
 #####
 
+.. currentmodule:: torchio
+
 The :class:`Image` class, representing one medical image,
 stores a 4D tensor, whose voxels encode, e.g., signal intensity or segmentation
 labels, and the corresponding affine transform,
@@ -33,25 +35,14 @@ structure.
 .. image:: ../../images/data_structures.png
     :alt: Data structures
 
-.. currentmodule:: torchio.data
-
-
-:class:`ScalarImage`
---------------------
 
 .. autoclass:: ScalarImage
     :show-inheritance:
 
 
-:class:`LabelMap`
------------------
-
 .. autoclass:: LabelMap
     :show-inheritance:
 
-
-:class:`Image`
---------------
 
 .. autoclass:: Image
     :members:

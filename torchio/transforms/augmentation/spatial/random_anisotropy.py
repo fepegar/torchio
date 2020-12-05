@@ -54,7 +54,7 @@ class RandomAnisotropy(RandomTransform):
             ):
         super().__init__(p=p, keys=keys)
         self.axes = self.parse_axes(axes)
-        self.downsampling_range = self.parse_range(
+        self.downsampling_range = self._parse_range(
             downsampling, 'downsampling', min_constraint=1)
         self.image_interpolation = self.parse_interpolation(image_interpolation)
         self.scalars_only = scalars_only
