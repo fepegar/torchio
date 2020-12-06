@@ -38,8 +38,6 @@
     :hidden:
 
     interfaces/index
-    interfaces/cli
-    interfaces/slicer
 
 
 See also

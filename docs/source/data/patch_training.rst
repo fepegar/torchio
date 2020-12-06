@@ -15,40 +15,23 @@ For more information about patch-based training, see
 `this NiftyNet tutorial <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_.
 
 
-
-:class:`UniformSampler`
-^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: UniformSampler
     :show-inheritance:
 
-
-:class:`WeightedSampler`
-^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: WeightedSampler
     :show-inheritance:
 
 
-:class:`LabelSampler`
-^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: LabelSampler
     :show-inheritance:
 
 
-:class:`PatchSampler`
-^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: PatchSampler
     :show-inheritance:
 
-
 Queue
 -----
-
-:class:`Queue`
-^^^^^^^^^^^^^^
 
 .. autoclass:: Queue
     :members:

@@ -35,8 +35,8 @@ class RandomNoise(RandomTransform, IntensityTransform):
             **kwargs
             ):
         super().__init__(**kwargs)
-        self.mean_range = self.parse_range(mean, 'mean')
-        self.std_range = self.parse_range(std, 'std', min_constraint=0)
+        self.mean_range = self._parse_range(mean, 'mean')
+        self.std_range = self._parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
@@ -56,7 +56,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
             ) -> Tuple[float, float]:
         mean = self.sample_uniform(*mean_range).item()
         std = self.sample_uniform(*std_range).item()
-        seed = self.get_random_seed()
+        seed = self._get_random_seed()
         return mean, std, seed
 
 

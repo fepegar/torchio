@@ -48,7 +48,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
             **kwargs
             ):
         super().__init__(**kwargs)
-        self.log_gamma_range = self.parse_range(log_gamma, 'log_gamma')
+        self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)

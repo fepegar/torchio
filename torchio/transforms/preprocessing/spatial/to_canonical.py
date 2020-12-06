@@ -33,7 +33,7 @@ class ToCanonical(SpatialTransform):
             affine = image.affine
             if nib.aff2axcodes(affine) == tuple('RAS'):
                 continue
-            array = image.data.numpy()[np.newaxis]  # (1, C, W, H, D)
+            array = image.numpy()[np.newaxis]  # (1, C, W, H, D)
             # NIfTI images should have channels in 5th dimension
             array = array.transpose(2, 3, 4, 0, 1)  # (W, H, D, 1, C)
             nii = nib.Nifti1Image(array, affine)

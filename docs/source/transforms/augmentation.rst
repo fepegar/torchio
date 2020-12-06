@@ -2,7 +2,6 @@ Augmentation
 ============
 
 Augmentation transforms generate different results every time they are called.
-The result can be made deterministic using the :attr:`seed` parameter.
 
 .. contents::
     :local:
@@ -74,7 +73,7 @@ Spatial
 :class:`RandomAnisotropy`
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. image:: https://user-images.githubusercontent.com/12688084/87075276-fe9d9d00-c217-11ea-81a4-db0cac163ce7.png
+.. image:: ../../images/random_anisotropy.png
     :alt: Simulation of an image with highly anisotropic spacing
 
 .. autoclass:: RandomAnisotropy

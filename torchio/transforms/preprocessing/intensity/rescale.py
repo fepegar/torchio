@@ -22,7 +22,7 @@ class RescaleIntensity(NormalizationTransform):
             If only one value :math:`d` is provided,
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
-            :class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.
+            :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
@@ -37,9 +37,9 @@ class RescaleIntensity(NormalizationTransform):
             ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.out_min_max = out_min_max
-        self.out_min, self.out_max = self.parse_range(
+        self.out_min, self.out_max = self._parse_range(
             out_min_max, 'out_min_max')
-        self.percentiles = self.parse_range(
+        self.percentiles = self._parse_range(
             percentiles, 'percentiles', min_constraint=0, max_constraint=100)
         self.args_names = 'out_min_max', 'percentiles', 'masking_method'
 

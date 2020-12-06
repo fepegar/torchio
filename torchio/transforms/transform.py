@@ -27,13 +27,13 @@ class Transform(ABC):
     :class:`torchio.Image`,
     :class:`numpy.ndarray`,
     :class:`torch.Tensor`,
-    :class:`SimpleITK.image`,
-    or a Python dictionary.
+    :class:`SimpleITK.Image`,
+    or :class:`dict`.
 
     Args:
         p: Probability that this transform will be applied.
         copy: Make a shallow copy of the input before applying the transform.
-        keys: Mandatory if the input is a Python dictionary. The transform will
+        keys: Mandatory if the input is a :class:`dict`. The transform will
             be applied only to the data in each key.
     """
     def __init__(
@@ -54,13 +54,13 @@ class Transform(ABC):
 
         Args:
             data: Instance of 1) :class:`~torchio.Subject`, 4D
-                :class:`torch.Tensor` or NumPy array with dimensions
+                :class:`torch.Tensor` or :class:`numpy.ndarray` with dimensions
                 :math:`(C, W, H, D)`, where :math:`C` is the number of channels
                 and :math:`W, H, D` are the spatial dimensions. If the input is
                 a tensor, the affine matrix will be set to identity. Other
                 valid input types are a SimpleITK image, a
-                :class:`torch.Image`, a NiBabel Nifti1 Image or a Python
-                dictionary. The output type is the same as te input type.
+                :class:`torchio.Image`, a NiBabel Nifti1 image or a
+                :class:`dict`. The output type is the same as the input type.
         """
         if torch.rand(1).item() > self.probability:
             return data
@@ -134,11 +134,11 @@ class Transform(ABC):
                 )
                 raise ValueError(message)
             for param_range in zip(params[::2], params[1::2]):
-                self.parse_range(param_range, name, **kwargs)
+                self._parse_range(param_range, name, **kwargs)
         return tuple(params)
 
     @staticmethod
-    def parse_range(
+    def _parse_range(
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
             min_constraint: TypeNumber = None,
