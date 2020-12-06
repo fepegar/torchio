@@ -19,13 +19,13 @@ class Compose(Transform):
     Args:
         transforms: Sequence of instances of
             :class:`~torchio.transforms.Transform`.
-        p: Probability that this transform will be applied.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     .. note::
         This is a thin wrapper of :class:`torchvision.transforms.Compose`.
     """
-    def __init__(self, transforms: Sequence[Transform], p: float = 1):
-        super().__init__(p=p)
+    def __init__(self, transforms: Sequence[Transform], **kwargs):
+        super().__init__(**kwargs)
         if not transforms:
             raise ValueError('The list of transforms is empty')
         for transform in transforms:
@@ -74,7 +74,7 @@ class OneOf(RandomTransform):
             probabilities as values. Probabilities are normalized so they sum
             to one. If a sequence is given, the same probability will be
             assigned to each transform.
-        p: Probability that this transform will be applied.
+        **kwargs: See :class:`~torchio.transforms.Transform`.
 
     Example:
         >>> import torchio as tio
@@ -90,9 +90,9 @@ class OneOf(RandomTransform):
     def __init__(
             self,
             transforms: TypeTransformsDict,
-            p: float = 1,
+            **kwargs
             ):
-        super().__init__(p=p)
+        super().__init__(**kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
     def apply_transform(self, subject: Subject) -> Subject:
