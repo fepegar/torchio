@@ -1,5 +1,4 @@
 import warnings
-from typing import Optional, Sequence
 
 import torch
 import numpy as np

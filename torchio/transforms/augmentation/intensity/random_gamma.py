@@ -1,6 +1,6 @@
 import warnings
 from collections import defaultdict
-from typing import Tuple, Optional, Sequence
+from typing import Tuple
 
 import torch
 

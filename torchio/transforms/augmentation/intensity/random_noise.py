@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Tuple, Optional, Union, Dict, Sequence
+from typing import Tuple, Union, Dict, Sequence
 
 import torch
 from ....torchio import DATA

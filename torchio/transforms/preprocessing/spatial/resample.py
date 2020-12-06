@@ -1,6 +1,6 @@
 from pathlib import Path
 from numbers import Number
-from typing import Union, Tuple, Optional, Sequence
+from typing import Union, Tuple, Optional
 
 import torch
 import numpy as np

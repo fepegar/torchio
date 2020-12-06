@@ -1,4 +1,4 @@
-from typing import Union, Sequence, Optional
+from typing import Union
 import torch
 from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable

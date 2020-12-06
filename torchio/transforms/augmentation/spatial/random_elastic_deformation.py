@@ -1,6 +1,6 @@
 import warnings
 from numbers import Number
-from typing import Tuple, Optional, Union, Sequence
+from typing import Tuple, Union, Sequence
 
 import torch
 import numpy as np

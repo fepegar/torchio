@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Union, Sequence, Optional
+from typing import Union
 
 import numpy as np
 import nibabel as nib

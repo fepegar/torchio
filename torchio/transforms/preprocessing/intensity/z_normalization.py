@@ -1,5 +1,4 @@
 import torch
-from typing import Optional, Sequence
 from ....data.subject import Subject
 from ....torchio import DATA
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod

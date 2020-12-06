@@ -2,7 +2,7 @@
 This is the docstring of random transform module
 """
 
-from typing import Optional, Tuple, Sequence
+from typing import Tuple
 
 import torch
 

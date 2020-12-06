@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Optional, List, Sequence
+from typing import Union, Tuple, List
 import torch
 import numpy as np
 from ....data.subject import Subject

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Union, Tuple, Optional, Sequence, Dict
+from typing import Union, Tuple, Dict
 
 import torch
 import numpy as np
