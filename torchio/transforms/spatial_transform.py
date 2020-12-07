@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from .transform import Transform
-from .. import Image
+from ..data import Image
 
 
 class SpatialTransform(Transform):

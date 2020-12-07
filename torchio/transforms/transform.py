@@ -66,7 +66,7 @@ class Transform(ABC):
         """
         if torch.rand(1).item() > self.probability:
             return data
-        data_parser = DataParser(data, keys=self.keys)
+        data_parser = DataParser(data, keys=self.include)
         subject = data_parser.get_subject()
         if self.copy:
             subject = copy.copy(subject)
@@ -280,7 +280,7 @@ class Transform(ABC):
         if include is not None and exclude is not None:
             message = (
                 'Include and exclude cannot be specified both. To apply this transform'
-                ' only to specific images use or include or exclude'
+                ' only to specific images use or include or exclude.'
             )
             raise ValueError(message)
         return include, exclude

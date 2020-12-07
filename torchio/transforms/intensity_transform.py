@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from .transform import Transform
-from .. import Image
+from ..data import Image
 
 
 class IntensityTransform(Transform):

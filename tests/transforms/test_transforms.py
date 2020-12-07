@@ -52,7 +52,7 @@ class TestTransforms(TorchioTestCase):
         return tio.Compose(transforms)
 
     def test_transforms_dict(self):
-        transform = tio.RandomNoise(keys=('t1', 't2'))
+        transform = tio.RandomNoise(include=('t1', 't2'))
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         transformed = transform(input_dict)
         self.assertIsInstance(transformed, dict)

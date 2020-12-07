@@ -59,7 +59,7 @@ class DataParser:
         elif isinstance(self.data, dict):  # e.g. Eisen or MONAI dicts
             if self.keys is None:
                 message = (
-                    'If input is a dictionary, a value for "keys" must be'
+                    'If input is a dictionary, a value for "include" must be'
                     ' specified when instantiating the transform'
                 )
                 raise RuntimeError(message)
