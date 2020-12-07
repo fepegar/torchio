@@ -92,10 +92,15 @@ class RandomAnisotropy(RandomTransform):
         )
         target_spacing = list(subject.spacing)
         target_spacing[axis] *= downsampling
+
+        arguments = {
+            'image_interpolation': 'nearest',
+            'scalars_only': self.scalars_only,
+        }
+
         downsample = Resample(
             tuple(target_spacing),
-            image_interpolation='nearest',
-            scalars_only=self.scalars_only,
+            **self.add_include_exclude(arguments)
         )
         downsampled = downsample(subject)
         upsample = Resample(

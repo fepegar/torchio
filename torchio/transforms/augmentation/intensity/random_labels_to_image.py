@@ -176,14 +176,14 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             else:
                 raise RuntimeError(f'No label maps found in subject: {subject}')
 
-        arguments = dict(
-            label_key=self.label_key,
-            mean=[],
-            std=[],
-            image_key=self.image_key,
-            used_labels=self.used_labels,
-            discretize=self.discretize,
-        )
+        arguments = {
+            'label_key': self.label_key,
+            'mean': [],
+            'std': [],
+            'image_key': self.image_key,
+            'used_labels': self.used_labels,
+            'discretize': self.discretize,
+        }
 
         label_map = subject[self.label_key][DATA]
 
@@ -215,7 +215,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             arguments['mean'].append(mean)
             arguments['std'].append(std)
 
-        transform = LabelsToImage(**arguments)
+        transform = LabelsToImage(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

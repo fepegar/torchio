@@ -85,7 +85,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             )
             arguments['locations'][name] = locations
             arguments['patch_size'][name] = self.patch_size
-        transform = Swap(**arguments)
+        transform = Swap(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

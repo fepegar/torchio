@@ -55,7 +55,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         for name, image in self.get_images_dict(subject).items():
             gammas = [self.get_params(self.log_gamma_range) for _ in image.data]
             arguments['gamma'][name] = gammas
-        transform = Gamma(**arguments)
+        transform = Gamma(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

@@ -52,7 +52,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             )
             arguments['coefficients'][image_name] = coefficients
             arguments['order'][image_name] = self.order
-        transform = BiasField(**arguments)
+        transform = BiasField(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

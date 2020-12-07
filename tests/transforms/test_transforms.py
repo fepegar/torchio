@@ -190,9 +190,8 @@ class TestTransforms(TorchioTestCase):
         )
 
     def test_transforms_use_include_and_exclude(self):
-        transform = tio.RandomNoise(include=['t2'], exclude=['t1'])
         with self.assertRaises(ValueError):
-            transform(transform)
+            tio.RandomNoise(include=['t2'], exclude=['t1'])
 
 
 class TestTransform(TorchioTestCase):

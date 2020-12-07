@@ -167,11 +167,14 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             self.max_displacement,
             self.num_locked_borders,
         )
-        transform = ElasticDeformation(
-            control_points,
-            self.max_displacement,
-            self.image_interpolation,
-        )
+
+        arguments = {
+            'control_points': control_points,
+            'max_displacement': self.max_displacement,
+            'image_interpolation': self.image_interpolation,
+        }
+
+        transform = ElasticDeformation(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

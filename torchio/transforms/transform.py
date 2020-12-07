@@ -280,7 +280,7 @@ class Transform(ABC):
         if include is not None and exclude is not None:
             message = (
                 'Include and exclude cannot be specified both. To apply this transform'
-                ' only to specific images use or include or exclude.'
+                ' to specific images only use or include or exclude.'
             )
             raise ValueError(message)
         return include, exclude
