@@ -14,8 +14,7 @@ class Lambda(Transform):
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
             will be applied to all images in the subject.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -29,10 +28,9 @@ class Lambda(Transform):
             self,
             function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.function = function
         self.types_to_apply = types_to_apply
         self.args_names = 'function', 'types_to_apply'

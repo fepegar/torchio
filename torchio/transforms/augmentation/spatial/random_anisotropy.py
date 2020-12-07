@@ -1,5 +1,5 @@
 import warnings
-from typing import Union, Tuple, Optional, List, Sequence
+from typing import Union, Tuple, List
 
 import torch
 
@@ -29,8 +29,7 @@ class RandomAnisotropy(RandomTransform):
             neighbor interpolation. See :ref:`Interpolation` for supported
             interpolation types.
         scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -49,10 +48,9 @@ class RandomAnisotropy(RandomTransform):
             downsampling: TypeRangeFloat = (1.5, 5),
             image_interpolation: str = 'linear',
             scalars_only: bool = True,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self._parse_range(
             downsampling, 'downsampling', min_constraint=1)

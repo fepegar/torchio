@@ -31,7 +31,7 @@ class HistogramStandardization(NormalizationTransform):
             :meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        p: Probability that this transform will be applied.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torch
@@ -48,9 +48,9 @@ class HistogramStandardization(NormalizationTransform):
             self,
             landmarks: TypeLandmarks,
             masking_method: TypeMaskingMethod = None,
-            p: float = 1,
+            **kwargs
             ):
-        super().__init__(masking_method=masking_method, p=p)
+        super().__init__(masking_method=masking_method, **kwargs)
         self.landmarks = landmarks
         self.landmarks_dict = self._parse_landmarks(landmarks)
         self.args_names = 'landmarks', 'masking_method'

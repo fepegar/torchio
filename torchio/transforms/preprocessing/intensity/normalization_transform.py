@@ -1,4 +1,4 @@
-from typing import Union, Sequence, Optional
+from typing import Union
 import torch
 from ....data.subject import Subject
 from ....torchio import DATA, TypeCallable
@@ -19,7 +19,7 @@ class NormalizationTransform(IntensityTransform):
             - A string: the mask image is retrieved from the subject, which is expected the string as a key
 
             - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :class:`torch.Tensor`
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -37,8 +37,7 @@ class NormalizationTransform(IntensityTransform):
     def __init__(
             self,
             masking_method: TypeMaskingMethod = None,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
         """
         masking_method is used to choose the values used for normalization.
@@ -47,7 +46,7 @@ class NormalizationTransform(IntensityTransform):
          - A function: the mask will be computed using the function
          - None: all values are used
         """
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.mask_name = None
         self.masking_method = masking_method
         if masking_method is None:

@@ -2,7 +2,7 @@
 This is the docstring of random transform module
 """
 
-from typing import Optional, Tuple, Sequence
+from typing import Tuple
 
 import torch
 
@@ -14,15 +14,13 @@ class RandomTransform(Transform):
     """Base class for stochastic augmentation transforms.
 
     Args:
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
 
     def parse_degrees(
             self,

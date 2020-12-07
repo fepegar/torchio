@@ -1,6 +1,6 @@
 import warnings
 from numbers import Number
-from typing import Tuple, Optional, Union, Sequence
+from typing import Tuple, Union, Sequence
 
 import torch
 import numpy as np
@@ -55,8 +55,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             The value of the dense displacement at each voxel is always
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
     can also be used to better understand the meaning of the parameters.
@@ -117,10 +116,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
         _parse_num_control_points(self.num_control_points)
@@ -185,7 +183,7 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
 
     def __init__(
@@ -193,9 +191,9 @@ class ElasticDeformation(SpatialTransform):
             control_points: np.ndarray,
             max_displacement: TypeTripletFloat,
             image_interpolation: str = 'linear',
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.control_points = control_points
         self.max_displacement = max_displacement
         self.image_interpolation = self.parse_interpolation(image_interpolation)

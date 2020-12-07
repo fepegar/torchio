@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Sequence, Optional
+from typing import Union, Tuple
 import numpy as np
 from ....torchio import TypeTripletInt
 from ... import SpatialTransform
@@ -18,16 +18,14 @@ class BoundsTransform(SpatialTransform):
     Args:
         bounds_parameters: The meaning of this argument varies according to the
             child class.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             bounds_parameters: TypeBounds,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.bounds_parameters = self.parse_bounds(bounds_parameters)
 
     def is_invertible(self):

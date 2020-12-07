@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Tuple, Optional, Sequence, List, Union, Dict
+from typing import Tuple, Sequence, List, Union, Dict
 
 import torch
 import numpy as np
@@ -38,8 +38,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -50,10 +49,9 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
             translation: float = 10,  # in mm
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         if not 0 < num_transforms or not isinstance(num_transforms, int):
@@ -126,7 +124,7 @@ class Motion(IntensityTransform, FourierTransform):
         translation: Sequence of translations :math:`(t_1, t_2, t_3)` in mm.
         times: Sequence of times from 0 to 1 at which the motions happen.
         image_interpolation: See :ref:`Interpolation`.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
@@ -134,9 +132,9 @@ class Motion(IntensityTransform, FourierTransform):
             translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
             times: Union[Sequence[float], Dict[str, Sequence[float]]],
             image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.degrees = degrees
         self.translation = translation
         self.times = times

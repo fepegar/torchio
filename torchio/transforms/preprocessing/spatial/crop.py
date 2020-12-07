@@ -1,5 +1,3 @@
-from typing import Sequence, Optional
-
 import numpy as np
 import nibabel as nib
 
@@ -25,14 +23,14 @@ class Crop(BoundsTransform):
             If only one value :math:`n` is provided, then
             :math:`w_{ini} = w_{fin} = h_{ini} = h_{fin}
             = d_{ini} = d_{fin} = n`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             cropping: TypeBounds,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(cropping, p=p, keys=keys)
+        super().__init__(cropping, **kwargs)
         self.cropping = cropping
         self.args_names = ('cropping',)
 

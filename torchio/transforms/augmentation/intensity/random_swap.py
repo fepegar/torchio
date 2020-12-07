@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Optional, Tuple, Union, List, Sequence, Dict
+from typing import Tuple, Union, List, Sequence, Dict
 
 import torch
 import numpy as np
@@ -25,17 +25,15 @@ class RandomSwap(RandomTransform, IntensityTransform):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs,
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.patch_size = np.array(to_tuple(patch_size))
         self.num_iterations = self._parse_num_iterations(num_iterations)
 
@@ -103,15 +101,15 @@ class Swap(IntensityTransform):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
             locations: Union[TypeLocations, Dict[str, TypeLocations]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.locations = locations
         self.patch_size = patch_size
         self.args_names = 'locations', 'patch_size'

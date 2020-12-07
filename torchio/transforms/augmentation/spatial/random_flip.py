@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Optional, List, Sequence
+from typing import Union, Tuple, List
 import torch
 import numpy as np
 from ....data.subject import Subject
@@ -22,8 +22,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
             used.
         flip_probability: Probability that the image will be flipped. This is
             computed on a per-axis basis.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -38,10 +37,9 @@ class RandomFlip(RandomTransform, SpatialTransform):
             self,
             axes: Union[int, Tuple[int, ...]] = 0,
             flip_probability: float = 0.5,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.axes = _parse_axes(axes)
         self.flip_probability = self.parse_probability(flip_probability)
 
@@ -69,14 +67,14 @@ class Flip(SpatialTransform):
             the image will be flipped. See
             :class:`~torchio.transforms.augmentation.spatial.random_flip.RandomFlip`
             for more information.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. tip:: It is handy to specify the axes as anatomical labels when the image
         orientation is not known.
     """
 
-    def __init__(self, axes, keys: Optional[Sequence[str]] = None):
-        super().__init__(keys=keys)
+    def __init__(self, axes, **kwargs):
+        super().__init__(**kwargs)
         self.axes = _parse_axes(axes)
         self.args_names = ('axes',)
 

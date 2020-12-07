@@ -1,5 +1,4 @@
 import torch
-from typing import Optional, Sequence
 from ....data.subject import Subject
 from ....torchio import DATA
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
@@ -11,16 +10,14 @@ class ZNormalization(NormalizationTransform):
     Args:
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             masking_method: TypeMaskingMethod = None,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(masking_method=masking_method, p=p, keys=keys)
+        super().__init__(masking_method=masking_method, **kwargs)
         self.args_names = ('masking_method',)
 
     def apply_normalization(

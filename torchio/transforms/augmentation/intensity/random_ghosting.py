@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Tuple, Optional, Union, Sequence, Dict
+from typing import Tuple, Union, Dict
 
 import torch
 import numpy as np
@@ -38,8 +38,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -50,10 +49,9 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
             intensity: Union[float, Tuple[float, float]] = (0.5, 1),
             restore: float = 0.02,
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         if not isinstance(axes, tuple):
             try:
                 axes = tuple(axes)
@@ -122,7 +120,7 @@ class Ghosting(IntensityTransform, FourierTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -133,9 +131,9 @@ class Ghosting(IntensityTransform, FourierTransform):
             axis: Union[int, Dict[str, int]],
             intensity: Union[float, Dict[str, float]],
             restore: Union[float, Dict[str, float]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.axis = axis
         self.num_ghosts = num_ghosts
         self.intensity = intensity

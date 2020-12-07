@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Tuple, Optional, Union, Dict, Sequence
+from typing import Tuple, Union, Dict, Sequence
 
 import torch
 from ....torchio import DATA
@@ -26,17 +26,15 @@ class RandomNoise(RandomTransform, IntensityTransform):
             then :math:`\sigma \sim \mathcal{U}(a, b)`.
             If only one value :math:`d` is provided,
             :math:`\sigma \sim \mathcal{U}(0, d)`.
-        p: Probability that this transform will be applied.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             mean: Union[float, Tuple[float, float]] = 0,
             std: Union[float, Tuple[float, float]] = (0, 0.25),
-            p: float = 1,
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(p=p, keys=keys)
+        super().__init__(**kwargs)
         self.mean_range = self._parse_range(mean, 'mean')
         self.std_range = self._parse_range(std, 'std', min_constraint=0)
 
@@ -73,16 +71,16 @@ class Noise(IntensityTransform):
         std: Standard deviation :math:`\sigma` of the Gaussian distribution
             from which the noise is sampled.
         seed: Seed for the random number generator.
-        keys: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,
             mean: Union[float, Dict[str, float]],
             std: Union[float, Dict[str, float]],
             seed: Union[int, Sequence[int]],
-            keys: Optional[Sequence[str]] = None,
+            **kwargs
             ):
-        super().__init__(keys=keys)
+        super().__init__(**kwargs)
         self.mean = mean
         self.std = std
         self.seed = seed
