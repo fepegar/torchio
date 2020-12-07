@@ -14,7 +14,7 @@ class Lambda(Transform):
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
             will be applied to all images in the subject.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio

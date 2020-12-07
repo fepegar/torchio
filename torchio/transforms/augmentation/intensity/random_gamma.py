@@ -24,7 +24,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
@@ -73,7 +73,7 @@ class Gamma(IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 

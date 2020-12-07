@@ -19,7 +19,7 @@ class Compose(Transform):
     Args:
         transforms: Sequence of instances of
             :class:`~torchio.transforms.Transform`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note::
         This is a thin wrapper of :class:`torchvision.transforms.Compose`.
@@ -74,7 +74,7 @@ class OneOf(RandomTransform):
             probabilities as values. Probabilities are normalized so they sum
             to one. If a sequence is given, the same probability will be
             assigned to each transform.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio

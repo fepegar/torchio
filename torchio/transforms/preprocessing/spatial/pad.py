@@ -29,7 +29,7 @@ class Pad(BoundsTransform):
             d_{ini} = d_{fin} = n`.
         padding_mode: See possible modes in `NumPy docs`_. If it is a number,
             the mode will be set to ``'constant'``.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. _NumPy docs: https://numpy.org/doc/stable/reference/generated/numpy.pad.html
     """

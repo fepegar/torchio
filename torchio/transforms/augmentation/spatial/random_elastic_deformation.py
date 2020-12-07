@@ -55,7 +55,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             The value of the dense displacement at each voxel is always
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
     can also be used to better understand the meaning of the parameters.
@@ -183,7 +183,7 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
 
     def __init__(

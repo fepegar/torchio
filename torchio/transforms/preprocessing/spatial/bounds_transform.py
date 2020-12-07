@@ -18,7 +18,7 @@ class BoundsTransform(SpatialTransform):
     Args:
         bounds_parameters: The meaning of this argument varies according to the
             child class.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,

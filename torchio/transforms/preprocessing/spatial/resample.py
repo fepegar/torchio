@@ -38,7 +38,7 @@ class Resample(SpatialTransform):
             Supported interpolation techniques for resampling
             are ``'nearest'``, ``'linear'`` and ``'bspline'``.
         scalars_only: Apply only to instances of :class:`~torchio.ScalarImage`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio

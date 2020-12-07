@@ -19,7 +19,7 @@ class NormalizationTransform(IntensityTransform):
             - A string: the mask image is retrieved from the subject, which is expected the string as a key
 
             - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :class:`torch.Tensor`
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio

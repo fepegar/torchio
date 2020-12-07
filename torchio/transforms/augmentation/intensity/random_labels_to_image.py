@@ -58,7 +58,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             Discretization is done taking the class of the highest value per
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -266,7 +266,7 @@ class LabelsToImage(IntensityTransform):
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
         seed: Seed for the random number generator.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See

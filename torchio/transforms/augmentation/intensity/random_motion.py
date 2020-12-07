@@ -38,7 +38,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -124,7 +124,7 @@ class Motion(IntensityTransform, FourierTransform):
         translation: Sequence of translations :math:`(t_1, t_2, t_3)` in mm.
         times: Sequence of times from 0 to 1 at which the motions happen.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,

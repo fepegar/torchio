@@ -26,7 +26,7 @@ class CropOrPad(BoundsTransform):
             If a string is given, the output volume center will be the center
             of the bounding box of non-zero values in the image named
             :attr:`mask_name`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio

@@ -38,7 +38,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -120,7 +120,7 @@ class Ghosting(IntensityTransform, FourierTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.

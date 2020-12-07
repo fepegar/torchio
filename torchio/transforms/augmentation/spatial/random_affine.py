@@ -76,7 +76,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -178,7 +178,7 @@ class Affine(SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
     """
     def __init__(
             self,

@@ -23,7 +23,7 @@ class RescaleIntensity(NormalizationTransform):
             :math:`(n_{min}, n_{max}) = (0, d)`.
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        **kwargs: See :class:`~torchio.transforms.Transform`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
     .. _nn-UNet paper: https://arxiv.org/abs/1809.10486
