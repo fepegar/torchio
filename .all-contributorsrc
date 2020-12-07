@@ -154,6 +154,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "dmus",
+      "name": "Derk Mus",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/464378?v=4",
+      "profile": "https://github.com/dmus",
+      "contributions": [
+        "doc",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
