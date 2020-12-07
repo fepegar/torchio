@@ -155,6 +155,45 @@ class TestTransforms(TorchioTestCase):
                 f'Changes after {transform.name}'
             )
 
+    def test_transforms_use_include(self):
+        original_subject = copy.deepcopy(self.sample_subject)
+        transform = tio.RandomNoise(include=['t1'])
+        transformed = transform(self.sample_subject)
+
+        self.assertTensorNotEqual(
+            original_subject.t1.data,
+            transformed.t1.data,
+            f'Changes after {transform.name}'
+        )
+
+        self.assertTensorEqual(
+            original_subject.t2.data,
+            transformed.t2.data,
+            f'Changes after {transform.name}'
+        )
+
+    def test_transforms_use_exclude(self):
+        original_subject = copy.deepcopy(self.sample_subject)
+        transform = tio.RandomNoise(exclude=['t2'])
+        transformed = transform(self.sample_subject)
+
+        self.assertTensorNotEqual(
+            original_subject.t1.data,
+            transformed.t1.data,
+            f'Changes after {transform.name}'
+        )
+
+        self.assertTensorEqual(
+            original_subject.t2.data,
+            transformed.t2.data,
+            f'Changes after {transform.name}'
+        )
+
+    def test_transforms_use_include_and_exclude(self):
+        transform = tio.RandomNoise(include=['t2'], exclude=['t1'])
+        with self.assertRaises(ValueError):
+            transform(transform)
+
 
 class TestTransform(TorchioTestCase):
 

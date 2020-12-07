@@ -45,6 +45,8 @@ class RandomNoise(RandomTransform, IntensityTransform):
             arguments['mean'][image_name] = mean
             arguments['std'][image_name] = std
             arguments['seed'][image_name] = seed
+        arguments['include'] = self.include
+        arguments['exclude'] = self.exclude
         transform = Noise(**arguments)
         transformed = transform(subject)
         return transformed
