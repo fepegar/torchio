@@ -1,6 +1,6 @@
 import copy
 import pprint
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional, Sequence
 
 import numpy as np
 
@@ -173,18 +173,32 @@ class Subject(dict):
         self.check_consistent_spatial_shape()
         self.check_consistent_affine()
 
-    def get_images_dict(self, intensity_only=True) -> Dict[str, Image]:
+    def get_images_dict(
+            self,
+            intensity_only=True,
+            include: Optional[Sequence[str]] = None,
+            exclude: Optional[Sequence[str]] = None,
+            ) -> Dict[str, Image]:
         images = {}
         for image_name, image in self.items():
             if not isinstance(image, Image):
                 continue
             if intensity_only and not image[TYPE] == INTENSITY:
                 continue
+            if include is not None and image_name not in include:
+                continue
+            if exclude is not None and image_name in exclude:
+                continue
             images[image_name] = image
         return images
 
-    def get_images(self, intensity_only=True) -> List[Image]:
-        images_dict = self.get_images_dict(intensity_only=intensity_only)
+    def get_images(
+            self,
+            intensity_only=True,
+            include: Optional[Sequence[str]] = None,
+            exclude: Optional[Sequence[str]] = None,
+            ) -> List[Image]:
+        images_dict = self.get_images_dict(intensity_only=intensity_only, include=include, exclude=exclude)
         return list(images_dict.values())
 
     def get_first_image(self) -> Image:

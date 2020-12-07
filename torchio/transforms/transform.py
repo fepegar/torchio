@@ -33,18 +33,20 @@ class Transform(ABC):
     Args:
         p: Probability that this transform will be applied.
         copy: Make a shallow copy of the input before applying the transform.
-        keys: Mandatory if the input is a :class:`dict`. The transform will
+        include: The transform will
             be applied only to the data in each key.
+        exclude: The transform will not be applied to the data in each key
     """
     def __init__(
             self,
             p: float = 1,
             copy: bool = True,
-            keys: Optional[Sequence[str]] = None,
+            include: Optional[Sequence[str]] = None,
+            exclude: Optional[Sequence[str]] = None,
             ):
         self.probability = self.parse_probability(p)
         self.copy = copy
-        self.keys = keys
+        self.include, self.exclude = self.parse_include_and_exclude(include, exclude)
 
     def __call__(
             self,
@@ -269,6 +271,19 @@ class Transform(ABC):
             )
             raise ValueError(message)
         return probability
+
+    @staticmethod
+    def parse_include_and_exclude(
+            include: Optional[Sequence[str]] = None,
+            exclude: Optional[Sequence[str]] = None,
+            ) -> Tuple[Optional[Sequence[str]], Optional[Sequence[str]]]:
+        if include is not None and exclude is not None:
+            message = (
+                'Include and exclude cannot be specified both. To apply this transform'
+                ' only to specific images use or include or exclude'
+            )
+            raise ValueError(message)
+        return include, exclude
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:
