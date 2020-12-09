@@ -36,7 +36,7 @@ class Lambda(Transform):
         self.args_names = 'function', 'types_to_apply'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        for image in subject.get_images(intensity_only=False):
+        for image in subject.get_images(intensity_only=False, include=self.include, exclude=self.exclude):
 
             image_type = image[TYPE]
             if self.types_to_apply is not None:

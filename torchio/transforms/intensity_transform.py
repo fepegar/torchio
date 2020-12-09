@@ -1,11 +1,13 @@
+from typing import Dict
+
 from .transform import Transform
+from ..data import Image
 
 
 class IntensityTransform(Transform):
     """Transform that modifies voxel intensities only."""
-    @staticmethod
-    def get_images_dict(sample):
-        return sample.get_images_dict(intensity_only=True)
+    def get_images_dict(self, sample) -> Dict[str, Image]:
+        return sample.get_images_dict(intensity_only=True, include=self.include, exclude=self.exclude)
 
     def arguments_are_dict(self) -> bool:
         """Check if main arguments are dict.

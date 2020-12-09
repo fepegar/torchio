@@ -52,7 +52,7 @@ class TestTransforms(TorchioTestCase):
         return tio.Compose(transforms)
 
     def test_transforms_dict(self):
-        transform = tio.RandomNoise(keys=('t1', 't2'))
+        transform = tio.RandomNoise(include=('t1', 't2'))
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         transformed = transform(input_dict)
         self.assertIsInstance(transformed, dict)
@@ -154,6 +154,48 @@ class TestTransforms(TorchioTestCase):
                 original_data,
                 f'Changes after {transform.name}'
             )
+
+    def test_transforms_use_include(self):
+        original_subject = copy.deepcopy(self.sample_subject)
+        transform = tio.RandomNoise(include=['t1'])
+        transformed = transform(self.sample_subject)
+
+        self.assertTensorNotEqual(
+            original_subject.t1.data,
+            transformed.t1.data,
+            f'Changes after {transform.name}'
+        )
+
+        self.assertTensorEqual(
+            original_subject.t2.data,
+            transformed.t2.data,
+            f'Changes after {transform.name}'
+        )
+
+    def test_transforms_use_exclude(self):
+        original_subject = copy.deepcopy(self.sample_subject)
+        transform = tio.RandomNoise(exclude=['t2'])
+        transformed = transform(self.sample_subject)
+
+        self.assertTensorNotEqual(
+            original_subject.t1.data,
+            transformed.t1.data,
+            f'Changes after {transform.name}'
+        )
+
+        self.assertTensorEqual(
+            original_subject.t2.data,
+            transformed.t2.data,
+            f'Changes after {transform.name}'
+        )
+
+    def test_transforms_use_include_and_exclude(self):
+        with self.assertRaises(ValueError):
+            tio.RandomNoise(include=['t2'], exclude=['t1'])
+
+    def test_keys_deprecated(self):
+        with self.assertWarns(DeprecationWarning):
+            tio.RandomNoise(keys=['t2'])
 
 
 class TestTransform(TorchioTestCase):

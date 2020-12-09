@@ -1,15 +1,16 @@
 import copy
 import numbers
+import warnings
+from typing import Union, Tuple
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Optional, Union, Tuple, Sequence
 
 import torch
 import numpy as np
 import SimpleITK as sitk
 
 from ..data.subject import Subject
-from .. import TypeData, TypeNumber
+from .. import TypeData, TypeNumber, TypeKeys
 from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
@@ -18,8 +19,8 @@ from .data_parser import DataParser, TypeTransformInput
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
-    All subclasses should overwrite
-    :meth:`torchio.tranforms.Transform.apply_transform`,
+    All subclasses must overwrite
+    :meth:`Transform.apply_transform`,
     which takes data, applies some transformation and returns the result.
 
     The input can be an instance of
@@ -33,18 +34,37 @@ class Transform(ABC):
     Args:
         p: Probability that this transform will be applied.
         copy: Make a shallow copy of the input before applying the transform.
-        keys: Mandatory if the input is a :class:`dict`. The transform will
-            be applied only to the data in each key.
+        include: Sequence of strings with the names of the only images to which
+            the transform will be applied.
+            Mandatory if the input is a :class:`dict`.
+        exclude: Sequence of strings with the names of the images to which the
+            the transform will not be applied, apart from the ones that are
+            excluded because of the transform type.
+            For example, if a subject includes an MRI, a CT and a label map, and
+            the CT is added to the list of exclusions of an intensity transform
+            such as :class:`~torchio.transforms.RandomBlur`,
+            the transform will be only applied to the MRI, as the label map is
+            excluded by default by spatial transforms.
     """
     def __init__(
             self,
             p: float = 1,
             copy: bool = True,
-            keys: Optional[Sequence[str]] = None,
+            include: TypeKeys = None,
+            exclude: TypeKeys = None,
+            keys: TypeKeys = None,
             ):
         self.probability = self.parse_probability(p)
         self.copy = copy
-        self.keys = keys
+        if keys is not None:
+            message = (
+                'The "keys" argument is deprecated and will be removed in the'
+                ' future. Use "include" instead.'
+            )
+            warnings.warn(message, DeprecationWarning)
+            include = keys
+        self.include, self.exclude = self.parse_include_and_exclude(
+            include, exclude)
 
     def __call__(
             self,
@@ -64,7 +84,7 @@ class Transform(ABC):
         """
         if torch.rand(1).item() > self.probability:
             return data
-        data_parser = DataParser(data, keys=self.keys)
+        data_parser = DataParser(data, keys=self.include)
         subject = data_parser.get_subject()
         if self.copy:
             subject = copy.copy(subject)
@@ -269,6 +289,15 @@ class Transform(ABC):
             )
             raise ValueError(message)
         return probability
+
+    @staticmethod
+    def parse_include_and_exclude(
+            include: TypeKeys = None,
+            exclude: TypeKeys = None,
+            ) -> Tuple[TypeKeys, TypeKeys]:
+        if include is not None and exclude is not None:
+            raise ValueError('Include and exclude cannot both be specified')
+        return include, exclude
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:

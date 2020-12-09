@@ -151,7 +151,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             default_pad_value=self.default_pad_value,
             image_interpolation=self.image_interpolation,
         )
-        transform = Affine(**arguments)
+        transform = Affine(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

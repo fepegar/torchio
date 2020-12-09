@@ -58,7 +58,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             )
             arguments['spikes_positions'][image_name] = spikes_positions_param
             arguments['intensity'][image_name] = intensity_param
-        transform = Spike(**arguments)
+        transform = Spike(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

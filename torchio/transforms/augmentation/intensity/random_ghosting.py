@@ -84,7 +84,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             arguments['axis'][name] = axis_param
             arguments['intensity'][name] = intensity_param
             arguments['restore'][name] = self.restore
-        transform = Ghosting(**arguments)
+        transform = Ghosting(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

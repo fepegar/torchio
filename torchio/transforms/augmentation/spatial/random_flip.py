@@ -50,7 +50,11 @@ class RandomFlip(RandomTransform, SpatialTransform):
             if i not in potential_axes:
                 axes_to_flip_hot[i] = False
         axes, = np.where(axes_to_flip_hot)
-        transform = Flip(axes=axes.tolist())
+
+        arguments = {
+            'axes': axes.tolist(),
+        }
+        transform = Flip(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
 

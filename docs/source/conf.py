@@ -54,6 +54,7 @@ intersphinx_mapping = {
     'torch': ('https://pytorch.org/docs/master/', None),  # https://github.com/pytorch/fairseq/blob/adb5b9c71f7ef4fe2f258e0da102d819ab9920ef/docs/conf.py#L131
     'torchvision': ('https://pytorch.org/docs/master/', None),
     'nibabel': ('https://nipy.org/nibabel/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
