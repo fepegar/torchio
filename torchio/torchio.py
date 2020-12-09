@@ -1,7 +1,7 @@
 """Main module."""
 
 from pathlib import Path
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Optional, Sequence
 import torch
 import numpy as np
 
@@ -28,6 +28,7 @@ CHANNELS_DIMENSION = 1
 # For typing hints
 TypePath = Union[Path, str]
 TypeNumber = Union[int, float]
+TypeKeys = Optional[Sequence[str]]
 TypeData = Union[torch.Tensor, np.ndarray]
 TypeTripletInt = Tuple[int, int, int]
 TypeSextetInt = Tuple[int, int, int, int, int, int]
