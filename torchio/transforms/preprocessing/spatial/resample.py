@@ -34,9 +34,7 @@ class Resample(SpatialTransform):
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
             transform. See usage in the example below.
-        image_interpolation: String that defines the interpolation technique.
-            Supported interpolation techniques for resampling
-            are ``'nearest'``, ``'linear'`` and ``'bspline'``.
+        image_interpolation: See :ref:`Interpolation`.
         scalars_only: Apply only to instances of :class:`~torchio.ScalarImage`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
