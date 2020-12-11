@@ -66,6 +66,15 @@ This project is supported by the
 (BMEIS) <https://www.kcl.ac.uk/bmeis>`_
 (King's College London).
 
+.. image:: ../images/weiss.jpg
+    :width: 300
+    :alt: Wellcome / EPSRC Centre for Interventional and Surgical Sciences
+
+
+.. image:: ../images/cme.svg
+    :width: 250
+    :alt: School of Biomedical Engineering & Imaging Sciences
+
 This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 
