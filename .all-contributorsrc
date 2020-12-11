@@ -164,6 +164,15 @@
         "doc",
         "code"
       ]
+    },
+    {
+      "login": "che85",
+      "name": "Christian Herz",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10195822?v=4",
+      "profile": "http://www.linkedin.com/in/che85",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
