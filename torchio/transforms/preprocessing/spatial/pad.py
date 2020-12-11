@@ -56,23 +56,18 @@ class Pad(BoundsTransform):
             ):
         super().__init__(padding, **kwargs)
         self.padding = padding
-        self.padding_mode, self.fill = self.parse_padding_mode(padding_mode)
+        self.check_padding_mode(padding_mode)
+        self.padding_mode = padding_mode
         self.args_names = 'padding', 'padding_mode'
 
     @classmethod
-    def parse_padding_mode(cls, padding_mode):
-        if padding_mode in cls.PADDING_MODES:
-            fill = None
-        elif isinstance(padding_mode, Number):
-            fill = padding_mode
-            padding_mode = 'constant'
-        else:
+    def check_padding_mode(cls, padding_mode):
+        if not (padding_mode in cls.PADDING_MODES or isinstance(padding_mode, Number)):
             message = (
                 f'Padding mode "{padding_mode}" not valid. Valid options are'
                 f' {list(cls.PADDING_MODES)} or a number'
             )
             raise KeyError(message)
-        return padding_mode, fill
 
     def apply_transform(self, subject: Subject) -> Subject:
         low = self.bounds_parameters[::2]
@@ -80,9 +75,11 @@ class Pad(BoundsTransform):
             new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
             new_affine = image.affine.copy()
             new_affine[:3, 3] = new_origin
-            kwargs = {'mode': self.padding_mode}
-            if self.padding_mode == 'constant':
-                kwargs['constant_values'] = self.fill
+            if isinstance(self.padding_mode, Number):
+                kwargs = {'mode': 'constant',
+                          'constant_values': self.padding_mode}
+            else:
+                kwargs = {'mode': self.padding_mode}
             pad_params = self.bounds_parameters
             paddings = (0, 0), pad_params[:2], pad_params[2:4], pad_params[4:]
             padded = np.pad(image.data, paddings, **kwargs)
