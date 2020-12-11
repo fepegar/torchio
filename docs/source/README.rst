@@ -58,6 +58,14 @@ BibTeX:
       keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing, Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Statistics - Machine Learning},
    }
 
+This project is supported by the
+`Wellcome / EPSRC Centre for Interventional and Surgical Sciences
+(WEISS) <https://www.ucl.ac.uk/interventional-surgical-sciences/>`_
+(University College London) and the
+`School of Biomedical Engineering & Imaging Sciences
+(BMEIS) <https://www.kcl.ac.uk/bmeis>`_
+(King's College London).
+
 This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 

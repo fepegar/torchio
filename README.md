@@ -249,6 +249,8 @@ BibTeX entry:
 }
 ```
 
+This project is supported by the [Wellcome / EPSRC Centre for Interventional and Surgical Sciences (WEISS)](https://www.ucl.ac.uk/interventional-surgical-sciences/) (University College London) and the [School of Biomedical Engineering & Imaging Sciences (BMEIS)](https://www.kcl.ac.uk/bmeis) (King's College London).
+
 
 ## Getting started
 
