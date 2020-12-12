@@ -3,6 +3,7 @@
 """Tests for Subject."""
 
 import tempfile
+import pytest
 import torch
 import numpy as np
 import torchio as tio
@@ -65,7 +66,9 @@ class TestSubject(TorchioTestCase):
         subject.plot(show=False)
 
     # flake8: noqa: E203, E241
+    @pytest.mark.skip(reason='waiting for SimpleITK#1276')
     def test_different_space(self):
+        # https://github.com/fepegar/torchio/issues/354
         affine1 = np.array([
             [ -0.69921875,   0.        ,   0.        , 169.11578369],
             [  0.        ,  -0.69921875,   0.        ,  37.26315689],
@@ -85,3 +88,25 @@ class TestSubject(TorchioTestCase):
         )
         with self.assertRaises(RuntimeError):
             subject.check_consistent_space()
+
+    # flake8: noqa: E203, E241
+    def test_same_space(self):
+        # https://github.com/fepegar/torchio/issues/381
+        affine1 = np.array([
+            [ 4.27109375e-14, -8.71264808e-03,  9.99876633e-01, -3.39850907e+01],
+            [-5.54687500e-01, -2.71630469e-12,  8.75148028e-17, 1.62282930e+02],
+            [ 2.71575000e-12, -5.54619070e-01, -1.57073092e-02, 2.28515784e+02],
+            [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 1.00000000e+00],
+        ])
+        affine2 = np.array([
+            [ 3.67499773e-08, -8.71257665e-03,  9.99876635e-01, -3.39850922e+01],
+            [-5.54687500e-01,  3.67499771e-08,  6.73024385e-08, 1.62282928e+02],
+            [-3.73318194e-08, -5.54619071e-01, -1.57071802e-02, 2.28515778e+02],
+            [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, 1.00000000e+00],
+        ])
+        t = torch.rand(1, 2, 3, 4)
+        subject = tio.Subject(
+            im1=tio.ScalarImage(tensor=t, affine=affine1),
+            im2=tio.ScalarImage(tensor=t, affine=affine2),
+        )
+        subject.check_consistent_space()
