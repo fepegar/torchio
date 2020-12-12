@@ -17,7 +17,7 @@ class TestToCanonical(TorchioTestCase):
         transform = ToCanonical()
         transformed = transform(self.sample_subject)
         self.assertEqual(transformed.t1.orientation, ('R', 'A', 'S'))
-        self.assertTensorEqual(
+        self.assertTensorAlmostEqual(
             transformed.t1.data,
             self.sample_subject.t1.data.numpy()[:, ::-1, :, :]
         )

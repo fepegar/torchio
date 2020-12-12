@@ -51,12 +51,6 @@ class Lambda(Transform):
                     f' of type {torch.Tensor}, not {type(result)}'
                 )
                 raise ValueError(message)
-            if result.dtype != torch.float32:
-                message = (
-                    'The data type of the returned value must be'
-                    f' of type {torch.float32}, not {result.dtype}'
-                )
-                raise ValueError(message)
             if result.ndim != function_arg.ndim:
                 message = (
                     'The number of dimensions of the returned value must'
