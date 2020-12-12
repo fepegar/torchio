@@ -40,8 +40,7 @@ def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     else:
         image = sitk.ReadImage(str(path))
     data, affine = sitk_to_nib(image, keepdim=True)
-    if data.dtype != np.float32:
-        data = data.astype(np.float32)
+
     tensor = torch.from_numpy(data)
     return tensor, affine
 

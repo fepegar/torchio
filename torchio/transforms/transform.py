@@ -94,8 +94,6 @@ class Transform(ABC):
         for image in transformed.get_images(intensity_only=False):
             ndim = image.data.ndim
             assert ndim == 4, f'Output of {self.name} is {ndim}D'
-            dtype = image.data.dtype
-            assert dtype is torch.float32, f'Output of {self.name} is {dtype}'
 
         output = data_parser.get_output(transformed)
         return output

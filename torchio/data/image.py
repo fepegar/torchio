@@ -364,10 +364,8 @@ class Image(dict):
             else:
                 raise RuntimeError('Input tensor cannot be None')
         if isinstance(tensor, np.ndarray):
-            tensor = torch.from_numpy(tensor.astype(np.float32))
-        elif isinstance(tensor, torch.Tensor):
-            tensor = tensor.float()
-        else:
+            tensor = torch.from_numpy(tensor)
+        elif not isinstance(tensor, torch.Tensor):
             message = 'Input tensor must be a PyTorch tensor or NumPy array'
             raise TypeError(message)
         if tensor.ndim != 4:
