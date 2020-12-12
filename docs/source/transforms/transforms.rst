@@ -28,7 +28,7 @@ For example::
 
 
 Transforms can also be applied from the command line using
-:ref:`torchio-transform`.
+:ref:`torchio-transform <cli>`.
 
 All transforms inherit from :class:`torchio.transforms.Transform`:
 
