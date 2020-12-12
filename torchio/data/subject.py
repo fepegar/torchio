@@ -158,7 +158,7 @@ class Subject(dict):
             if affine is None:
                 affine = image.affine
                 first_image = image_name
-            elif not np.allclose(affine, image.affine, rtol=1e-7):
+            elif not np.allclose(affine, image.affine, rtol=1e-6, atol=1e-6):
                 message = (
                     f'Images "{first_image}" and "{image_name}" do not occupy'
                     ' the same physical space.'
