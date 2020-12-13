@@ -1,6 +1,5 @@
 import torch
 from ....data.subject import Subject
-from ....torchio import DATA
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 
@@ -28,7 +27,7 @@ class ZNormalization(NormalizationTransform):
             ) -> None:
         image = subject[image_name]
         standardized = self.znorm(
-            image[DATA],
+            image.data,
             mask,
         )
         if standardized is None:
@@ -41,7 +40,7 @@ class ZNormalization(NormalizationTransform):
 
     @staticmethod
     def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        tensor = tensor.clone()
+        tensor = tensor.clone().float()
         values = tensor.masked_select(mask)
         mean, std = values.mean(), values.std()
         if std == 0:
