@@ -3,8 +3,12 @@
 """Tests for Image."""
 
 import copy
+import tempfile
+
 import torch
 import numpy as np
+import nibabel as nib
+
 from torchio import ScalarImage, LabelMap, Subject, INTENSITY, LABEL, STEM
 from ..utils import TorchioTestCase
 from torchio import RandomFlip, RandomAffine
@@ -156,3 +160,12 @@ class TestImage(TorchioTestCase):
         tensor = np.random.rand(1, 3, 3, 3).astype(np.bool)
         image = ScalarImage(tensor=tensor)
         image.save(self.dir / 'image.nii')
+
+    def test_load_uint(self):
+        affine = np.eye(4)
+        for dtype in np.uint16, np.uint32:
+            data = np.ones((3, 3, 3), dtype=dtype)
+            img = nib.Nifti1Image(data, affine)
+            with tempfile.NamedTemporaryFile(suffix='.nii') as f:
+                nib.save(img, f.name)
+                ScalarImage(f.name).load()
