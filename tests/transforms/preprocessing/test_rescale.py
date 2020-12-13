@@ -12,7 +12,11 @@ class TestRescaleIntensity(TorchioTestCase):
         transform = RescaleIntensity(out_min_max=(min_t1, max_t1))
         transformed = transform(self.sample_subject)
         assert np.allclose(
-            transformed.t1.data, self.sample_subject.t1.data, rtol=0, atol=1e-06)
+            transformed.t1.data,
+            self.sample_subject.t1.data,
+            rtol=0,
+            atol=1e-05,
+        )
 
     def test_min_max(self):
         transform = RescaleIntensity(out_min_max=(0., 1.))
