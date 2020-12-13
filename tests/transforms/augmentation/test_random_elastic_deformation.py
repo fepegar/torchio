@@ -1,29 +1,9 @@
-import torch
 from torchio.transforms import RandomElasticDeformation
 from ...utils import TorchioTestCase
 
 
 class TestRandomElasticDeformation(TorchioTestCase):
     """Tests for `RandomElasticDeformation`."""
-
-    def test_random_elastic_deformation(self):
-        transform = RandomElasticDeformation(
-            num_control_points=5,
-            max_displacement=(2, 3, 5),  # half grid spacing is (3.3, 3.3, 5)
-        )
-        keys = ('t1', 't2', 'label')
-        fixtures = 2916.7192, 2955.1265, 2950
-        torch_rng_state = torch.random.get_rng_state()
-        torch.manual_seed(42)
-        transformed = transform(self.sample_subject)
-        torch.random.set_rng_state(torch_rng_state)
-        for key, fixture in zip(keys, fixtures):
-            sample_data = self.sample_subject[key].numpy()
-            transformed_data = transformed[key].numpy()
-            transformed_total = transformed_data.sum()
-            # Make sure that intensities have changed
-            self.assertTensorNotEqual(sample_data, transformed_data)
-            self.assertAlmostEqual(transformed_total, fixture, places=4)
 
     def test_inputs_pta_gt_one(self):
         with self.assertRaises(ValueError):
