@@ -1,7 +1,7 @@
 from typing import Union
 import torch
 from ....data.subject import Subject
-from ....torchio import DATA, TypeCallable
+from ....torchio import TypeCallable
 from ... import IntensityTransform
 
 
@@ -60,11 +60,11 @@ class NormalizationTransform(IntensityTransform):
         if self.mask_name is None:
             return self.masking_method(tensor)
         else:
-            return subject[self.mask_name][DATA].bool()
+            return subject[self.mask_name].data.bool()
 
     def apply_transform(self, subject: Subject) -> Subject:
-        for image_name, image_dict in self.get_images_dict(subject).items():
-            mask = self.get_mask(subject, image_dict[DATA])
+        for image_name, image in self.get_images_dict(subject).items():
+            mask = self.get_mask(subject, image.data)
             self.apply_normalization(subject, image_name, mask)
         return subject
 

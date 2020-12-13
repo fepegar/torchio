@@ -111,15 +111,15 @@ class Resample(SpatialTransform):
         return result
 
     @staticmethod
-    def check_affine(affine_name: str, image_dict: dict):
+    def check_affine(affine_name: str, image: Image):
         if not isinstance(affine_name, str):
             message = (
                 'Affine name argument must be a string,'
                 f' not {type(affine_name)}'
             )
             raise TypeError(message)
-        if affine_name in image_dict:
-            matrix = image_dict[affine_name]
+        if affine_name in image:
+            matrix = image[affine_name]
             if not isinstance(matrix, (np.ndarray, torch.Tensor)):
                 message = (
                     'The affine matrix must be a NumPy array or PyTorch tensor,'
@@ -135,8 +135,8 @@ class Resample(SpatialTransform):
 
     @staticmethod
     def check_affine_key_presence(affine_name: str, subject: Subject):
-        for image_dict in subject.get_images(intensity_only=False):
-            if affine_name in image_dict:
+        for image in subject.get_images(intensity_only=False):
+            if affine_name in image:
                 return
         message = (
             f'An affine name was given ("{affine_name}"), but it was not found'

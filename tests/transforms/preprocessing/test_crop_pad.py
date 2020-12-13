@@ -22,9 +22,9 @@ class TestCropOrPad(TorchioTestCase):
         with self.assertWarns(RuntimeWarning):
             transformed = transform(self.sample_subject)
         for key in transformed:
-            image_dict = self.sample_subject[key]
-            self.assertTensorEqual(image_dict.data, transformed[key].data)
-            self.assertTensorEqual(image_dict.affine, transformed[key].affine)
+            image = self.sample_subject[key]
+            self.assertTensorEqual(image.data, transformed[key].data)
+            self.assertTensorEqual(image.affine, transformed[key].affine)
 
     def test_different_shape(self):
         shape = self.sample_subject['t1'].spatial_shape
