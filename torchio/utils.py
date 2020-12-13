@@ -415,3 +415,12 @@ def download_url(
         # check integrity of downloaded file
         if not check_integrity(fpath, md5):
             raise RuntimeError('File not found or corrupted.')
+
+
+def check_uint_to_int(array):
+    # This is because PyTorch won't take uint16 nor uint32
+    if array.dtype == np.uint16:
+        return array.astype(np.int32)
+    if array.dtype == np.uint32:
+        return array.astype(np.int64)
+    return array

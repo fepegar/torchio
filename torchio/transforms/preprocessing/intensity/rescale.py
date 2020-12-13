@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 from ....data.subject import Subject
-from ....torchio import DATA, TypeRangeFloat
+from ....torchio import TypeRangeFloat
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 
@@ -49,8 +49,8 @@ class RescaleIntensity(NormalizationTransform):
             image_name: str,
             mask: torch.Tensor,
             ) -> None:
-        image_dict = subject[image_name]
-        image_dict.data = self.rescale(image_dict[DATA], mask, image_name)
+        image = subject[image_name]
+        image.data = self.rescale(image.data, mask, image_name)
 
     def rescale(
             self,
@@ -58,7 +58,8 @@ class RescaleIntensity(NormalizationTransform):
             mask: torch.Tensor,
             image_name: str,
             ) -> torch.Tensor:
-        array = tensor.clone().numpy()  # we'll use in-place operations later
+        # The tensor is cloned as in-place operations will be used
+        array = tensor.clone().float().numpy()
         mask = mask.numpy()
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)

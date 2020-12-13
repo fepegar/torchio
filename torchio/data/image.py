@@ -14,6 +14,7 @@ from ..utils import (
     get_rotation_and_spacing_from_affine,
     get_stem,
     ensure_4d,
+    check_uint_to_int,
 )
 from ..torchio import (
     TypeData,
@@ -149,7 +150,7 @@ class Image(dict):
             ])
         else:
             properties.append(f'path: "{self.path}"')
-        properties.append(f'type: {self.type}')
+        properties.append(f'dtype: {self.data.type()}')
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
         return string
@@ -364,14 +365,15 @@ class Image(dict):
             else:
                 raise RuntimeError('Input tensor cannot be None')
         if isinstance(tensor, np.ndarray):
-            tensor = torch.from_numpy(tensor.astype(np.float32))
-        elif isinstance(tensor, torch.Tensor):
-            tensor = tensor.float()
-        else:
+            tensor = check_uint_to_int(tensor)
+            tensor = torch.from_numpy(tensor)
+        elif not isinstance(tensor, torch.Tensor):
             message = 'Input tensor must be a PyTorch tensor or NumPy array'
             raise TypeError(message)
         if tensor.ndim != 4:
             raise ValueError('Input tensor must be 4D')
+        if tensor.dtype == torch.bool:
+            tensor = tensor.to(torch.uint8)
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in tensor', RuntimeWarning)
         return tensor

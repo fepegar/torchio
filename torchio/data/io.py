@@ -6,7 +6,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from .. import TypePath, TypeData
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..utils import nib_to_sitk, sitk_to_nib, check_uint_to_int
 
 
 FLIPXY = np.diag([-1, -1, 1, 1])
@@ -29,6 +29,7 @@ def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     if data.ndim == 5:
         data = data[..., 0, :]
         data = data.transpose(3, 0, 1, 2)
+    data = check_uint_to_int(data)
     tensor = torch.from_numpy(data)
     affine = img.affine
     return tensor, affine
@@ -40,8 +41,7 @@ def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     else:
         image = sitk.ReadImage(str(path))
     data, affine = sitk_to_nib(image, keepdim=True)
-    if data.dtype != np.float32:
-        data = data.astype(np.float32)
+    data = check_uint_to_int(data)
     tensor = torch.from_numpy(data)
     return tensor, affine
 

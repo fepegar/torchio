@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from ....torchio import DATA, TypePath
+from ....torchio import TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
@@ -86,10 +86,10 @@ class HistogramStandardization(NormalizationTransform):
                 f' landmarks dictionary, whose keys are {keys}'
             )
             raise KeyError(message)
-        image_dict = subject[image_name]
+        image = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
-        image_dict.data = normalize(
-            image_dict[DATA],
+        image.data = normalize(
+            image.data,
             landmarks,
             mask=mask,
         )

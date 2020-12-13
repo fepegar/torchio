@@ -189,7 +189,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
         # Find out if we face a partial-volume image or a label map.
         # One-hot-encoded label map is considered as a partial-volume image
-        all_discrete = label_map.eq(label_map.round()).all()
+        all_discrete = label_map.eq(label_map.float().round()).all()
         same_num_dims = label_map.squeeze().dim() < label_map.dim()
         is_discretized = all_discrete and same_num_dims
 
@@ -306,7 +306,7 @@ class LabelsToImage(IntensityTransform):
 
         # Find out if we face a partial-volume image or a label map.
         # One-hot-encoded label map is considered as a partial-volume image
-        all_discrete = label_map.eq(label_map.round()).all()
+        all_discrete = label_map.eq(label_map.float().round()).all()
         same_num_dims = label_map.squeeze().dim() < label_map.dim()
         is_discretized = all_discrete and same_num_dims
 
@@ -352,7 +352,7 @@ class LabelsToImage(IntensityTransform):
                 bg_mask = label_map == -1
             else:
                 bg_mask = label_map.sum(dim=0, keepdim=True) < 0.5
-            final_image[DATA][bg_mask] = original_image[DATA][bg_mask]
+            final_image[DATA][bg_mask] = original_image[DATA][bg_mask].float()
 
         subject.add_image(final_image, self.image_key)
         return subject
