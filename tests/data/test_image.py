@@ -141,3 +141,13 @@ class TestImage(TorchioTestCase):
     def test_plot(self):
         image = self.sample_subject.t1
         image.plot(show=False, output_path=self.dir / 'image.png')
+
+    def test_data_type_uint16_array(self):
+        tensor = np.random.rand(1, 3, 3, 3).astype(np.uint16)
+        image = ScalarImage(tensor=tensor)
+        self.assertEqual(image.data.dtype, torch.int32)
+
+    def test_data_type_uint32_array(self):
+        tensor = np.random.rand(1, 3, 3, 3).astype(np.uint32)
+        image = ScalarImage(tensor=tensor)
+        self.assertEqual(image.data.dtype, torch.int64)
