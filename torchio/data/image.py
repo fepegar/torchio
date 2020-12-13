@@ -149,7 +149,7 @@ class Image(dict):
             ])
         else:
             properties.append(f'path: "{self.path}"')
-        properties.append(f'type: {self.type}')
+        properties.append(f'dtype: {self.data.type()}')
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
         return string
