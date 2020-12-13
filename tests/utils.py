@@ -144,17 +144,28 @@ class TorchioTestCase(unittest.TestCase):
             data = (data > 0.5).astype(np.uint8)
             if not data.sum() and force_binary_foreground:
                 data[..., 0] = 1
+        elif self.flip_coin():  # cast some images
+            data *= 100
+            dtype = np.uint8 if self.flip_coin() else np.uint16
+            data = data.astype(dtype)
         if add_nans:
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
         if suffix is None:
             suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img', '.mnc'))
         path = self.dir / f'{stem}{suffix}'
-        if np.random.rand() > 0.5:
+        if self.flip_coin():
             path = str(path)
-        image = tio.ScalarImage(tensor=data, affine=affine, check_nans=not add_nans)
+        image = tio.ScalarImage(
+            tensor=data,
+            affine=affine,
+            check_nans=not add_nans,
+        )
         image.save(path)
         return path
+
+    def flip_coin(self):
+        return np.random.rand() > 0.5
 
     def get_tests_data_dir(self):
         return Path(__file__).parent / 'image_data'
