@@ -151,3 +151,8 @@ class TestImage(TorchioTestCase):
         tensor = np.random.rand(1, 3, 3, 3).astype(np.uint32)
         image = ScalarImage(tensor=tensor)
         self.assertEqual(image.data.dtype, torch.int64)
+
+    def test_save_image_with_data_type_boolean(self):
+        tensor = np.random.rand(1, 3, 3, 3).astype(np.bool)
+        image = ScalarImage(tensor=tensor)
+        image.save(self.dir / 'image.nii')
