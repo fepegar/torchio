@@ -14,6 +14,7 @@ from ..utils import (
     get_rotation_and_spacing_from_affine,
     get_stem,
     ensure_4d,
+    check_uint_to_int,
 )
 from ..torchio import (
     TypeData,
@@ -364,15 +365,8 @@ class Image(dict):
             else:
                 raise RuntimeError('Input tensor cannot be None')
         if isinstance(tensor, np.ndarray):
-            try:
-                tensor = torch.from_numpy(tensor)
-            except TypeError:
-                if tensor.dtype == np.uint16:
-                    tensor = torch.from_numpy(tensor.astype(np.int32))
-                elif tensor.dtype == np.uint32:
-                    tensor = torch.from_numpy(tensor.astype(np.int64))
-                else:
-                    raise
+            tensor = check_uint_to_int(tensor)
+            tensor = torch.from_numpy(tensor)
         elif not isinstance(tensor, torch.Tensor):
             message = 'Input tensor must be a PyTorch tensor or NumPy array'
             raise TypeError(message)
