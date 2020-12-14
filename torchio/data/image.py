@@ -16,19 +16,8 @@ from ..utils import (
     ensure_4d,
     check_uint_to_int,
 )
-from ..torchio import (
-    TypeData,
-    TypePath,
-    TypeTripletInt,
-    TypeTripletFloat,
-    DATA,
-    TYPE,
-    AFFINE,
-    PATH,
-    STEM,
-    INTENSITY,
-    LABEL,
-)
+from ..typing import TypeData, TypePath, TypeTripletInt, TypeTripletFloat
+from ..constants import DATA, TYPE, AFFINE, PATH, STEM, INTENSITY, LABEL
 from .io import read_image, write_image
 
 

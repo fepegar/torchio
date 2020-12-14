@@ -7,16 +7,9 @@ import numpy as np
 import SimpleITK as sitk
 
 from ....data.subject import Subject
+from ....constants import INTENSITY, DATA, AFFINE, TYPE
 from ....utils import nib_to_sitk, get_major_sitk_version, to_tuple
-from ....torchio import (
-    INTENSITY,
-    DATA,
-    AFFINE,
-    TYPE,
-    TypeRangeFloat,
-    TypeSextetFloat,
-    TypeTripletFloat,
-)
+from ....typing import TypeRangeFloat, TypeSextetFloat, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform
 

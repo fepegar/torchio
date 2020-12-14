@@ -3,7 +3,7 @@ from typing import Union, Tuple, List
 
 import torch
 
-from ....torchio import TypeRangeFloat
+from ....typing import TypeRangeFloat
 from ....data.subject import Subject
 from ....utils import to_tuple
 from .. import RandomTransform

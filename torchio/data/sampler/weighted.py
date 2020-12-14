@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Generator
 import torch
 import numpy as np
 
-from ...torchio import TypePatchSize
+from ...typing import TypePatchSize
 from ..subject import Subject
 from .sampler import RandomSampler
 

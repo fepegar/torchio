@@ -3,7 +3,8 @@ from typing import Dict, Optional
 import torch
 
 from ...data.subject import Subject
-from ...torchio import TypePatchSize, DATA, TYPE, LABEL
+from ...typing import TypePatchSize
+from ...constants import DATA, TYPE, LABEL
 from .weighted import WeightedSampler
 
 

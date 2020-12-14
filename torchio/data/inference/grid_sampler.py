@@ -4,7 +4,8 @@ import numpy as np
 from torch.utils.data import Dataset
 
 from ...utils import to_tuple
-from ...torchio import LOCATION, TypeTuple, TypeTripletInt
+from ...constants import LOCATION
+from ...typing import TypeTuple, TypeTripletInt
 from ..subject import Subject
 from ..sampler.sampler import PatchSampler
 

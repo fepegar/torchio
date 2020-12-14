@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 
-from .. import TypeData
+from ..typing import TypeData
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
 from ..utils import nib_to_sitk, sitk_to_nib

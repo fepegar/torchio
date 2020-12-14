@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
-from .. import TypePath, TypeData
+from ..typing import TypePath, TypeData
 from ..utils import nib_to_sitk, sitk_to_nib, check_uint_to_int
 
 

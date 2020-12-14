@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple, Optional, Sequence
 
 import numpy as np
 
-from ..torchio import TYPE, INTENSITY
+from ..constants import TYPE, INTENSITY
 from .image import Image
 
 

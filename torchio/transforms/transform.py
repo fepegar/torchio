@@ -10,7 +10,7 @@ import numpy as np
 import SimpleITK as sitk
 
 from ..data.subject import Subject
-from .. import TypeData, TypeNumber, TypeKeys
+from ..typing import TypeData, TypeNumber, TypeKeys
 from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput

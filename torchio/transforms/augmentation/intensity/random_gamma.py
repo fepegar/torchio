@@ -5,7 +5,7 @@ from typing import Tuple
 import torch
 
 from ....utils import to_tuple
-from ....torchio import TypeRangeFloat
+from ....typing import TypeRangeFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform

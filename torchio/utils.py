@@ -12,13 +12,8 @@ import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
 
-from .torchio import (
-    INTENSITY,
-    TypeData,
-    TypeNumber,
-    TypePath,
-    REPO_URL,
-)
+from .constants import INTENSITY, REPO_URL
+from .typing import TypeData, TypeNumber, TypePath
 
 
 FLIP_XY = np.diag((-1, -1, 1))  # used to switch between LPS and RAS

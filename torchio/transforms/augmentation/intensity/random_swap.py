@@ -6,7 +6,7 @@ import numpy as np
 
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ....torchio import TypeTuple, TypeData, TypeTripletInt
+from ....typing import TypeTuple, TypeData, TypeTripletInt
 from ... import IntensityTransform
 from .. import RandomTransform
 

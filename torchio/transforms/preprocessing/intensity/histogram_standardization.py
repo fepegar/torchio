@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from ....torchio import TypePath
+from ....typing import TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod

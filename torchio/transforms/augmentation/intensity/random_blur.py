@@ -6,7 +6,7 @@ import numpy as np
 import scipy.ndimage as ndi
 
 from ....utils import to_tuple
-from ....torchio import TypeData, TypeTripletFloat, TypeSextetFloat
+from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform

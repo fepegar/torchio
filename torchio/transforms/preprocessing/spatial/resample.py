@@ -8,7 +8,7 @@ import SimpleITK as sitk
 
 from ....data.subject import Subject
 from ....data.image import Image, ScalarImage
-from ....torchio import TypeTripletFloat
+from ....typing import TypeTripletFloat
 from ....utils import sitk_to_nib
 from ... import SpatialTransform
 

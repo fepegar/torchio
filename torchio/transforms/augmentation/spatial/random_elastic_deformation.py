@@ -9,7 +9,7 @@ import SimpleITK as sitk
 from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....utils import to_tuple, nib_to_sitk
-from ....torchio import TypeTripletInt, TypeTripletFloat
+from ....typing import TypeTripletInt, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform
 

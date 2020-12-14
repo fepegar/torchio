@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 from ....data.subject import Subject
-from ....torchio import TypeRangeFloat
+from ....typing import TypeRangeFloat
 from .normalization_transform import NormalizationTransform, TypeMaskingMethod
 
 

@@ -4,7 +4,7 @@ from typing import Tuple, Union, Dict
 import torch
 import numpy as np
 
-from ....torchio import DATA
+from ....constants import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform

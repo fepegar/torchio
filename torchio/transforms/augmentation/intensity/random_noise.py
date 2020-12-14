@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Tuple, Union, Dict, Sequence
 
 import torch
-from ....torchio import DATA
+from ....constants import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform

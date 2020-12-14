@@ -6,7 +6,7 @@ import numpy as np
 import SimpleITK as sitk
 
 from ....utils import nib_to_sitk
-from ....torchio import TypeTripletFloat
+from ....typing import TypeTripletFloat
 from ....data.subject import Subject
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform

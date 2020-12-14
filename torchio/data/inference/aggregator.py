@@ -2,7 +2,8 @@ import warnings
 from typing import Tuple
 import torch
 import numpy as np
-from ...torchio import TypeData, CHANNELS_DIMENSION
+from ...typing import TypeData
+from ...constants import CHANNELS_DIMENSION
 from .grid_sampler import GridSampler
 
 

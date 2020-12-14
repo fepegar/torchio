@@ -1,6 +1,6 @@
 from typing import Union, Tuple
 import numpy as np
-from ....torchio import TypeTripletInt
+from ....typing import TypeTripletInt
 from ... import SpatialTransform
 
 

@@ -22,9 +22,11 @@ import shutil
 from pathlib import Path
 from typing import Optional, Sequence
 from tempfile import NamedTemporaryFile
-from ..utils import download_and_extract_archive
+
+from ..typing import TypePath
 from ..transforms import Transform
-from .. import SubjectsDataset, Subject, ScalarImage, LabelMap, TypePath
+from ..utils import download_and_extract_archive
+from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
 
 
 class IXI(SubjectsDataset):

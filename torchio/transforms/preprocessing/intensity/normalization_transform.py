@@ -1,7 +1,7 @@
 from typing import Union
 import torch
 from ....data.subject import Subject
-from ....torchio import TypeCallable
+from ....typing import TypeCallable
 from ... import IntensityTransform
 
 

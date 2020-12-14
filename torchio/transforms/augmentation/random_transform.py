@@ -6,7 +6,7 @@ from typing import Tuple
 
 import torch
 
-from ... import TypeRangeFloat
+from ...typing import TypeRangeFloat
 from .. import Transform
 
 

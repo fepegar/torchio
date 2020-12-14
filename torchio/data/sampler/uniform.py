@@ -1,6 +1,6 @@
 import torch
 from ...data.subject import Subject
-from ...torchio import TypePatchSize
+from ...typing import TypePatchSize
 from .sampler import RandomSampler
 from typing import Generator
 import numpy as np

@@ -2,9 +2,10 @@ from typing import Tuple, Optional, Sequence, List
 
 import torch
 
-from ....torchio import DATA, TypeData, TypeRangeFloat
+from ....constants import DATA
 from ....utils import check_sequence
 from ....data.subject import Subject
+from ....typing import TypeData, TypeRangeFloat
 from ....data.image import ScalarImage, LabelMap
 from ... import IntensityTransform
 from .. import RandomTransform

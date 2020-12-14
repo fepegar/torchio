@@ -2,7 +2,7 @@ from typing import Optional, Generator
 
 import numpy as np
 
-from ... import TypePatchSize, TypeTripletInt
+from ...typing import TypePatchSize, TypeTripletInt
 from ...data.subject import Subject
 from ...utils import to_tuple
 
