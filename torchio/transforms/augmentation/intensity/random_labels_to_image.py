@@ -2,7 +2,6 @@ from typing import Tuple, Optional, Sequence, List
 
 import torch
 
-from ....constants import DATA
 from ....utils import check_sequence
 from ....data.subject import Subject
 from ....typing import TypeData, TypeRangeFloat
@@ -186,7 +185,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             'discretize': self.discretize,
         }
 
-        label_map = subject[self.label_key][DATA]
+        label_map = subject[self.label_key].data
 
         # Find out if we face a partial-volume image or a label map.
         # One-hot-encoded label map is considered as a partial-volume image
@@ -353,7 +352,7 @@ class LabelsToImage(IntensityTransform):
                 bg_mask = label_map == -1
             else:
                 bg_mask = label_map.sum(dim=0, keepdim=True) < 0.5
-            final_image[DATA][bg_mask] = original_image[DATA][bg_mask].float()
+            final_image.data[bg_mask] = original_image.data[bg_mask].float()
 
         subject.add_image(final_image, self.image_key)
         return subject

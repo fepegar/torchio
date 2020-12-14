@@ -4,7 +4,6 @@ from typing import Tuple, Union, Dict
 import torch
 import numpy as np
 
-from ....constants import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
@@ -111,7 +110,7 @@ class Spike(IntensityTransform, FourierTransform):
                 spikes_positions = self.spikes_positions[image_name]
                 intensity = self.intensity[image_name]
             transformed_tensors = []
-            for channel in image[DATA]:
+            for channel in image.data:
                 transformed_tensor = self.add_artifact(
                     channel,
                     spikes_positions,

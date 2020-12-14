@@ -1,6 +1,6 @@
 import urllib.parse
 from ...utils import get_torchio_cache_dir, download_and_extract_archive
-from ... import ScalarImage, LabelMap, DATA
+from ... import ScalarImage, LabelMap
 from .mni import SubjectMNI
 
 
@@ -73,7 +73,7 @@ class Colin27(SubjectMNI):
             if version == 2008:
                 path = download_root / 'colin27_cls_tal_hires.nii'
                 cls_image = LabelMap(path)
-                cls_image.data = cls_image[DATA].round().byte()
+                cls_image.data = cls_image.data.round().byte()
                 cls_image.save(path)
 
         if version == 1998:

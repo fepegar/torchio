@@ -1,5 +1,5 @@
 import torch
-from torchio import DATA, LABEL
+from torchio import LABEL
 from torchio.transforms import Lambda
 from ..utils import TorchioTestCase
 
@@ -26,18 +26,18 @@ class TestLambda(TorchioTestCase):
         transform = Lambda(lambda x: x + 1)
         transformed = transform(self.sample_subject)
         assert torch.all(torch.eq(
-            transformed['t1'][DATA], self.sample_subject['t1'][DATA] + 1))
+            transformed.t1.data, self.sample_subject.t1.data + 1))
         assert torch.all(torch.eq(
-            transformed['t2'][DATA], self.sample_subject['t2'][DATA] + 1))
+            transformed.t2.data, self.sample_subject.t2.data + 1))
         assert torch.all(torch.eq(
-            transformed['label'][DATA], self.sample_subject['label'][DATA] + 1))
+            transformed.label.data, self.sample_subject.label.data + 1))
 
     def test_image_types(self):
         transform = Lambda(lambda x: x + 1, types_to_apply=[LABEL])
         transformed = transform(self.sample_subject)
         assert torch.all(torch.eq(
-            transformed['t1'][DATA], self.sample_subject['t1'][DATA]))
+            transformed.t1.data, self.sample_subject.t1.data))
         assert torch.all(torch.eq(
-            transformed['t2'][DATA], self.sample_subject['t2'][DATA]))
+            transformed.t2.data, self.sample_subject.t2.data))
         assert torch.all(torch.eq(
-            transformed['label'][DATA], self.sample_subject['label'][DATA] + 1))
+            transformed.label.data, self.sample_subject.label.data + 1))

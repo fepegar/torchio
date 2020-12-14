@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import Tuple, Union, Dict, Sequence
 
 import torch
-from ....constants import DATA
 from ....data.subject import Subject
 from ... import IntensityTransform
 from .. import RandomTransform
@@ -93,10 +92,10 @@ class Noise(IntensityTransform):
             if self.arguments_are_dict():
                 mean, std, seed = [arg[name] for arg in args]
             with self._use_seed(seed):
-                noise = get_noise(image[DATA], mean, std)
+                noise = get_noise(image.data, mean, std)
             if self.invert_transform:
                 noise *= -1
-            image.data = image[DATA] + noise
+            image.data = image.data + noise
         return subject
 
 

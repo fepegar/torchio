@@ -4,7 +4,7 @@ import torch
 
 from ...data.subject import Subject
 from ...typing import TypePatchSize
-from ...constants import DATA, TYPE, LABEL
+from ...constants import TYPE, LABEL
 from .weighted import WeightedSampler
 
 
@@ -64,10 +64,10 @@ class LabelSampler(WeightedSampler):
         if self.probability_map_name is None:
             for image in subject.get_images(intensity_only=False):
                 if image[TYPE] == LABEL:
-                    label_map_tensor = image[DATA]
+                    label_map_tensor = image.data
                     break
         elif self.probability_map_name in subject:
-            label_map_tensor = subject[self.probability_map_name][DATA]
+            label_map_tensor = subject[self.probability_map_name].data
         else:
             message = (
                 f'Image "{self.probability_map_name}"'

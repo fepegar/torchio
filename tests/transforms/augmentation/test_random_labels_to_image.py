@@ -1,5 +1,4 @@
 from torchio.transforms import RandomLabelsToImage
-from torchio import DATA
 from ...utils import TorchioTestCase
 
 
@@ -23,12 +22,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
         self.assertTensorEqual(
-            transformed['image_from_labels'][DATA] == 0.5,
-            self.sample_subject['label'][DATA] == 0
+            transformed['image_from_labels'].data == 0.5,
+            self.sample_subject['label'].data == 0
         )
         self.assertTensorEqual(
-            transformed['image_from_labels'][DATA] == 2,
-            self.sample_subject['label'][DATA] == 1
+            transformed['image_from_labels'].data == 2,
+            self.sample_subject['label'].data == 1
         )
 
     def test_deterministic_simulation_with_discretized_label_map(self):
@@ -43,12 +42,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
         self.assertTensorEqual(
-            transformed['image_from_labels'][DATA] == 0.5,
-            self.sample_subject['label'][DATA] == 0
+            transformed['image_from_labels'].data == 0.5,
+            self.sample_subject['label'].data == 0
         )
         self.assertTensorEqual(
-            transformed['image_from_labels'][DATA] == 2,
-            self.sample_subject['label'][DATA] == 1
+            transformed['image_from_labels'].data == 2,
+            self.sample_subject['label'].data == 1
         )
 
     def test_deterministic_simulation_with_pv_map(self):
@@ -62,11 +61,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
-            transformed['image_from_labels'][DATA][0],
-            subject['label'][DATA][0] * 0.5 + subject['label'][DATA][1] * 1
+            transformed['image_from_labels'].data[0],
+            subject['label'].data[0] * 0.5 + subject['label'].data[1] * 1
         )
         self.assertEqual(
-            transformed['image_from_labels'][DATA].shape,
+            transformed['image_from_labels'].data.shape,
             (1, 10, 20, 30)
         )
 
@@ -83,8 +82,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
-            transformed['image_from_labels'][DATA],
-            (subject['label'][DATA] > 0) * 0.5
+            transformed['image_from_labels'].data,
+            (subject['label'].data > 0) * 0.5
         )
 
     def test_filling(self):
@@ -96,11 +95,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             image_key='t1',
             used_labels=[1]
         )
-        t1_indices = self.sample_subject['label'][DATA] == 0
+        t1_indices = self.sample_subject['label'].data == 0
         transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
-            transformed['t1'][DATA][t1_indices],
-            self.sample_subject['t1'][DATA][t1_indices]
+            transformed['t1'].data[t1_indices],
+            self.sample_subject['t1'].data[t1_indices]
         )
 
     def test_filling_with_discretized_label_map(self):
@@ -113,11 +112,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             discretize=True,
             used_labels=[1]
         )
-        t1_indices = self.sample_subject['label'][DATA] < 0.5
+        t1_indices = self.sample_subject['label'].data < 0.5
         transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
-            transformed['t1'][DATA][t1_indices],
-            self.sample_subject['t1'][DATA][t1_indices]
+            transformed['t1'].data[t1_indices],
+            self.sample_subject['t1'].data[t1_indices]
         )
 
     def test_filling_with_discretized_pv_label_map(self):
@@ -131,11 +130,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
             discretize=True,
             used_labels=[1]
         )
-        t1_indices = subject['label'][DATA].argmax(dim=0) == 0
+        t1_indices = subject['label'].data.argmax(dim=0) == 0
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
-            transformed['t1'][DATA][0][t1_indices],
-            subject['t1'][DATA][0][t1_indices]
+            transformed['t1'].data[0][t1_indices],
+            subject['t1'].data[0][t1_indices]
         )
 
     def test_filling_without_any_hole(self):

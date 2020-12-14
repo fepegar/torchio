@@ -2,7 +2,7 @@ from typing import Sequence, Optional
 import torch
 from ..typing import TypeCallable
 from ..data.subject import Subject
-from ..constants import DATA, TYPE
+from ..constants import TYPE
 from .transform import Transform
 
 
@@ -44,7 +44,7 @@ class Lambda(Transform):
                 if image_type not in self.types_to_apply:
                     continue
 
-            function_arg = image[DATA]
+            function_arg = image.data
             result = self.function(function_arg)
             if not isinstance(result, torch.Tensor):
                 message = (

@@ -272,7 +272,7 @@ class Affine(SpatialTransform):
                 center = None
 
             transformed_tensors = []
-            for tensor in image[DATA]:
+            for tensor in image.data:
                 transformed_tensor = self.apply_affine_transform(
                     tensor,
                     image.affine,

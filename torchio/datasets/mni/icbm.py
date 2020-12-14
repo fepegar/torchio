@@ -5,7 +5,7 @@ from ...utils import (
     compress,
     download_and_extract_archive,
 )
-from ... import ScalarImage, LabelMap, DATA
+from ... import ScalarImage, LabelMap
 from .mni import SubjectMNI
 
 
@@ -58,7 +58,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             gm = LabelMap(f'{p}_gm_{m}.nii')
             wm = LabelMap(f'{p}_wm_{m}.nii')
             csf = LabelMap(f'{p}_csf_{m}.nii')
-            gm.data = torch.cat((gm[DATA], wm[DATA], csf[DATA]))
+            gm.data = torch.cat((gm.data, wm.data, csf.data))
             gm.save(tissues_path)
 
         for fp in files_dir.glob('*.nii'):

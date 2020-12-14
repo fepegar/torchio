@@ -151,7 +151,7 @@ class Image(dict):
         return super().__getitem__(item)
 
     def __array__(self):
-        return self[DATA].numpy()
+        return self.data.numpy()
 
     def __copy__(self):
         kwargs = dict(
@@ -434,7 +434,7 @@ class Image(dict):
                 before saving.
         """
         write_image(
-            self[DATA],
+            self.data,
             self.affine,
             path,
             squeeze=squeeze,
@@ -449,7 +449,7 @@ class Image(dict):
 
     def as_sitk(self, **kwargs) -> sitk.Image:
         """Get the image as an instance of :class:`sitk.Image`."""
-        return nib_to_sitk(self[DATA], self.affine, **kwargs)
+        return nib_to_sitk(self.data, self.affine, **kwargs)
 
     def as_pil(self) -> ImagePIL:
         """Get the image as an instance of :class:`PIL.Image`."""
