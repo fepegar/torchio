@@ -4,6 +4,7 @@ import torch
 import numpy as np
 
 from ...typing import TypePatchSize
+from ..image import Image
 from ..subject import Subject
 from .sampler import RandomSampler
 
@@ -68,7 +69,7 @@ class WeightedSampler(RandomSampler):
             )
             raise RuntimeError(message)
         probability_map = self.get_probability_map(subject)
-        probability_map = self.process_probability_map(probability_map)
+        probability_map = self.process_probability_map(probability_map, subject)
         cdf = self.get_cumulative_distribution_function(probability_map)
 
         patches_left = num_patches if num_patches is not None else True
@@ -77,15 +78,18 @@ class WeightedSampler(RandomSampler):
             if num_patches is not None:
                 patches_left -= 1
 
-    def get_probability_map(self, subject: Subject) -> torch.Tensor:
+    def get_probability_map_image(self, subject: Subject) -> Image:
         if self.probability_map_name in subject:
-            data = subject[self.probability_map_name].data
+            return subject[self.probability_map_name]
         else:
             message = (
                 f'Image "{self.probability_map_name}"'
-                f' not found in subject subject: {subject}'
+                f' not found in subject: {subject}'
             )
             raise KeyError(message)
+
+    def get_probability_map(self, subject: Subject) -> torch.Tensor:
+        data = self.get_probability_map_image(subject).data
         if torch.any(data < 0):
             message = (
                 'Negative values found'
@@ -97,6 +101,7 @@ class WeightedSampler(RandomSampler):
     def process_probability_map(
             self,
             probability_map: torch.Tensor,
+            subject: Subject,
             ) -> np.ndarray:
         # Using float32 can create cdf with maximum very far from 1, e.g. 0.92!
         data = probability_map[0].numpy().astype(np.float64)
@@ -105,8 +110,8 @@ class WeightedSampler(RandomSampler):
         total = data.sum()
         if total == 0:
             message = (
-                'Empty probability map found'
-                f' ({self.probability_map_name})'
+                'Empty probability map found:'
+                f' {self.get_probability_map_image(subject).path}'
             )
             raise RuntimeError(message)
         data /= total  # normalize probabilities
