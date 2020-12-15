@@ -160,3 +160,17 @@ class TestImage(TorchioTestCase):
             with tempfile.NamedTemporaryFile(suffix='.nii') as f:
                 nib.save(img, f.name)
                 tio.ScalarImage(f.name).load()
+
+    def test_pil_3d(self):
+        with self.assertRaises(RuntimeError):
+            tio.ScalarImage(tensor=torch.rand(1, 2, 3, 4)).as_pil()
+
+    def test_pil_1(self):
+        tio.ScalarImage(tensor=torch.rand(1, 2, 3, 1)).as_pil()
+
+    def test_pil_2(self):
+        with self.assertRaises(RuntimeError):
+            tio.ScalarImage(tensor=torch.rand(2, 2, 3, 1)).as_pil()
+
+    def test_pil_3(self):
+        tio.ScalarImage(tensor=torch.rand(3, 2, 3, 1)).as_pil()
