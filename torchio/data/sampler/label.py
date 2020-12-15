@@ -2,6 +2,7 @@ from typing import Dict, Optional
 
 import torch
 
+from ...data.image import LabelMap
 from ...data.subject import Subject
 from ...typing import TypePatchSize
 from ...constants import TYPE, LABEL
@@ -60,21 +61,24 @@ class LabelSampler(WeightedSampler):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
 
-    def get_probability_map(self, subject: Subject) -> torch.Tensor:
+    def get_probability_map_image(self, subject: Subject) -> LabelMap:
         if self.probability_map_name is None:
             for image in subject.get_images(intensity_only=False):
                 if image[TYPE] == LABEL:
-                    label_map_tensor = image.data
+                    label_map = image
                     break
         elif self.probability_map_name in subject:
-            label_map_tensor = subject[self.probability_map_name].data
+            label_map = subject[self.probability_map_name]
         else:
             message = (
                 f'Image "{self.probability_map_name}"'
                 f' not found in subject subject: {subject}'
             )
             raise KeyError(message)
+        return label_map
 
+    def get_probability_map(self, subject: Subject) -> torch.Tensor:
+        label_map_tensor = self.get_probability_map_image(subject).data
         label_map_tensor = label_map_tensor.float()
 
         if self.label_probabilities_dict is None:
