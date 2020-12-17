@@ -38,7 +38,8 @@ class ToCanonical(SpatialTransform):
             array = array.transpose(2, 3, 4, 0, 1)  # (W, H, D, 1, C)
             nii = nib.Nifti1Image(array, affine)
             reoriented = nib.as_closest_canonical(nii)
-            array = reoriented.get_fdata(dtype=np.float32)
+            # https://nipy.org/nibabel/reference/nibabel.dataobj_images.html#nibabel.dataobj_images.DataobjImage.get_data
+            array = np.asanyarray(reoriented.dataobj)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
             array = array.copy()
             array = array.transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
