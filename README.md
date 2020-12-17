@@ -97,6 +97,14 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
+<p align="center">
+  <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
+    <img style="width: 360px; height: 360px; overflow: hidden;" src="docs/images/augmentation.gif" alt="Augmentation">
+  </a>
+</p>
+
+---
+
 <table align="center">
     <tr>
         <td align="center">Original</td>
