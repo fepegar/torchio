@@ -136,7 +136,7 @@ class Spike(IntensityTransform, FourierTransform):
             diff = index - mid_shape
             i, j, k = mid_shape + diff
             # As of torch 1.7, "max is not yet implemented for complex tensors"
-            artifact = spectrum.numpy().max() * intensity_factor
+            artifact = spectrum.cpu().numpy().max() * intensity_factor
             if self.invert_transform:
                 spectrum[i, j, k] -= artifact
             else:
