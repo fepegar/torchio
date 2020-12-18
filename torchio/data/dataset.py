@@ -21,6 +21,9 @@ class SubjectsDataset(Dataset):
             :class:`~torchio.Subject`.
         transform: An instance of :class:`~torchio.transforms.Transform`
             that will be applied to each subject.
+        load_getitem: Load all subject images before returning it in
+            :meth:`__getitem__`. Set it to ``False`` if some of the images will
+            not be needed during training.
 
     Example:
         >>> import torchio as tio
@@ -57,11 +60,13 @@ class SubjectsDataset(Dataset):
             self,
             subjects: Sequence[Subject],
             transform: Optional[Callable] = None,
+            load_getitem: bool = True,
             ):
         self._parse_subjects_list(subjects)
         self.subjects = subjects
         self._transform: Optional[Callable]
         self.set_transform(transform)
+        self.load_getitem = load_getitem
 
     def __len__(self):
         return len(self.subjects)
@@ -71,7 +76,8 @@ class SubjectsDataset(Dataset):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
         subject = self.subjects[index]
         subject = copy.deepcopy(subject)  # cheap since images not loaded yet
-        subject.load()
+        if self.load_getitem:
+            subject.load()
 
         # Apply transform (this is usually the bottleneck)
         if self._transform is not None:
