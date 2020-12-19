@@ -86,7 +86,7 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_sitk(self):
         tensor = torch.rand(2, 4, 5, 8)
         affine = np.diag((-1, 2, -3, 1))
-        image = tio.utils.nib_to_sitk(tensor, affine)
+        image = tio.data.io.nib_to_sitk(tensor, affine)
         transform = self.get_transform(
             channels=('default_image_name',), labels=False)
         transformed = transform(image)
@@ -116,6 +116,7 @@ class TestTransforms(TorchioTestCase):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
         subject = self.make_multichannel(self.sample_subject)
         subject = self.flip_affine_x(subject)
+        transformed = None
         for transform in composed.transform.transforms:
             transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)

@@ -9,16 +9,17 @@ from PIL import Image as ImagePIL
 import nibabel as nib
 import SimpleITK as sitk
 
-from ..utils import (
-    nib_to_sitk,
-    get_rotation_and_spacing_from_affine,
-    get_stem,
-    ensure_4d,
-    check_uint_to_int,
-)
+from ..utils import get_stem
 from ..typing import TypeData, TypePath, TypeTripletInt, TypeTripletFloat
 from ..constants import DATA, TYPE, AFFINE, PATH, STEM, INTENSITY, LABEL
-from .io import read_image, write_image
+from .io import (
+    ensure_4d,
+    read_image,
+    write_image,
+    nib_to_sitk,
+    check_uint_to_int,
+    get_rotation_and_spacing_from_affine,
+)
 
 
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM

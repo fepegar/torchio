@@ -6,9 +6,10 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from ....data.image import ScalarImage
+from ....utils import to_tuple
+from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....utils import to_tuple, nib_to_sitk
+from ....data.image import ScalarImage
 from ....typing import TypeTripletInt, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform

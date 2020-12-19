@@ -8,7 +8,7 @@ import SimpleITK as sitk
 from ..typing import TypeData
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..data.io import nib_to_sitk, sitk_to_nib
 
 
 TypeTransformInput = Union[

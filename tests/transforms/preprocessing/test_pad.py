@@ -1,7 +1,7 @@
 import torch
 import SimpleITK as sitk
 import torchio as tio
-from torchio.utils import sitk_to_nib
+from torchio.data.io import sitk_to_nib
 from ...utils import TorchioTestCase
 
 

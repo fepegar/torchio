@@ -5,9 +5,9 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from ....utils import nib_to_sitk
-from ....typing import TypeTripletFloat
+from ....data.io import nib_to_sitk
 from ....data.subject import Subject
+from ....typing import TypeTripletFloat
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
 

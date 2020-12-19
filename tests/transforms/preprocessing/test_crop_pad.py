@@ -91,8 +91,7 @@ class TestCropOrPad(TorchioTestCase):
         with self.assertWarns(RuntimeWarning):
             transform(self.sample_subject)
 
-    def test_mask_only_pad(self):
-        target_shape = 11, 22, 30
+    def mask_only(self, target_shape):
         transform = CropOrPad(target_shape, mask_name='label')
         mask = self.sample_subject['label'].data
         mask *= 0
@@ -112,26 +111,11 @@ class TestCropOrPad(TorchioTestCase):
                 f'Wrong shape for image: {key}',
             )
 
+    def test_mask_only_pad(self):
+        self.mask_only((11, 22, 30))
+
     def test_mask_only_crop(self):
-        target_shape = 9, 18, 30
-        transform = CropOrPad(target_shape, mask_name='label')
-        mask = self.sample_subject['label'].data
-        mask *= 0
-        mask[0, 4:6, 5:8, 3:7] = 1
-        transformed = transform(self.sample_subject)
-        shapes = []
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
-            shapes.append(result_shape)
-        set_shapes = set(shapes)
-        message = f'Images have different shapes: {set_shapes}'
-        assert len(set_shapes) == 1, message
-        for key in transformed:
-            result_shape = transformed[key].spatial_shape
-            self.assertEqual(
-                target_shape, result_shape,
-                f'Wrong shape for image: {key}',
-            )
+        self.mask_only((9, 18, 30))
 
     def test_center_mask(self):
         """The mask bounding box and the input image have the same center"""

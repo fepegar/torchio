@@ -9,9 +9,10 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
+from ..utils import to_tuple
 from ..data.subject import Subject
+from ..data.io import nib_to_sitk, sitk_to_nib
 from ..typing import TypeData, TypeNumber, TypeKeys
-from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
 
