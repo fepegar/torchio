@@ -1,7 +1,8 @@
 import urllib.parse
 from .. import Subject, ScalarImage, LabelMap, DATA_REPO
-from ..utils import get_torchio_cache_dir, download_url
 from ..data.io import read_matrix
+from ..download import download_url
+from ..utils import get_torchio_cache_dir
 
 
 class FPG(Subject):

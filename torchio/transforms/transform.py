@@ -164,7 +164,7 @@ class Transform(ABC):
             max_constraint: TypeNumber = None,
             type_constraint: type = None,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        r"""Adapted from ``torchvision.transforms.RandomRotation``.
+        r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
         Args:
             nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,

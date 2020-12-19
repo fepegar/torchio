@@ -1,4 +1,3 @@
-import os
 import ast
 import gzip
 import shutil
@@ -210,74 +209,3 @@ def history_collate(batch: Sequence, collate_transforms=True):
         if hasattr(first_element, attr):
             dictionary.update({attr: [getattr(d, attr) for d in batch]})
         return dictionary
-
-
-# Adapted from torchvision, removing print statements
-def download_and_extract_archive(
-        url: str,
-        download_root: TypePath,
-        extract_root: Optional[TypePath] = None,
-        filename: Optional[TypePath] = None,
-        md5: str = None,
-        remove_finished: bool = False,
-        ) -> None:
-    download_root = os.path.expanduser(download_root)
-    if extract_root is None:
-        extract_root = download_root
-    if not filename:
-        filename = os.path.basename(url)
-    download_url(url, download_root, filename, md5)
-    archive = os.path.join(download_root, filename)
-    from torchvision.datasets.utils import extract_archive
-    extract_archive(archive, extract_root, remove_finished)
-
-
-# Adapted from torchvision, removing print statements
-def download_url(
-        url: str,
-        root: TypePath,
-        filename: Optional[TypePath] = None,
-        md5: str = None,
-        ) -> None:
-    """Download a file from a url and place it in root.
-
-    Args:
-        url: URL to download file from
-        root: Directory to place downloaded file in
-        filename: Name to save the file under.
-            If ``None``, use the basename of the URL
-        md5: MD5 checksum of the download. If None, do not check
-    """
-    import urllib
-    from torchvision.datasets.utils import check_integrity, gen_bar_updater
-
-    root = os.path.expanduser(root)
-    if not filename:
-        filename = os.path.basename(url)
-    fpath = os.path.join(root, filename)
-    os.makedirs(root, exist_ok=True)
-    # check if file is already present locally
-    if not check_integrity(fpath, md5):
-        try:
-            print('Downloading ' + url + ' to ' + fpath)  # noqa: T001
-            urllib.request.urlretrieve(
-                url, fpath,
-                reporthook=gen_bar_updater()
-            )
-        except (urllib.error.URLError, OSError) as e:
-            if url[:5] == 'https':
-                url = url.replace('https:', 'http:')
-                message = (
-                    'Failed download. Trying https -> http instead.'
-                    ' Downloading ' + url + ' to ' + fpath
-                )
-                print(message)  # noqa: T001
-                urllib.request.urlretrieve(
-                    url, fpath,
-                    reporthook=gen_bar_updater()
-                )
-            else:
-                raise e
-        # check integrity of downloaded file
-        if not check_integrity(fpath, md5):
-            raise RuntimeError('File not found or corrupted.')

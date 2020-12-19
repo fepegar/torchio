@@ -1,6 +1,7 @@
 import urllib.parse
-from ...utils import get_torchio_cache_dir, download_and_extract_archive
 from ... import ScalarImage, LabelMap
+from ...utils import get_torchio_cache_dir
+from ...download import download_and_extract_archive
 from .mni import SubjectMNI
 
 

@@ -1,10 +1,7 @@
 import urllib.parse
 import torch
-from ...utils import (
-    get_torchio_cache_dir,
-    compress,
-    download_and_extract_archive,
-)
+from ...utils import get_torchio_cache_dir, compress
+from ...download import download_and_extract_archive
 from ... import ScalarImage, LabelMap
 from .mni import SubjectMNI
 
