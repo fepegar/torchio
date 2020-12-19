@@ -286,16 +286,19 @@ class Image(dict):
     # flake8: noqa: E701
     @staticmethod
     def flip_axis(axis: str) -> str:
-        if axis == 'R': return 'L'
-        elif axis == 'L': return 'R'
-        elif axis == 'A': return 'P'
-        elif axis == 'P': return 'A'
-        elif axis == 'I': return 'S'
-        elif axis == 'S': return 'I'
+        if axis == 'R': flipped_axis = 'L'
+        elif axis == 'L': flipped_axis = 'R'
+        elif axis == 'A': flipped_axis = 'P'
+        elif axis == 'P': flipped_axis = 'A'
+        elif axis == 'I': flipped_axis = 'S'
+        elif axis == 'S': flipped_axis = 'I'
+        elif axis == 'T': flipped_axis = 'B'
+        elif axis == 'B': flipped_axis = 'T'
         else:
             values = ', '.join('LRPAISTB')
             message = f'Axis not understood. Please use one of: {values}'
             raise ValueError(message)
+        return flipped_axis
 
     def get_spacing_string(self) -> str:
         strings = [f'{n:.2f}' for n in self.spacing]
