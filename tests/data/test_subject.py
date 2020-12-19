@@ -66,30 +66,6 @@ class TestSubject(TorchioTestCase):
         subject.plot(show=False)
 
     # flake8: noqa: E203, E241
-    @pytest.mark.skip(reason='waiting for SimpleITK#1276')
-    def test_different_space(self):
-        # https://github.com/fepegar/torchio/issues/354
-        affine1 = np.array([
-            [ -0.69921875,   0.        ,   0.        , 169.11578369],
-            [  0.        ,  -0.69921875,   0.        ,  37.26315689],
-            [  0.        ,   0.        ,   0.69999993,  15.30004883],
-            [  0.        ,   0.        ,   0.        ,   1.        ],
-        ])
-        affine2 = np.array([
-            [ -0.69921881,   0.        ,   0.        , 169.11578369],
-            [  0.        ,  -0.69921881,   0.        ,  37.26315689],
-            [  0.        ,   0.        ,   0.69999993,  15.30003738],
-            [  0.        ,   0.        ,   0.        ,   1.        ],
-        ])
-        t = torch.rand(1, 2, 3, 4)
-        subject = tio.Subject(
-            im1=tio.ScalarImage(tensor=t, affine=affine1),
-            im2=tio.ScalarImage(tensor=t, affine=affine2),
-        )
-        with self.assertRaises(RuntimeError):
-            subject.check_consistent_space()
-
-    # flake8: noqa: E203, E241
     def test_same_space(self):
         # https://github.com/fepegar/torchio/issues/381
         affine1 = np.array([
