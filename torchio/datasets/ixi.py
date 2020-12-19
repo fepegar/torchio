@@ -25,7 +25,7 @@ from tempfile import NamedTemporaryFile
 
 from ..typing import TypePath
 from ..transforms import Transform
-from ..utils import download_and_extract_archive
+from ..download import download_and_extract_archive
 from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
 
 

@@ -117,7 +117,7 @@ class TestTransforms(TorchioTestCase):
         subject = self.make_multichannel(self.sample_subject)
         subject = self.flip_affine_x(subject)
         transformed = None
-        for transform in composed.transform.transforms:
+        for transform in composed.transforms:
             transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)
             assert trsf_channels > 1, f'Lost channels in {transform.name}'
@@ -147,7 +147,7 @@ class TestTransforms(TorchioTestCase):
         subject = copy.deepcopy(self.sample_subject)
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
         subject = self.flip_affine_x(subject)
-        for transform in composed.transform.transforms:
+        for transform in composed.transforms:
             original_data = copy.deepcopy(subject.t1.data)
             transform(subject)
             self.assertTensorEqual(

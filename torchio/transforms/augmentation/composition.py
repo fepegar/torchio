@@ -3,7 +3,6 @@ from typing import Union, Sequence, Dict
 
 import torch
 import numpy as np
-from torchvision.transforms import Compose as PyTorchCompose
 
 from ...data.subject import Subject
 from .. import Transform
@@ -21,8 +20,6 @@ class Compose(Transform):
             :class:`~torchio.transforms.Transform`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
-    .. note::
-        This is a thin wrapper of :class:`torchvision.transforms.Compose`.
     """
     def __init__(self, transforms: Sequence[Transform], **kwargs):
         super().__init__(**kwargs)
@@ -35,8 +32,7 @@ class Compose(Transform):
                     f' are not callable: "{transform}"'
                 )
                 raise TypeError(message)
-        self.transform = PyTorchCompose(transforms)
-        self.transforms = self.transform.transforms
+        self.transforms = transforms
 
     def __len__(self):
         return len(self.transforms)
@@ -48,7 +44,9 @@ class Compose(Transform):
         return self.transform.__repr__()
 
     def apply_transform(self, subject: Subject) -> Subject:
-        return self.transform(subject)
+        for transform in self.transforms:
+            subject = transform(subject)
+        return subject
 
     def is_invertible(self) -> bool:
         return all(t.is_invertible() for t in self.transforms)

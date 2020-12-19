@@ -17,7 +17,6 @@ requirements = [
     'numpy',
     'scipy',
     'torch>=1.1',
-    'torchvision',
     'tqdm',
 ]
 

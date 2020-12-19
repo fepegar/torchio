@@ -1,6 +1,7 @@
 import urllib.parse
-from ...utils import get_torchio_cache_dir, download_and_extract_archive
-from ... import Subject, ScalarImage, LabelMap
+from ...utils import get_torchio_cache_dir
+from ...data import Subject, ScalarImage, LabelMap
+from ...download import download_and_extract_archive
 
 
 class SubjectITKSNAP(Subject):

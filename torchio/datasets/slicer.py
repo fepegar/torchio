@@ -1,5 +1,5 @@
 import urllib.parse
-from ..utils import download_url
+from ..download import download_url
 from .. import Subject, ScalarImage
 from ..utils import get_torchio_cache_dir
 
