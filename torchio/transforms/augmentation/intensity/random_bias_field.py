@@ -121,9 +121,9 @@ class BiasField(IntensityTransform):
         # Create the bias field map using a linear combination of polynomial
         # functions and the coefficients previously sampled
         shape = np.array(data.shape[1:])  # first axis is channels
-        half_shape = shape / 2
+        half_shape = shape.astype(float) / 2
 
-        ranges = [np.arange(-n, n) for n in half_shape]
+        ranges = [np.arange(-n, n) + 0.5 for n in half_shape]
 
         bias_field = np.zeros(shape)
         x_mesh, y_mesh, z_mesh = np.asarray(np.meshgrid(*ranges))
