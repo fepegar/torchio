@@ -109,9 +109,14 @@ class WeightedSampler(RandomSampler):
         self.clear_probability_borders(data, self.patch_size)
         total = data.sum()
         if total == 0:
+            half_patch_size = tuple(n // 2 for n in self.patch_size)
             message = (
                 'Empty probability map found:'
                 f' {self.get_probability_map_image(subject).path}'
+                '\nVoxels with positive probability might be near the image'
+                ' border.\nIf you suspect that this is the case, try adding a'
+                ' padding transform\nwith half the patch size:'
+                f' torchio.Pad({half_patch_size})'
             )
             raise RuntimeError(message)
         data /= total  # normalize probabilities
