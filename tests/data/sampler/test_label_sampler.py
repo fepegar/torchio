@@ -57,3 +57,10 @@ class TestLabelSampler(TorchioTestCase):
         probabilities = sampler.get_probability_map(subject)
         fixture = torch.Tensor((1 / 4, 3 / 4))
         assert torch.all(probabilities.squeeze().eq(fixture))
+
+    def test_no_labelmap(self):
+        im = tio.ScalarImage(tensor=torch.rand(1, 1, 1, 1))
+        subject = tio.Subject(image=im, no_label=im)
+        sampler = tio.LabelSampler(1)
+        with self.assertRaises(RuntimeError):
+            next(sampler(subject))
