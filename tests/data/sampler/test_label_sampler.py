@@ -64,3 +64,14 @@ class TestLabelSampler(TorchioTestCase):
         sampler = tio.LabelSampler(1)
         with self.assertRaises(RuntimeError):
             next(sampler(subject))
+
+    def test_empty_map(self):
+        # https://github.com/fepegar/torchio/issues/392
+        im = tio.ScalarImage(tensor=torch.rand(1, 6, 6, 6))
+        label = torch.zeros(1, 6, 6, 6)
+        label[..., 0] = 1  # voxels far from center
+        label_im = tio.LabelMap(tensor=label)
+        subject = tio.Subject(image=im, label=label_im)
+        sampler = tio.LabelSampler(4)
+        with self.assertRaises(RuntimeError):
+            next(sampler(subject))

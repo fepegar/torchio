@@ -24,7 +24,7 @@ class TestWeightedSampler(TorchioTestCase):
         subject = torchio.SubjectsDataset([subject])[0]
         return subject
 
-    def test_incosistent_shape(self):
+    def test_inconsistent_shape(self):
         # https://github.com/fepegar/torchio/issues/234#issuecomment-675029767
         subject = torchio.Subject(
             im1=torchio.ScalarImage(tensor=torch.rand(1, 4, 5, 6)),
