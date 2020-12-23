@@ -376,9 +376,11 @@ class Image(dict):
         return ensure_4d(tensor)
 
     @staticmethod
-    def _parse_affine(affine: np.ndarray) -> np.ndarray:
+    def _parse_affine(affine: TypeData) -> np.ndarray:
         if affine is None:
             return np.eye(4)
+        if isinstance(affine, torch.Tensor):
+            affine = affine.numpy()
         if not isinstance(affine, np.ndarray):
             raise TypeError(f'Affine must be a NumPy array, not {type(affine)}')
         if affine.shape != (4, 4):
