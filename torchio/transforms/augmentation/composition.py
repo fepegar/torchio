@@ -41,7 +41,7 @@ class Compose(Transform):
         return self.transforms[index]
 
     def __repr__(self) -> str:
-        return self.transform.__repr__()
+        return repr(self.transforms)
 
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
@@ -51,16 +51,26 @@ class Compose(Transform):
     def is_invertible(self) -> bool:
         return all(t.is_invertible() for t in self.transforms)
 
-    def inverse(self) -> Transform:
+    def inverse(self, warn: bool = True) -> Transform:
+        """Return a composed transform with inverted order and transforms.
+
+        Args:
+            warn: Issue a warning if some transforms are not invertible.
+        """
         transforms = []
         for transform in self.transforms:
             if transform.is_invertible():
                 transforms.append(transform.inverse())
-            else:
+            elif warn:
                 message = f'Skipping {transform.name} as it is not invertible'
                 warnings.warn(message, RuntimeWarning)
         transforms.reverse()
-        return Compose(transforms)
+        if transforms:
+            result = Compose(transforms)
+        else:  # return noop if no invertible transforms are found
+            def result(x): return x  # noqa: E704
+            warnings.warn('No invertible transforms found', RuntimeWarning)
+        return result
 
 
 class OneOf(RandomTransform):

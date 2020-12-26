@@ -121,11 +121,11 @@ class Subject(dict):
         from ..transforms.augmentation.composition import Compose
         return Compose(self.history)
 
-    def get_inverse_transform(self) -> 'Transform':
-        return self.get_composed_history().inverse()
+    def get_inverse_transform(self, warn=True) -> 'Transform':
+        return self.get_composed_history().inverse(warn=warn)
 
-    def apply_inverse_transform(self) -> 'Subject':
-        return self.get_inverse_transform()(self)
+    def apply_inverse_transform(self, warn=True) -> 'Subject':
+        return self.get_inverse_transform(warn=warn)(self)
 
     def clear_history(self) -> None:
         self.applied_transforms = []
