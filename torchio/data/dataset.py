@@ -97,10 +97,14 @@ class SubjectsDataset(Dataset):
 
     @staticmethod
     def _parse_subjects_list(subjects_list: Sequence[Subject]) -> None:
-        # Check that it's list or tuple
-        if not isinstance(subjects_list, collections.abc.Sequence):
-            raise TypeError(
-                f'Subject list must be a sequence, not {type(subjects_list)}')
+        # Check that it's an iterable
+        try:
+            iter(subjects_list)
+        except TypeError as e:
+            message = (
+                f'Subject list must be an iterable, not {type(subjects_list)}'
+            )
+            raise TypeError(message) from e
 
         # Check that it's not empty
         if not subjects_list:
