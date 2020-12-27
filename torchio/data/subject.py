@@ -6,6 +6,7 @@ import numpy as np
 
 from ..constants import TYPE, INTENSITY
 from .image import Image
+from ..utils import get_subclasses
 
 
 class Subject(dict):
@@ -110,10 +111,12 @@ class Subject(dict):
 
     @property
     def history(self):
-        from .. import transforms
+        from ..transforms.transform import Transform
+        transform_classes = {cls.__name__: cls for cls in get_subclasses(Transform)}
+
         transforms_list = []
         for transform_name, arguments in self.applied_transforms:
-            transform = getattr(transforms, transform_name)(**arguments)
+            transform = transform_classes[transform_name](**arguments)
             transforms_list.append(transform)
         return transforms_list
 

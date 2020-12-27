@@ -209,3 +209,9 @@ def history_collate(batch: Sequence, collate_transforms=True):
         if hasattr(first_element, attr):
             dictionary.update({attr: [getattr(d, attr) for d in batch]})
         return dictionary
+
+
+def get_subclasses(target_class: type) -> List[type]:
+    subclasses = target_class.__subclasses__()
+    subclasses += sum([get_subclasses(cls) for cls in subclasses], [])
+    return subclasses
