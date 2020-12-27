@@ -311,7 +311,9 @@ class Transform(ABC):
         Return a dictionary with the arguments that would be necessary to
         reproduce the transform exactly.
         """
-        return {name: getattr(self, name) for name in self.args_names}
+        reproducing_arguments = dict(include=self.include, exclude=self.exclude, copy=self.copy)
+        reproducing_arguments.update({name: getattr(self, name) for name in self.args_names})
+        return reproducing_arguments
 
     def is_invertible(self):
         return hasattr(self, 'invert_transform')
