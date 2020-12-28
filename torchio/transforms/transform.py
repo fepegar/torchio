@@ -120,12 +120,13 @@ class Transform(ABC):
 
     def add_transform_to_subject_history(self, subject):
         from .augmentation import RandomTransform
-        from . import Compose, OneOf, CropOrPad
+        from . import Compose, OneOf, CropOrPad, EnsureShapeMultiple
         call_others = (
             RandomTransform,
             Compose,
             OneOf,
             CropOrPad,
+            EnsureShapeMultiple,
         )
         if not isinstance(self, call_others):
             subject.add_transform(self, self._get_reproducing_arguments())
@@ -311,8 +312,13 @@ class Transform(ABC):
         Return a dictionary with the arguments that would be necessary to
         reproduce the transform exactly.
         """
-        reproducing_arguments = dict(include=self.include, exclude=self.exclude, copy=self.copy)
-        reproducing_arguments.update({name: getattr(self, name) for name in self.args_names})
+        reproducing_arguments = dict(
+            include=self.include,
+            exclude=self.exclude,
+            copy=self.copy,
+        )
+        args_names = {name: getattr(self, name) for name in self.args_names}
+        reproducing_arguments.update(args_names)
         return reproducing_arguments
 
     def is_invertible(self):

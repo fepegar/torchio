@@ -25,6 +25,7 @@ class TestTransforms(TorchioTestCase):
             tio.CropOrPad(cp_args),
             tio.ToCanonical(),
             tio.RandomAnisotropy(downsampling=(1.75, 2), axes=axes_downsample),
+            tio.EnsureShapeMultiple(2),
             tio.Resample((1, 1.1, 1.25)),
             tio.RandomFlip(axes=flip_axes, flip_probability=1),
             tio.RandomMotion(),
