@@ -5,7 +5,8 @@ import numpy as np
 
 from .pad import Pad
 from .crop import Crop
-from .bounds_transform import BoundsTransform, TypeTripletInt, TypeSixBounds
+from .bounds_transform import BoundsTransform
+from ...transform import TypeTripletInt, TypeSixBounds
 from ....data.subject import Subject
 from ....utils import round_up
 

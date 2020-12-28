@@ -1,11 +1,8 @@
-from typing import Union
 import torch
 from ....data.subject import Subject
-from ....typing import TypeCallable
+from ....transforms.transform import Transform
+from ....transforms.transform import TypeMaskingMethod
 from ... import IntensityTransform
-
-
-TypeMaskingMethod = Union[str, TypeCallable, None]
 
 
 class NormalizationTransform(IntensityTransform):
@@ -14,11 +11,15 @@ class NormalizationTransform(IntensityTransform):
     Args:
         masking_method: Defines the mask used to compute the normalization statistics. It can be one of:
 
-            - ``None``: the mask image is all ones, i.e. all values in the image are used
+            - ``None``: the mask image is all ones, i.e. all values in the image are used.
 
-            - A string: the mask image is retrieved from the subject, which is expected the string as a key
+            - A string: key to a :class:`torchio.LabelMap` in the subject which is used as a mask,
+              OR an anatomical label: ``'Left'``, ``'Right'``, ``'Anterior'``, ``'Posterior'``,
+              ``'Inferior'``, ``'Superior'`` which specifies a side of the mask volume to be ones.
 
-            - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :class:`torch.Tensor`
+            - A function: the mask image is computed as a function of the intensity image.
+              The function must receive and return a :class:`torch.Tensor`
+
         **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
 
     Example:
@@ -39,32 +40,12 @@ class NormalizationTransform(IntensityTransform):
             masking_method: TypeMaskingMethod = None,
             **kwargs
             ):
-        """
-        masking_method is used to choose the values used for normalization.
-        It can be:
-         - A string: the mask will be retrieved from the subject
-         - A function: the mask will be computed using the function
-         - None: all values are used
-        """
         super().__init__(**kwargs)
-        self.mask_name = None
         self.masking_method = masking_method
-        if masking_method is None:
-            self.masking_method = self.ones
-        elif callable(masking_method):
-            self.masking_method = masking_method
-        elif isinstance(masking_method, str):
-            self.mask_name = masking_method
-
-    def get_mask(self, subject: Subject, tensor: torch.Tensor) -> torch.Tensor:
-        if self.mask_name is None:
-            return self.masking_method(tensor)
-        else:
-            return subject[self.mask_name].data.bool()
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image_name, image in self.get_images_dict(subject).items():
-            mask = self.get_mask(subject, image.data)
+            mask = Transform.get_mask(self.masking_method, subject, image.data)
             self.apply_normalization(subject, image_name, mask)
         return subject
 
@@ -76,12 +57,3 @@ class NormalizationTransform(IntensityTransform):
             ) -> None:
         # There must be a nicer way of doing this
         raise NotImplementedError
-
-    @staticmethod
-    def ones(tensor: torch.Tensor) -> torch.Tensor:
-        return torch.ones_like(tensor, dtype=torch.bool)
-
-    @staticmethod
-    def mean(tensor: torch.Tensor) -> torch.Tensor:
-        mask = tensor > tensor.mean()
-        return mask

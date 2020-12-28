@@ -119,6 +119,20 @@ class TorchioTestCase(unittest.TestCase):
             ),
         )
 
+    def get_subject_with_labels(self, labels):
+        return tio.Subject(
+            label=tio.LabelMap(
+                self.get_image_path(
+                    'label_multi', labels=labels
+                )
+            )
+        )
+
+    def get_unique_labels(self, label_map):
+        labels = torch.unique(label_map.data)
+        labels = {i.item() for i in labels if i != 0}
+        return labels
+
     def tearDown(self):
         """Tear down test fixtures, if any."""
         shutil.rmtree(self.dir)
@@ -131,6 +145,7 @@ class TorchioTestCase(unittest.TestCase):
             self,
             stem,
             binary=False,
+            labels=None,
             shape=(10, 20, 30),
             spacing=(1, 1, 1),
             components=1,
@@ -144,6 +159,14 @@ class TorchioTestCase(unittest.TestCase):
             data = (data > 0.5).astype(np.uint8)
             if not data.sum() and force_binary_foreground:
                 data[..., 0] = 1
+        elif labels is not None:
+            data = (data * (len(labels) + 1)).astype(np.uint8)
+            new_data = np.zeros_like(data)
+            for i, label in enumerate(labels):
+                new_data[data == (i + 1)] = label
+                if not (new_data == label).sum():
+                    new_data[..., i] = label
+            data = new_data
         elif self.flip_coin():  # cast some images
             data *= 100
             dtype = np.uint8 if self.flip_coin() else np.uint16
@@ -171,7 +194,7 @@ class TorchioTestCase(unittest.TestCase):
         return Path(__file__).parent / 'image_data'
 
     def assertTensorNotEqual(self, *args, **kwargs):  # noqa: N802
-        message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
+        message_kwarg = {'msg': args[2]} if len(args) == 3 else {}
         with self.assertRaises(AssertionError, **message_kwarg):
             self.assertTensorEqual(*args, **kwargs)
 

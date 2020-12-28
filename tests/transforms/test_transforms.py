@@ -44,6 +44,9 @@ class TestTransforms(TorchioTestCase):
                 tio.RandomAffine(): 3,
                 elastic: 1,
             }),
+            tio.RemapLabels(remapping={1: 2, 2: 1, 3: 20, 4: 25}, masking_method='Left'),
+            tio.RemoveLabels([1, 3]),
+            tio.SequentialLabels(),
             tio.Pad(pad_args, padding_mode=3),
             tio.Crop(crop_args),
         ]
@@ -121,7 +124,7 @@ class TestTransforms(TorchioTestCase):
             transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)
             assert trsf_channels > 1, f'Lost channels in {transform.name}'
-            if transform.name != 'RandomLabelsToImage':
+            if transform.name not in ['RandomLabelsToImage', 'RemapLabels', 'RemoveLabels', 'SequentialLabels']:
                 self.assertEqual(
                     subject.shape[0],
                     transformed.shape[0],

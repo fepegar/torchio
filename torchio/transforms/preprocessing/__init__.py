@@ -8,6 +8,10 @@ from .intensity.rescale import RescaleIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
+from .label.remap_labels import RemapLabels
+from .label.sequential_labels import SequentialLabels
+from .label.remove_labels import RemoveLabels
+
 
 __all__ = [
     'Pad',
@@ -18,4 +22,7 @@ __all__ = [
     'RescaleIntensity',
     'ZNormalization',
     'HistogramStandardization',
+    'RemapLabels',
+    'SequentialLabels',
+    'RemoveLabels',
 ]

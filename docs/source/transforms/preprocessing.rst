@@ -85,3 +85,29 @@ Spatial
 
 .. autoclass:: ToCanonical
     :show-inheritance:
+
+Label
+---------
+
+.. currentmodule:: torchio.transforms.preprocessing.label
+
+
+:class:`RemapLabels`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RemapLabels
+    :show-inheritance:
+
+
+:class:`RemoveLabels`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RemoveLabels
+    :show-inheritance:
+
+
+:class:`SequentialLabels`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: SequentialLabels
+    :show-inheritance:
