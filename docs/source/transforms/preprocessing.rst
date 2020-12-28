@@ -59,6 +59,13 @@ Spatial
     :members: _get_six_bounds_parameters
 
 
+:class:`EnsureShapeMultiple`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: EnsureShapeMultiple
+    :show-inheritance:
+
+
 :class:`Crop`
 ~~~~~~~~~~~~~
 
