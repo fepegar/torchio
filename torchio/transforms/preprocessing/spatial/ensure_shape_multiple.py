@@ -10,7 +10,7 @@ from .crop_or_pad import CropOrPad
 
 
 class EnsureShapeMultiple(SpatialTransform):
-    """Crop and/or pad an image to a shape that is a multiple of :math:`N`.
+    """Crop or pad an image to a shape that is a multiple of :math:`N`.
 
     Args:
         target_multiple: Tuple :math:`(w, h, d)`. If a single value :math:`n` is
@@ -21,7 +21,7 @@ class EnsureShapeMultiple(SpatialTransform):
 
     Example:
         >>> import torchio as tio
-        >>> image = torchio.datasets.FPG().t1
+        >>> image = tio.datasets.Colin27().t1
         >>> image.shape
         (1, 181, 217, 181)
         >>> transform = tio.EnsureShapeMultiple(8, method='pad')
@@ -32,10 +32,18 @@ class EnsureShapeMultiple(SpatialTransform):
         >>> transformed = transform(image)
         >>> transformed.shape
         (1, 176, 216, 176)
+        >>> image_2d = image.data[..., :1]
+        >>> image_2d.shape
+        torch.Size([1, 181, 217, 1])
+        >>> transformed = transform(image_2d)
+        >>> transformed.shape
+        torch.Size([1, 176, 216, 1])
+
     """
     def __init__(
             self,
             target_multiple: Union[int, TypeTripletInt],
+            *,
             method: Optional[str] = 'pad',
             **kwargs
             ):
@@ -50,4 +58,5 @@ class EnsureShapeMultiple(SpatialTransform):
         function = np.floor if self.method == 'crop' else np.ceil
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
+        target_shape = np.maximum(target_shape, 1)
         return CropOrPad(target_shape.astype(int))(subject)
