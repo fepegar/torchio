@@ -323,7 +323,11 @@ class Transform(ABC):
         Return a dictionary with the arguments that would be necessary to
         reproduce the transform exactly.
         """
-        reproducing_arguments = {'include': self.include, 'exclude': self.exclude, 'copy': self.copy}
+        reproducing_arguments = {
+            'include': self.include,
+            'exclude': self.exclude,
+            'copy': self.copy,
+        }
         reproducing_arguments.update({name: getattr(self, name) for name in self.args_names})
         return reproducing_arguments
 
