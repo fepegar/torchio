@@ -24,7 +24,8 @@ class Lambda(Transform):
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = tio.Lambda(double)
-    """
+    """  # noqa: E501
+
     def __init__(
             self,
             function: TypeCallable,
@@ -37,8 +38,12 @@ class Lambda(Transform):
         self.args_names = 'function', 'types_to_apply'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        for image in subject.get_images(intensity_only=False, include=self.include, exclude=self.exclude):
-
+        images = subject.get_images(
+            intensity_only=False,
+            include=self.include,
+            exclude=self.exclude,
+        )
+        for image in images:
             image_type = image[TYPE]
             if self.types_to_apply is not None:
                 if image_type not in self.types_to_apply:

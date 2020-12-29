@@ -45,6 +45,10 @@ class TestGridSampler(TorchioTestCase):
         patch_overlap = 2, 4, 6
         initial_shape = copy(self.sample_subject.shape)
         GridSampler(
-            self.sample_subject, patch_size, patch_overlap, padding_mode='reflect')
+            self.sample_subject,
+            patch_size,
+            patch_overlap,
+            padding_mode='reflect',
+        )
         final_shape = self.sample_subject.shape
         self.assertEqual(initial_shape, final_shape)

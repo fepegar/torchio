@@ -34,7 +34,7 @@ class NormalizationTransform(IntensityTransform):
         >>> transform = tio.ZNormalization(masking_method=lambda x: x > x.mean())
         >>> transformed = transform(subject)  # use values above the image mean
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
             masking_method: TypeMaskingMethod = None,

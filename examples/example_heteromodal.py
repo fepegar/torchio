@@ -49,8 +49,8 @@ def main():
     )
 
     # This collate_fn is needed in the case of missing modalities
-    # In this case, the batch will be composed by a *list* of samples instead of
-    # the typical Python dictionary that is collated by default in Pytorch
+    # In this case, the batch will be composed by a *list* of samples instead
+    # of the typical Python dictionary that is collated by default in Pytorch
     batch_loader = DataLoader(
         queue_dataset,
         batch_size=batch_size,

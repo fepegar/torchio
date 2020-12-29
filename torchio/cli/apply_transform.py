@@ -38,7 +38,7 @@ def main(
     \b
     Example:
     $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
-    """
+    """  # noqa: E501
     # Imports are placed here so that the tool loads faster if not being run
     import torch
     import torchio.transforms as transforms

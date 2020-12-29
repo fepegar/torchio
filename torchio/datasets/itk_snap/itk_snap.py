@@ -7,9 +7,10 @@ from ...download import download_and_extract_archive
 class SubjectITKSNAP(Subject):
     """ITK-SNAP Image Data Downloads.
 
-    See `the itk-SNAP website <http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.Data>`_
-    for more information.
-    """
+    See `the ITK-SNAP website`_ for more information.
+
+    .. _the ITK-SNAP website: http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.Data
+    """  # noqa: E501
     url_base = 'https://www.nitrc.org/frs/download.php/'
 
     def __init__(self, name, code):
