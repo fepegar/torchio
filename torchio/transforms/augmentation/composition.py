@@ -69,7 +69,8 @@ class Compose(Transform):
             result = Compose(transforms)
         else:  # return noop if no invertible transforms are found
             def result(x): return x  # noqa: E704
-            warnings.warn('No invertible transforms found', RuntimeWarning)
+            if warn:
+                warnings.warn('No invertible transforms found', RuntimeWarning)
         return result
 
 

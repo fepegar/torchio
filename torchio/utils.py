@@ -213,5 +213,5 @@ def history_collate(batch: Sequence, collate_transforms=True):
 
 def get_subclasses(target_class: type) -> List[type]:
     subclasses = target_class.__subclasses__()
-    subclasses += sum([get_subclasses(cls) for cls in subclasses], [])
+    subclasses += sum((get_subclasses(cls) for cls in subclasses), [])
     return subclasses

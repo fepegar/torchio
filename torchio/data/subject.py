@@ -128,7 +128,9 @@ class Subject(dict):
         return self.get_composed_history().inverse(warn=warn)
 
     def apply_inverse_transform(self, warn=True) -> 'Subject':
-        return self.get_inverse_transform(warn=warn)(self)
+        transformed = self.get_inverse_transform(warn=warn)(self)
+        transformed.clear_history()
+        return transformed
 
     def clear_history(self) -> None:
         self.applied_transforms = []
