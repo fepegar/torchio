@@ -12,9 +12,18 @@ import SimpleITK as sitk
 from ..utils import to_tuple
 from ..data.subject import Subject
 from ..data.io import nib_to_sitk, sitk_to_nib
-from ..typing import TypeData, TypeNumber, TypeKeys
+from ..data.image import LabelMap
+from ..typing import TypeData, TypeNumber, TypeKeys, TypeCallable, TypeTripletInt
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
+
+TypeSixBounds = Tuple[int, int, int, int, int, int]
+TypeBounds = Union[
+    int,
+    TypeTripletInt,
+    TypeSixBounds,
+]
+TypeMaskingMethod = Union[str, TypeCallable, TypeBounds, None]
 
 
 class Transform(ABC):
@@ -121,12 +130,14 @@ class Transform(ABC):
     def add_transform_to_subject_history(self, subject):
         from .augmentation import RandomTransform
         from . import Compose, OneOf, CropOrPad, EnsureShapeMultiple
+        from .preprocessing.label import SequentialLabels
         call_others = (
             RandomTransform,
             Compose,
             OneOf,
             CropOrPad,
             EnsureShapeMultiple,
+            SequentialLabels,
         )
         if not isinstance(self, call_others):
             subject.add_transform(self, self._get_reproducing_arguments())
@@ -312,13 +323,8 @@ class Transform(ABC):
         Return a dictionary with the arguments that would be necessary to
         reproduce the transform exactly.
         """
-        reproducing_arguments = dict(
-            include=self.include,
-            exclude=self.exclude,
-            copy=self.copy,
-        )
-        args_names = {name: getattr(self, name) for name in self.args_names}
-        reproducing_arguments.update(args_names)
+        reproducing_arguments = {'include': self.include, 'exclude': self.exclude, 'copy': self.copy}
+        reproducing_arguments.update({name: getattr(self, name) for name in self.args_names})
         return reproducing_arguments
 
     def is_invertible(self):
@@ -343,3 +349,98 @@ class Transform(ABC):
     @staticmethod
     def get_sitk_interpolator(interpolation: str) -> int:
         return get_sitk_interpolator(interpolation)
+
+    @staticmethod
+    def parse_bounds(bounds_parameters: TypeBounds) -> TypeSixBounds:
+        try:
+            bounds_parameters = tuple(bounds_parameters)
+        except TypeError:
+            bounds_parameters = (bounds_parameters,)
+
+        # Check that numbers are integers
+        for number in bounds_parameters:
+            if not isinstance(number, (int, np.integer)) or number < 0:
+                message = (
+                    'Bounds values must be integers greater or equal to zero,'
+                    f' not "{bounds_parameters}" of type {type(number)}'
+                )
+                raise ValueError(message)
+        bounds_parameters = tuple(int(n) for n in bounds_parameters)
+        bounds_parameters_length = len(bounds_parameters)
+        if bounds_parameters_length == 6:
+            return bounds_parameters
+        if bounds_parameters_length == 1:
+            return 6 * bounds_parameters
+        if bounds_parameters_length == 3:
+            return tuple(np.repeat(bounds_parameters, 2).tolist())
+        message = (
+            'Bounds parameter must be an integer or a tuple of'
+            f' 3 or 6 integers, not {bounds_parameters}'
+        )
+        raise ValueError(message)
+
+    @staticmethod
+    def ones(tensor: torch.Tensor) -> torch.Tensor:
+        return torch.ones_like(tensor, dtype=torch.bool)
+
+    @staticmethod
+    def mean(tensor: torch.Tensor) -> torch.Tensor:
+        mask = tensor > tensor.mean()
+        return mask
+
+    @staticmethod
+    def get_mask(masking_method: TypeMaskingMethod, subject: Subject, tensor: torch.Tensor) -> torch.Tensor:
+        if masking_method is None:
+            return Transform.ones(tensor)
+        elif callable(masking_method):
+            return masking_method(tensor)
+        elif type(masking_method) is str:
+            if masking_method in subject and isinstance(subject[masking_method], LabelMap):
+                return subject[masking_method].data.bool()
+            if masking_method.title() in ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'):
+                return Transform.get_mask_from_anatomical_label(masking_method.title(), tensor)
+        elif type(masking_method) in (tuple, list, int):
+            return Transform.get_mask_from_bounds(masking_method, tensor)
+        message = (
+            'Masking method parameter must be a function, a label map name,'
+            " an anatomical label: ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'),"
+            ' or a bounds parameter: (an int, tuple of 3 ints, or tuple of 6 ints)'
+            f' not {masking_method} of type {type(masking_method)}'
+        )
+        raise ValueError(message)
+
+    @staticmethod
+    def get_mask_from_anatomical_label(anatomical_label: str, tensor: torch.Tensor) -> torch.Tensor:
+        anatomical_label = anatomical_label.title()
+        if anatomical_label.title() not in ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'):
+            message = (
+                "Anatomical label must be one of ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior')"
+                f' not {anatomical_label}'
+            )
+            raise ValueError(message)
+        mask = torch.zeros_like(tensor, dtype=torch.bool)
+        _, width, height, depth = tensor.shape
+        if anatomical_label == 'Right':
+            mask[:, width // 2:] = True
+        elif anatomical_label == 'Left':
+            mask[:, :width // 2] = True
+        elif anatomical_label == 'Anterior':
+            mask[:, :, height // 2:] = True
+        elif anatomical_label == 'Posterior':
+            mask[:, :, :height // 2] = True
+        elif anatomical_label == 'Superior':
+            mask[:, :, :, depth // 2:] = True
+        elif anatomical_label == 'Inferior':
+            mask[:, :, :, :depth // 2] = True
+        return mask
+
+    @staticmethod
+    def get_mask_from_bounds(bounds_parameters: TypeBounds, tensor: torch.Tensor) -> torch.Tensor:
+        bounds_parameters = Transform.parse_bounds(bounds_parameters)
+        low = bounds_parameters[::2]
+        high = bounds_parameters[1::2]
+        i0, j0, k0 = low
+        i1, j1, k1 = np.array(tensor.shape[1:]) - high
+        mask = torch.zeros_like(tensor, dtype=torch.bool)
+        mask[:, i0:i1, j0:j1, k0:k1] = True
+        return mask
