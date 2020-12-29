@@ -3,6 +3,7 @@ from .spatial.crop import Crop
 from .spatial.resample import Resample
 from .spatial.crop_or_pad import CropOrPad
 from .spatial.to_canonical import ToCanonical
+from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 
 from .intensity.rescale import RescaleIntensity
 from .intensity.z_normalization import ZNormalization
@@ -19,8 +20,9 @@ __all__ = [
     'Resample',
     'ToCanonical',
     'CropOrPad',
-    'RescaleIntensity',
+    'EnsureShapeMultiple',
     'ZNormalization',
+    'RescaleIntensity',
     'HistogramStandardization',
     'RemapLabels',
     'SequentialLabels',

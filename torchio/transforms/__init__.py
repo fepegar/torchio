@@ -33,6 +33,7 @@ from .preprocessing import CropOrPad
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
+from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
 from .preprocessing.intensity.histogram_standardization import train as train_histogram
 from .preprocessing.label.remap_labels import RemapLabels
@@ -81,6 +82,7 @@ __all__ = [
     'HistogramStandardization',
     'RescaleIntensity',
     'CropOrPad',
+    'EnsureShapeMultiple',
     'train_histogram',
     'RemapLabels',
     'SequentialLabels',
