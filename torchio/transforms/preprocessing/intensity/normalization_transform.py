@@ -45,7 +45,11 @@ class NormalizationTransform(IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image_name, image in self.get_images_dict(subject).items():
-            mask = Transform.get_mask(self.masking_method, subject, image.data)
+            mask = Transform.get_mask_from_masking_method(
+                self.masking_method,
+                subject,
+                image.data,
+            )
             self.apply_normalization(subject, image_name, mask)
         return subject
 

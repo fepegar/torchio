@@ -1,13 +1,19 @@
 from typing import Dict
 
 from .transform import Transform
-from ..data import Image
+from ..data.image import Image
+from ..data.subject import Subject
 
 
 class IntensityTransform(Transform):
     """Transform that modifies voxel intensities only."""
-    def get_images_dict(self, sample) -> Dict[str, Image]:
-        return sample.get_images_dict(intensity_only=True, include=self.include, exclude=self.exclude)
+    def get_images_dict(self, subject: Subject) -> Dict[str, Image]:
+        images = subject.get_images_dict(
+            intensity_only=True,
+            include=self.include,
+            exclude=self.exclude,
+        )
+        return images
 
     def arguments_are_dict(self) -> bool:
         """Check if main arguments are dict.

@@ -47,7 +47,7 @@ class RemapLabels(Transform):
         >>> transformed = transform(subject)
         >>> # Apply the inverse on the right side only. The labels are correctly split into left/right.
         >>> inverse_transformed = transformed.apply_inverse_transform()
-    """
+    """  # noqa: E501
     def __init__(
             self,
             remapping: Dict[int, int],
@@ -71,7 +71,11 @@ class RemapLabels(Transform):
                 continue
 
             new_data = image.data.clone()
-            mask = Transform.get_mask(self.masking_method, subject, new_data)
+            mask = Transform.get_mask_from_masking_method(
+                self.masking_method,
+                subject,
+                new_data,
+            )
             for old_id, new_id in self.remapping.items():
                 new_data[mask & (image.data == old_id)] = new_id
             image.data = new_data

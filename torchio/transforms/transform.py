@@ -13,7 +13,13 @@ from ..utils import to_tuple
 from ..data.subject import Subject
 from ..data.io import nib_to_sitk, sitk_to_nib
 from ..data.image import LabelMap
-from ..typing import TypeData, TypeNumber, TypeKeys, TypeCallable, TypeTripletInt
+from ..typing import (
+    TypeKeys,
+    TypeData,
+    TypeNumber,
+    TypeCallable,
+    TypeTripletInt,
+)
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
 
@@ -24,6 +30,7 @@ TypeBounds = Union[
     TypeSixBounds,
 ]
 TypeMaskingMethod = Union[str, TypeCallable, TypeBounds, None]
+anat_axes = 'Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'
 
 
 class Transform(ABC):
@@ -50,9 +57,9 @@ class Transform(ABC):
         exclude: Sequence of strings with the names of the images to which the
             the transform will not be applied, apart from the ones that are
             excluded because of the transform type.
-            For example, if a subject includes an MRI, a CT and a label map, and
-            the CT is added to the list of exclusions of an intensity transform
-            such as :class:`~torchio.transforms.RandomBlur`,
+            For example, if a subject includes an MRI, a CT and a label map,
+            and the CT is added to the list of exclusions of an intensity
+            transform such as :class:`~torchio.transforms.RandomBlur`,
             the transform will be only applied to the MRI, as the label map is
             excluded by default by spatial transforms.
     """
@@ -151,7 +158,8 @@ class Transform(ABC):
 
     def parse_params(self, params, around, name, make_ranges=True, **kwargs):
         params = to_tuple(params)
-        if len(params) == 1 or (len(params) == 2 and make_ranges):  # d or (a, b)
+        # d or (a, b)
+        if len(params) == 1 or (len(params) == 2 and make_ranges):
             params *= 3  # (d, d, d) or (a, b, a, b, a, b)
         if len(params) == 3 and make_ranges:  # (a, b, c)
             items = [self.to_range(n, around) for n in params]
@@ -160,8 +168,8 @@ class Transform(ABC):
         if make_ranges:
             if len(params) != 6:
                 message = (
-                    f'If "{name}" is a sequence, it must have length 2, 3 or 6,'
-                    f' not {len(params)}'
+                    f'If "{name}" is a sequence, it must have length 2, 3 or'
+                    f' 6, not {len(params)}'
                 )
                 raise ValueError(message)
             for param_range in zip(params[::2], params[1::2]):
@@ -328,7 +336,8 @@ class Transform(ABC):
             'exclude': self.exclude,
             'copy': self.copy,
         }
-        reproducing_arguments.update({name: getattr(self, name) for name in self.args_names})
+        args_names = {name: getattr(self, name) for name in self.args_names}
+        reproducing_arguments.update(args_names)
         return reproducing_arguments
 
     def is_invertible(self):
@@ -393,32 +402,42 @@ class Transform(ABC):
         return mask
 
     @staticmethod
-    def get_mask(masking_method: TypeMaskingMethod, subject: Subject, tensor: torch.Tensor) -> torch.Tensor:
+    def get_mask(
+            masking_method: TypeMaskingMethod,
+            subject: Subject,
+            tensor: torch.Tensor,
+            ) -> torch.Tensor:
         if masking_method is None:
             return Transform.ones(tensor)
         elif callable(masking_method):
             return masking_method(tensor)
         elif type(masking_method) is str:
-            if masking_method in subject and isinstance(subject[masking_method], LabelMap):
+            in_subject = masking_method in subject
+            if in_subject and isinstance(subject[masking_method], LabelMap):
                 return subject[masking_method].data.bool()
-            if masking_method.title() in ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'):
-                return Transform.get_mask_from_anatomical_label(masking_method.title(), tensor)
+            masking_method = masking_method.capitalize()
+            if masking_method in anat_axes:
+                return Transform.get_mask_from_anatomical_label(
+                    masking_method, tensor)
         elif type(masking_method) in (tuple, list, int):
             return Transform.get_mask_from_bounds(masking_method, tensor)
         message = (
             'Masking method parameter must be a function, a label map name,'
-            " an anatomical label: ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'),"
-            ' or a bounds parameter: (an int, tuple of 3 ints, or tuple of 6 ints)'
+            f' an anatomical label: {anat_axes}, or a bounds parameter'
+            ' (an int, tuple of 3 ints, or tuple of 6 ints),'
             f' not {masking_method} of type {type(masking_method)}'
         )
         raise ValueError(message)
 
     @staticmethod
-    def get_mask_from_anatomical_label(anatomical_label: str, tensor: torch.Tensor) -> torch.Tensor:
+    def get_mask_from_anatomical_label(
+            anatomical_label: str,
+            tensor: torch.Tensor,
+            ) -> torch.Tensor:
         anatomical_label = anatomical_label.title()
-        if anatomical_label.title() not in ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior'):
+        if anatomical_label.title() not in anat_axes:
             message = (
-                "Anatomical label must be one of ('Left', 'Right', 'Anterior', 'Posterior', 'Inferior', 'Superior')"
+                f'Anatomical label must be one of {anat_axes}'
                 f' not {anatomical_label}'
             )
             raise ValueError(message)
@@ -439,7 +458,10 @@ class Transform(ABC):
         return mask
 
     @staticmethod
-    def get_mask_from_bounds(bounds_parameters: TypeBounds, tensor: torch.Tensor) -> torch.Tensor:
+    def get_mask_from_bounds(
+            bounds_parameters: TypeBounds,
+            tensor: torch.Tensor,
+            ) -> torch.Tensor:
         bounds_parameters = Transform.parse_bounds(bounds_parameters)
         low = bounds_parameters[::2]
         high = bounds_parameters[1::2]

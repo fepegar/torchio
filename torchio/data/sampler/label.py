@@ -70,8 +70,8 @@ class LabelSampler(WeightedSampler):
             else:
                 images = subject.get_images(intensity_only=False)
                 message = (
-                    f'No label maps found in subject {subject} with image paths'
-                    f' {[image.path for image in images]}'
+                    f'No label maps found in subject {subject} with image'
+                    f' paths {[image.path for image in images]}'
                 )
                 raise RuntimeError(message)
         elif self.probability_map_name in subject:
