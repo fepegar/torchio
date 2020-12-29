@@ -1,22 +1,21 @@
 from typing import Sequence
 
-from .remap_labels import RemapLabels
 from ...transform import TypeMaskingMethod
+from .remap_labels import RemapLabels
 
 
 class RemoveLabels(RemapLabels):
-    r"""Removes labels from a label map by remapping them to the background label.
+    r"""Remove labels from a label map by remapping them to the background label.
 
-    This transformation is not invertible.
+    This transformation is not `invertible <invertibility>`_.
 
     Args:
         labels: A sequence of label integers that will be removed.
-
-        background_label: integer that specifies which label is considered to be background (generally 0)
-
-        masking_method: See
-            :class:`~torchio.RemapLabels`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        background_label: integer that specifies which label is considered to be
+            background (generally 0).
+        masking_method: See :class:`~torchio.RemapLabels`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,

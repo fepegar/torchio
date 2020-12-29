@@ -1,18 +1,21 @@
-from ...transform import Transform, TypeMaskingMethod
-from ....data import LabelMap
 from typing import Dict
+
+from ....data import LabelMap
+from ...transform import Transform, TypeMaskingMethod
 
 
 class RemapLabels(Transform):
     r"""Remap the integer ids of labels in a LabelMap.
 
-    This transformation may not be invertible if two labels are combined by the remapping.
-    A masking method can be used to correctly split the label into two during the inverse transformation (see example).
+    This transformation may not be invertible if two labels are combined by the
+    remapping.
+    A masking method can be used to correctly split the label into two during
+    the `inverse transformation <invertibility>`_ (see example).
 
     Args:
-        remapping: Dict[int, int].
-            Dictionary that specifies how labels should be remapped.
-            The keys are the old label ids, and the corresponding values replace them.
+        remapping: Dictionary that specifies how labels should be remapped.
+            The keys are the old label ids, and the corresponding values replace
+            them.
         masking_method: Defines a mask for where the label remapping is applied. It can be one of:
 
             - ``None``: the mask image is all ones, i.e. all values in the image are used.
@@ -22,9 +25,10 @@ class RemapLabels(Transform):
               ``'Inferior'``, ``'Superior'`` which specifies a side of the mask volume to be ones.
 
             - A function: the mask image is computed as a function of the intensity image.
-              The function must receive and return a :class:`torch.Tensor`
+              The function must receive and return a :class:`torch.Tensor`.
 
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -57,7 +61,12 @@ class RemapLabels(Transform):
         self.args_names = ('remapping', 'masking_method',)
 
     def apply_transform(self, subject):
-        for image in subject.get_images(intensity_only=False, include=self.include, exclude=self.exclude):
+        images = subject.get_images(
+            intensity_only=False,
+            include=self.include,
+            exclude=self.exclude,
+        )
+        for image in images:
             if not isinstance(image, LabelMap):
                 continue
 
@@ -74,4 +83,9 @@ class RemapLabels(Transform):
 
     def inverse(self):
         inverse_remapping = {v: k for k, v in self.remapping.items()}
-        return RemapLabels(inverse_remapping, masking_method=self.masking_method, **self.kwargs)
+        inverse_transform = RemapLabels(
+            inverse_remapping,
+            masking_method=self.masking_method,
+            **self.kwargs,
+        )
+        return inverse_transform

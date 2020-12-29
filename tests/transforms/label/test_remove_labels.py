@@ -13,8 +13,16 @@ class TestRemoveLabels(TorchioTestCase):
 
         subject = self.get_subject_with_labels(labels=initial_labels)
         transformed = remove_labels(subject)
-        inverse_transformed = transformed.apply_inverse_transform()
-
-        self.assertEqual(self.get_unique_labels(subject.label), set(initial_labels))
-        self.assertEqual(self.get_unique_labels(transformed.label), set(remaining_labels))
-        self.assertEqual(self.get_unique_labels(inverse_transformed.label), set(remaining_labels))
+        inverse_transformed = transformed.apply_inverse_transform(warn=False)
+        self.assertEqual(
+            self.get_unique_labels(subject.label),
+            set(initial_labels),
+        )
+        self.assertEqual(
+            self.get_unique_labels(transformed.label),
+            set(remaining_labels),
+        )
+        self.assertEqual(
+            self.get_unique_labels(inverse_transformed.label),
+            set(remaining_labels),
+        )
