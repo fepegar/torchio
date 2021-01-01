@@ -62,14 +62,14 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             compress(fp, fp.with_suffix('.nii.gz'))
             fp.unlink()
 
-        subject_dict = dict(
-            t1=ScalarImage(f'{p}_t1_{m}{s}'),
-            eyes=LabelMap(f'{p}_t1_{m}_eye_mask{s}'),
-            face=LabelMap(f'{p}_t1_{m}_face_mask{s}'),
-            brain=LabelMap(f'{p}_t1_{m}_mask{s}'),
-            t2=ScalarImage(f'{p}_t2_{m}{s}'),
-            pd=ScalarImage(f'{p}_csf_{m}{s}'),
-        )
+        subject_dict = {
+            't1': ScalarImage(f'{p}_t1_{m}{s}'),
+            'eyes': LabelMap(f'{p}_t1_{m}_eye_mask{s}'),
+            'face': LabelMap(f'{p}_t1_{m}_face_mask{s}'),
+            'brain': LabelMap(f'{p}_t1_{m}_mask{s}'),
+            't2': ScalarImage(f'{p}_t2_{m}{s}'),
+            'pd': ScalarImage(f'{p}_csf_{m}{s}'),
+        }
         if load_4d_tissues:
             subject_dict['tissues'] = LabelMap(
                 tissues_path, channels_last=True)

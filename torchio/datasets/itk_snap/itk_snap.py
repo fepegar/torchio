@@ -41,13 +41,13 @@ class BrainTumor(SubjectITKSNAP):
             self.download_root / self.name / f'BRATS_HG0015_{name}.mha'
             for name in ('T1', 'T1C', 'T2', 'FLAIR', 'truth')
         ]
-        return dict(
-            t1=ScalarImage(t1),
-            t1c=ScalarImage(t1c),
-            t2=ScalarImage(t2),
-            flair=ScalarImage(flair),
-            seg=LabelMap(seg),
-        )
+        return {
+            't1': ScalarImage(t1),
+            't1c': ScalarImage(t1c),
+            't2': ScalarImage(t2),
+            'flair': ScalarImage(flair),
+            'seg': LabelMap(seg),
+        }
 
 
 class T1T2(SubjectITKSNAP):

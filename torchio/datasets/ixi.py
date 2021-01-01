@@ -123,7 +123,7 @@ class IXI(SubjectsDataset):
         subjects = []
         for filepath in paths:
             subject_id = get_subject_id(filepath)
-            images_dict = dict(subject_id=subject_id)
+            images_dict = {'subject_id': subject_id}
             images_dict[one_modality] = ScalarImage(filepath)
             for modality in modalities[1:]:
                 globbed = sglob(
