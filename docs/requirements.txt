@@ -4,5 +4,6 @@ humanize
 nibabel
 numpy
 scipy
+sphinx-copybutton
 torch>=1.1
 tqdm
