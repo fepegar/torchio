@@ -143,9 +143,9 @@ class BiasField(IntensityTransform):
                     coefficient = coefficients[i]
                     new_map = (
                         coefficient
-                        * x_mesh ** x_order  # noqa: W503
-                        * y_mesh ** y_order  # noqa: W503
-                        * z_mesh ** z_order  # noqa: W503
+                        * x_mesh ** x_order
+                        * y_mesh ** y_order
+                        * z_mesh ** z_order
                     )
                     bias_field += np.transpose(new_map, (1, 0, 2))  # why?
                     i += 1
