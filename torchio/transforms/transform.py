@@ -398,7 +398,7 @@ class Transform(ABC):
 
     @staticmethod
     def mean(tensor: torch.Tensor) -> torch.Tensor:
-        mask = tensor > tensor.mean()
+        mask = tensor > tensor.float().mean()
         return mask
 
     @staticmethod
