@@ -159,16 +159,16 @@ class HistogramStandardization(NormalizationTransform):
         percentiles = _get_percentiles(percentiles_cutoff)
         for image_file_path in tqdm(images_paths):
             tensor, _ = read_image(image_file_path)
-            data = tensor.numpy()
             if masking_function is not None:
-                mask = masking_function(data)
+                mask = masking_function(tensor)
             else:
                 if mask_path is not None:
                     mask, _ = read_image(mask_path)
                     mask = mask.numpy() > 0
                 else:
-                    mask = np.ones_like(data, dtype=np.bool)
-            percentile_values = np.percentile(data[mask], percentiles)
+                    mask = np.ones_like(tensor, dtype=np.bool)
+            array = tensor.numpy()
+            percentile_values = np.percentile(array[mask], percentiles)
             percentiles_database.append(percentile_values)
         percentiles_database = np.vstack(percentiles_database)
         mapping = _get_average_mapping(percentiles_database)
