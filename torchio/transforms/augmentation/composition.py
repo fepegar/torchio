@@ -23,8 +23,6 @@ class Compose(Transform):
     """
     def __init__(self, transforms: Sequence[Transform], **kwargs):
         super().__init__(**kwargs)
-        if not transforms:
-            raise ValueError('The list of transforms is empty')
         for transform in transforms:
             if not callable(transform):
                 message = (
@@ -32,7 +30,7 @@ class Compose(Transform):
                     f' are not callable: "{transform}"'
                 )
                 raise TypeError(message)
-        self.transforms = transforms
+        self.transforms = list(transforms)
 
     def __len__(self):
         return len(self.transforms)
@@ -41,7 +39,7 @@ class Compose(Transform):
         return self.transforms[index]
 
     def __repr__(self) -> str:
-        return repr(self.transforms)
+        return f'{self.name}({self.transforms})'
 
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
@@ -65,12 +63,9 @@ class Compose(Transform):
                 message = f'Skipping {transform.name} as it is not invertible'
                 warnings.warn(message, RuntimeWarning)
         transforms.reverse()
-        if transforms:
-            result = Compose(transforms)
-        else:  # return noop if no invertible transforms are found
-            def result(x): return x  # noqa: E704
-            if warn:
-                warnings.warn('No invertible transforms found', RuntimeWarning)
+        result = Compose(transforms)
+        if not transforms and warn:
+            warnings.warn('No invertible transforms found', RuntimeWarning)
         return result
 
 
