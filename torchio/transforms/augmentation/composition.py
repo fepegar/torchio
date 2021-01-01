@@ -30,7 +30,7 @@ class Compose(Transform):
                     f' are not callable: "{transform}"'
                 )
                 raise TypeError(message)
-        self.transforms = transforms
+        self.transforms = list(transforms)
 
     def __len__(self):
         return len(self.transforms)
@@ -39,7 +39,7 @@ class Compose(Transform):
         return self.transforms[index]
 
     def __repr__(self) -> str:
-        return repr(self.transforms)
+        return f'{self.__class__.__name__}({self.transforms})'
 
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
