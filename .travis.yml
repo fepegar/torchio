@@ -9,7 +9,6 @@ python:
 install:
   - pip install --upgrade tox-travis
   - pip install -r requirements-dev.txt
-  - python -m pip install scikit-build
 
 script:
   - tox
