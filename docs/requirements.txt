@@ -1,5 +1,6 @@
 Click
 SimpleITK<2
+furo
 humanize
 nibabel
 numpy
