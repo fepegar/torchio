@@ -58,10 +58,10 @@ class T1T2(SubjectITKSNAP):
     def get_kwargs(self):
         mprage = self.download_root / self.name / 'mprage_3T_bet_dr.nii'
         tse = self.download_root / self.name / 'tse_3t_dr.nii'
-        return dict(
-            mprage=ScalarImage(mprage),
-            tse=ScalarImage(tse),
-        )
+        return {
+            'mprage': ScalarImage(mprage),
+            'tse': ScalarImage(tse),
+        }
 
 
 class AorticValve(SubjectITKSNAP):
@@ -74,9 +74,9 @@ class AorticValve(SubjectITKSNAP):
             self.download_root / self.name / f'bav_frame_{name}.nii.gz'
             for name in ('14', '14_manseg', '25', '25_manseg')
         ]
-        return dict(
-            b14=ScalarImage(b14),
-            b14_seg=LabelMap(b14_seg),
-            b25=ScalarImage(b25),
-            b25_seg=LabelMap(b25_seg),
-        )
+        return {
+            'b14': ScalarImage(b14),
+            'b14_seg': LabelMap(b14_seg),
+            'b25': ScalarImage(b25),
+            'b25_seg': LabelMap(b25_seg),
+        }
