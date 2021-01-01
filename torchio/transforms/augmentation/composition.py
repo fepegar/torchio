@@ -39,7 +39,7 @@ class Compose(Transform):
         return self.transforms[index]
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({self.transforms})'
+        return f'{self.name}({self.transforms})'
 
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
