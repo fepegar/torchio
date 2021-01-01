@@ -402,7 +402,7 @@ class Transform(ABC):
         return mask
 
     @staticmethod
-    def get_mask(
+    def get_mask_from_masking_method(
             masking_method: TypeMaskingMethod,
             subject: Subject,
             tensor: torch.Tensor,
