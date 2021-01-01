@@ -1,10 +1,6 @@
 Preprocessing
 =============
 
-.. contents::
-   :local:
-
-
 Intensity
 ---------
 
