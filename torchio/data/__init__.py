@@ -3,7 +3,12 @@ from .subject import Subject
 from .dataset import SubjectsDataset
 from .image import Image, ScalarImage, LabelMap
 from .inference import GridSampler, GridAggregator
-from .sampler import PatchSampler, LabelSampler, WeightedSampler, UniformSampler
+from .sampler import (
+    PatchSampler,
+    LabelSampler,
+    WeightedSampler,
+    UniformSampler,
+)
 
 
 __all__ = [

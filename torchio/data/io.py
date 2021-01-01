@@ -229,7 +229,8 @@ def nib_to_sitk(
         ) -> sitk.Image:
     """Create a SimpleITK image from a tensor and a 4x4 affine matrix."""
     if data.ndim != 4:
-        raise ValueError(f'Input must be 4D, but has shape {tuple(data.shape)}')
+        shape = tuple(data.shape)
+        raise ValueError(f'Input must be 4D, but has shape {shape}')
     # Possibilities
     # (1, w, h, 1)
     # (c, w, h, 1)

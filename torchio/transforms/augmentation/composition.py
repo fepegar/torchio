@@ -18,7 +18,8 @@ class Compose(Transform):
     Args:
         transforms: Sequence of instances of
             :class:`~torchio.transforms.Transform`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     """
     def __init__(self, transforms: Sequence[Transform], **kwargs):
@@ -28,8 +29,8 @@ class Compose(Transform):
         for transform in transforms:
             if not callable(transform):
                 message = (
-                    'One or more of the objects passed to the Compose transform'
-                    f' are not callable: "{transform}"'
+                    'One or more of the objects passed to the Compose'
+                    f' transform are not callable: "{transform}"'
                 )
                 raise TypeError(message)
         self.transforms = transforms
@@ -83,7 +84,8 @@ class OneOf(RandomTransform):
             probabilities as values. Probabilities are normalized so they sum
             to one. If a sequence is given, the same probability will be
             assigned to each transform.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio

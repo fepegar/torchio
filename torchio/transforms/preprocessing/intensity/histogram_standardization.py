@@ -31,7 +31,8 @@ class HistogramStandardization(NormalizationTransform):
             :meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torch
@@ -43,7 +44,7 @@ class HistogramStandardization(NormalizationTransform):
         >>> transform = tio.HistogramStandardization(landmarks)
         >>> torch.save(landmarks, 'path_to_landmarks.pth')
         >>> transform = tio.HistogramStandardization('path_to_landmarks.pth')
-    """
+    """  # noqa: E501
     def __init__(
             self,
             landmarks: TypeLandmarks,
@@ -151,7 +152,7 @@ class HistogramStandardization(NormalizationTransform):
             ... }
             >>>
             >>> transform = HistogramStandardization(landmarks_dict)
-        """
+        """  # noqa: E501
         quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []

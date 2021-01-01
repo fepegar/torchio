@@ -22,15 +22,16 @@ class RandomFlip(RandomTransform, SpatialTransform):
             used.
         flip_probability: Probability that the image will be flipped. This is
             computed on a per-axis basis.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
         >>> fpg = tio.datasets.FPG()
         >>> flip = tio.RandomFlip(axes=('LR',))  # flip along lateral axis only
 
-    .. tip:: It is handy to specify the axes as anatomical labels when the image
-        orientation is not known.
+    .. tip:: It is handy to specify the axes as anatomical labels when the
+        image orientation is not known.
     """
 
     def __init__(
@@ -71,10 +72,11 @@ class Flip(SpatialTransform):
             the image will be flipped. See
             :class:`~torchio.transforms.augmentation.spatial.random_flip.RandomFlip`
             for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
-    .. tip:: It is handy to specify the axes as anatomical labels when the image
-        orientation is not known.
+    .. tip:: It is handy to specify the axes as anatomical labels when the
+        image orientation is not known.
     """
 
     def __init__(self, axes, **kwargs):

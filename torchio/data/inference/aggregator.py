@@ -26,7 +26,7 @@ class GridAggregator:
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch-based sampling.
-    """
+    """  # noqa: E501
     def __init__(self, sampler: GridSampler, overlap_mode: str = 'crop'):
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
@@ -41,8 +41,8 @@ class GridAggregator:
     def parse_overlap_mode(overlap_mode):
         if overlap_mode not in ('crop', 'average'):
             message = (
-                f'Overlap mode must be "crop" or "average" but "{overlap_mode}"'
-                ' was passed'
+                'Overlap mode must be "crop" or "average" but '
+                f' "{overlap_mode}" was passed'
             )
             raise ValueError(message)
 
