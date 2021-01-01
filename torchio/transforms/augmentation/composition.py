@@ -64,7 +64,7 @@ class Compose(Transform):
                 warnings.warn(message, RuntimeWarning)
         transforms.reverse()
         result = Compose(transforms)
-        if not transforms:
+        if not transforms and warn:
             warnings.warn('No invertible transforms found', RuntimeWarning)
         return result
 
