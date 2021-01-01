@@ -40,7 +40,10 @@ class TestRandomAffine(TorchioTestCase):
             center='image',
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
         transform = RandomAffine(
             scales=(1, 1),
@@ -50,7 +53,10 @@ class TestRandomAffine(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
         transformed = transform(transformed)
-        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_translation(self):
         transform = RandomAffine(
