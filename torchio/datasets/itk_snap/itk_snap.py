@@ -7,9 +7,10 @@ from ...download import download_and_extract_archive
 class SubjectITKSNAP(Subject):
     """ITK-SNAP Image Data Downloads.
 
-    See `the itk-SNAP website <http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.Data>`_
-    for more information.
-    """
+    See `the ITK-SNAP website`_ for more information.
+
+    .. _the ITK-SNAP website: http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.Data
+    """  # noqa: E501
     url_base = 'https://www.nitrc.org/frs/download.php/'
 
     def __init__(self, name, code):
@@ -40,13 +41,13 @@ class BrainTumor(SubjectITKSNAP):
             self.download_root / self.name / f'BRATS_HG0015_{name}.mha'
             for name in ('T1', 'T1C', 'T2', 'FLAIR', 'truth')
         ]
-        return dict(
-            t1=ScalarImage(t1),
-            t1c=ScalarImage(t1c),
-            t2=ScalarImage(t2),
-            flair=ScalarImage(flair),
-            seg=LabelMap(seg),
-        )
+        return {
+            't1': ScalarImage(t1),
+            't1c': ScalarImage(t1c),
+            't2': ScalarImage(t2),
+            'flair': ScalarImage(flair),
+            'seg': LabelMap(seg),
+        }
 
 
 class T1T2(SubjectITKSNAP):
@@ -57,10 +58,10 @@ class T1T2(SubjectITKSNAP):
     def get_kwargs(self):
         mprage = self.download_root / self.name / 'mprage_3T_bet_dr.nii'
         tse = self.download_root / self.name / 'tse_3t_dr.nii'
-        return dict(
-            mprage=ScalarImage(mprage),
-            tse=ScalarImage(tse),
-        )
+        return {
+            'mprage': ScalarImage(mprage),
+            'tse': ScalarImage(tse),
+        }
 
 
 class AorticValve(SubjectITKSNAP):
@@ -73,9 +74,9 @@ class AorticValve(SubjectITKSNAP):
             self.download_root / self.name / f'bav_frame_{name}.nii.gz'
             for name in ('14', '14_manseg', '25', '25_manseg')
         ]
-        return dict(
-            b14=ScalarImage(b14),
-            b14_seg=LabelMap(b14_seg),
-            b25=ScalarImage(b25),
-            b25_seg=LabelMap(b25_seg),
-        )
+        return {
+            'b14': ScalarImage(b14),
+            'b14_seg': LabelMap(b14_seg),
+            'b25': ScalarImage(b25),
+            'b25_seg': LabelMap(b25_seg),
+        }

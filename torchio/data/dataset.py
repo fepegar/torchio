@@ -52,7 +52,7 @@ class SubjectsDataset(Dataset):
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
     .. _DICOM: https://www.dicomstandard.org/
     .. _affine matrix: https://nipy.org/nibabel/coordinate_systems.html
-    """
+    """  # noqa: E501
 
     def __init__(
             self,

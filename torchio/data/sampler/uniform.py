@@ -35,7 +35,10 @@ class UniformSampler(RandomSampler):
         valid_range = subject.spatial_shape - self.patch_size
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
-            index_ini = [torch.randint(x + 1, (1,)).item() for x in valid_range]
+            index_ini = [
+                torch.randint(x + 1, (1,)).item()
+                for x in valid_range
+            ]
             index_ini_array = np.asarray(index_ini)
             yield self.extract_patch(subject, index_ini_array)
             if num_patches is not None:

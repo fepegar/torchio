@@ -24,12 +24,13 @@ class RandomAnisotropy(RandomTransform):
         axes: Axis or tuple of axes along which the image will be downsampled.
         downsampling: Downsampling factor :math:`m \gt 1`. If a tuple
             :math:`(a, b)` is provided then :math:`m \sim \mathcal{U}(a, b)`.
-        image_interpolation: Image interpolation used to upsample the image back
-            to its initial spacing. Downsampling is performed using nearest
-            neighbor interpolation. See :ref:`Interpolation` for supported
-            interpolation types.
+        image_interpolation: Image interpolation used to upsample the image
+            back to its initial spacing. Downsampling is performed using
+            nearest neighbor interpolation. See :ref:`Interpolation` for
+            supported interpolation types.
         scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -40,7 +41,7 @@ class RandomAnisotropy(RandomTransform):
         ... )   # Multiply spacing of one of the 3 axes by a factor randomly chosen in [2, 5]
         >>> colin = tio.datasets.Colin27()
         >>> transformed = transform(colin)
-    """
+    """  # noqa: E501
 
     def __init__(
             self,
@@ -54,7 +55,8 @@ class RandomAnisotropy(RandomTransform):
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self._parse_range(
             downsampling, 'downsampling', min_constraint=1)
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        parsed_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = parsed_interpolation
         self.scalars_only = scalars_only
 
     def get_params(

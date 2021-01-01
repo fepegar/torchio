@@ -11,8 +11,8 @@ class RemoveLabels(RemapLabels):
 
     Args:
         labels: A sequence of label integers that will be removed.
-        background_label: integer that specifies which label is considered to be
-            background (generally 0).
+        background_label: integer that specifies which label is considered to
+            be background (generally 0).
         masking_method: See :class:`~torchio.RemapLabels`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.

@@ -12,7 +12,10 @@ class TestRandomAnisotropy(TorchioTestCase):
             downsampling=(2., 2.)
         )
         transformed = transform(self.sample_subject)
-        self.assertEqual(self.sample_subject.spacing[1], transformed.spacing[1])
+        self.assertEqual(
+            self.sample_subject.spacing[1],
+            transformed.spacing[1],
+        )
 
     def test_out_of_range_axis(self):
         with self.assertRaises(ValueError):

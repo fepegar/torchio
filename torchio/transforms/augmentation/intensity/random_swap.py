@@ -25,7 +25,8 @@ class RandomSwap(RandomTransform, IntensityTransform):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -101,7 +102,8 @@ class Swap(IntensityTransform):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
         num_iterations: Number of times that two patches will be swapped.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,

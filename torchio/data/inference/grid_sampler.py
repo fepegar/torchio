@@ -23,13 +23,14 @@ class GridSampler(PatchSampler, Dataset):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided,
             :math:`w = h = d = n`.
-        patch_overlap: Tuple of even integers :math:`(w_o, h_o, d_o)` specifying
-            the overlap between patches for dense inference. If a single number
-            :math:`n` is provided, :math:`w_o = h_o = d_o = n`.
+        patch_overlap: Tuple of even integers :math:`(w_o, h_o, d_o)`
+            specifying the overlap between patches for dense inference. If a
+            single number :math:`n` is provided, :math:`w_o = h_o = d_o = n`.
         padding_mode: Same as :attr:`padding_mode` in
-            :class:`~torchio.transforms.Pad`. If ``None``, the volume will
-            not be padded before sampling and patches at the border will not be
-            cropped by the aggregator. Otherwise, the volume will be padded with
+            :class:`~torchio.transforms.Pad`. If ``None``, the volume will not
+            be padded before sampling and patches at the border will not be
+            cropped by the aggregator.
+            Otherwise, the volume will be padded with
             :math:`\left(\frac{w_o}{2}, \frac{h_o}{2}, \frac{d_o}{2} \right)`
             on each side before sampling. If the sampler is passed to a
             :class:`~torchio.data.GridAggregator`, it will crop the output

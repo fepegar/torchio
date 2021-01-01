@@ -106,7 +106,8 @@ def extract_archive(from_path, to_path=None, remove_finished=False):
         with tarfile.open(from_path, 'r:xz') as tar:
             tar.extractall(path=to_path)
     elif _is_gzip(from_path):
-        to_path = os.path.join(to_path, os.path.splitext(os.path.basename(from_path))[0])
+        stem = os.path.splitext(os.path.basename(from_path))[0]
+        to_path = os.path.join(to_path, stem)
         with open(to_path, 'wb') as out_f, gzip.GzipFile(from_path) as zip_f:
             out_f.write(zip_f.read())
     elif _is_zip(from_path):

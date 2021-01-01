@@ -13,8 +13,8 @@ class EnsureShapeMultiple(SpatialTransform):
     """Crop or pad an image to a shape that is a multiple of :math:`N`.
 
     Args:
-        target_multiple: Tuple :math:`(w, h, d)`. If a single value :math:`n` is
-            provided, then :math:`w = h = d = n`.
+        target_multiple: Tuple :math:`(w, h, d)`. If a single value :math:`n`
+            is provided, then :math:`w = h = d = n`.
         method: Either ``'crop'`` or ``'pad'``.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.

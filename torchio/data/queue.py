@@ -123,7 +123,7 @@ class Queue(Dataset):
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
             subjects_dataset: SubjectsDataset,

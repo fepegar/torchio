@@ -102,7 +102,11 @@ class TorchioTestCase(unittest.TestCase):
 
     def get_reference_image_and_path(self):
         """Return a reference image and its path"""
-        path = self.get_image_path('ref', shape=(10, 20, 31), spacing=(1, 1, 2))
+        path = self.get_image_path(
+            'ref',
+            shape=(10, 20, 31),
+            spacing=(1, 1, 2),
+        )
         image = tio.ScalarImage(path)
         return image, path
 
@@ -175,7 +179,8 @@ class TorchioTestCase(unittest.TestCase):
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
         if suffix is None:
-            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img', '.mnc'))
+            extensions = '.nii.gz', '.nii', '.nrrd', '.img', '.mnc'
+            suffix = random.choice(extensions)
         path = self.dir / f'{stem}{suffix}'
         if self.flip_coin():
             path = str(path)

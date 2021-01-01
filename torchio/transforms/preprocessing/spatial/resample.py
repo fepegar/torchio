@@ -36,7 +36,8 @@ class Resample(SpatialTransform):
             transform. See usage in the example below.
         image_interpolation: See :ref:`Interpolation`.
         scalars_only: Apply only to instances of :class:`~torchio.ScalarImage`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -48,7 +49,7 @@ class Resample(SpatialTransform):
         >>> # Resample all images into the MNI space
         >>> transform = tio.Resample(colin.t1.path, pre_affine_name='affine_matrix')
         >>> transformed = transform(fpg)  # images in fpg are now in MNI space
-    """
+    """  # noqa: E501
     def __init__(
             self,
             target: Union[TypeSpacing, str, Path, Image, None] = 1,
@@ -60,7 +61,8 @@ class Resample(SpatialTransform):
         super().__init__(**kwargs)
         self.target = target
         self.reference_image, self.target_spacing = self.parse_target(target)
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        parsed_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = parsed_interpolation
         self.pre_affine_name = pre_affine_name
         self.scalars_only = scalars_only
         self.args_names = (
@@ -122,8 +124,8 @@ class Resample(SpatialTransform):
             matrix = image[affine_name]
             if not isinstance(matrix, (np.ndarray, torch.Tensor)):
                 message = (
-                    'The affine matrix must be a NumPy array or PyTorch tensor,'
-                    f' not {type(matrix)}'
+                    'The affine matrix must be a NumPy array or PyTorch'
+                    f' tensor, not {type(matrix)}'
                 )
                 raise TypeError(message)
             if matrix.shape != (4, 4):
@@ -175,7 +177,8 @@ class Resample(SpatialTransform):
             # Resample
             if isinstance(self.reference_image, str):
                 try:
-                    reference_image_sitk = subject[self.reference_image].as_sitk()
+                    reference_image = subject[self.reference_image]
+                    reference_image_sitk = reference_image.as_sitk()
                 except KeyError as error:
                     message = (
                         f'Reference name "{self.reference_image}"'

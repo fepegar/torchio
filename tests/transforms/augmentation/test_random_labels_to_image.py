@@ -220,7 +220,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         """The transform raises an error if mean and used_labels
          length don't match."""
         with self.assertRaises(AssertionError):
-            RandomLabelsToImage(label_key='label', mean=[0], used_labels=[0, 1])
+            RandomLabelsToImage(
+                label_key='label',
+                mean=[0],
+                used_labels=[0, 1],
+            )
 
     def test_std_and_used_labels_len_not_matching(self):
         """The transform raises an error if std and used_labels

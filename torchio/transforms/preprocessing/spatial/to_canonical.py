@@ -18,13 +18,14 @@ class ToCanonical(SpatialTransform):
     See `NiBabel docs about image orientation`_ for more information.
 
     Args:
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The reorientation is performed using
         :meth:`nibabel.as_closest_canonical`.
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
-    """
+    """  # noqa: E501
 
     args_names = ()
 

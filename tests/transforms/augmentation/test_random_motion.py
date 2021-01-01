@@ -15,14 +15,20 @@ class TestRandomMotion(TorchioTestCase):
             num_transforms=1
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_with_movement(self):
         transform = RandomMotion(
             num_transforms=1
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorNotEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorNotEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_negative_degrees(self):
         with self.assertRaises(ValueError):

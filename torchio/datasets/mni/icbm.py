@@ -29,7 +29,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
         >>> icbm
         ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
 
-    """
+    """  # noqa: E501
     def __init__(self, load_4d_tissues: bool = True):
         self.name = 'mni_icbm152_nlin_sym_09c_nifti'
         self.url_base = 'http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/'
@@ -62,16 +62,17 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             compress(fp, fp.with_suffix('.nii.gz'))
             fp.unlink()
 
-        subject_dict = dict(
-            t1=ScalarImage(f'{p}_t1_{m}{s}'),
-            eyes=LabelMap(f'{p}_t1_{m}_eye_mask{s}'),
-            face=LabelMap(f'{p}_t1_{m}_face_mask{s}'),
-            brain=LabelMap(f'{p}_t1_{m}_mask{s}'),
-            t2=ScalarImage(f'{p}_t2_{m}{s}'),
-            pd=ScalarImage(f'{p}_csf_{m}{s}'),
-        )
+        subject_dict = {
+            't1': ScalarImage(f'{p}_t1_{m}{s}'),
+            'eyes': LabelMap(f'{p}_t1_{m}_eye_mask{s}'),
+            'face': LabelMap(f'{p}_t1_{m}_face_mask{s}'),
+            'brain': LabelMap(f'{p}_t1_{m}_mask{s}'),
+            't2': ScalarImage(f'{p}_t2_{m}{s}'),
+            'pd': ScalarImage(f'{p}_csf_{m}{s}'),
+        }
         if load_4d_tissues:
-            subject_dict['tissues'] = LabelMap(tissues_path, channels_last=True)
+            subject_dict['tissues'] = LabelMap(
+                tissues_path, channels_last=True)
         else:
             subject_dict['gm'] = LabelMap(f'{p}_gm_{m}{s}')
             subject_dict['wm'] = LabelMap(f'{p}_wm_{m}{s}')

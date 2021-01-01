@@ -46,7 +46,7 @@ class WeightedSampler(RandomSampler):
         the center of the patch cannot be at the border (unless the patch has
         size 1 or 2 along that axis).
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
             patch_size: TypePatchSize,
@@ -69,7 +69,8 @@ class WeightedSampler(RandomSampler):
             )
             raise RuntimeError(message)
         probability_map = self.get_probability_map(subject)
-        probability_map = self.process_probability_map(probability_map, subject)
+        probability_map = self.process_probability_map(
+            probability_map, subject)
         cdf = self.get_cumulative_distribution_function(probability_map)
 
         patches_left = num_patches if num_patches is not None else True
@@ -127,8 +128,8 @@ class WeightedSampler(RandomSampler):
             probability_map: np.ndarray,
             patch_size: TypePatchSize,
             ) -> None:
-        # Set probability to 0 on voxels that wouldn't possibly be sampled given
-        # the current patch size
+        # Set probability to 0 on voxels that wouldn't possibly be sampled
+        # given the current patch size
         # We will arbitrarily define the center of an array with even length
         # using the // Python operator
         # For example, the center of an array (3, 4) will be on (1, 2)
@@ -156,8 +157,8 @@ class WeightedSampler(RandomSampler):
         probability_map[:, :crop_j, :] = 0
         probability_map[:, :, :crop_k] = 0
 
-        # The call tolist() is very important. Using np.uint16 as negative index
-        # will not work because e.g. -np.uint16(2) == 65534
+        # The call tolist() is very important. Using np.uint16 as negative
+        # index will not work because e.g. -np.uint16(2) == 65534
         crop_i, crop_j, crop_k = crop_fin.tolist()
         if crop_i:
             probability_map[-crop_i:, :, :] = 0
@@ -222,7 +223,7 @@ class WeightedSampler(RandomSampler):
             array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
 
-        """
+        """  # noqa: E501
         # Get first value larger than random number
         random_number = torch.rand(1).item()
         # If probability map is float32, cdf.max() can be far from 1, e.g. 0.92

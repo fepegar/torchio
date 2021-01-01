@@ -43,8 +43,7 @@ repos:
           pep8-naming,              # check PEP-8 naming conventions
         ]
         args: [
-          '--max-line-length=160',
-          '--ignore=E123,E501,W503,N813',
+          '--ignore=N813,E123,W503',  # import SimpleITK as sitk, brackets indentation, line break before binary operator
         ]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.6.0  # Use the ref you want to point at

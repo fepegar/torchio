@@ -27,7 +27,8 @@ class CropOrPad(BoundsTransform):
             If a string is given, the output volume center will be the center
             of the bounding box of non-zero values in the image named
             :attr:`mask_name`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -82,7 +83,7 @@ class CropOrPad(BoundsTransform):
 
         Args:
             mask_volume: 3D NumPy array.
-        """
+        """  # noqa: E501
         i_any = np.any(mask_volume, axis=(1, 2))
         j_any = np.any(mask_volume, axis=(0, 2))
         k_any = np.any(mask_volume, axis=(0, 1))
@@ -112,7 +113,7 @@ class CropOrPad(BoundsTransform):
             >>> p = np.array((4, 0, 7))
             >>> CropOrPad._get_six_bounds_parameters(p)
             (2, 2, 0, 0, 4, 3)
-        """
+        """  # noqa: E501
         parameters = parameters / 2
         result = []
         for number in parameters:

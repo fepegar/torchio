@@ -58,7 +58,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             Discretization is done taking the class of the highest value per
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -89,7 +90,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ... )
         >>> transform = tio.Compose([rescale_transform, simulation_transform])
         >>> transformed = transform(subject)  # subject's key 't1' has been replaced with the simulated image
-    """
+    """  # noqa: E501
     def __init__(
             self,
             label_key: Optional[str] = None,
@@ -108,7 +109,10 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         self.mean, self.std = self.parse_mean_and_std(mean, std)
         self.default_mean = self.parse_gaussian_parameter(
             default_mean, 'default_mean')
-        self.default_std = self.parse_gaussian_parameter(default_std, 'default_std')
+        self.default_std = self.parse_gaussian_parameter(
+            default_std,
+            'default_std',
+        )
         self.image_key = image_key
         self.discretize = discretize
 
@@ -174,7 +178,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
                     self.label_key = name
                     break
             else:
-                raise RuntimeError(f'No label maps found in subject: {subject}')
+                message = f'No label maps found in subject: {subject}'
+                raise RuntimeError(message)
 
         arguments = {
             'label_key': self.label_key,
@@ -266,7 +271,8 @@ class LabelsToImage(IntensityTransform):
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
         seed: Seed for the random number generator.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: It is recommended to blur the new images to make the result more
         realistic. See
@@ -371,7 +377,8 @@ class LabelsToImage(IntensityTransform):
 
 def _parse_label_key(label_key: Optional[str]) -> Optional[str]:
     if label_key is not None and not isinstance(label_key, str):
-        message = f'"label_key" must be a string or None, not {type(label_key)}'
+        message = (
+            f'"label_key" must be a string or None, not {type(label_key)}')
         raise TypeError(message)
     return label_key
 

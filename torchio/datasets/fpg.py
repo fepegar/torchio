@@ -43,7 +43,7 @@ class FPG(Subject):
         self.gif_colors = GIF_COLORS
 
     def plot(self, *args, **kwargs):
-        super().plot(*args, **kwargs, cmap_dict=dict(seg=self.gif_colors))
+        super().plot(*args, **kwargs, cmap_dict={'seg': self.gif_colors})
 
 
 GIF_COLORS = {

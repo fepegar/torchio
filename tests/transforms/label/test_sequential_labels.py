@@ -14,6 +14,15 @@ class TestSequentialLabels(TorchioTestCase):
         transformed = sequential_labels(subject)
         inverse_transformed = transformed.apply_inverse_transform()
 
-        self.assertEqual(self.get_unique_labels(subject.label), set(initial_labels))
-        self.assertEqual(self.get_unique_labels(transformed.label), set(transformed_labels))
-        self.assertEqual(self.get_unique_labels(inverse_transformed.label), set(initial_labels))
+        self.assertEqual(
+            self.get_unique_labels(subject.label),
+            set(initial_labels),
+        )
+        self.assertEqual(
+            self.get_unique_labels(transformed.label),
+            set(transformed_labels),
+        )
+        self.assertEqual(
+            self.get_unique_labels(inverse_transformed.label),
+            set(initial_labels),
+        )

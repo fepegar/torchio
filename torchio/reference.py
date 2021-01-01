@@ -10,7 +10,7 @@ BIBTEX = r"""@misc{fern2020torchio,
    eprint={2003.04696},
    archivePrefix={arXiv},
    primaryClass={eess.IV}
-} """
+} """  # noqa: E501
 
 TITLE = (
     'TorchIO: a Python library for efficient loading, preprocessing,'

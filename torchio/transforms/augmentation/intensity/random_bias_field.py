@@ -30,7 +30,8 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             If a tuple :math:`(a, b)` is specified, then
             :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -78,7 +79,8 @@ class BiasField(IntensityTransform):
     Args:
         coefficients: Magnitudes of the polinomial coefficients.
         order: Order of the basis polynomial functions.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,

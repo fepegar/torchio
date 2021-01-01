@@ -8,12 +8,18 @@ class TestRandomBiasField(TorchioTestCase):
     def test_no_bias(self):
         transform = tio.RandomBiasField(coefficients=0.)
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_with_bias(self):
         transform = tio.RandomBiasField(coefficients=0.1)
         transformed = transform(self.sample_subject)
-        self.assertTensorNotEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorNotEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_wrong_coefficient_type(self):
         with self.assertRaises(ValueError):

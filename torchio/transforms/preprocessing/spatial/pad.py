@@ -29,10 +29,11 @@ class Pad(BoundsTransform):
             d_{ini} = d_{fin} = n`.
         padding_mode: See possible modes in `NumPy docs`_. If it is a number,
             the mode will be set to ``'constant'``.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. _NumPy docs: https://numpy.org/doc/stable/reference/generated/numpy.pad.html
-    """
+    """  # noqa: E501
 
     PADDING_MODES = (
         'empty',
@@ -62,7 +63,8 @@ class Pad(BoundsTransform):
 
     @classmethod
     def check_padding_mode(cls, padding_mode):
-        if not (padding_mode in cls.PADDING_MODES or isinstance(padding_mode, Number)):
+        is_number = isinstance(padding_mode, Number)
+        if not (padding_mode in cls.PADDING_MODES or is_number):
             message = (
                 f'Padding mode "{padding_mode}" not valid. Valid options are'
                 f' {list(cls.PADDING_MODES)} or a number'

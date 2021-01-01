@@ -9,11 +9,17 @@ class TestToCanonical(TorchioTestCase):
     def test_no_changes(self):
         transform = ToCanonical()
         transformed = transform(self.sample_subject)
-        self.assertTensorEqual(transformed.t1.data, self.sample_subject.t1.data)
-        self.assertTensorEqual(transformed.t1.affine, self.sample_subject.t1.affine)
+        self.assertTensorEqual(
+            transformed.t1.data,
+            self.sample_subject.t1.data,
+        )
+        self.assertTensorEqual(
+            transformed.t1.affine,
+            self.sample_subject.t1.affine,
+        )
 
     def test_las_to_ras(self):
-        self.sample_subject.t1.affine[0, 0] = -1    # Change orientation to 'LAS'
+        self.sample_subject.t1.affine[0, 0] = -1  # Change orientation to 'LAS'
         transform = ToCanonical()
         transformed = transform(self.sample_subject)
         self.assertEqual(transformed.t1.orientation, ('R', 'A', 'S'))

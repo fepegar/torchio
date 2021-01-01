@@ -12,6 +12,15 @@ class TestRemapLabels(TorchioTestCase):
         transformed = remap_labels(subject)
         inverse_transformed = transformed.apply_inverse_transform()
 
-        self.assertEqual(self.get_unique_labels(subject.label), set(remapping.keys()))
-        self.assertEqual(self.get_unique_labels(transformed.label), set(remapping.values()))
-        self.assertEqual(self.get_unique_labels(inverse_transformed.label), set(remapping.keys()))
+        self.assertEqual(
+            self.get_unique_labels(subject.label),
+            set(remapping.keys()),
+        )
+        self.assertEqual(
+            self.get_unique_labels(transformed.label),
+            set(remapping.values()),
+        )
+        self.assertEqual(
+            self.get_unique_labels(inverse_transformed.label),
+            set(remapping.keys()),
+        )

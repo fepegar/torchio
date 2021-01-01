@@ -20,7 +20,8 @@ class NormalizationTransform(IntensityTransform):
             - A function: the mask image is computed as a function of the intensity image.
               The function must receive and return a :class:`torch.Tensor`
 
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -34,7 +35,7 @@ class NormalizationTransform(IntensityTransform):
         >>> transform = tio.ZNormalization(masking_method=lambda x: x > x.mean())
         >>> transformed = transform(subject)  # use values above the image mean
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
             masking_method: TypeMaskingMethod = None,
@@ -45,7 +46,11 @@ class NormalizationTransform(IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image_name, image in self.get_images_dict(subject).items():
-            mask = Transform.get_mask(self.masking_method, subject, image.data)
+            mask = Transform.get_mask_from_masking_method(
+                self.masking_method,
+                subject,
+                image.data,
+            )
             self.apply_normalization(subject, image_name, mask)
         return subject
 

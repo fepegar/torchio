@@ -24,7 +24,8 @@ class RandomGamma(RandomTransform, IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
@@ -41,7 +42,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(subject)
-    """
+    """  # noqa: E501
     def __init__(
             self,
             log_gamma: TypeRangeFloat = (-0.3, 0.3),
@@ -53,7 +54,10 @@ class RandomGamma(RandomTransform, IntensityTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
-            gammas = [self.get_params(self.log_gamma_range) for _ in image.data]
+            gammas = [
+                self.get_params(self.log_gamma_range)
+                for _ in image.data
+            ]
             arguments['gamma'][name] = gammas
         transform = Gamma(**self.add_include_exclude(arguments))
         transformed = transform(subject)
@@ -73,7 +77,8 @@ class Gamma(IntensityTransform):
             Negative and positive values for this argument perform gamma
             compression and expansion, respectively.
             See the `Gamma correction`_ Wikipedia entry for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
@@ -83,14 +88,19 @@ class Gamma(IntensityTransform):
         the applied transform is :math:`\text{sign}(I) |I|^\gamma`,
         instead of the usual :math:`I^\gamma`. The
         :class:`~torchio.transforms.preprocessing.intensity.rescale.RescaleIntensity`
-        transform may be used to ensure that all values are positive.
+        transform may be used to ensure that all values are positive. This is
+        generally not problematic, but it is recommended to visualize results
+        on image with negative values. More information can be found on
+        `this StackExchange question`_.
+
+        .. _this StackExchange question: https://math.stackexchange.com/questions/317528/how-do-you-compute-negative-numbers-to-fractional-powers
 
     Example:
         >>> import torchio as tio
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.Gamma(0.8)
         >>> transformed = transform(subject)
-    """
+    """  # noqa: E501
     def __init__(
             self,
             gamma: float,
@@ -125,7 +135,7 @@ def power(tensor, gamma):
         message = (
             'Negative values found in input tensor. See the documentation for'
             ' more details on the implemented workaround:'
-            ' https://torchio.readthedocs.io/transforms/augmentation.html#randomgamma'
+            ' https://torchio.readthedocs.io/transforms/augmentation.html#randomgamma'  # noqa: E501
         )
         warnings.warn(message, RuntimeWarning)
         output = tensor.sign() * tensor.abs() ** gamma

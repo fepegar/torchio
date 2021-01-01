@@ -35,7 +35,7 @@ from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
 from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
-from .preprocessing.intensity.histogram_standardization import train as train_histogram
+from .preprocessing.intensity.histogram_standardization import train_histogram
 from .preprocessing.label.remap_labels import RemapLabels
 from .preprocessing.label.sequential_labels import SequentialLabels
 from .preprocessing.label.remove_labels import RemoveLabels

@@ -7,12 +7,18 @@ class TestRandomNoise(TorchioTestCase):
     def test_no_noise(self):
         transform = RandomNoise(mean=0., std=0.)
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorAlmostEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_with_noise(self):
         transform = RandomNoise()
         transformed = transform(self.sample_subject)
-        self.assertTensorNotEqual(self.sample_subject.t1.data, transformed.t1.data)
+        self.assertTensorNotEqual(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
 
     def test_constant_noise(self):
         transform = RandomNoise(mean=(5., 5.), std=0.)
