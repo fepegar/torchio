@@ -16,3 +16,11 @@ class TestZNormalization(TorchioTestCase):
         image = tio.ScalarImage(tensor=torch.ones(1, 2, 2, 2))
         with self.assertRaises(RuntimeError):
             tio.ZNormalization()(image)
+
+    def test_dtype(self):
+        # https://github.com/fepegar/torchio/issues/407
+        tensor_int = (100 * torch.rand(1, 2, 3, 4)).byte()
+        transform = tio.ZNormalization(masking_method=tio.ZNormalization.mean)
+        transform(tensor_int)
+        transform = tio.ZNormalization()
+        transform(tensor_int)
