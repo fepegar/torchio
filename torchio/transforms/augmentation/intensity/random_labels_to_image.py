@@ -61,7 +61,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
-    .. note:: It is recommended to blur the new images to make the result more
+    .. tip:: It is recommended to blur the new images to make the result more
         realistic. See
         :class:`~torchio.transforms.augmentation.RandomBlur`.
 

@@ -4,6 +4,7 @@ codecov
 coverage
 coveralls
 flake8
+furo
 matplotlib
 mypy
 pip
@@ -12,7 +13,8 @@ pylint
 pytest
 pytest-cov
 sphinx
-sphinx_rtd_theme
+sphinx-autobuild
+sphinx-copybutton
 tox
 twine
 watchdog
