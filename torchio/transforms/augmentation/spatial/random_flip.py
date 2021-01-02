@@ -127,4 +127,4 @@ def _flip_image(image, axes):
     data = np.flip(data, axis=spatial_axes)
     data = data.copy()  # remove negative strides
     data = torch.from_numpy(data)
-    image.data = data
+    image.set_data(data)

@@ -174,3 +174,8 @@ class TestImage(TorchioTestCase):
 
     def test_pil_3(self):
         tio.ScalarImage(tensor=torch.rand(3, 2, 3, 1)).as_pil()
+
+    def test_set_data(self):
+        with self.assertWarns(DeprecationWarning):
+            im = self.sample_subject.t1
+            im.data = im.data

@@ -62,13 +62,13 @@ class TorchioTestCase(unittest.TestCase):
     def make_2d(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image.data = image.data[..., :1]
+            image.set_data(image.data[..., :1])
         return subject
 
     def make_multichannel(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image.data = torch.cat(4 * (image.data,))
+            image.set_data(torch.cat(4 * (image.data,)))
         return subject
 
     def flip_affine_x(self, subject):

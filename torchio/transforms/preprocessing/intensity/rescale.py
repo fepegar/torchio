@@ -51,7 +51,7 @@ class RescaleIntensity(NormalizationTransform):
             mask: torch.Tensor,
             ) -> None:
         image = subject[image_name]
-        image.data = self.rescale(image.data, mask, image_name)
+        image.set_data(self.rescale(image.data, mask, image_name))
 
     def rescale(
             self,

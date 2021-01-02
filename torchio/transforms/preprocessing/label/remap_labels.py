@@ -78,7 +78,7 @@ class RemapLabels(Transform):
             )
             for old_id, new_id in self.remapping.items():
                 new_data[mask & (image.data == old_id)] = new_id
-            image.data = new_data
+            image.set_data(new_data)
 
         return subject
 

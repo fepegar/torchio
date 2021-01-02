@@ -97,7 +97,7 @@ class Noise(IntensityTransform):
                 noise = get_noise(image.data, mean, std)
             if self.invert_transform:
                 noise *= -1
-            image.data = image.data + noise
+            image.set_data(image.data + noise)
         return subject
 
 

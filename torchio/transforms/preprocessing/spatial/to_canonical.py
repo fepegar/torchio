@@ -44,6 +44,6 @@ class ToCanonical(SpatialTransform):
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
             array = array.copy()
             array = array.transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
-            image.data = torch.from_numpy(array[0])
+            image.set_data(torch.from_numpy(array[0]))
             image.affine = reoriented.affine
         return subject

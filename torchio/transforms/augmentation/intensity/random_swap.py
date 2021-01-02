@@ -125,7 +125,7 @@ class Swap(IntensityTransform):
                 patch_size = self.patch_size[name]
             if self.invert_transform:
                 locations.reverse()
-            image.data = swap(image.data, patch_size, locations)
+            image.set_data(swap(image.data, patch_size, locations))
         return subject
 
 

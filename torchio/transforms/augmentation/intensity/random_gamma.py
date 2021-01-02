@@ -118,7 +118,7 @@ class Gamma(IntensityTransform):
                 gamma = self.gamma[name]
             gammas = to_tuple(gamma, length=len(image.data))
             transformed_tensors = []
-            image.data = image.data.float()
+            image.set_data(image.data.float())
             for gamma, tensor in zip(gammas, image.data):
                 if self.invert_transform:
                     correction = power(tensor, 1 - gamma)
@@ -126,7 +126,7 @@ class Gamma(IntensityTransform):
                 else:
                     transformed_tensor = power(tensor, gamma)
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
 

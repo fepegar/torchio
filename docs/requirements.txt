@@ -1,4 +1,5 @@
 Click
+Deprecated
 SimpleITK<2
 furo
 humanize

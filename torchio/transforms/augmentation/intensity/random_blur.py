@@ -85,7 +85,7 @@ class Blur(IntensityTransform):
                     std,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
 

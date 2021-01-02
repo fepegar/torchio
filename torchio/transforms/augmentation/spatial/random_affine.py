@@ -286,7 +286,7 @@ class Affine(SpatialTransform):
                     center_lps=center,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
     def apply_affine_transform(

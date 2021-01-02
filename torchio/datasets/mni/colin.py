@@ -74,7 +74,7 @@ class Colin27(SubjectMNI):
             if version == 2008:
                 path = download_root / 'colin27_cls_tal_hires.nii'
                 cls_image = LabelMap(path)
-                cls_image.data = cls_image.data.round().byte()
+                cls_image.set_data(cls_image.data.round().byte())
                 cls_image.save(path)
 
         if version == 1998:

@@ -12,6 +12,7 @@ with open('HISTORY.rst', encoding='utf8') as history_file:
 
 requirements = [
     'Click',
+    'Deprecated',
     'humanize',
     'nibabel',
     'numpy',

@@ -55,7 +55,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
             gm = LabelMap(f'{p}_gm_{m}.nii')
             wm = LabelMap(f'{p}_wm_{m}.nii')
             csf = LabelMap(f'{p}_csf_{m}.nii')
-            gm.data = torch.cat((gm.data, wm.data, csf.data))
+            gm.set_data(torch.cat((gm.data, wm.data, csf.data)))
             gm.save(tissues_path)
 
         for fp in files_dir.glob('*.nii'):

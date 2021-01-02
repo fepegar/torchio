@@ -258,12 +258,13 @@ class ElasticDeformation(SpatialTransform):
                 interpolation = self.image_interpolation
             if image.is_2d():
                 control_points[..., -1] = 0  # no displacement in IS axis
-            image.data = self.apply_bspline_transform(
+            transformed = self.apply_bspline_transform(
                 image.data,
                 image.affine,
                 control_points,
                 interpolation,
             )
+            image.set_data(transformed)
         return subject
 
     def apply_bspline_transform(

@@ -5,9 +5,10 @@ from typing import Any, Dict, Tuple, Optional, Union, Sequence, List
 import torch
 import humanize
 import numpy as np
-from PIL import Image as ImagePIL
 import nibabel as nib
 import SimpleITK as sitk
+from PIL import Image as ImagePIL
+from deprecated import deprecated
 
 from ..utils import get_stem
 from ..typing import TypeData, TypePath, TypeTripletInt, TypeTripletFloat
@@ -25,6 +26,11 @@ from .io import (
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
 TypeBound = Tuple[float, float]
 TypeBounds = Tuple[TypeBound, TypeBound, TypeBound]
+
+deprecation_message = (
+    'Setting the image data with the property setter is deprecated. Use the'
+    ' set_data() method instead'
+)
 
 
 class Image(dict):
@@ -103,7 +109,7 @@ class Image(dict):
             warnings.warn(
                 'Not specifying the image type is deprecated and will be'
                 ' mandatory in the future. You can probably use tio.ScalarImage'
-                'or LabelMap instead', DeprecationWarning,
+                ' or tio.LabelMap instead', DeprecationWarning,
             )
             type = INTENSITY
 
@@ -114,7 +120,7 @@ class Image(dict):
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
         if tensor is not None:
-            self.data = tensor
+            self.set_data(tensor)
             self.affine = affine
             self._loaded = True
         for key in PROTECTED_KEYS:
@@ -173,7 +179,16 @@ class Image(dict):
         return self[DATA]
 
     @data.setter
+    @deprecated(version='0.18.16', reason=deprecation_message)
     def data(self, tensor: TypeData):
+        self.set_data(tensor)
+
+    def set_data(self, tensor: TypeData):
+        """Store a 4D tensor in the :attr:`data` key and attribute.
+
+        Args:
+            tensor: 4D tensor with dimensions :math:`(C, W, H, D)`.
+        """
         self[DATA] = self._parse_tensor(tensor, none_ok=False)
 
     @property
@@ -419,7 +434,7 @@ class Image(dict):
                 RuntimeError(message)
             tensors.append(new_tensor)
         tensor = torch.cat(tensors)
-        self.data = tensor
+        self.set_data(tensor)
         self.affine = affine
         self._loaded = True
 

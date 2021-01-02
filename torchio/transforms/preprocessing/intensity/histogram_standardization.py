@@ -89,11 +89,8 @@ class HistogramStandardization(NormalizationTransform):
             raise KeyError(message)
         image = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
-        image.data = normalize(
-            image.data,
-            landmarks,
-            mask=mask,
-        )
+        normalized = normalize(image.data, landmarks, mask=mask)
+        image.set_data(normalized)
 
     @classmethod
     def train(

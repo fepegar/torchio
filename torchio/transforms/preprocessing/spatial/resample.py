@@ -204,7 +204,7 @@ class Resample(SpatialTransform):
             resampled = resampler.Execute(floating_itk)
 
             array, affine = sitk_to_nib(resampled)
-            image.data = torch.from_numpy(array)
+            image.set_data(torch.from_numpy(array))
             image.affine = affine
         return subject
 
