@@ -323,8 +323,8 @@ class Image(dict):
             path = Path(path).expanduser()
         except TypeError:
             message = (
-                f'Expected type str or Path but found {path} with '
-                f'{type(path)} instead'
+                f'Expected type str or Path but found {path} with type'
+                f' {type(path)} instead'
             )
             raise TypeError(message)
         except RuntimeError:
