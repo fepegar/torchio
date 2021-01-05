@@ -1,9 +1,9 @@
 import copy
 import numbers
 import warnings
-from typing import Union, Tuple
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from typing import Union, Tuple, Optional, Dict
 
 import torch
 import numpy as np
@@ -62,6 +62,17 @@ class Transform(ABC):
             transform such as :class:`~torchio.transforms.RandomBlur`,
             the transform will be only applied to the MRI, as the label map is
             excluded by default by spatial transforms.
+        keep: Dictionary with the names of the images that will be kept in the
+            subject and their new names.
+
+        Examples::
+
+            >>> import torchio as tio
+            >>> subject = tio.datasets.FPG()
+            >>> subject
+            FPG(Keys: ('t1', 'seg'); images: 2)
+            >>>
+
     """
     def __init__(
             self,
@@ -70,6 +81,7 @@ class Transform(ABC):
             include: TypeKeys = None,
             exclude: TypeKeys = None,
             keys: TypeKeys = None,
+            keep: Optional[Dict[str, str]] = None,
             ):
         self.probability = self.parse_probability(p)
         self.copy = copy
@@ -82,6 +94,7 @@ class Transform(ABC):
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
             include, exclude)
+        self.keep = keep
 
     def __call__(
             self,
@@ -103,10 +116,17 @@ class Transform(ABC):
             return data
         data_parser = DataParser(data, keys=self.include)
         subject = data_parser.get_subject()
+        if self.keep is not None:
+            images_to_keep = {}
+            for name, new_name in self.keep.items():
+                images_to_keep[new_name] = copy.copy(subject[name])
         if self.copy:
             subject = copy.copy(subject)
         with np.errstate(all='raise'):
             transformed = self.apply_transform(subject)
+        if self.keep is not None:
+            for name, image in images_to_keep.items():
+                transformed.add_image(image, name)
         self.add_transform_to_subject_history(transformed)
         for image in transformed.get_images(intensity_only=False):
             ndim = image.data.ndim
@@ -131,7 +151,7 @@ class Transform(ABC):
         return self.__class__.__name__
 
     @abstractmethod
-    def apply_transform(self, subject: Subject):
+    def apply_transform(self, subject: Subject) -> Subject:
         raise NotImplementedError
 
     def add_transform_to_subject_history(self, subject):

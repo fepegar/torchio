@@ -209,6 +209,21 @@ class TestTransforms(TorchioTestCase):
         with self.assertWarns(DeprecationWarning):
             tio.RandomNoise(keys=['t2'])
 
+    def test_keep_original(self):
+        subject = copy.deepcopy(self.sample_subject)
+        old, new = 't1', 't1_original'
+        transformed = tio.RandomAffine(keep={old: new})(subject)
+        assert old in transformed
+        assert new in transformed
+        self.assertTensorEqual(
+            transformed[new].data,
+            subject[old].data,
+        )
+        self.assertTensorNotEqual(
+            transformed[new].data,
+            transformed[old].data,
+        )
+
 
 class TestTransform(TorchioTestCase):
 
