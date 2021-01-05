@@ -89,7 +89,7 @@ class Noise(IntensityTransform):
         self.args_names = 'mean', 'std', 'seed'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        args = self.mean, self.std, self.seed
+        mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
                 mean, std, seed = [arg[name] for arg in args]
