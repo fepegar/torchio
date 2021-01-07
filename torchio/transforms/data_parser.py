@@ -59,8 +59,10 @@ class DataParser:
         elif isinstance(self.data, dict):  # e.g. Eisen or MONAI dicts
             if self.keys is None:
                 message = (
-                    'If input is a dictionary, a value for "include" must be'
-                    ' specified when instantiating the transform'
+                    'If the input is a dictionary, a value for "include" must'
+                    ' be specified when instantiating the transform. See the'
+                    ' docs for Transform:'
+                    ' https://torchio.readthedocs.io/transforms/transforms.html#torchio.transforms.Transform'  # noqa: E501
                 )
                 raise RuntimeError(message)
             subject = self._get_subject_from_dict(self.data, self.keys)
