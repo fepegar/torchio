@@ -1,12 +1,15 @@
 import copy
 import pprint
-from typing import Any, Dict, List, Tuple, Optional, Sequence
+from typing import Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING
 
 import numpy as np
 
 from ..constants import TYPE, INTENSITY
 from .image import Image
 from ..utils import get_subclasses
+
+if TYPE_CHECKING:
+    from ..transforms import Transform, Compose
 
 
 class Subject(dict):
@@ -114,7 +117,10 @@ class Subject(dict):
         # Kept for backwards compatibility
         return self.get_applied_transforms()
 
-    def get_applied_transforms(self, ignore_intensity: bool = False):
+    def get_applied_transforms(
+            self,
+            ignore_intensity: bool = False,
+            ) -> List['Transform']:
         from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
         name_to_transform = {
@@ -132,7 +138,7 @@ class Subject(dict):
     def get_composed_history(
             self,
             ignore_intensity: bool = False,
-            ) -> 'Transform':
+            ) -> 'Compose':
         from ..transforms.augmentation.composition import Compose
         transforms = self.get_applied_transforms(
             ignore_intensity=ignore_intensity)
@@ -142,21 +148,28 @@ class Subject(dict):
             self,
             warn: bool = True,
             ignore_intensity: bool = True,
-            ) ->  'Transform':
+            ) ->  'Compose':
+        """Get a reversed list of the inverses of the applied transforms.
+
+        Args:
+            warn: Issue a warning if some transforms are not invertible.
+            ignore_intensity: If ``True``, all instances of
+                :class:`~torchio.transforms.intensity_transform.IntensityTransform`
+                will be ignored.
+        """
         history_transform = self.get_composed_history(
             ignore_intensity=ignore_intensity)
         inverse_transform = history_transform.inverse(warn=warn)
         return inverse_transform
 
-    def apply_inverse_transform(
-            self,
-            warn: bool = True,
-            ignore_intensity: bool = True,
-            ) -> 'Subject':
-        inverse_transform = self.get_inverse_transform(
-            warn=warn,
-            ignore_intensity=ignore_intensity,
-        )
+    def apply_inverse_transform(self, **kwargs) -> 'Subject':
+        """Try to apply the inverse of all applied transforms, in reverse order.
+
+        Args:
+            **kwargs: Keyword arguments passed on to
+                :meth:`~torchio.data.subject.Subject.get_inverse_transform`.
+        """
+        inverse_transform = self.get_inverse_transform(**kwargs)
         transformed = inverse_transform(self)
         transformed.clear_history()
         return transformed
