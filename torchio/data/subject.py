@@ -203,7 +203,11 @@ class Subject(dict):
             include: Optional[Sequence[str]] = None,
             exclude: Optional[Sequence[str]] = None,
             ) -> List[Image]:
-        images_dict = self.get_images_dict(intensity_only=intensity_only, include=include, exclude=exclude)
+        images_dict = self.get_images_dict(
+            intensity_only=intensity_only,
+            include=include,
+            exclude=exclude,
+        )
         return list(images_dict.values())
 
     def get_first_image(self) -> Image:
@@ -218,7 +222,7 @@ class Subject(dict):
         self.applied_transforms.append((transform.name, parameters_dict))
 
     def load(self) -> None:
-        """Load images in subject."""
+        """Load images in subject on RAM."""
         for image in self.get_images(intensity_only=False):
             image.load()
 
@@ -234,8 +238,14 @@ class Subject(dict):
     def remove_image(self, image_name: str) -> None:
         """Remove an image."""
         del self[image_name]
+        delattr(self, image_name)
 
     def plot(self, **kwargs) -> None:
-        """Plot images."""
+        """Plot images using matplotlib.
+
+        Args:
+            **kwargs: Keyword arguments that will be passed on to
+                :class:`~torchio.data.image.Image`.
+        """
         from ..visualization import plot_subject  # avoid circular import
         plot_subject(self, **kwargs)
