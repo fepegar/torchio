@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
-"""Tests for Subject."""
-
+import copy
 import tempfile
 import pytest
 import torch
@@ -86,3 +83,11 @@ class TestSubject(TorchioTestCase):
             im2=tio.ScalarImage(tensor=t, affine=affine2),
         )
         subject.check_consistent_space()
+
+    def test_delete_image(self):
+        subject = copy.deepcopy(self.sample_subject)
+        subject.remove_image('t1')
+        with self.assertRaises(KeyError):
+            subject['t1']
+        with self.assertRaises(AttributeError):
+            subject.t1
