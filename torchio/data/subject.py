@@ -111,24 +111,53 @@ class Subject(dict):
 
     @property
     def history(self):
-        from ..transforms.transform import Transform
-        transform_classes = {cls.__name__: cls for cls in get_subclasses(Transform)}
+        # Kept for backwards compatibility
+        return self.get_applied_transforms()
 
+    def get_applied_transforms(self, ignore_intensity: bool = False):
+        from ..transforms.transform import Transform
+        from ..transforms.intensity_transform import IntensityTransform
+        name_to_transform = {
+            cls.__name__: cls
+            for cls in get_subclasses(Transform)
+        }
         transforms_list = []
         for transform_name, arguments in self.applied_transforms:
-            transform = transform_classes[transform_name](**arguments)
+            transform = name_to_transform[transform_name](**arguments)
+            if ignore_intensity and isinstance(transform, IntensityTransform):
+                continue
             transforms_list.append(transform)
         return transforms_list
 
-    def get_composed_history(self) -> 'Transform':
+    def get_composed_history(
+            self,
+            ignore_intensity: bool = False,
+            ) -> 'Transform':
         from ..transforms.augmentation.composition import Compose
-        return Compose(self.history)
+        transforms = self.get_applied_transforms(
+            ignore_intensity=ignore_intensity)
+        return Compose(transforms)
 
-    def get_inverse_transform(self, warn=True) -> 'Transform':
-        return self.get_composed_history().inverse(warn=warn)
+    def get_inverse_transform(
+            self,
+            warn: bool = True,
+            ignore_intensity: bool = True,
+            ) ->  'Transform':
+        history_transform = self.get_composed_history(
+            ignore_intensity=ignore_intensity)
+        inverse_transform = history_transform.inverse(warn=warn)
+        return inverse_transform
 
-    def apply_inverse_transform(self, warn=True) -> 'Subject':
-        transformed = self.get_inverse_transform(warn=warn)(self)
+    def apply_inverse_transform(
+            self,
+            warn: bool = True,
+            ignore_intensity: bool = True,
+            ) -> 'Subject':
+        inverse_transform = self.get_inverse_transform(
+            warn=warn,
+            ignore_intensity=ignore_intensity,
+        )
+        transformed = inverse_transform(self)
         transformed.clear_history()
         return transformed
 
