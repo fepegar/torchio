@@ -18,7 +18,7 @@ class RandomAnisotropy(RandomTransform):
 
     Similar to the work by Billot et al.: `Partial Volume Segmentation of Brain
     MRI Scans of any Resolution and
-    Contrast <https://link.springer.com/chapter/10.1007/978-3-030-59728-3_18>`_.
+    Contrast <billot>`_.
 
     Args:
         axes: Axis or tuple of axes along which the image will be downsampled.
@@ -29,8 +29,12 @@ class RandomAnisotropy(RandomTransform):
             nearest neighbor interpolation. See :ref:`Interpolation` for
             supported interpolation types.
         scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
+            This is useful when the segmentation quality needs to be kept,
+            as in `Billot et al. <billot>_.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
+
+    .. _billot: https://link.springer.com/chapter/10.1007/978-3-030-59728-3_18
 
     Example:
         >>> import torchio as tio

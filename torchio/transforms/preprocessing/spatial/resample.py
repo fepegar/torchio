@@ -36,6 +36,7 @@ class Resample(SpatialTransform):
             transform. See usage in the example below.
         image_interpolation: See :ref:`Interpolation`.
         scalars_only: Apply only to instances of :class:`~torchio.ScalarImage`.
+            See :class:`~torchio.transforms.RandomAnisotropy`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
@@ -174,7 +175,7 @@ class Resample(SpatialTransform):
 
             floating_itk = image.as_sitk(force_3d=True)
 
-            # Resample
+            # Get reference image
             if isinstance(self.reference_image, str):
                 try:
                     reference_image = subject[self.reference_image]
@@ -193,11 +194,11 @@ class Resample(SpatialTransform):
                     floating_itk,
                     self.target_spacing,
                 )
-
             num_dims_ref = reference_image_sitk.GetDimension()
             num_dims_flo = floating_itk.GetDimension()
             assert num_dims_ref == num_dims_flo
 
+            # Resample
             resampler = sitk.ResampleImageFilter()
             resampler.SetInterpolator(interpolator)
             resampler.SetReferenceImage(reference_image_sitk)
