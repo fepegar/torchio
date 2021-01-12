@@ -69,6 +69,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.18.15',
+    version='0.18.16',
     zip_safe=False,
 )
