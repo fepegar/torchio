@@ -120,6 +120,7 @@ class Subject(dict):
     def get_applied_transforms(
             self,
             ignore_intensity: bool = False,
+            image_interpolation: Optional[str] = None,
             ) -> List['Transform']:
         from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
@@ -132,22 +133,30 @@ class Subject(dict):
             transform = name_to_transform[transform_name](**arguments)
             if ignore_intensity and isinstance(transform, IntensityTransform):
                 continue
+            resamples = hasattr(transform, 'image_interpolation')
+            if resamples and image_interpolation is not None:
+                parsed = transform.parse_interpolation(image_interpolation)
+                transform.image_interpolation = parsed
             transforms_list.append(transform)
         return transforms_list
 
     def get_composed_history(
             self,
             ignore_intensity: bool = False,
+            image_interpolation: Optional[str] = None,
             ) -> 'Compose':
         from ..transforms.augmentation.composition import Compose
         transforms = self.get_applied_transforms(
-            ignore_intensity=ignore_intensity)
+            ignore_intensity=ignore_intensity,
+            image_interpolation=image_interpolation,
+        )
         return Compose(transforms)
 
     def get_inverse_transform(
             self,
             warn: bool = True,
             ignore_intensity: bool = True,
+            image_interpolation: Optional[str] = None,
             ) ->  'Compose':
         """Get a reversed list of the inverses of the applied transforms.
 
@@ -156,9 +165,13 @@ class Subject(dict):
             ignore_intensity: If ``True``, all instances of
                 :class:`~torchio.transforms.intensity_transform.IntensityTransform`
                 will be ignored.
+            image_interpolation: Modify interpolation for scalar images inside
+                transforms that perform resampling.
         """
         history_transform = self.get_composed_history(
-            ignore_intensity=ignore_intensity)
+            ignore_intensity=ignore_intensity,
+            image_interpolation=image_interpolation,
+        )
         inverse_transform = history_transform.inverse(warn=warn)
         return inverse_transform
 
