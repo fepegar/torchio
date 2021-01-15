@@ -1,11 +1,12 @@
 import torch
 
 from ....data import LabelMap
-from ...transform import Transform, TypeMaskingMethod
+from ...transform import TypeMaskingMethod
 from .remap_labels import RemapLabels
+from .label_transform import LabelTransform
 
 
-class SequentialLabels(Transform):
+class SequentialLabels(LabelTransform):
     r"""Remap the integer IDs of labels in a LabelMap to be sequential.
 
     For example, if a label map has 6 labels with IDs (3, 5, 9, 15, 16, 23),
