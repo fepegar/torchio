@@ -36,9 +36,10 @@ from .preprocessing import RescaleIntensity
 from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
 from .preprocessing.intensity.histogram_standardization import train_histogram
-from .preprocessing.label.remap_labels import RemapLabels
-from .preprocessing.label.sequential_labels import SequentialLabels
-from .preprocessing.label.remove_labels import RemoveLabels
+from .preprocessing import OneHot
+from .preprocessing import RemapLabels
+from .preprocessing import RemoveLabels
+from .preprocessing import SequentialLabels
 
 
 __all__ = [
@@ -84,7 +85,8 @@ __all__ = [
     'CropOrPad',
     'EnsureShapeMultiple',
     'train_histogram',
+    'OneHot',
     'RemapLabels',
-    'SequentialLabels',
     'RemoveLabels',
+    'SequentialLabels',
 ]
