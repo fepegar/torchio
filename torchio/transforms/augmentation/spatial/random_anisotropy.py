@@ -30,7 +30,7 @@ class RandomAnisotropy(RandomTransform):
             supported interpolation types.
         scalars_only: Apply only to instances of :class:`torchio.ScalarImage`.
             This is useful when the segmentation quality needs to be kept,
-            as in `Billot et al. <billot>_.
+            as in `Billot et al. <billot>`_.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
