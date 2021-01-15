@@ -1,6 +1,5 @@
 from typing import Dict
 
-from ....data import LabelMap
 from ...transform import TypeMaskingMethod
 from .label_transform import LabelTransform
 
@@ -62,15 +61,7 @@ class RemapLabels(LabelTransform):
         self.args_names = ('remapping', 'masking_method',)
 
     def apply_transform(self, subject):
-        images = subject.get_images(
-            intensity_only=False,
-            include=self.include,
-            exclude=self.exclude,
-        )
-        for image in images:
-            if not isinstance(image, LabelMap):
-                continue
-
+        for image in self.get_images(subject):
             new_data = image.data.clone()
             mask = self.get_mask_from_masking_method(
                 self.masking_method,

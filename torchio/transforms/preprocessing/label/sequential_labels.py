@@ -1,6 +1,5 @@
 import torch
 
-from ....data import LabelMap
 from ...transform import TypeMaskingMethod
 from .remap_labels import RemapLabels
 from .label_transform import LabelTransform
@@ -30,15 +29,7 @@ class SequentialLabels(LabelTransform):
         self.args_names = []
 
     def apply_transform(self, subject):
-        images_dict = subject.get_images_dict(
-            intensity_only=False,
-            include=self.include,
-            exclude=self.exclude,
-        )
-        for name, image in images_dict.items():
-            if not isinstance(image, LabelMap):
-                continue
-
+        for name, image in self.get_images_dict(subject).items():
             unique_labels = torch.unique(image.data)
             remapping = {
                 unique_labels[i].item(): i
