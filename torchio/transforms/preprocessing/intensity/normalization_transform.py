@@ -1,6 +1,5 @@
 import torch
 from ....data.subject import Subject
-from ....transforms.transform import Transform
 from ....transforms.transform import TypeMaskingMethod
 from ... import IntensityTransform
 
@@ -46,7 +45,7 @@ class NormalizationTransform(IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image_name, image in self.get_images_dict(subject).items():
-            mask = Transform.get_mask_from_masking_method(
+            mask = self.get_mask_from_masking_method(
                 self.masking_method,
                 subject,
                 image.data,

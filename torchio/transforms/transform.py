@@ -421,14 +421,14 @@ class Transform(ABC):
         mask = tensor > tensor.float().mean()
         return mask
 
-    @staticmethod
     def get_mask_from_masking_method(
+            self,
             masking_method: TypeMaskingMethod,
             subject: Subject,
             tensor: torch.Tensor,
             ) -> torch.Tensor:
         if masking_method is None:
-            return Transform.ones(tensor)
+            return self.ones(tensor)
         elif callable(masking_method):
             return masking_method(tensor)
         elif type(masking_method) is str:
@@ -437,15 +437,15 @@ class Transform(ABC):
                 return subject[masking_method].data.bool()
             masking_method = masking_method.capitalize()
             if masking_method in anat_axes:
-                return Transform.get_mask_from_anatomical_label(
+                return self.get_mask_from_anatomical_label(
                     masking_method, tensor)
         elif type(masking_method) in (tuple, list, int):
-            return Transform.get_mask_from_bounds(masking_method, tensor)
+            return self.get_mask_from_bounds(masking_method, tensor)
         message = (
             'Masking method parameter must be a function, a label map name,'
             f' an anatomical label: {anat_axes}, or a bounds parameter'
             ' (an int, tuple of 3 ints, or tuple of 6 ints),'
-            f' not {masking_method} of type {type(masking_method)}'
+            f' not "{masking_method}" of type "{type(masking_method)}"'
         )
         raise ValueError(message)
 
