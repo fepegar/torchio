@@ -72,12 +72,12 @@ Reproducibility
 ---------------
 
 When transforms are instantiated, we typically need to pass values that will be
-used to sample the transform parameters when the :meth:`__call__` method of the
+used to sample the transform parameters when the :meth:`~torchio.transforms.Transform.__call__` method of the
 transform is called, i.e., when the transform instance is called.
 
 All random transforms have a corresponding deterministic class, that can be
-applied again to obtain exactly the same result. The :class:`Subject` class
-contains some convenience methods to reproduce transforms::
+applied again to obtain exactly the same result. The :class:`~torchio.Subject` class
+contains some convenient methods to reproduce transforms::
 
     >>> import torchio as tio
     >>> subject = tio.datasets.FPG()
@@ -147,7 +147,7 @@ invertibility:
 - Impossible: transforms that cannot be inverted, such as
   :class:`~torchio.transforms.RandomBlur`.
 
-Non-invertible transforms will be ignored by the :meth:`apply_inverse_transform`
+Non-invertible transforms will be ignored by the :meth:`~torchio.Subject.apply_inverse_transform`
 method of :class:`~torchio.Subject`.
 
 

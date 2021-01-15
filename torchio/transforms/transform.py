@@ -37,8 +37,8 @@ class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
     All subclasses must overwrite
-    :meth:`Transform.apply_transform`,
-    which takes data, applies some transformation and returns the result.
+    :meth:`~torchio.transforms.Transform.apply_transform`,
+    which takes some input, applies a transformation and returns the result.
 
     The input can be an instance of
     :class:`torchio.Subject`,
@@ -64,15 +64,6 @@ class Transform(ABC):
             excluded by default by spatial transforms.
         keep: Dictionary with the names of the images that will be kept in the
             subject and their new names.
-
-        Examples::
-
-            >>> import torchio as tio
-            >>> subject = tio.datasets.FPG()
-            >>> subject
-            FPG(Keys: ('t1', 'seg'); images: 2)
-            >>>
-
     """
     def __init__(
             self,
@@ -103,7 +94,7 @@ class Transform(ABC):
         """Transform data and return a result of the same type.
 
         Args:
-            data: Instance of 1) :class:`~torchio.Subject`, 4D
+            data: Instance of :class:`torchio.Subject`, 4D
                 :class:`torch.Tensor` or :class:`numpy.ndarray` with dimensions
                 :math:`(C, W, H, D)`, where :math:`C` is the number of channels
                 and :math:`W, H, D` are the spatial dimensions. If the input is

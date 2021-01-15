@@ -85,6 +85,8 @@ exclude_patterns: List[str] = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky
+nitpicky = True
 
 # -- Options for HTML output -------------------------------------------------
 
