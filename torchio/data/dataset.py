@@ -52,6 +52,9 @@ class SubjectsDataset(Dataset):
     .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F
     .. _DICOM: https://www.dicomstandard.org/
     .. _affine matrix: https://nipy.org/nibabel/coordinate_systems.html
+
+    .. tip:: To quickly iterate over the subjects without loading the images,
+        use :meth:`dry_iter()`.
     """  # noqa: E501
 
     def __init__(
@@ -61,18 +64,18 @@ class SubjectsDataset(Dataset):
             load_getitem: bool = True,
             ):
         self._parse_subjects_list(subjects)
-        self.subjects = subjects
+        self._subjects = subjects
         self._transform: Optional[Callable]
         self.set_transform(transform)
         self.load_getitem = load_getitem
 
     def __len__(self):
-        return len(self.subjects)
+        return len(self._subjects)
 
     def __getitem__(self, index: int) -> Subject:
         if not isinstance(index, int):
             raise ValueError(f'Index "{index}" must be int, not {type(index)}')
-        subject = self.subjects[index]
+        subject = self._subjects[index]
         subject = copy.deepcopy(subject)  # cheap since images not loaded yet
         if self.load_getitem:
             subject.load()
@@ -82,15 +85,29 @@ class SubjectsDataset(Dataset):
             subject = self._transform(subject)
         return subject
 
+    def dry_iter(self):
+        """Return the internal list of subjects.
+
+        This can be used to iterate over the subjects without loading the data
+        and applying any transforms::
+
+        >>> names = [subject.name for subject in dataset.dry_iter()]
+        """
+        return self._subjects
+
     def set_transform(self, transform: Optional[Callable]) -> None:
         """Set the :attr:`transform` attribute.
 
         Args:
-            transform: An instance of :class:`torchio.transforms.Transform`.
+            transform: Callable object, typically an subclass of
+                :class:`torchio.transforms.Transform`.
         """
         if transform is not None and not callable(transform):
-            raise ValueError(
-                f'The transform must be a callable object, not {transform}')
+            message = (
+                'The transform must be a callable object,'
+                f' but it has type {type(transform)}'
+            )
+            raise ValueError(message)
         self._transform = transform
 
     @staticmethod
