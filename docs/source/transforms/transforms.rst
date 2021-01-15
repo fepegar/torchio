@@ -176,9 +176,9 @@ optimal resampling results during offline data preprocessing.
 
 Visit the
 `ITK docs <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
-for more information and see
-`this SimpleITK example <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
-for some interpolation results on test images.
+for technical documentation and
+`Cambridge in Colour <https://www.cambridgeincolour.com/tutorials/image-interpolation.htm>`_
+for some further generalexplanations of digital image interpolation.
 
 .. currentmodule:: torchio.transforms.interpolation
 

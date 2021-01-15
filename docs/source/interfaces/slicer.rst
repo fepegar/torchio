@@ -6,7 +6,7 @@ medical image informatics, image processing,
 and three-dimensional visualization.
 
 You can download and install Slicer 4.11 from
-`their download website <https://www.download.slicer.org/>`_ or, if you are on
+`their download website <https://download.slicer.org/>`_ or, if you are on
 macOS, using `Homebrew <https://docs.brew.sh/>`_:
 ``brew cask install slicer-nightly``.
 
