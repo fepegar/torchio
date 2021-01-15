@@ -20,11 +20,3 @@ help:
 
 livehtml:
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-
-# https://sublime-and-sphinx-guide.readthedocs.io/en/latest/references.html#test-external-links
-LINKCHECKDIR  = build/linkcheck
-.PHONY: checklinks
-checklinks:
-	$(SPHINXBUILD) -b linkcheck "$(SOURCEDIR)" "$(LINKCHECKDIR)"
-	@echo
-	@echo "Check finished. Report is in $(LINKCHECKDIR)."
