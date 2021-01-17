@@ -14,8 +14,7 @@ class SequentialLabels(LabelTransform):
     This transformation is always `fully invertible <invertibility>`_.
 
     Args:
-        masking_method: See
-            :class:`~torchio.RemapLabels`.
+        masking_method: See :class:`~torchio.transforms.RemapLabels`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """

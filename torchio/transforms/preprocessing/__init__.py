@@ -9,9 +9,10 @@ from .intensity.rescale import RescaleIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
+from .label.one_hot import OneHot
 from .label.remap_labels import RemapLabels
-from .label.sequential_labels import SequentialLabels
 from .label.remove_labels import RemoveLabels
+from .label.sequential_labels import SequentialLabels
 
 
 __all__ = [
@@ -24,7 +25,8 @@ __all__ = [
     'ZNormalization',
     'RescaleIntensity',
     'HistogramStandardization',
+    'OneHot',
     'RemapLabels',
-    'SequentialLabels',
     'RemoveLabels',
+    'SequentialLabels',
 ]
