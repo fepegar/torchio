@@ -125,10 +125,10 @@ or `aleatoric uncertainty estimation <https://www.sciencedirect.com/science/arti
     >>> segmentations = []
     >>> num_segmentations = 10
     >>> for _ in range(num_segmentations):
-    ...     transform = tio.RandomAffine()
+    ...     transform = tio.RandomAffine(image_interpolation='bspline')
     ...     transformed = transform(subject)
     ...     segmentation = model(transformed)
-    ...     transformed_native_space = segmentation.apply_inverse_transform()
+    ...     transformed_native_space = segmentation.apply_inverse_transform(image_interpolation='linear')
     ...     segmentations.append(transformed_native_space)
     ...
 
