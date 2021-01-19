@@ -7,7 +7,6 @@ import humanize
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
-from PIL import Image as ImagePIL
 from deprecated import deprecated
 
 from ..utils import get_stem
@@ -473,11 +472,22 @@ class Image(dict):
         """Get the image as an instance of :class:`sitk.Image`."""
         return nib_to_sitk(self.data, self.affine, **kwargs)
 
-    def as_pil(self) -> ImagePIL:
+    def as_pil(self):
         """Get the image as an instance of :class:`PIL.Image`.
 
         .. note:: Values will be clamped to 0-255 and cast to uint8.
+        .. note:: To use this method, `Pillow` needs to be installed:
+            `pip install Pillow`.
         """
+        try:
+            from PIL import Image as ImagePIL
+        except ModuleNotFoundError as e:
+            message = (
+                'Please install Pillow to use Image.as_pil():'
+                ' pip install Pillow'
+            )
+            raise RuntimeError(message) from e
+
         self.check_is_2d()
         tensor = self.data
         if len(tensor) == 1:
