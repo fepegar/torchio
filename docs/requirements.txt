@@ -3,6 +3,7 @@ Deprecated
 SimpleITK<2
 furo
 humanize
+matplotlib
 nibabel
 numpy
 scipy
