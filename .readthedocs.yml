@@ -5,8 +5,7 @@
 # Required
 version: 2
 
-# We don't want the docs to be published if there are any warnings,
-# as they might be relevant
+# Don't publish the docs if there are any warnings, as they might be relevant
 # https://github.com/readthedocs/readthedocs.org/issues/6837#issuecomment-607229633
 sphinx:
   fail_on_warning: true

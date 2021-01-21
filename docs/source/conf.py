@@ -86,7 +86,10 @@ exclude_patterns: List[str] = []
 pygments_style = None
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky
-nitpicky = True
+# This generates a lot of warnings because of the broken internal links, which
+# makes the docs build fail because of the "fail_on_warning: true" option in
+# the .readthedocs.yml config file
+# nitpicky = True
 
 # -- Options for HTML output -------------------------------------------------
 
