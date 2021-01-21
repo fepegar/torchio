@@ -99,9 +99,11 @@ html_theme = 'furo'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
+arxiv_url = 'https://arxiv.org/abs/2003.04696'
+link = f'<a href="{arxiv_url}">arXiv preprint</a>'
 html_theme_options = {
     # 'navigation_depth': 3,  # for sphinx theme
-    # "announcement": "<em>Important</em> announcement!",
+    'announcement': f'Check out our new, extended {link} (12 Jan 2021)',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
