@@ -1,4 +1,9 @@
-requirements_file: docs/requirements.txt
+# .readthedocs.yml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
 
 # We don't want the docs to be published if there are any warnings,
 # as they might be relevant
@@ -6,6 +11,13 @@ requirements_file: docs/requirements.txt
 sphinx:
   fail_on_warning: true
 
-# Do not build Latex or PDF
+# Formats of the documentation to be built
 formats:
   - htmlzip
+  - pdf
+  - epub
+
+python:
+   version: 3.7
+   install:
+   - requirements: docs/requirements.txt
