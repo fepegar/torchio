@@ -8,5 +8,6 @@ nibabel
 numpy
 scipy
 sphinx-copybutton
+sphinx>=3.4.3
 torch>=1.1
 tqdm
