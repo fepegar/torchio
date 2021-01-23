@@ -54,15 +54,15 @@ class Queue(Dataset):
     which are passed to the neural network.
 
     Args:
-        subjects_dataset: Instance of
-            :class:`~torchio.data.SubjectsDataset`.
+        subjects_dataset: Instance of :class:`~torchio.data.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        sampler: A sampler used to extract patches from the volumes.
+        sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
+            to extract patches from the volumes.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
@@ -71,7 +71,7 @@ class Queue(Dataset):
             have been processed.
         shuffle_patches: If ``True``, patches are shuffled after filling the
             queue.
-        verbose: If ``True``, some debugging messages are printed.
+        verbose: If ``True``, some debugging messages will be printed.
 
     This diagram represents the connection between
     a :class:`~torchio.data.SubjectsDataset`,
@@ -94,7 +94,9 @@ class Queue(Dataset):
 
     .. note:: :attr:`num_workers` refers to the number of workers used to
         load and transform the volumes. Multiprocessing is not needed to pop
-        patches from the queue.
+        patches from the queue, so you should always use ``num_workers=0`` for
+        the :class:`~torch.utils.data.DataLoader` you instantiate to generate
+        training batches.
 
     Example:
 
