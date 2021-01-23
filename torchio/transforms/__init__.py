@@ -37,6 +37,7 @@ from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
 from .preprocessing.intensity.histogram_standardization import train_histogram
 from .preprocessing import OneHot
+from .preprocessing import Contour
 from .preprocessing import RemapLabels
 from .preprocessing import RemoveLabels
 from .preprocessing import SequentialLabels
@@ -87,6 +88,7 @@ __all__ = [
     'EnsureShapeMultiple',
     'train_histogram',
     'OneHot',
+    'Contour',
     'RemapLabels',
     'RemoveLabels',
     'SequentialLabels',

@@ -16,10 +16,7 @@ class KeepLargestComponent(LabelTransform):
 
     .. _open a new issue: https://github.com/fepegar/torchio/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=Improve%20KeepLargestComponent%20transform
     """  # noqa: E501
-    def __init__(
-            self,
-            **kwargs
-            ):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.args_names = []
 

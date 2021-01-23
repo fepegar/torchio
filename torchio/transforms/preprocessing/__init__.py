@@ -10,6 +10,7 @@ from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
 from .label.one_hot import OneHot
+from .label.contour import Contour
 from .label.remap_labels import RemapLabels
 from .label.remove_labels import RemoveLabels
 from .label.sequential_labels import SequentialLabels
@@ -27,6 +28,7 @@ __all__ = [
     'RescaleIntensity',
     'HistogramStandardization',
     'OneHot',
+    'Contour',
     'RemapLabels',
     'RemoveLabels',
     'SequentialLabels',

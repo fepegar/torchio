@@ -122,6 +122,13 @@ Label
     :show-inheritance:
 
 
+:class:`Contour`
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: Contour
+    :show-inheritance:
+
+
 :class:`KeepLargestComponent`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
