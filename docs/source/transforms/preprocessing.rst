@@ -120,3 +120,10 @@ Label
 
 .. autoclass:: OneHot
     :show-inheritance:
+
+
+:class:`KeepLargestComponent`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: KeepLargestComponent
+    :show-inheritance:

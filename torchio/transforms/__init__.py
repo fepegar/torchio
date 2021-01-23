@@ -40,6 +40,7 @@ from .preprocessing import OneHot
 from .preprocessing import RemapLabels
 from .preprocessing import RemoveLabels
 from .preprocessing import SequentialLabels
+from .preprocessing import KeepLargestComponent
 
 
 __all__ = [
@@ -89,4 +90,5 @@ __all__ = [
     'RemapLabels',
     'RemoveLabels',
     'SequentialLabels',
+    'KeepLargestComponent',
 ]

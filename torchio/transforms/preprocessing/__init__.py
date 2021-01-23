@@ -13,6 +13,7 @@ from .label.one_hot import OneHot
 from .label.remap_labels import RemapLabels
 from .label.remove_labels import RemoveLabels
 from .label.sequential_labels import SequentialLabels
+from .label.keep_largest_component import KeepLargestComponent
 
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     'RemapLabels',
     'RemoveLabels',
     'SequentialLabels',
+    'KeepLargestComponent',
 ]
