@@ -71,6 +71,8 @@ class Queue(Dataset):
             have been processed.
         shuffle_patches: If ``True``, patches are shuffled after filling the
             queue.
+        start_background: If ``True``, the loader will start working in the
+            background as soon as the queue is instantiated.
         verbose: If ``True``, some debugging messages will be printed.
 
     This diagram represents the connection between
@@ -135,6 +137,7 @@ class Queue(Dataset):
             num_workers: int = 0,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
+            start_background: bool = True,
             verbose: bool = False,
             ):
         self.subjects_dataset = subjects_dataset
@@ -145,8 +148,10 @@ class Queue(Dataset):
         self.sampler = sampler
         self.num_workers = num_workers
         self.verbose = verbose
-        self.subjects_iterable = self.get_subjects_iterable()
-        self.patches_list: List[dict] = []
+        self._subjects_iterable = None
+        if start_background:
+            self.initialize_subjects_iterable()
+        self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
 
     def __len__(self):
@@ -176,6 +181,15 @@ class Queue(Dataset):
     def _print(self, *args):
         if self.verbose:
             print(*args)  # noqa: T001
+
+    def initialize_subjects_iterable(self):
+        self._subjects_iterable = self.get_subjects_iterable()
+
+    @property
+    def subjects_iterable(self):
+        if self._subjects_iterable is None:
+            self.initialize_subjects_iterable()
+        return self._subjects_iterable
 
     @property
     def num_subjects(self) -> int:
@@ -224,7 +238,7 @@ class Queue(Dataset):
             subject = next(self.subjects_iterable)
         except StopIteration as exception:
             self._print('Queue is empty:', exception)
-            self.subjects_iterable = self.get_subjects_iterable()
+            self.initialize_subjects_iterable()
             subject = next(self.subjects_iterable)
         return subject
 
