@@ -20,7 +20,7 @@ def rotate(image):
 
 def plot_volume(
         image: Image,
-        channel=0,
+        channel=-1,  # default to foreground for binary maps
         axes=None,
         cmap=None,
         output_path=None,
@@ -44,7 +44,7 @@ def plot_volume(
         slice_x, slice_y, slice_z = color_labels(slices, cmap)
     else:
         if cmap is None:
-            cmap = 'inferno' if is_label else 'gray'
+            cmap = 'cubehelix' if is_label else 'gray'
         kwargs['cmap'] = cmap
     if is_label:
         kwargs['interpolation'] = 'none'
@@ -64,6 +64,7 @@ def plot_subject(
         cmap_dict=None,
         show=True,
         output_path=None,
+        **kwargs,
         ):
     _, plt = import_mpl_plt()
     fig, axes = plt.subplots(len(subject), 3)
@@ -77,7 +78,7 @@ def plot_subject(
         cmap = None
         if cmap_dict is not None and name in cmap_dict:
             cmap = cmap_dict[name]
-        plot_volume(image, axes=row_axes, show=False, cmap=cmap)
+        plot_volume(image, axes=row_axes, show=False, cmap=cmap, **kwargs)
         for axis, axis_name in zip(row_axes, axes_names):
             axis.set_title(f'{name} ({axis_name})')
     plt.tight_layout()
