@@ -64,10 +64,11 @@ def plot_subject(
         cmap_dict=None,
         show=True,
         output_path=None,
+        figsize=None,
         **kwargs,
         ):
     _, plt = import_mpl_plt()
-    fig, axes = plt.subplots(len(subject), 3)
+    fig, axes = plt.subplots(len(subject), 3, figsize=figsize)
     # The array of axes must be 2D so that it can be indexed correctly within
     # the plot_volume() function
     axes = axes.reshape(-1, 3)
