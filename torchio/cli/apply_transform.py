@@ -15,6 +15,12 @@ import click
     help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
 )
 @click.option(
+    '--imclass', '-c',
+    type=str,
+    default='ScalarImage',
+    help='Subclass of torchio.Image used to instantiate the image.'
+)
+@click.option(
     '--seed', '-s',
     type=int,
     help='Seed for PyTorch random number generator.',
@@ -30,6 +36,7 @@ def main(
         transform_name,
         output_path,
         kwargs,
+        imclass,
         seed,
         verbose,
         ):
@@ -59,6 +66,7 @@ def main(
         transform,
         output_path,
         verbose=verbose,
+        class_=imclass,
     )
     return 0
 
