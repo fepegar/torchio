@@ -54,24 +54,28 @@ class Queue(Dataset):
     which are passed to the neural network.
 
     Args:
-        subjects_dataset: Instance of
-            :class:`~torchio.data.SubjectsDataset`.
+        subjects_dataset: Instance of :class:`~torchio.data.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        sampler: A sampler used to extract patches from the volumes.
+        sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
+            to extract patches from the volumes.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
+        pin_memory: See :attr:`pin_memory` in
+            :class:`~torch.utils.data.DataLoader`.
         shuffle_subjects: If ``True``, the subjects dataset is shuffled at the
             beginning of each epoch, i.e. when all patches from all subjects
             have been processed.
         shuffle_patches: If ``True``, patches are shuffled after filling the
             queue.
-        verbose: If ``True``, some debugging messages are printed.
+        start_background: If ``True``, the loader will start working in the
+            background as soon as the queue is instantiated.
+        verbose: If ``True``, some debugging messages will be printed.
 
     This diagram represents the connection between
     a :class:`~torchio.data.SubjectsDataset`,
@@ -94,7 +98,9 @@ class Queue(Dataset):
 
     .. note:: :attr:`num_workers` refers to the number of workers used to
         load and transform the volumes. Multiprocessing is not needed to pop
-        patches from the queue.
+        patches from the queue, so you should always use ``num_workers=0`` for
+        the :class:`~torch.utils.data.DataLoader` you instantiate to generate
+        training batches.
 
     Example:
 
@@ -131,8 +137,10 @@ class Queue(Dataset):
             samples_per_volume: int,
             sampler: PatchSampler,
             num_workers: int = 0,
+            pin_memory: bool = True,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
+            start_background: bool = True,
             verbose: bool = False,
             ):
         self.subjects_dataset = subjects_dataset
@@ -142,9 +150,12 @@ class Queue(Dataset):
         self.samples_per_volume = samples_per_volume
         self.sampler = sampler
         self.num_workers = num_workers
+        self.pin_memory = pin_memory
         self.verbose = verbose
-        self.subjects_iterable = self.get_subjects_iterable()
-        self.patches_list: List[dict] = []
+        self._subjects_iterable = None
+        if start_background:
+            self.initialize_subjects_iterable()
+        self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
 
     def __len__(self):
@@ -174,6 +185,15 @@ class Queue(Dataset):
     def _print(self, *args):
         if self.verbose:
             print(*args)  # noqa: T001
+
+    def initialize_subjects_iterable(self):
+        self._subjects_iterable = self.get_subjects_iterable()
+
+    @property
+    def subjects_iterable(self):
+        if self._subjects_iterable is None:
+            self.initialize_subjects_iterable()
+        return self._subjects_iterable
 
     @property
     def num_subjects(self) -> int:
@@ -222,19 +242,25 @@ class Queue(Dataset):
             subject = next(self.subjects_iterable)
         except StopIteration as exception:
             self._print('Queue is empty:', exception)
-            self.subjects_iterable = self.get_subjects_iterable()
+            self.initialize_subjects_iterable()
             subject = next(self.subjects_iterable)
         return subject
+
+    @staticmethod
+    def get_first_item(batch):
+        return batch[0]
 
     def get_subjects_iterable(self) -> Iterator:
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
         self._print(
-            '\nCreating subjects loader with', self.num_workers, 'workers')
+            f'\nCreating subjects loader with {self.num_workers} workers')
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,
-            collate_fn=lambda x: x[0],
+            pin_memory=self.pin_memory,
+            batch_size=1,
+            collate_fn=self.get_first_item,
             shuffle=self.shuffle_subjects,
         )
         return iter(subjects_loader)
