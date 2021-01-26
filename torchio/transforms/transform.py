@@ -86,6 +86,10 @@ class Transform(ABC):
         self.include, self.exclude = self.parse_include_and_exclude(
             include, exclude)
         self.keep = keep
+        # args_names is the sequence of parameters from self that need to be
+        # passed to a non-random version of a random transform. They are also
+        # used to invert invertible transforms
+        self.args_names = ()
 
     def __call__(
             self,

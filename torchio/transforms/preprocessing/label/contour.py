@@ -10,10 +10,6 @@ class Contour(LabelTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.args_names = []
-
     def apply_transform(self, subject):
         for image in self.get_images(subject):
             assert image.data.ndim == 4 and image.data.shape[0] == 1

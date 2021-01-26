@@ -25,7 +25,6 @@ class SequentialLabels(LabelTransform):
             ):
         super().__init__(**kwargs)
         self.masking_method = masking_method
-        self.args_names = []
 
     def apply_transform(self, subject):
         for name, image in self.get_images_dict(subject).items():

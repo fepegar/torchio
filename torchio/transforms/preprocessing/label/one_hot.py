@@ -11,14 +11,9 @@ class OneHot(LabelTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(
-            self,
-            num_classes: int = -1,
-            **kwargs
-            ):
+    def __init__(self, num_classes: int = -1, **kwargs):
         super().__init__(**kwargs)
         self.num_classes = num_classes
-        self.args_names = []
 
     def apply_transform(self, subject):
         for image in self.get_images(subject):

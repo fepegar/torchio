@@ -26,9 +26,6 @@ class ToCanonical(SpatialTransform):
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
     """  # noqa: E501
-
-    args_names = ()
-
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):
             affine = image.affine
