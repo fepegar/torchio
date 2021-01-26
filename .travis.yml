@@ -12,6 +12,11 @@ install:
 script:
   - tox
 
+os:
+  - linux
+  - osx
+  - windows
+
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
