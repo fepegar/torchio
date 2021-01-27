@@ -75,10 +75,7 @@ class Resample(SpatialTransform):
             'scalars_only',
         )
 
-    def parse_target(
-            self,
-            target: Union[TypeSpacing, str],
-            ) -> TypeTarget:
+    def parse_target(self, target: Union[TypeSpacing, str]) -> TypeTarget:
         """
         If target is an existing path, return a torchio.ScalarImage
         If it does not exist, return the string
@@ -184,8 +181,10 @@ class Resample(SpatialTransform):
                     reference_image_sitk = reference_image.as_sitk()
                 except KeyError as error:
                     message = (
-                        f'Reference name "{self.reference_image}"'
-                        ' not found in subject'
+                        f'Image name "{self.reference_image}"'
+                        f' not found in subject. If "{self.reference_image}"'
+                        ' is a path, it does not exist or permission has been'
+                        ' denied'
                     )
                     raise ValueError(message) from error
             elif isinstance(self.reference_image, Image):
