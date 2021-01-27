@@ -1,6 +1,10 @@
 Transforms
 ----------
 
+.. image:: ../../images/fpg_progressive.gif
+    :alt: Augmented image
+
+
 TorchIO transforms take as input instances of
 :class:`~torchio.Subject` or
 :class:`~torchio.Image` (and its subclasses), 4D PyTorch tensors,
