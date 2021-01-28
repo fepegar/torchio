@@ -117,6 +117,9 @@ class Subject(dict):
         # Kept for backwards compatibility
         return self.get_applied_transforms()
 
+    def is_2d(self):
+        return all(i.is_2d() for i in self.get_images(intensity_only=False))
+
     def get_applied_transforms(
             self,
             ignore_intensity: bool = False,

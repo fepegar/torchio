@@ -91,3 +91,7 @@ class TestSubject(TorchioTestCase):
             subject['t1']
         with self.assertRaises(AttributeError):
             subject.t1
+
+    def test_2d(self):
+        subject = self.make_2d(self.sample_subject)
+        assert subject.is_2d()
