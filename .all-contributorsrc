@@ -191,6 +191,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "rayryeng",
+      "name": "Ray Phan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/765375?v=4",
+      "profile": "https://stackoverflow.com/users/3250829/rayryeng?tab=profile",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
