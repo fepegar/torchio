@@ -74,9 +74,7 @@ class CropOrPad(BoundsTransform):
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
 
     @staticmethod
-    def _bbox_mask(
-            mask_volume: np.ndarray,
-            ) -> Tuple[np.ndarray, np.ndarray]:
+    def _bbox_mask(mask_volume: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Return 6 coordinates of a 3D bounding box from a given mask.
 
         Taken from `this SO question <https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array>`_.
@@ -179,7 +177,7 @@ class CropOrPad(BoundsTransform):
             return self._compute_center_crop_or_pad(subject=subject)
 
         # Original subject shape (from mask shape)
-        sample_shape = subject.spatial_shape
+        subject_shape = subject.spatial_shape
         # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
         # Coordinates of the mask center
@@ -196,10 +194,10 @@ class CropOrPad(BoundsTransform):
             end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
             # Check if dimension needs padding (before or after)
             begin_pad = round_up(abs(min(begin, 0)))
-            end_pad = round(max(end - sample_shape[dim], 0))
+            end_pad = round(max(end - subject_shape[dim], 0))
             # Check if cropping is needed
             begin_crop = round_up(max(begin, 0))
-            end_crop = abs(round(min(end - sample_shape[dim], 0)))
+            end_crop = abs(round(min(end - subject_shape[dim], 0)))
             # Add padding values of the dim to the list
             padding.append(begin_pad)
             padding.append(end_pad)
@@ -209,6 +207,9 @@ class CropOrPad(BoundsTransform):
         # Conversion for SimpleITK compatibility
         padding = np.asarray(padding, dtype=int)
         cropping = np.asarray(cropping, dtype=int)
+        if subject.is_2d() == 1:
+            padding[-2:] = 0
+            cropping[-2:] = 0
         padding_params = tuple(padding.tolist()) if padding.any() else None
         cropping_params = tuple(cropping.tolist()) if cropping.any() else None
         return padding_params, cropping_params
