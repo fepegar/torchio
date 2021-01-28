@@ -66,8 +66,6 @@ class Queue(Dataset):
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
-        pin_memory: See :attr:`pin_memory` in
-            :class:`~torch.utils.data.DataLoader`.
         shuffle_subjects: If ``True``, the subjects dataset is shuffled at the
             beginning of each epoch, i.e. when all patches from all subjects
             have been processed.
@@ -137,7 +135,6 @@ class Queue(Dataset):
             samples_per_volume: int,
             sampler: PatchSampler,
             num_workers: int = 0,
-            pin_memory: bool = True,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
             start_background: bool = True,
@@ -150,7 +147,6 @@ class Queue(Dataset):
         self.samples_per_volume = samples_per_volume
         self.sampler = sampler
         self.num_workers = num_workers
-        self.pin_memory = pin_memory
         self.verbose = verbose
         self._subjects_iterable = None
         if start_background:
@@ -258,7 +254,6 @@ class Queue(Dataset):
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
             batch_size=1,
             collate_fn=self.get_first_item,
             shuffle=self.shuffle_subjects,
