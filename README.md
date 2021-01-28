@@ -318,6 +318,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="http://www.linkedin.com/in/che85"><img src="https://avatars2.githubusercontent.com/u/10195822?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christian Herz</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ache85" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/efirdc"><img src="https://avatars3.githubusercontent.com/u/5416313?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cory Efird</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=efirdc" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/estebvac"><img src="https://avatars.githubusercontent.com/u/21016728?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Esteban Vaca C.</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aestebvac" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://stackoverflow.com/users/3250829/rayryeng?tab=profile"><img src="https://avatars.githubusercontent.com/u/765375?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ray Phan</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arayryeng" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
