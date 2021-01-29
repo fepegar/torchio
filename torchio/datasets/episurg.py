@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 from typing import Optional
 
@@ -67,23 +68,32 @@ class EPISURG(SubjectsDataset):
 
     @staticmethod
     def _get_subjects_list(root):
-        subjects_dir = root / 'EPISURG' / 'subjects'
-        subjects = []
-        for subject_dir in sorted(subjects_dir.glob('sub-*')):
-            subject_id = subject_dir.name[-4:]
-            images_dict = {'subject_id': subject_id}
-            preop_dir = subject_dir / 'preop'
-            preop_paths = list(preop_dir.glob('*preop*'))
-            assert len(preop_paths) <= 1
-            if preop_paths:
-                images_dict['preop_mri'] = ScalarImage(preop_paths[0])
-            postop_dir = subject_dir / 'postop'
-            postop_path = list(postop_dir.glob('*postop-t1mri*'))[0]
-            images_dict['postop_mri'] = ScalarImage(postop_path)
-            for seg_path in postop_dir.glob('*seg*'):
-                seg_id = seg_path.name[-8]
-                images_dict[f'seg_{seg_id}'] = LabelMap(seg_path)
-            subjects.append(Subject(**images_dict))
+        episurg_dir = root / 'EPISURG'
+        subjects_dir = episurg_dir / 'subjects'
+        csv_path = episurg_dir / 'subjects.csv'
+        with open(csv_path) as csvfile:
+            reader = csv.DictReader(csvfile)
+            subjects = []
+            for row in reader:
+                subject_id = row['Subject']
+                subject_dir = subjects_dir / subject_id
+                subject_dict = {
+                    'subject_id': subject_id,
+                    'hemisphere': row['Hemisphere'],
+                    'surgery_type': row['Type'],
+                }
+                preop_dir = subject_dir / 'preop'
+                preop_paths = list(preop_dir.glob('*preop*'))
+                assert len(preop_paths) <= 1
+                if preop_paths:
+                    subject_dict['preop_mri'] = ScalarImage(preop_paths[0])
+                postop_dir = subject_dir / 'postop'
+                postop_path = list(postop_dir.glob('*postop-t1mri*'))[0]
+                subject_dict['postop_mri'] = ScalarImage(postop_path)
+                for seg_path in postop_dir.glob('*seg*'):
+                    seg_id = seg_path.name[-8]
+                    subject_dict[f'seg_{seg_id}'] = LabelMap(seg_path)
+                subjects.append(Subject(**subject_dict))
         return subjects
 
     def _download(self, root):
