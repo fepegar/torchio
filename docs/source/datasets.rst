@@ -20,6 +20,19 @@ IXI
     :show-inheritance:
 
 
+EPISURG
+-------
+
+.. currentmodule:: torchio.datasets.episurg
+
+:class:`EPISURG`
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: EPISURG
+    :members:
+    :show-inheritance:
+
+
 MNI
 ---
 
