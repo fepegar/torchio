@@ -15,9 +15,6 @@ FLIPXY = np.diag([-1, -1, 1, 1])
 
 
 def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
-    # ITK shows an (unwanted) error message when it can't read MINC files
-    if str(path).endswith('.mnc'):
-        return _read_nibabel(path)
     try:
         result = _read_sitk(path)
     except RuntimeError:  # try with NiBabel
