@@ -96,7 +96,7 @@ class EPISURG(SubjectsDataset):
                 subjects.append(Subject(**subject_dict))
         return subjects
 
-    def _download(self, root):
+    def _download(self, root: Path):
         """Download the EPISURG data if it does not exist already."""
         if (root / 'EPISURG').is_dir():
             return

@@ -90,6 +90,16 @@ MNI
     :show-inheritance:
 
 
+.. currentmodule:: torchio.datasets.bite
+
+:class:`BITE3`
+~~~~~~~~~~~~~~
+
+.. autoclass:: BITE3
+    :members:
+    :show-inheritance:
+
+
 ITK-SNAP
 --------
 
