@@ -14,12 +14,17 @@ def import_mpl_plt():
     return mpl, plt
 
 
-def rotate(image):
-    return np.rot90(image)
+def rotate(image, radiological=True):
+    # Rotate for visualization purposes
+    image = np.rot90(image)
+    if radiological:
+        image = np.fliplr(image)
+    return image
 
 
 def plot_volume(
         image: Image,
+        radiological=True,
         channel=-1,  # default to foreground for binary maps
         axes=None,
         cmap=None,
@@ -48,10 +53,31 @@ def plot_volume(
         kwargs['cmap'] = cmap
     if is_label:
         kwargs['interpolation'] = 'none'
-    x_extent, y_extent, z_extent = [tuple(b) for b in image.bounds.T]
-    axes[0].imshow(slice_x, extent=y_extent + z_extent, **kwargs)
-    axes[1].imshow(slice_y, extent=x_extent + z_extent, **kwargs)
-    axes[2].imshow(slice_z, extent=x_extent + y_extent, **kwargs)
+    lr_extent, pa_extent, is_extent = [tuple(b) for b in image.bounds.T]
+
+    # Use radiological convention
+    rl_extent = tuple(reversed(lr_extent))
+    ap_extent = tuple(reversed(pa_extent))
+
+    sag_axis, cor_axis, axi_axis = axes
+    if radiological:
+        sag_extent = ap_extent + is_extent
+        cor_extent = rl_extent + is_extent
+        axi_extent = rl_extent + pa_extent
+    else:
+        sag_extent = pa_extent + is_extent
+        cor_extent = lr_extent + is_extent
+        axi_extent = lr_extent + pa_extent
+
+    sag_axis.imshow(slice_x, extent=sag_extent, **kwargs)
+    sag_axis.set_xlabel('A')
+    sag_axis.set_ylabel('S')
+    cor_axis.imshow(slice_y, extent=cor_extent, **kwargs)
+    cor_axis.set_xlabel('R')
+    cor_axis.set_ylabel('S')
+    axi_axis.imshow(slice_z, extent=axi_extent, **kwargs)
+    axi_axis.set_xlabel('R')
+    axi_axis.set_ylabel('A')
     plt.tight_layout()
     if output_path is not None and fig is not None:
         fig.savefig(output_path)
