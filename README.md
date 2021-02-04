@@ -99,13 +99,13 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 <p align="center">
   <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
-    <img style="width: 600px; overflow: hidden;" src="docs/images/fpg_progressive.gif" alt="Progressive artifacts">
+    <img style="width: 600px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/fpg_progressive.gif" alt="Progressive artifacts">
   </a>
 </p>
 
 <p align="center">
   <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
-    <img style="width: 360px; height: 360px; overflow: hidden;" src="docs/images/augmentation.gif" alt="Augmentation">
+    <img style="width: 360px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/augmentation.gif" alt="Augmentation">
   </a>
 </p>
 
