@@ -7,7 +7,8 @@ import click
 
 @click.command()
 @click.argument('input-path', type=click.Path(exists=True))
-def main(input_path):
+@click.option('--plot/--no-plot', '-p', default=False)
+def main(input_path, plot):
     """Print information about an image.
 
     \b
@@ -19,6 +20,8 @@ def main(input_path):
     image = tio.ScalarImage(input_path)
     image.load()
     print(image)  # noqa: T001
+    if plot:
+        image.plot()
     return 0
 
 
