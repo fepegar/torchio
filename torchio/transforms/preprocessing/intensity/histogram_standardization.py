@@ -97,7 +97,7 @@ class HistogramStandardization(NormalizationTransform):
             cls,
             images_paths: Sequence[TypePath],
             cutoff: Optional[Tuple[float, float]] = None,
-            mask_path: Optional[TypePath] = None,
+            mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
             masking_function: Optional[Callable] = None,
             output_path: Optional[TypePath] = None,
             ) -> np.ndarray:
@@ -110,7 +110,7 @@ class HistogramStandardization(NormalizationTransform):
                 interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
                 `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
             mask_path: Optional path to a mask image to extract voxels used for
-                training.
+                training. If using a list of masks, make sure that they are aligned with the images_paths list
             masking_function: Optional function used to extract voxels used for
                 training.
             output_path: Optional file path with extension ``.txt`` or
@@ -154,13 +154,16 @@ class HistogramStandardization(NormalizationTransform):
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
         percentiles = _get_percentiles(percentiles_cutoff)
-        for image_file_path in tqdm(images_paths):
+        for i, image_file_path in enumerate(tqdm(images_paths)):
             tensor, _ = read_image(image_file_path)
             if masking_function is not None:
                 mask = masking_function(tensor)
             else:
                 if mask_path is not None:
-                    mask, _ = read_image(mask_path)
+                    if isinstance(mask_path, list):
+                        mask, _ = read_image(mask_path[i])
+                    else:
+                        mask, _ = read_image(mask_path)
                     mask = mask.numpy() > 0
                 else:
                     mask = np.ones_like(tensor, dtype=np.bool)
