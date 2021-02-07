@@ -209,6 +209,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "NMontanaBrown",
+      "name": "Nina Montana-Brown",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56116848?v=4",
+      "profile": "http://nina.brown.15@ucl.ac.uk",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
