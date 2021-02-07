@@ -247,9 +247,14 @@ class Image(dict):
         return tuple(spacing)
 
     @property
+    def itemsize(self):
+        """Element size of the data type."""
+        return self.data.element_size()
+
+    @property
     def memory(self) -> float:
         """Number of Bytes that the tensor takes in the RAM."""
-        return np.prod(self.shape) * 4  # float32, i.e. 4 bytes per voxel
+        return np.prod(self.shape) * self.itemsize
 
     @property
     def bounds(self) -> np.ndarray:
