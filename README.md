@@ -321,7 +321,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://stackoverflow.com/users/3250829/rayryeng?tab=profile"><img src="https://avatars.githubusercontent.com/u/765375?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ray Phan</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arayryeng" title="Bug reports">🐛</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/Linardos"><img src="https://avatars.githubusercontent.com/u/26694607?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Akis Linardos</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ALinardos" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/Linardos"><img src="https://avatars.githubusercontent.com/u/26694607?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Akis Linardos</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ALinardos" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=Linardos" title="Code">💻</a></td>
     <td align="center"><a href="http://nina.brown.15@ucl.ac.uk"><img src="https://avatars.githubusercontent.com/u/56116848?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nina Montana-Brown</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=NMontanaBrown" title="Documentation">📖</a></td>
   </tr>
 </table>
