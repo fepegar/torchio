@@ -10,10 +10,10 @@ from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
 
 class EPISURG(SubjectsDataset):
     """
-    `EPISURG`_ is a clinical dataset of :math:`T_1`-weighted MRI from 430
-    epileptic patients who underwent resective brain surgery at the National
-    Hospital of Neurology and Neurosurgery (Queen Square, London, United
-    Kingdom) between 1990 and 2018.
+    `EPISURG <https://doi.org/10.5522/04/9996158.v1>`_ is a clinical dataset of
+    :math:`T_1`-weighted MRI from 430 epileptic patients who underwent
+    resective brain surgery at the National Hospital of Neurology and
+    Neurosurgery (Queen Square, London, United Kingdom) between 1990 and 2018.
 
     The dataset comprises 430 postoperative MRI. The corresponding preoperative
     MRI is present for 268 subjects.
@@ -23,9 +23,8 @@ class EPISURG(SubjectsDataset):
 
     If you use this dataset for your research, you agree with the *Data use
     agreement* presented at the EPISURG entry on the `UCL Research Data
-    Repository <EPISURG>`_ and you must cite the corresponding publications.
-
-    .. _EPISURG: https://doi.org/10.5522/04/9996158.v1
+    Repository <https://doi.org/10.5522/04/9996158.v1>`_ and you must cite the
+    corresponding publications.
 
     Args:
         root: Root directory to which the dataset will be downloaded.
