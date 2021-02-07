@@ -27,6 +27,9 @@ class Pediatric(SubjectMNI):
     See `the MNI website <http://nist.mni.mcgill.ca/?p=974>`_ for more
     information.
 
+    .. image:: http://nist.mni.mcgill.ca/wp-content/uploads/2016/04/nihpd_asym_all_sm.jpg
+        :alt: Pediatric MNI template
+
     Arguments:
         years: Tuple of 2 ages. Possible values are: ``(4.5, 18.5)``,
             ``(4.5, 8.5)``,
@@ -36,7 +39,7 @@ class Pediatric(SubjectMNI):
             ``(13, 18.5)``.
         symmetric: If ``True``, the left-right symmetric templates will be
             used. Else, the asymmetric (natural) templates will be used.
-    """
+    """  # noqa: E501
     def __init__(self, years, symmetric=False):
         self.url_dir = 'http://www.bic.mni.mcgill.ca/~vfonov/nihpd/obj1/'
         sym_string = 'sym' if symmetric else 'asym'
