@@ -109,10 +109,12 @@ class HistogramStandardization(NormalizationTransform):
                 respectively, that are used to select a range of intensity of
                 interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
                 `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
-            mask_path: Optional path to a mask image to extract voxels used for
-                training. If using a list of masks, make sure that they are aligned with the images_paths list
-            masking_function: Optional function used to extract voxels used for
-                training.
+            mask_path: Path (or list of paths) to a binary image that will be
+                used to select the voxels use to compute the stats during
+                histogram training. If ``None``, all voxels in the image will
+                be used.
+            masking_function: Function used to extract voxels used for
+                histogram training.
             output_path: Optional file path with extension ``.txt`` or
                 ``.npy``, where the landmarks will be saved.
 
@@ -150,6 +152,13 @@ class HistogramStandardization(NormalizationTransform):
             >>>
             >>> transform = HistogramStandardization(landmarks_dict)
         """  # noqa: E501
+        is_masks_list = isinstance(mask_path, Sequence)
+        if is_masks_list and len(mask_path) != len(images_paths):
+            message = (
+                f'Different number of images ({len(images_paths)})'
+                f' and mask ({len(mask_path)}) paths found'
+            )
+            raise ValueError(message)
         quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
@@ -159,14 +168,15 @@ class HistogramStandardization(NormalizationTransform):
             if masking_function is not None:
                 mask = masking_function(tensor)
             else:
-                if mask_path is not None:
-                    if isinstance(mask_path, list):
-                        mask, _ = read_image(mask_path[i])
-                    else:
-                        mask, _ = read_image(mask_path)
-                    mask = mask.numpy() > 0
-                else:
+                if mask_path is None:
                     mask = np.ones_like(tensor, dtype=np.bool)
+                else:
+                    if is_masks_list:
+                        path = mask_path[i]
+                    else:
+                        path = mask_path
+                    mask, _ = read_image(path)
+                    mask = mask.numpy() > 0
             array = tensor.numpy()
             percentile_values = np.percentile(array[mask], percentiles)
             percentiles_database.append(percentile_values)
@@ -281,4 +291,5 @@ def normalize(
     return new_img
 
 
+# train_histogram kept for backward compatibility
 train = train_histogram = HistogramStandardization.train
