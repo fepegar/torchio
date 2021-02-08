@@ -111,7 +111,7 @@ class BiasField(IntensityTransform):
                 image.data, order, coefficients)
             if self.invert_transform:
                 np.divide(1, bias_field, out=bias_field)
-            image.set_data(image.data * torch.from_numpy(bias_field))
+            image.set_data(image.data * torch.as_tensor(bias_field))
         return subject
 
     @staticmethod

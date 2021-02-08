@@ -148,4 +148,4 @@ class Spike(IntensityTransform, FourierTransform):
             # #i, j, k = mid_shape - diff
             # #spectrum[i, j, k] = spectrum.max() * intensity_factor
         result = np.real(self.inv_fourier_transform(spectrum))
-        return torch.from_numpy(result.astype(np.float32))
+        return torch.as_tensor(result.astype(np.float32))

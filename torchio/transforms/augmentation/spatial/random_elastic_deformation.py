@@ -296,7 +296,7 @@ class ElasticDeformation(SpatialTransform):
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampled = resampler.Execute(floating)
             result, _ = self.sitk_to_nib(resampled)
-            results.append(torch.from_numpy(result))
+            results.append(torch.as_tensor(result))
         tensor = torch.cat(results)
         return tensor
 

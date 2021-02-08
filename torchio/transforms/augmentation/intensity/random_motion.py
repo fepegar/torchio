@@ -180,7 +180,7 @@ class Motion(IntensityTransform, FourierTransform):
                 )
                 result_arrays.append(transformed_channel)
             result = np.stack(result_arrays)
-            image.set_data(torch.from_numpy(result))
+            image.set_data(torch.as_tensor(result))
         return subject
 
     def get_rigid_transforms(

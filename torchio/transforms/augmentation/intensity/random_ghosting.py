@@ -212,7 +212,7 @@ class Ghosting(IntensityTransform, FourierTransform):
 
         array_ghosts = self.inv_fourier_transform(spectrum)
         array_ghosts = np.real(array_ghosts).astype(np.float32)
-        return torch.from_numpy(array_ghosts)
+        return torch.as_tensor(array_ghosts)
 
 
 def _parse_restore(restore):

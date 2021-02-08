@@ -287,7 +287,7 @@ def normalize(
     new_img = lin_img * data + aff_img
     new_img = new_img.reshape(shape)
     new_img = new_img.astype(np.float32)
-    new_img = torch.from_numpy(new_img)
+    new_img = torch.as_tensor(new_img)
     return new_img
 
 

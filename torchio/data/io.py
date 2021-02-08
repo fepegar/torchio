@@ -21,7 +21,13 @@ def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         try:
             result = _read_nibabel(path)
         except nib.loadsave.ImageFileError:
-            raise RuntimeError(f'File "{path}" not understood')
+            message = (
+                f'File "{path}" not understood.'
+                ' Check supported formats by at'
+                ' https://simpleitk.readthedocs.io/en/master/IO.html#images'
+                ' and https://nipy.org/nibabel/api.html#file-formats'
+            )
+            raise RuntimeError(message)
     return result
 
 
@@ -32,7 +38,7 @@ def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         data = data[..., 0, :]
         data = data.transpose(3, 0, 1, 2)
     data = check_uint_to_int(data)
-    tensor = torch.from_numpy(data)
+    tensor = torch.as_tensor(data)
     affine = img.affine
     return tensor, affine
 
@@ -44,7 +50,7 @@ def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         image = sitk.ReadImage(str(path))
     data, affine = sitk_to_nib(image, keepdim=True)
     data = check_uint_to_int(data)
-    tensor = torch.from_numpy(data)
+    tensor = torch.as_tensor(data)
     return tensor, affine
 
 
@@ -180,7 +186,7 @@ def _read_itk_matrix(path):
     matrix = np.hstack([rotation_matrix, translation_vector])
     homogeneous_matrix_lps = np.vstack([matrix, [0, 0, 0, 1]])
     homogeneous_matrix_ras = _from_itk_convention(homogeneous_matrix_lps)
-    return torch.from_numpy(homogeneous_matrix_ras)
+    return torch.as_tensor(homogeneous_matrix_ras)
 
 
 def _write_itk_matrix(matrix, tfm_path):
@@ -201,7 +207,7 @@ def _read_niftyreg_matrix(trsf_path):
     """Read a NiftyReg matrix and return it as a NumPy array"""
     matrix = np.loadtxt(trsf_path)
     matrix = np.linalg.inv(matrix)
-    return torch.from_numpy(matrix)
+    return torch.as_tensor(matrix)
 
 
 def _write_niftyreg_matrix(matrix, txt_path):
@@ -304,6 +310,7 @@ def sitk_to_nib(
 
 def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
     # I wish named tensors were properly supported in PyTorch
+    tensor = torch.as_tensor(tensor)
     num_dimensions = tensor.ndim
     if num_dimensions == 4:
         pass
