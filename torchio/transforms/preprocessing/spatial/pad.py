@@ -85,7 +85,7 @@ class Pad(BoundsTransform):
             pad_params = self.bounds_parameters
             paddings = (0, 0), pad_params[:2], pad_params[2:4], pad_params[4:]
             padded = np.pad(image.data, paddings, **kwargs)
-            image.set_data(torch.from_numpy(padded))
+            image.set_data(torch.as_tensor(padded))
             image.affine = new_affine
         return subject
 

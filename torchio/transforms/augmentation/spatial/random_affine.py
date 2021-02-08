@@ -345,7 +345,7 @@ class Affine(SpatialTransform):
 
         np_array = sitk.GetArrayFromImage(resampled)
         np_array = np_array.transpose()  # ITK to NumPy
-        tensor = torch.from_numpy(np_array)
+        tensor = torch.as_tensor(np_array)
         return tensor
 
 

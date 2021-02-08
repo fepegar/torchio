@@ -97,5 +97,5 @@ def blur(
     assert data.ndim == 3
     std_physical = np.array(std_voxel) / np.array(spacing)
     blurred = ndi.gaussian_filter(data, std_physical)
-    tensor = torch.from_numpy(blurred)
+    tensor = torch.as_tensor(blurred)
     return tensor

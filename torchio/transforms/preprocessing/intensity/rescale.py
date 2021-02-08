@@ -78,4 +78,4 @@ class RescaleIntensity(NormalizationTransform):
         out_range = self.out_max - self.out_min
         array *= out_range  # [0, out_range]
         array += self.out_min  # [out_min, out_max]
-        return torch.from_numpy(array)
+        return torch.as_tensor(array)

@@ -388,7 +388,7 @@ class Image(dict):
                 raise RuntimeError('Input tensor cannot be None')
         if isinstance(tensor, np.ndarray):
             tensor = check_uint_to_int(tensor)
-            tensor = torch.from_numpy(tensor)
+            tensor = torch.as_tensor(tensor)
         elif not isinstance(tensor, torch.Tensor):
             message = 'Input tensor must be a PyTorch tensor or NumPy array'
             raise TypeError(message)

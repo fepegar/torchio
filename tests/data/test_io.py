@@ -24,7 +24,7 @@ class TestIO(TorchioTestCase):
             '0.0906326 0.18661 0.978245 11.4002 '
             '0 0 0 1 '
         )
-        tensor = torch.from_numpy(np.fromstring(string, sep=' ').reshape(4, 4))
+        tensor = torch.as_tensor(np.fromstring(string, sep=' ').reshape(4, 4))
         self.matrix = tensor
 
     def test_read_image(self):
