@@ -304,6 +304,7 @@ def sitk_to_nib(
 
 def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
     # I wish named tensors were properly supported in PyTorch
+    tensor = torch.as_tensor(tensor)
     num_dimensions = tensor.ndim
     if num_dimensions == 4:
         pass

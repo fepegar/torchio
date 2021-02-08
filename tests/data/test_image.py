@@ -179,3 +179,21 @@ class TestImage(TorchioTestCase):
         with self.assertWarns(DeprecationWarning):
             im = self.sample_subject.t1
             im.data = im.data
+
+    def test_custom_reader(self):
+        path = self.dir / 'im.npy'
+
+        def numpy_reader(path):
+            return np.load(path), np.eye(4)
+
+        def assert_shape(shape_in, shape_out):
+            np.save(path, np.random.rand(*shape_in))
+            image = tio.ScalarImage(path, reader=numpy_reader)
+            assert image.shape == shape_out
+
+        assert_shape((5, 5), (1, 5, 5, 1))
+        assert_shape((5, 5, 3), (3, 5, 5, 1))
+        assert_shape((3, 5, 5), (3, 5, 5, 1))
+        assert_shape((5, 5, 5), (1, 5, 5, 5))
+        assert_shape((1, 5, 5, 5), (1, 5, 5, 5))
+        assert_shape((4, 5, 5, 5), (4, 5, 5, 5))

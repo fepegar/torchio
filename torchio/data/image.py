@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Tuple, Optional, Union, Sequence, List
+from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
 
 import torch
 import humanize
@@ -66,6 +66,10 @@ class Image(dict):
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image. If ``False``, images will not be checked for the
             presence of NaNs.
+        reader: Callable object that takes a path and returns a 4D tensor and a
+            2D, :math:`4 \times 4` affine matrix. This can be used if your data
+            is saved in a custom format, such as ``.npy`` (see example below).
+            If the affine matrix is ``None``, an identity matrix will be used.
         **kwargs: Items that will be added to the image dictionary, e.g.
             acquisition parameters.
 
@@ -74,6 +78,7 @@ class Image(dict):
 
     Example:
         >>> import torchio as tio
+        >>> import numpy as np
         >>> image = tio.ScalarImage('t1.nii.gz')  # subclass of Image
         >>> image  # not loaded yet
         ScalarImage(path: t1.nii.gz; type: intensity)
@@ -81,6 +86,8 @@ class Image(dict):
         >>> image
         ScalarImage(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
         >>> image.save('doubled_image.nii.gz')
+        >>> numpy_reader = lambda path: np.load(path), np.eye(4)
+        >>> image = tio.ScalarImage('t1.npy', reader=numpy_reader)
 
     .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading
     .. _preprocessing: https://torchio.readthedocs.io/transforms/preprocessing.html#intensity
@@ -99,10 +106,12 @@ class Image(dict):
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default
             channels_last: bool = False,
+            reader: Callable = read_image,
             **kwargs: Dict[str, Any],
             ):
         self.check_nans = check_nans
         self.channels_last = channels_last
+        self.reader = reader
 
         if type is None:
             warnings.warn(
@@ -443,8 +452,10 @@ class Image(dict):
         self._loaded = True
 
     def read_and_check(self, path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
-        tensor, affine = read_image(path)
+        tensor, affine = self.reader(path)
         tensor = self.parse_tensor_shape(tensor)
+        tensor = self._parse_tensor(tensor)
+        affine = self._parse_affine(affine)
         if self.channels_last:
             tensor = tensor.permute(3, 0, 1, 2)
         if self.check_nans and torch.isnan(tensor).any():
