@@ -21,7 +21,13 @@ def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         try:
             result = _read_nibabel(path)
         except nib.loadsave.ImageFileError:
-            raise RuntimeError(f'File "{path}" not understood')
+            message = (
+                f'File "{path}" not understood.'
+                ' Check supported formats by at'
+                ' https://simpleitk.readthedocs.io/en/master/IO.html#images'
+                ' and https://nipy.org/nibabel/api.html#file-formats'
+            )
+            raise RuntimeError(message)
     return result
 
 
