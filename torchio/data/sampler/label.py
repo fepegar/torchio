@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 import torch
+import numpy as np
 
 from ...data.image import LabelMap
 from ...data.subject import Subject
@@ -39,8 +40,12 @@ class LabelSampler(WeightedSampler):
         >>> subject = tio.datasets.Colin27()
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
-        >>> subject = tio.SubjectsDataset([subject])[0]
-        >>> sampler = tio.data.LabelSampler(64, 'brain')
+        >>> probabilities = {0: 0.5, 1: 0.5}
+        >>> sampler = tio.data.LabelSampler(
+        ...     patch_size=64,
+        ...     label_name='brain',
+        ...     label_probabilities=probabilities,
+        ... )
         >>> generator = sampler(subject)
         >>> for patch in generator:
         ...     print(patch.shape)
@@ -85,14 +90,14 @@ class LabelSampler(WeightedSampler):
         return label_map
 
     def get_probability_map(self, subject: Subject) -> torch.Tensor:
-        label_map_tensor = self.get_probability_map_image(subject).data
-        label_map_tensor = label_map_tensor.float()
+        label_map_tensor = self.get_probability_map_image(subject).data.float()
 
         if self.label_probabilities_dict is None:
             return label_map_tensor > 0
         probability_map = self.get_probabilities_from_label_map(
             label_map_tensor,
             self.label_probabilities_dict,
+            self.patch_size,
         )
         return probability_map
 
@@ -100,8 +105,23 @@ class LabelSampler(WeightedSampler):
     def get_probabilities_from_label_map(
             label_map: torch.Tensor,
             label_probabilities_dict: Dict[int, float],
+            patch_size: np.ndarray,
             ) -> torch.Tensor:
         """Create probability map according to label map probabilities."""
+        patch_size = patch_size.astype(int)
+        ini_i, ini_j, ini_k = patch_size // 2
+        spatial_shape = np.array(label_map.shape[1:])
+        if np.any(patch_size > spatial_shape):
+            message = (
+                f'Patch size {patch_size}'
+                f'larger than label map {spatial_shape}'
+            )
+            raise RuntimeError(message)
+        crop_fin_i, crop_fin_j, crop_fin_k = crop_fin = (patch_size - 1) // 2
+        fin_i, fin_j, fin_k = spatial_shape - crop_fin
+        # See https://github.com/fepegar/torchio/issues/458
+        label_map = label_map[:, ini_i:fin_i, ini_j:fin_j, ini_k:fin_k]
+
         multichannel = label_map.shape[0] > 1
         probability_map = torch.zeros_like(label_map)
         label_probs = torch.Tensor(list(label_probabilities_dict.values()))
@@ -122,4 +142,11 @@ class LabelSampler(WeightedSampler):
                 probability_map[mask] = prob_voxels
         if multichannel:
             probability_map = probability_map.sum(dim=0, keepdim=True)
+
+        # See https://github.com/fepegar/torchio/issues/458
+        padding = ini_k, crop_fin_k, ini_j, crop_fin_j, ini_i, crop_fin_i
+        probability_map = torch.nn.functional.pad(
+            probability_map,
+            padding,
+        )
         return probability_map
