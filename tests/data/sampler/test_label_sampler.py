@@ -19,9 +19,10 @@ class TestLabelSampler(TorchioTestCase):
         )
         subject = tio.SubjectsDataset([subject])[0]
         probs_dict = {0: 0, 1: 50, 2: 25, 3: 25}
-        sampler = tio.LabelSampler(5, 'label', label_probabilities=probs_dict)
+        patch_size = (1, 1, 5)
+        sampler = tio.LabelSampler(patch_size, label_probabilities=probs_dict)
         probabilities = sampler.get_probability_map(subject)
-        fixture = torch.Tensor((0, 0, 2 / 12, 2 / 12, 3 / 12, 2 / 12, 0))
+        fixture = torch.Tensor((0, 0, 1 / 4, 1 / 4, 1 / 4, 0, 0))
         assert torch.all(probabilities.squeeze().eq(fixture))
 
     def test_inconsistent_shape(self):
