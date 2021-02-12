@@ -474,10 +474,11 @@ class Transform(ABC):
 
     @staticmethod
     def get_mask_from_bounds(
+            self,
             bounds_parameters: TypeBounds,
             tensor: torch.Tensor,
             ) -> torch.Tensor:
-        bounds_parameters = Transform.parse_bounds(bounds_parameters)
+        bounds_parameters = self.parse_bounds(bounds_parameters)
         low = bounds_parameters[::2]
         high = bounds_parameters[1::2]
         i0, j0, k0 = low

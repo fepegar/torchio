@@ -8,7 +8,6 @@ from .crop import Crop
 from .bounds_transform import BoundsTransform
 from ...transform import TypeTripletInt, TypeSixBounds
 from ....data.subject import Subject
-from ....utils import round_up
 
 
 class CropOrPad(BoundsTransform):
@@ -89,7 +88,7 @@ class CropOrPad(BoundsTransform):
         j_min, j_max = np.where(j_any)[0][[0, -1]]
         k_min, k_max = np.where(k_any)[0][[0, -1]]
         bb_min = np.array([i_min, j_min, k_min])
-        bb_max = np.array([i_max, j_max, k_max])
+        bb_max = np.array([i_max, j_max, k_max]) + 1
         return bb_min, bb_max
 
     @staticmethod
@@ -118,6 +117,10 @@ class CropOrPad(BoundsTransform):
             ini, fin = int(np.ceil(number)), int(np.floor(number))
             result.extend([ini, fin])
         return tuple(result)
+
+    @property
+    def target_shape(self):
+        return self.bounds_parameters[::2]
 
     def _compute_cropping_padding_from_shapes(
             self,
@@ -176,40 +179,50 @@ class CropOrPad(BoundsTransform):
             warnings.warn(message, RuntimeWarning)
             return self._compute_center_crop_or_pad(subject=subject)
 
-        # Original subject shape (from mask shape)
+        # Let's assume that the center of first voxel is at coordinate 0.5
+        # (which is typically not the case)
         subject_shape = subject.spatial_shape
-        # Calculate bounding box of the mask center
         bb_min, bb_max = self._bbox_mask(mask[0])
-        # Coordinates of the mask center
-        center_mask = (bb_max - bb_min) / 2 + bb_min
-        # List of padding to do
+        center_mask = np.mean((bb_min, bb_max), axis=0)
         padding = []
-        # Final cropping (after padding)
         cropping = []
-        for dim, center_dimension in enumerate(center_mask):
-            # Compute coordinates of the target shape taken from the center of
-            # the mask
-            center_dim = round_up(center_dimension)
-            begin = center_dim - (self.bounds_parameters[2 * dim] / 2)
-            end = center_dim + (self.bounds_parameters[2 * dim + 1] / 2)
-            # Check if dimension needs padding (before or after)
-            begin_pad = round_up(abs(min(begin, 0)))
-            end_pad = round(max(end - subject_shape[dim], 0))
-            # Check if cropping is needed
-            begin_crop = round_up(max(begin, 0))
-            end_crop = abs(round(min(end - subject_shape[dim], 0)))
-            # Add padding values of the dim to the list
-            padding.append(begin_pad)
-            padding.append(end_pad)
-            # Add the slice of the dimension to take
-            cropping.append(begin_crop)
-            cropping.append(end_crop)
+        target_shape = np.array(self.target_shape)
+
+        for dim in range(3):
+            target_dim = target_shape[dim]
+            center_dim = center_mask[dim]
+            subject_dim = subject_shape[dim]
+
+            center_on_index = not (center_dim % 1)
+            target_even = not (target_dim % 2)
+
+            # Approximation when the center cannot be computed exactly
+            # The output will be off by half a voxel, but this is just an
+            # implementation detail
+            if target_even ^ center_on_index:
+                center_dim -= 0.5
+
+            begin = center_dim - target_dim / 2
+            if begin >= 0:
+                crop_ini = begin
+                pad_ini = 0
+            else:
+                crop_ini = 0
+                pad_ini = -begin
+
+            end = center_dim + target_dim / 2
+            if end <= subject_dim:
+                crop_fin = subject_dim - end
+                pad_fin = 0
+            else:
+                crop_fin = 0
+                pad_fin = end - subject_dim
+
+            padding.extend([pad_ini, pad_fin])
+            cropping.extend([crop_ini, crop_fin])
         # Conversion for SimpleITK compatibility
         padding = np.asarray(padding, dtype=int)
         cropping = np.asarray(cropping, dtype=int)
-        if subject.is_2d() == 1:
-            padding[-2:] = 0
-            cropping[-2:] = 0
         padding_params = tuple(padding.tolist()) if padding.any() else None
         cropping_params = tuple(cropping.tolist()) if cropping.any() else None
         return padding_params, cropping_params
@@ -221,4 +234,6 @@ class CropOrPad(BoundsTransform):
             subject = Pad(padding_params, **padding_kwargs)(subject)
         if cropping_params is not None:
             subject = Crop(cropping_params)(subject)
+        actual, target = subject.spatial_shape, self.target_shape
+        assert actual == target, (actual, target)
         return subject

@@ -161,35 +161,6 @@ class TestCropOrPad(TorchioTestCase):
                 'Physical position is different after cropping',
             )
 
-    def test_mask_origin(self):
-        target_shape = 7, 21, 29
-        center_voxel = np.floor(np.array(target_shape) / 2).astype(int)
-        transform_center = tio.CropOrPad(target_shape)
-        transform_mask = tio.CropOrPad(
-            target_shape, mask_name='label')
-        mask = self.sample_subject['label'].data
-        mask *= 0
-        mask[0, 0, 0, 0] = 1
-        transformed_center = transform_center(self.sample_subject)
-        transformed_mask = transform_mask(self.sample_subject)
-        zipped = zip(transformed_center.values(), transformed_mask.values())
-        for image_center, image_mask in zipped:
-            # Arrays are different
-            self.assertTensorNotEqual(image_center.data, image_mask.data)
-            # Rotation matrix doesn't change
-            center_rotation = image_center.affine[:3, :3]
-            mask_rotation = image_mask.affine[:3, :3]
-            self.assertTensorEqual(center_rotation, mask_rotation)
-            # Origin does change
-            center_origin = image_center.affine[:3, 3]
-            mask_origin = image_mask.affine[:3, 3]
-            self.assertTensorNotEqual(center_origin, mask_origin)
-            # Voxel at origin is center of transformed image
-            origin_value = image_center.data[0, 0, 0, 0]
-            i, j, k = center_voxel
-            transformed_value = image_mask.data[0, i, j, k]
-            self.assertEqual(origin_value, transformed_value)
-
     def test_2d(self):
         # https://github.com/fepegar/torchio/issues/434
         image = np.random.rand(1, 16, 16, 1)
