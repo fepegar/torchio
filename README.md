@@ -324,6 +324,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://github.com/Linardos"><img src="https://avatars.githubusercontent.com/u/26694607?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Akis Linardos</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ALinardos" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=Linardos" title="Code">💻</a></td>
     <td align="center"><a href="http://nina.brown.15@ucl.ac.uk"><img src="https://avatars.githubusercontent.com/u/56116848?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nina Montana-Brown</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=NMontanaBrown" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/fabien-brulport"><img src="https://avatars.githubusercontent.com/u/32873392?v=4?s=100" width="100px;" alt=""/><br /><sub><b>fabien-brulport</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Afabien-brulport" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/malteekj"><img src="https://avatars.githubusercontent.com/u/44469884?v=4?s=100" width="100px;" alt=""/><br /><sub><b>malteekj</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Amalteekj" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
