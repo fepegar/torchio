@@ -219,6 +219,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "fabien-brulport",
+      "name": "fabien-brulport",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32873392?v=4",
+      "profile": "https://github.com/fabien-brulport",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
