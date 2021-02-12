@@ -20,13 +20,6 @@ assignees: ''
 # Your code here
 ```
 
-<!-- If you have a code sample, error messages, stack traces, please provide it here as well -->
-
-```python-traceback
-# Your errors here
-```
-
-
 **Expected behavior**
 
 <!-- A clear and concise description of what you expected to happen. -->
@@ -35,9 +28,16 @@ assignees: ''
 
 <!-- A clear and concise description of what actually happens. -->
 
+<!-- If you have a code sample, error messages, stack traces, please provide it here as well -->
 
-**TorchIO version**
+```python-traceback
+# Your errors here
+```
 
-<!-- Can be retrieved running: -->
-<!-- $ python -c "import torchio; print(torchio.__version__)" -->
-<!-- `major.minor.patch`, e.g. `0.5.3` -->
+**System info**
+
+Output of
+
+```
+# Paste here the output of: python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/master/print_system.py)
+```
