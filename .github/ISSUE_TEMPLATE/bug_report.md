@@ -9,12 +9,13 @@ assignees: ''
 
 
 **🐛Bug**
-<!-- A clear and concise description of what the bug is -->
+<!-- A clear and concise description of what the bug is. Please use a short, concise title for the bug and elaborate here -->
 
 
 **To reproduce**
 
-<!-- Please provide a minimal working example: https://stackoverflow.com/help/minimal-reproducible-example -->
+<!-- What did you do? -->
+<!-- Please provide a minimal working example, if possible: https://stackoverflow.com/help/minimal-reproducible-example -->
 
 ```python
 # Your code here
@@ -22,22 +23,23 @@ assignees: ''
 
 **Expected behavior**
 
+<!-- What did you expect? -->
 <!-- A clear and concise description of what you expected to happen. -->
 
 **Actual behavior**
 
+<!-- What did you get? -->
 <!-- A clear and concise description of what actually happens. -->
-
 <!-- If you have a code sample, error messages, stack traces, please provide it here as well -->
 
 ```python-traceback
-# Your errors here
+# Paste the whole error stack trace here
 ```
 
 **System info**
 
-Output of
+Output of `python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/master/print_system.py)`:
 
 ```
-# Paste here the output of: python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/master/print_system.py)
+# Paste here the output of that command in a terminal
 ```
