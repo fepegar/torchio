@@ -488,7 +488,7 @@ class Image(dict):
         """Get the image as an instance of :class:`sitk.Image`."""
         return nib_to_sitk(self.data, self.affine, **kwargs)
 
-    def as_pil(self):
+    def as_pil(self, transpose=True):
         """Get the image as an instance of :class:`PIL.Image`.
 
         .. note:: Values will be clamped to 0-255 and cast to uint8.
@@ -510,8 +510,11 @@ class Image(dict):
             tensor = torch.cat(3 * [tensor])
         if len(tensor) != 3:
             raise RuntimeError('The image must have 1 or 3 channels')
-        tensor = tensor.permute(3, 1, 2, 0)[0]
-        array = tensor.clamp(0, 255).numpy()
+        if transpose:
+            tensor = tensor.permute(3, 2, 1, 0)
+        else:
+            tensor = tensor.permute(3, 1, 2, 0)
+        array = tensor.clamp(0, 255).numpy()[0]
         return ImagePIL.fromarray(array.astype(np.uint8))
 
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
