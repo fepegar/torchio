@@ -19,6 +19,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://pypi.org/project/torchio/">
                 <img src="https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white" alt="PyPI version">
             </a>
+            <a href="https://anaconda.org/conda-forge/torchio">
+                <img src="https://anaconda.org/conda-forge/torchio/badges/installer/conda.svg" alt="Conda version">
+            </a>
             <a href="https://github.com/fepegar/torchio#contributors-">
                 <img src="https://img.shields.io/badge/All_contributors-12-orange.svg" alt="All Contributors">
             </a>
