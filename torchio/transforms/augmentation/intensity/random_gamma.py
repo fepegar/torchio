@@ -1,4 +1,3 @@
-import warnings
 from collections import defaultdict
 from typing import Tuple
 
@@ -29,13 +28,20 @@ class RandomGamma(RandomTransform, IntensityTransform):
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
-    .. warning:: Fractional exponentiation of negative values is generally not
+    .. note:: Fractional exponentiation of negative values is generally not
         well-defined for non-complex numbers.
         If negative values are found in the input image :math:`I`,
         the applied transform is :math:`\text{sign}(I) |I|^\gamma`,
         instead of the usual :math:`I^\gamma`. The
         :class:`~torchio.transforms.RescaleIntensity`
-        transform may be used to ensure that all values are positive.
+        transform may be used to ensure that all values are positive. This is
+        generally not problematic, but it is recommended to visualize results
+        on image with negative values. More information can be found on
+        `this StackExchange question`_.
+
+        .. _this StackExchange question: https://math.stackexchange.com/questions/317528/how-do-you-compute-negative-numbers-to-fractional-powers
+
+
 
     Example:
         >>> import torchio as tio
@@ -82,7 +88,7 @@ class Gamma(IntensityTransform):
 
     .. _Gamma correction: https://en.wikipedia.org/wiki/Gamma_correction
 
-    .. warning:: Fractional exponentiation of negative values is generally not
+    .. note:: Fractional exponentiation of negative values is generally not
         well-defined for non-complex numbers.
         If negative values are found in the input image :math:`I`,
         the applied transform is :math:`\text{sign}(I) |I|^\gamma`,
@@ -132,12 +138,6 @@ class Gamma(IntensityTransform):
 
 def power(tensor, gamma):
     if tensor.min() < 0:
-        message = (
-            'Negative values found in input tensor. See the documentation for'
-            ' more details on the implemented workaround:'
-            ' https://torchio.readthedocs.io/transforms/augmentation.html#randomgamma'  # noqa: E501
-        )
-        warnings.warn(message, RuntimeWarning)
         output = tensor.sign() * tensor.abs() ** gamma
     else:
         output = tensor ** gamma
