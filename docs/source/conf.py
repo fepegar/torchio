@@ -104,11 +104,11 @@ html_favicon = 'favicon_io/favicon.ico'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-arxiv_url = 'https://arxiv.org/abs/2003.04696'
-link = f'<a href="{arxiv_url}">arXiv preprint</a>'
+arxiv_url = 'https://pytorchecosystemday.fbreg.com/'
+link = f'<a href="{arxiv_url}">PyTorch Ecosystem Day</a>'
+message = f'TorchIO will be featured at the {link}! (21 April Jan 2021)'
 html_theme_options = {
-    # 'navigation_depth': 3,  # for sphinx theme
-    'announcement': f'Check out our new, extended {link} (12 Jan 2021)',
+    'announcement': message,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
