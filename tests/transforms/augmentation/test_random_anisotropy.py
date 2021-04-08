@@ -9,7 +9,7 @@ class TestRandomAnisotropy(TorchioTestCase):
     def test_downsample(self):
         transform = RandomAnisotropy(
             axes=1,
-            downsampling=(2., 2.)
+            downsampling=(2, 2)
         )
         transformed = transform(self.sample_subject)
         self.assertEqual(

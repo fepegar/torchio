@@ -24,6 +24,14 @@ URLS_DICT = {
             'SHA256/67564aa42c7e2eec5c3fd68afb5a910e9eab837b61da780933716a3b922e50fe',  # noqa: E501
         ),
     ),
+    'CTChest': (
+        ('CT-chest.nrrd',),
+        ('SHA256/4507b664690840abb6cb9af2d919377ffc4ef75b167cb6fd0f747befdb12e38e',),  # noqa: E501
+    ),
+    'CTACardio': (
+        ('CTA-cardio.nrrd',),
+        ('SHA256/3b0d4eb1a7d8ebb0c5a89cc0504640f76a030b4e869e33ff34c564c3d3b88ad2',),  # noqa: E501
+    ),
 }
 
 
