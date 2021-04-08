@@ -142,8 +142,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
-            default_std=0.,
-            default_mean=-1.
+            default_std=0,
+            default_mean=-1,
         )
         original_t1 = self.sample_subject.t1.data.clone()
         transformed = transform(self.sample_subject)

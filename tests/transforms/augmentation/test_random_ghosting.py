@@ -66,7 +66,7 @@ class TestRandomGhosting(TorchioTestCase):
 
     def test_out_of_range_restore(self):
         with self.assertRaises(ValueError):
-            RandomGhosting(restore=-1.)
+            RandomGhosting(restore=-1)
 
     def test_wrong_restore_type(self):
         with self.assertRaises(TypeError):

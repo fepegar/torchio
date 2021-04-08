@@ -202,8 +202,8 @@ def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
 
     """
     cutoff = np.asarray(cutoff)
-    cutoff[0] = max(0., cutoff[0])
-    cutoff[1] = min(1., cutoff[1])
+    cutoff[0] = max(0, cutoff[0])
+    cutoff[1] = min(1, cutoff[1])
     cutoff[0] = np.min([cutoff[0], 0.09])
     cutoff[1] = np.max([cutoff[1], 0.91])
     return cutoff
