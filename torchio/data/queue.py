@@ -1,8 +1,9 @@
 import random
 import warnings
 from itertools import islice
-from typing import List, Iterator
+from typing import List, Iterator, Optional
 
+import humanize
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
@@ -150,7 +151,7 @@ class Queue(Dataset):
         self.verbose = verbose
         self._subjects_iterable = None
         if start_background:
-            self.initialize_subjects_iterable()
+            self._initialize_subjects_iterable()
         self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
 
@@ -161,7 +162,7 @@ class Queue(Dataset):
         # There are probably more elegant ways of doing this
         if not self.patches_list:
             self._print('Patches list is empty.')
-            self.fill()
+            self._fill()
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
         return sample_patch
@@ -182,13 +183,13 @@ class Queue(Dataset):
         if self.verbose:
             print(*args)  # noqa: T001
 
-    def initialize_subjects_iterable(self):
-        self._subjects_iterable = self.get_subjects_iterable()
+    def _initialize_subjects_iterable(self):
+        self._subjects_iterable = self._get_subjects_iterable()
 
     @property
     def subjects_iterable(self):
         if self._subjects_iterable is None:
-            self.initialize_subjects_iterable()
+            self._initialize_subjects_iterable()
         return self._subjects_iterable
 
     @property
@@ -203,7 +204,7 @@ class Queue(Dataset):
     def iterations_per_epoch(self) -> int:
         return self.num_subjects * self.samples_per_volume
 
-    def fill(self) -> None:
+    def _fill(self) -> None:
         assert self.sampler is not None
         if self.max_length % self.samples_per_volume != 0:
             message = (
@@ -225,28 +226,28 @@ class Queue(Dataset):
         else:
             iterable = range(num_subjects_for_queue)
         for _ in iterable:
-            subject = self.get_next_subject()
+            subject = self._get_next_subject()
             iterable = self.sampler(subject)
             patches = list(islice(iterable, self.samples_per_volume))
             self.patches_list.extend(patches)
         if self.shuffle_patches:
             random.shuffle(self.patches_list)
 
-    def get_next_subject(self) -> Subject:
+    def _get_next_subject(self) -> Subject:
         # A StopIteration exception is expected when the queue is empty
         try:
             subject = next(self.subjects_iterable)
         except StopIteration as exception:
             self._print('Queue is empty:', exception)
-            self.initialize_subjects_iterable()
+            self._initialize_subjects_iterable()
             subject = next(self.subjects_iterable)
         return subject
 
     @staticmethod
-    def get_first_item(batch):
+    def _get_first_item(batch):
         return batch[0]
 
-    def get_subjects_iterable(self) -> Iterator:
+    def _get_subjects_iterable(self) -> Iterator:
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
         self._print(
@@ -255,7 +256,31 @@ class Queue(Dataset):
             self.subjects_dataset,
             num_workers=self.num_workers,
             batch_size=1,
-            collate_fn=self.get_first_item,
+            collate_fn=self._get_first_item,
             shuffle=self.shuffle_subjects,
         )
         return iter(subjects_loader)
+
+    def get_max_memory(self, subject: Optional[Subject] = None) -> int:
+        """Get the maximum RAM occupied by the patches queue in bytes.
+
+        Args:
+            subject: Sample subject to compute the size of a patch.
+        """
+        images_channels = 0
+        if subject is None:
+            subject = self.subjects_dataset[0]
+        for image in subject.get_images(intensity_only=False):
+            images_channels += len(image.data)
+        voxels_in_patch = int(self.sampler.patch_size.prod() * images_channels)
+        bytes_per_patch = 4 * voxels_in_patch  # assume float32
+        return int(bytes_per_patch * self.max_length)
+
+    def get_max_memory_pretty(self, subject: Optional[Subject] = None) -> str:
+        """Get human-readable maximum RAM occupied by the patches queue.
+
+        Args:
+            subject: Sample subject to compute the size of a patch.
+        """
+        memory = self.get_max_memory(subject=subject)
+        return humanize.naturalsize(memory, binary=True)
