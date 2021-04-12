@@ -1,4 +1,5 @@
-# [TorchIO](http://torchio.rtfd.io/)
+![TorchIO Logo](https://github.com/fepegar/torchio/blob/master/docs/source/favicon_io/for_readme_2000x462.png)
+
 
 > *Tools like TorchIO are a symptom of the maturation of medical AI research using deep learning techniques*.
 
