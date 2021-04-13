@@ -255,6 +255,15 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "GabriellaKamlish",
+      "name": "GabriellaKamlish",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26881445?v=4",
+      "profile": "https://github.com/GabriellaKamlish",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
