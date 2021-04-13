@@ -117,7 +117,7 @@ class Transform(ABC):
                 images_to_keep[new_name] = copy.copy(subject[name])
         if self.copy:
             subject = copy.copy(subject)
-        with np.errstate(all='raise'):
+        with np.errstate(all='raise', under='ignore'):
             transformed = self.apply_transform(subject)
         if self.keep is not None:
             for name, image in images_to_keep.items():
