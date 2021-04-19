@@ -1,4 +1,8 @@
-![TorchIO Logo](https://github.com/fepegar/torchio/blob/master/docs/source/favicon_io/for_readme_2000x462.png)
+<p align="center">
+  <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
+    <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/source/favicon_io/for_readme_2000x462.png" alt="TorchIO logo">
+  </a>
+</p>
 
 
 > *Tools like TorchIO are a symptom of the maturation of medical AI research using deep learning techniques*.
