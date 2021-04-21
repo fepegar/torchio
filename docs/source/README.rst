@@ -20,9 +20,19 @@ simulation of intensity artifacts due to
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
+If you like TorchIO, please give the repo a star!
+
+.. raw:: html
+
+   <a class="github-button" href="https://github.com/fepegar/torchio" data-icon="octicon-star" data-show-count="true" aria-label="Star fepegar/torchio on GitHub">Star</a>
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 See :doc:`Getting started <quickstart>` for installation instructions and a
 usage overview.
+
+Contributions are more than welcome.
+Please check our `contributing guide <https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst>`_
+if you would like to contribute.
 
 
 Credits
