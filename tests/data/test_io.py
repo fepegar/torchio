@@ -108,7 +108,7 @@ class TestIO(TorchioTestCase):
     def test_sitk_to_nib(self):
         data = np.random.rand(10, 12)
         image = sitk.GetImageFromArray(data)
-        tensor, affine = sitk_to_nib(image)
+        tensor, _ = sitk_to_nib(image)
         self.assertAlmostEqual(data.sum(), tensor.sum())
 
 
