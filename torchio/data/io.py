@@ -229,7 +229,6 @@ def get_rotation_and_spacing_from_affine(
 def nib_to_sitk(
         data: TypeData,
         affine: TypeData,
-        squeeze: bool = False,
         force_3d: bool = False,
         force_4d: bool = False,
         ) -> sitk.Image:

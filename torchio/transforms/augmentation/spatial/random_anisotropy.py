@@ -67,7 +67,6 @@ class RandomAnisotropy(RandomTransform):
             self,
             axes: Tuple[int, ...],
             downsampling_range: Tuple[float, float],
-            is_2d: bool,
             ) -> List[bool]:
         axis = axes[torch.randint(0, len(axes), (1,))]
         downsampling = self.sample_uniform(*downsampling_range).item()
@@ -94,7 +93,6 @@ class RandomAnisotropy(RandomTransform):
         axis, downsampling = self.get_params(
             self.axes,
             self.downsampling_range,
-            is_2d,
         )
         target_spacing = list(subject.spacing)
         target_spacing[axis] *= downsampling
