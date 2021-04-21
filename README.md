@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
+  <a href="http://torchio.rtfd.io/">
     <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/source/favicon_io/for_readme_2000x462.png" alt="TorchIO logo">
   </a>
 </p>
