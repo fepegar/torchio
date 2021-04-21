@@ -472,7 +472,6 @@ class Transform(ABC):
             mask[:, :, :, :depth // 2] = True
         return mask
 
-    @staticmethod
     def get_mask_from_bounds(
             self,
             bounds_parameters: TypeBounds,
