@@ -1,6 +1,5 @@
 import copy
 import tempfile
-import pytest
 import torch
 import numpy as np
 import torchio as tio
