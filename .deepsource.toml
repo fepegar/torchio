@@ -2,7 +2,7 @@ version = 1
 
 test_patterns = ["tests/**"]
 
-exclude_patterns = ["**/external/*.py"]
+exclude_patterns = ["**/external/*.py", "**/plot_directive.py"]
 
 [[analyzers]]
 name = "python"
