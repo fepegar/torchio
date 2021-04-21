@@ -34,6 +34,22 @@ Contributions are more than welcome.
 Please check our `contributing guide <https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst>`_
 if you would like to contribute.
 
+If you have questions, feel free to ask in the discussions tab:
+
+.. raw:: html
+
+   <a class="github-button" href="https://github.com/fepegar/torchio/discussions" data-icon="octicon-comment-discussion" aria-label="Discuss fepegar/torchio on GitHub">Discuss</a>
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+If you found a bug or have a feature request, please open an issue:
+
+.. raw:: html
+
+   <!-- Place this tag where you want the button to render. -->
+   <a class="github-button" href="https://github.com/fepegar/torchio/issues" data-icon="octicon-issue-opened" data-show-count="true" aria-label="Issue fepegar/torchio on GitHub">Issue</a>
+   <!-- Place this tag in your head or just before your close body tag. -->
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
+
 
 Credits
 *******
