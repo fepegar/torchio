@@ -79,7 +79,7 @@ def write_image(
         ) -> None:
     args = tensor, affine, path
     try:
-        _write_sitk(*args, squeeze=squeeze)
+        _write_sitk(*args)
     except RuntimeError:  # try with NiBabel
         _write_nibabel(*args, squeeze=squeeze)
 
@@ -121,7 +121,6 @@ def _write_sitk(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
-        squeeze: bool = True,
         use_compression: bool = True,
         ) -> None:
     assert tensor.ndim == 4
@@ -132,7 +131,7 @@ def _write_sitk(
             RuntimeWarning,
         )
         tensor = tensor.numpy().astype(np.uint8)
-    image = nib_to_sitk(tensor, affine, squeeze=squeeze)
+    image = nib_to_sitk(tensor, affine)
     sitk.WriteImage(image, str(path), use_compression)
 
 
