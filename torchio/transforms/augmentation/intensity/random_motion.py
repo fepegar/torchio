@@ -55,7 +55,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         super().__init__(**kwargs)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
-        if not 0 < num_transforms or not isinstance(num_transforms, int):
+        if num_transforms < 1 or not isinstance(num_transforms, int):
             message = (
                 'Number of transforms must be a strictly positive natural'
                 f'number, not {num_transforms}'
