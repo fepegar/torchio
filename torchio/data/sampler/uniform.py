@@ -12,8 +12,6 @@ class UniformSampler(RandomSampler):
     Args:
         patch_size: See :class:`~torchio.data.PatchSampler`.
     """
-    def __init__(self, patch_size: TypePatchSize):
-        super().__init__(patch_size)
 
     def get_probability_map(self, subject: Subject) -> torch.Tensor:
         return torch.ones(1, *subject.spatial_shape)
