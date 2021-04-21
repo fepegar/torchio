@@ -41,9 +41,9 @@ def plot_volume(
     data = image.data[channel]
     indices = np.array(data.shape) // 2
     i, j, k = indices
-    slice_x = rotate(data[i, :, :])
-    slice_y = rotate(data[:, j, :])
-    slice_z = rotate(data[:, :, k])
+    slice_x = rotate(data[i, :, :], radiological=radiological)
+    slice_y = rotate(data[:, j, :], radiological=radiological)
+    slice_z = rotate(data[:, :, k], radiological=radiological)
     kwargs = {}
     is_label = isinstance(image, LabelMap)
     if isinstance(cmap, dict):
