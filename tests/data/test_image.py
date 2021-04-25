@@ -148,7 +148,7 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.data.dtype, torch.int64)
 
     def test_save_image_with_data_type_boolean(self):
-        tensor = np.random.rand(1, 3, 3, 3).astype(np.bool)
+        tensor = np.random.rand(1, 3, 3, 3).astype(bool)
         image = tio.ScalarImage(tensor=tensor)
         image.save(self.dir / 'image.nii')
 

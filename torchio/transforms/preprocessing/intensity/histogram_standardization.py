@@ -169,7 +169,7 @@ class HistogramStandardization(NormalizationTransform):
                 mask = masking_function(tensor)
             else:
                 if mask_path is None:
-                    mask = np.ones_like(tensor, dtype=np.bool)
+                    mask = np.ones_like(tensor, dtype=bool)
                 else:
                     if is_masks_list:
                         path = mask_path[i]
@@ -252,7 +252,7 @@ def normalize(
     data = data.reshape(-1).astype(np.float32)
 
     if mask is None:
-        mask = np.ones_like(data, np.bool)
+        mask = np.ones_like(data, bool)
     mask = mask.reshape(-1)
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
