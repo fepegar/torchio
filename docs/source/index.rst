@@ -39,6 +39,13 @@
 
     interfaces/index
 
+.. toctree::
+    :caption: Examples
+    :maxdepth: 2
+    :hidden:
+
+    auto_examples/index
+
 
 See also
 ********
