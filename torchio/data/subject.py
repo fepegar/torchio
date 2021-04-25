@@ -89,6 +89,14 @@ class Subject(dict):
         """Return shape of first image in subject.
 
         Consistency of shapes across images in the subject is checked first.
+
+        Example::
+
+            >>> import torchio as tio
+            >>> colin = tio.datasets.Colin27()
+            >>> colin.shape
+            (1, 181, 217, 181)
+
         """
         self.check_consistent_attribute('shape')
         return self.get_first_image().shape
@@ -99,6 +107,13 @@ class Subject(dict):
 
         Consistency of spatial shapes across images in the subject is checked
         first.
+
+        Example::
+
+            >>> import torchio as tio
+            >>> colin = tio.datasets.Colin27()
+            >>> colin.shape
+            (181, 217, 181)
         """
         self.check_consistent_spatial_shape()
         return self.get_first_image().spatial_shape
@@ -108,6 +123,13 @@ class Subject(dict):
         """Return spacing of first image in subject.
 
         Consistency of spacings across images in the subject is checked first.
+
+        Example::
+
+            >>> import torchio as tio
+            >>> colin = tio.datasets.Slicer()
+            >>> colin.shape
+            (1.0, 1.0, 1.2999954223632812)
         """
         self.check_consistent_attribute('spacing')
         return self.get_first_image().spacing
@@ -303,7 +325,7 @@ class Subject(dict):
 
         Args:
             **kwargs: Keyword arguments that will be passed on to
-                :class:`~torchio.data.image.Image`.
+                :meth:`~torchio.Image.plot`.
         """
         from ..visualization import plot_subject  # avoid circular import
         plot_subject(self, **kwargs)
