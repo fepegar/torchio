@@ -392,8 +392,9 @@ class Image(dict):
         elif not isinstance(tensor, torch.Tensor):
             message = 'Input tensor must be a PyTorch tensor or NumPy array'
             raise TypeError(message)
-        if tensor.ndim != 4:
-            raise ValueError('Input tensor must be 4D')
+        ndim = tensor.ndim
+        if ndim != 4:
+            raise ValueError(f'Input tensor must be 4D, but it is {ndim}D')
         if tensor.dtype == torch.bool:
             tensor = tensor.to(torch.uint8)
         if self.check_nans and torch.isnan(tensor).any():
