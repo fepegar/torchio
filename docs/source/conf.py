@@ -108,7 +108,7 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 #
 arxiv_url = 'https://pytorchecosystemday.fbreg.com/'
 link = f'<a href="{arxiv_url}">PyTorch Ecosystem Day</a>'
-message = f'TorchIO will be featured at the {link}! (21 April 2021)'
+message = f'TorchIO was featured at the {link}! (21 April 2021)'
 html_theme_options = {
     'announcement': message,
 }
