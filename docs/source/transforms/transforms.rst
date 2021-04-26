@@ -1,5 +1,5 @@
-Transforms
-----------
+Introduction
+------------
 
 .. image:: ../../images/fpg_progressive.gif
     :alt: Augmented image
