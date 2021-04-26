@@ -15,6 +15,7 @@ pytest-cov
 sphinx
 sphinx-autobuild
 sphinx-copybutton
+sphinx-gallery
 tox
 twine
 watchdog
