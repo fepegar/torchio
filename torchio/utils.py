@@ -194,3 +194,7 @@ def get_subclasses(target_class: type) -> List[type]:
     subclasses = target_class.__subclasses__()
     subclasses += sum((get_subclasses(cls) for cls in subclasses), [])
     return subclasses
+
+
+def get_first_item(data_loader):
+    return next(iter(data_loader))

@@ -30,7 +30,7 @@ class TestCollate(TorchioTestCase):
 
     def test_collate(self):
         loader = DataLoader(self.get_heterogeneous_dataset(), batch_size=2)
-        next(iter(loader))
+        tio.utils.get_first_item(loader)
 
     def test_history_collate(self):
         loader = DataLoader(
@@ -38,7 +38,7 @@ class TestCollate(TorchioTestCase):
             batch_size=4,
             collate_fn=tio.utils.history_collate,
         )
-        batch = next(iter(loader))
+        batch = tio.utils.get_first_item(loader)
         empty_history, one_history = batch['history']
         assert not empty_history
         assert len(one_history) == 1

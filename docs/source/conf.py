@@ -45,6 +45,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'matplotlib.sphinxext.plot_directive',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Add mappings
@@ -211,3 +212,19 @@ copybutton_prompt_is_regexp = True
 
 
 # -- Extension configuration -------------------------------------------------
+
+sphinx_gallery_conf = {
+    'examples_dirs': '../examples',   # example scripts
+    'gallery_dirs': 'auto_examples',  # where to save gallery generated output
+    'matplotlib_animations': True,
+    'binder': {
+        # Required keys
+        'org': 'fepegar',
+        'repo': 'torchio',
+        'branch': 'master',
+        'binderhub_url': 'https://mybinder.org',
+        'dependencies': '../requirements.txt',
+        # Optional keys
+        'use_jupyter_lab': False,
+    }
+}

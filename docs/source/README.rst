@@ -113,7 +113,7 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
    :alt: PyPI version
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
+   :target: https://github.com/fepegar/torchio/blob/master/notebooks/README.md
    :alt: Google Colab notebooks
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
