@@ -1,3 +1,5 @@
+import torch
+
 # Image types
 INTENSITY = 'intensity'
 LABEL = 'label'
@@ -22,3 +24,6 @@ REPO_URL = 'https://github.com/fepegar/torchio/'
 
 # Data repository
 DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/master/data/'
+
+# Floating point error
+MIN_FLOAT_32 = torch.finfo(torch.float32).eps

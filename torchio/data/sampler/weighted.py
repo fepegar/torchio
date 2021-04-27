@@ -3,6 +3,7 @@ from typing import Optional, Tuple, Generator
 import torch
 import numpy as np
 
+from ...constants import MIN_FLOAT_32
 from ...typing import TypePatchSize
 from ..image import Image
 from ..subject import Subject
@@ -224,26 +225,28 @@ class WeightedSampler(RandomSampler):
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
 
         """  # noqa: E501
-        # Get first value larger than random number
-        # Ensure random number cannot be exactly 0.0.
-        random_number = max(
-            torch.rand(1).item(), torch.finfo(torch.float32).eps
-        )
-        # If probability map is float32, cdf.max() can be far from 1, e.g. 0.92
-        if random_number > cdf.max():
-            cdf_index = -1
-        else:  # proceed as usual
-            cdf_index = np.searchsorted(cdf, random_number)
+        # Get first value larger than random number ensuring the random number
+        # is not exactly 0 (see https://github.com/fepegar/torchio/issues/510)
+        random_number = max(MIN_FLOAT_32, torch.rand(1).item())
 
-        random_location_index = cdf_index
+        # Accumulated floating point errors might make cdf.max() less than 1
+        if random_number > cdf.max():
+            random_location_index = -1
+        else:  # proceed as usual
+            random_location_index = np.searchsorted(cdf, random_number)
+
         center = np.unravel_index(
             random_location_index,
             probability_map.shape
         )
 
-        i, j, k = center
-        probability = probability_map[i, j, k]
-        assert probability > 0
+        probability = probability_map[center]
+        if probability <= 0:
+            message = (
+                'Error retrieving probability in weighted sampler.'
+                ' Please report this issue at'
+                ' https://github.com/fepegar/torchio/issues/new?labels=bug&template=bug_report.md'  # noqa: E501
+            )
+            raise RuntimeError(message)
 
-        center = np.array(center).astype(int)
-        return center
+        return np.array(center)
