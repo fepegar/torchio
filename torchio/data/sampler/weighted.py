@@ -225,7 +225,10 @@ class WeightedSampler(RandomSampler):
 
         """  # noqa: E501
         # Get first value larger than random number
-        random_number = torch.rand(1).item()
+        # Ensure random number cannot be exactly 0.0.
+        random_number = max(
+            torch.rand(1).item(), torch.finfo(torch.float32).eps
+        )
         # If probability map is float32, cdf.max() can be far from 1, e.g. 0.92
         if random_number > cdf.max():
             cdf_index = -1
