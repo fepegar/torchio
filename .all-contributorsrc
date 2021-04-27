@@ -264,6 +264,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "TylerSpears",
+      "name": "Tyler Spears",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7096950?v=4",
+      "profile": "https://github.com/TylerSpears",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
