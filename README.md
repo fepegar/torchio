@@ -337,6 +337,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="http://www.cbica.upenn.edu/spati"><img src="https://avatars.githubusercontent.com/u/11719673?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sarthak Pati</b></sub></a><br /><a href="#platform-sarthakpati" title="Packaging/porting to new platform">📦</a></td>
     <td align="center"><a href="https://github.com/GabriellaKamlish"><img src="https://avatars.githubusercontent.com/u/26881445?v=4?s=100" width="100px;" alt=""/><br /><sub><b>GabriellaKamlish</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AGabriellaKamlish" title="Bug reports">🐛</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/TylerSpears"><img src="https://avatars.githubusercontent.com/u/7096950?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tyler Spears</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ATylerSpears" title="Bug reports">🐛</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
