@@ -242,7 +242,7 @@ def get_subjects_from_batch(batch: Dict) -> List:
             path = Path(image_dict[constants.PATH][i])
             is_label = image_dict[constants.TYPE] == constants.LABEL
             klass = LabelMap if is_label else ScalarImage
-            image = klass(tensor=data, affine=affine, name=path.name)
+            image = klass(tensor=data, affine=affine, filename=path.name)
             subject_dict[image_name] = image
         subject = Subject(subject_dict)
         subjects.append(subject)
@@ -275,5 +275,8 @@ def add_images_from_batch(
         class_ = ScalarImage
     for subject, data in zip(subjects, tensor):
         one_image = subject.get_first_image()
-        image = class_(tensor=data, affine=one_image.affine)
+        kwargs = {'tensor': data, 'affine': one_image.affine}
+        if 'filename' in one_image:
+            kwargs['filename'] = one_image['filename']
+        image = class_(**kwargs)
         subject.add_image(image, name)
