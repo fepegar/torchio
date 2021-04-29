@@ -180,6 +180,10 @@ class TestImage(TorchioTestCase):
             im = self.sample_subject.t1
             im.data = im.data
 
+    def test_no_type(self):
+        with self.assertWarns(UserWarning):
+            tio.Image(tensor=torch.rand(1, 2, 3, 4))
+
     def test_custom_reader(self):
         path = self.dir / 'im.npy'
 

@@ -117,7 +117,7 @@ class Image(dict):
             warnings.warn(
                 'Not specifying the image type is deprecated and will be'
                 ' mandatory in the future. You can probably use tio.ScalarImage'
-                ' or tio.LabelMap instead', DeprecationWarning,
+                ' or tio.LabelMap instead',
             )
             type = INTENSITY
 
