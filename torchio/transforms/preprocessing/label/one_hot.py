@@ -17,8 +17,13 @@ class OneHot(LabelTransform):
 
     def apply_transform(self, subject):
         for image in self.get_images(subject):
-            assert image.data.ndim == 4 and image.data.shape[0] == 1
-            data = image.data.squeeze()
+            if image.num_channels > 1:
+                message = (
+                    'The number of input channels must be 1,'
+                    f' but it is {image.num_channels}'
+                )
+                raise RuntimeError(message)
+            data = image.data[0]
             num_classes = -1 if self.num_classes is None else self.num_classes
             one_hot = F.one_hot(data.long(), num_classes=num_classes)
             image.set_data(one_hot.permute(3, 0, 1, 2).type(data.type()))

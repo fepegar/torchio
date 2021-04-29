@@ -274,6 +274,11 @@ class Image(dict):
         point_fin = nib.affines.apply_affine(self.affine, fin)
         return np.array((point_ini, point_fin))
 
+    @property
+    def num_channels(self) -> int:
+        """Get the number of channels in the associated 4D tensor."""
+        return len(self.data)
+
     def axis_name_to_index(self, axis: str) -> int:
         """Convert an axis name to an axis index.
 
