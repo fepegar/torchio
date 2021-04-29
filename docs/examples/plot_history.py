@@ -46,14 +46,14 @@ loader = torch.utils.data.DataLoader(
 
 batch = tio.utils.get_first_item(loader)
 print('\nTransforms applied to subjects in batch:')  # noqa: T001
-pprint.pprint(batch['history'])  # noqa: T003
+pprint.pprint(batch[tio.HISTORY])  # noqa: T003
 
 for i in range(batch_size):
     tensor = batch['t1'][tio.DATA][i]
     affine = batch['t1'][tio.AFFINE][i]
     image = tio.ScalarImage(tensor=tensor, affine=affine)
     image.plot(show=False)
-    history = batch['history'][i]
+    history = batch[tio.HISTORY][i]
     title = ', '.join(t.name for t in history)
     plt.suptitle(title)
     plt.tight_layout()

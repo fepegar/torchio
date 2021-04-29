@@ -1,3 +1,4 @@
+import torch
 import torchio as tio
 from torchio.utils import (
     to_tuple,
@@ -41,3 +42,14 @@ class TestUtils(TorchioTestCase):
             self.get_image_path('output'),
             verbose=True,
         )
+
+    def test_subjects_from_batch(self):
+        dataset = tio.SubjectsDataset(4 * [self.sample_subject])
+        loader = torch.utils.data.DataLoader(dataset, batch_size=4)
+        batch = tio.utils.get_first_item(loader)
+        subjects = tio.utils.get_subjects_from_batch(batch)
+        assert isinstance(subjects[0], tio.Subject)
+
+    def test_empty_batch(self):
+        with self.assertRaises(RuntimeError):
+            tio.utils.get_batch_images_and_size({})
