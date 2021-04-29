@@ -18,7 +18,7 @@ from PIL import Image
 
 
 def read_clip(path, undersample=4):
-    """Read a GIF a return an array of shape (C, H, W, T)."""
+    """Read a GIF a return an array of shape (C, W, H, T)."""
     gif = Image.open(path)
     frames = []
     for i in range(gif.n_frames):

@@ -16,6 +16,9 @@ AFFINE = 'affine'
 IMAGE = 'image'
 LOCATION = 'location'
 
+# For special collate function
+HISTORY = 'history'
+
 # In PyTorch convention
 CHANNELS_DIMENSION = 1
 
