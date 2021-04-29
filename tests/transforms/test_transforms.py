@@ -206,7 +206,7 @@ class TestTransforms(TorchioTestCase):
             tio.RandomNoise(include=['t2'], exclude=['t1'])
 
     def test_keys_deprecated(self):
-        with self.assertWarns(DeprecationWarning):
+        with self.assertWarns(UserWarning):
             tio.RandomNoise(keys=['t2'])
 
     def test_keep_original(self):
