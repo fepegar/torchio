@@ -71,7 +71,7 @@ in parallel::
     # As RandomAffine is faster then RandomElasticDeformation, we choose to
     # apply RandomAffine 80% of the times and RandomElasticDeformation the rest
     # Also, there is a 25% chance that none of them will be applied
-    spatial = OneOf({
+    spatial = tio.OneOf({
             tio.RandomAffine(): 0.8,
             tio.RandomElasticDeformation(): 0.2,
         },
