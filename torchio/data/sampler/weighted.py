@@ -57,18 +57,11 @@ class WeightedSampler(RandomSampler):
         self.probability_map_name = probability_map
         self.cdf = None
 
-    def __call__(
+    def _generate_patches(
             self,
             subject: Subject,
             num_patches: Optional[int] = None,
             ) -> Generator[Subject, None, None]:
-        subject.check_consistent_space()
-        if np.any(self.patch_size > subject.spatial_shape):
-            message = (
-                f'Patch size {tuple(self.patch_size)} cannot be'
-                f' larger than image size {tuple(subject.spatial_shape)}'
-            )
-            raise RuntimeError(message)
         probability_map = self.get_probability_map(subject)
         probability_map = self.process_probability_map(
             probability_map, subject)
