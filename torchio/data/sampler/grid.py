@@ -26,6 +26,8 @@ class GridSampler(PatchSampler):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided,
             :math:`w = h = d = n`.
+            This argument is mandatory (it is a keyword argument for backward
+            compatibility).
         patch_overlap: Tuple of even integers :math:`(w_o, h_o, d_o)`
             specifying the overlap between patches for dense inference. If a
             single number :math:`n` is provided, :math:`w_o = h_o = d_o = n`.
@@ -70,6 +72,8 @@ class GridSampler(PatchSampler):
         super().__init__(patch_size)
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
         self.padding_mode = padding_mode
+        if subject is not None and not isinstance(subject, Subject):
+            raise ValueError('The subject argument must be None or Subject')
         self.subject = self._pad(subject)
         self.locations = self._compute_locations(self.subject)
 

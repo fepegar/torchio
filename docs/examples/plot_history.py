@@ -1,6 +1,6 @@
 """
-Tracing applied transforms
-==========================
+Trace applied transforms
+========================
 
 Sometimes we would like to see which transform was applied to a certain batch
 during training. This can be done in TorchIO using

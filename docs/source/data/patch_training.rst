@@ -30,6 +30,12 @@ For more information about patch-based training, see
 .. autoclass:: PatchSampler
     :show-inheritance:
 
+
+.. autoclass:: GridSampler
+    :noindex:
+    :show-inheritance:
+
+
 Queue
 -----
 
