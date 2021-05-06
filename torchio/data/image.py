@@ -420,7 +420,7 @@ class Image(dict):
             raise TypeError(f'Affine must be a NumPy array, not {type(affine)}')
         if affine.shape != (4, 4):
             raise ValueError(f'Affine shape must be (4, 4), not {affine.shape}')
-        return affine
+        return affine.astype(np.float64)
 
     def load(self) -> None:
         r"""Load the image from disk.
