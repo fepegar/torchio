@@ -60,9 +60,9 @@ class Image(dict):
         tensor: If :attr:`path` is not given, :attr:`tensor` must be a 4D
             :class:`torch.Tensor` or NumPy array with dimensions
             :math:`(C, W, H, D)`.
-        affine: If :attr:`path` is not given, :attr:`affine` must be a
-            :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an
-            identity matrix.
+        affine: :math:`4 \times 4` matrix to convert voxel coordinates to world
+            coordinates. If ``None``, an identity matrix will be used. See the
+            `NiBabel docs on coordinates`_ for more information.
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image. If ``False``, images will not be checked for the
             presence of NaNs.
@@ -93,6 +93,7 @@ class Image(dict):
     .. _preprocessing: https://torchio.readthedocs.io/transforms/preprocessing.html#intensity
     .. _augmentation: https://torchio.readthedocs.io/transforms/augmentation.html#intensity
     .. _NiBabel docs: https://nipy.org/nibabel/image_orientation.html
+    .. _NiBabel docs on coordinates: https://nipy.org/nibabel/coordinate_systems.html#the-affine-matrix-as-a-transformation-between-spaces
     .. _3D Slicer wiki: https://www.slicer.org/wiki/Coordinate_systems
     .. _FSL docs: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained
     .. _SimpleITK docs: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html
