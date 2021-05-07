@@ -1,9 +1,8 @@
 Inference
 =========
 
-
-Here's an example that uses a grid sampler and aggregator to perform dense
-inference across a 3D image using small patches::
+Here is an example that uses a grid sampler and aggregator to perform dense
+inference across a 3D image using patches::
 
     >>> import torch
     >>> import torch.nn as nn

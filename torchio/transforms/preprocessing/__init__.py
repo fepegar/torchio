@@ -8,6 +8,7 @@ from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 from .intensity.rescale import RescaleIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
+from .intensity.masking import Mask
 
 from .label.one_hot import OneHot
 from .label.contour import Contour
@@ -33,4 +34,5 @@ __all__ = [
     'RemoveLabels',
     'SequentialLabels',
     'KeepLargestComponent',
+    'Mask'
 ]

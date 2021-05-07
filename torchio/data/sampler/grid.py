@@ -1,16 +1,16 @@
-from typing import Union
+from typing import Union, Generator, Optional
 
 import numpy as np
-from torch.utils.data import Dataset
 
 from ...utils import to_tuple
 from ...constants import LOCATION
-from ...typing import TypeTuple, TypeTripletInt
-from ..subject import Subject
-from ..sampler.sampler import PatchSampler
+from ...data.subject import Subject
+from ...typing import TypePatchSize
+from ...typing import TypeTripletInt
+from .sampler import PatchSampler
 
 
-class GridSampler(PatchSampler, Dataset):
+class GridSampler(PatchSampler):
     r"""Extract patches across a whole volume.
 
     Grid samplers are useful to perform inference using all patches from a
@@ -18,11 +18,16 @@ class GridSampler(PatchSampler, Dataset):
 
     Args:
         subject: Instance of :class:`~torchio.data.Subject`
-            from which patches will be extracted.
+            from which patches will be extracted. This argument should only be
+            used before instantiating a :class:`~torchio.data.GridAggregator`,
+            or to precompute the number of patches that would be generated from
+            a subject.
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided,
             :math:`w = h = d = n`.
+            This argument is mandatory (it is a keyword argument for backward
+            compatibility).
         patch_overlap: Tuple of even integers :math:`(w_o, h_o, d_o)`
             specifying the overlap between patches for dense inference. If a
             single number :math:`n` is provided, :math:`w_o = h_o = d_o = n`.
@@ -36,6 +41,19 @@ class GridSampler(PatchSampler, Dataset):
             :class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
 
+    Example::
+
+        >>> import torchio as tio
+        >>> sampler = tio.GridSampler(patch_size=88)
+        >>> colin = tio.datasets.Colin27()
+        >>> for i, patch in enumerate(sampler(colin)):
+        ...     patch.t1.save(f'patch_{i}.nii.gz')
+        ...
+        >>> # To figure out the number of patches beforehand:
+        >>> sampler = tio.GridSampler(subject=colin, patch_size=88)
+        >>> len(sampler)
+        8
+
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch based sampling. Note that
@@ -44,24 +62,20 @@ class GridSampler(PatchSampler, Dataset):
     """
     def __init__(
             self,
-            subject: Subject,
-            patch_size: TypeTuple,
-            patch_overlap: TypeTuple = (0, 0, 0),
+            subject: Optional[Subject] = None,
+            patch_size: TypePatchSize = None,
+            patch_overlap: TypePatchSize = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
             ):
-        self.subject = subject
+        if patch_size is None:
+            raise ValueError('A value for patch_size must be given')
+        super().__init__(patch_size)
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
         self.padding_mode = padding_mode
-        if padding_mode is not None:
-            from ...transforms import Pad
-            border = self.patch_overlap // 2
-            padding = border.repeat(2)
-            pad = Pad(padding, padding_mode=padding_mode)
-            self.subject = pad(self.subject)
-        PatchSampler.__init__(self, patch_size)
-        sizes = self.subject.spatial_shape, self.patch_size, self.patch_overlap
-        self.parse_sizes(*sizes)
-        self.locations = self.get_patches_locations(*sizes)
+        if subject is not None and not isinstance(subject, Subject):
+            raise ValueError('The subject argument must be None or Subject')
+        self.subject = self._pad(subject)
+        self.locations = self._compute_locations(self.subject)
 
     def __len__(self):
         return len(self.locations)
@@ -74,8 +88,36 @@ class GridSampler(PatchSampler, Dataset):
         cropped_subject[LOCATION] = location
         return cropped_subject
 
+    def _pad(self, subject: Subject) -> Subject:
+        if self.padding_mode is not None:
+            from ...transforms import Pad
+            border = self.patch_overlap // 2
+            padding = border.repeat(2)
+            pad = Pad(padding, padding_mode=self.padding_mode)
+            subject = pad(subject)
+        return subject
+
+    def _compute_locations(self, subject: Subject):
+        if subject is None:
+            return None
+        sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
+        self._parse_sizes(*sizes)
+        return self._get_patches_locations(*sizes)
+
+    def _generate_patches(
+            self,
+            subject: Subject,
+            ) -> Generator[Subject, None, None]:
+        subject = self._pad(subject)
+        sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
+        self._parse_sizes(*sizes)
+        locations = self._get_patches_locations(*sizes)
+        for location in locations:
+            index_ini = location[:3]
+            yield self.extract_patch(subject, index_ini)
+
     @staticmethod
-    def parse_sizes(
+    def _parse_sizes(
             image_size: TypeTripletInt,
             patch_size: TypeTripletInt,
             patch_overlap: TypeTripletInt,
@@ -103,7 +145,7 @@ class GridSampler(PatchSampler, Dataset):
             raise ValueError(message)
 
     @staticmethod
-    def get_patches_locations(
+    def _get_patches_locations(
             image_size: TypeTripletInt,
             patch_size: TypeTripletInt,
             patch_overlap: TypeTripletInt,

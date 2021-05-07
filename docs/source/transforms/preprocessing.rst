@@ -32,6 +32,13 @@ Intensity
     :members:
 
 
+:class:`Mask`
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Mask
+    :show-inheritance:
+
+
 .. currentmodule:: torchio.transforms.preprocessing.intensity
 
 
@@ -40,6 +47,9 @@ Intensity
 
 .. autoclass:: NormalizationTransform
     :show-inheritance:
+
+
+
 
 
 Spatial
