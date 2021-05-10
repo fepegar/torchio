@@ -162,7 +162,11 @@ class GridAggregator:
             warnings.warn(message, RuntimeWarning)
             self._output_tensor = self._output_tensor.type(torch.int32)
         if self.overlap_mode == 'average':
-            output = self._output_tensor / self._avgmask_tensor
+            # true_divide is used instead of / in case the PyTorch version is
+            # old and one the operands is int:
+            # https://github.com/fepegar/torchio/issues/526
+            output = torch.true_divide(
+                self._output_tensor, self._avgmask_tensor)
         else:
             output = self._output_tensor
         if self.volume_padded:
