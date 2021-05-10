@@ -45,25 +45,49 @@ class PatchSampler:
             index_ini: TypeTripletInt,
             patch_size: TypeTripletInt,
             ) -> Subject:
-        transform = self.get_crop_transform(subject, index_ini, patch_size)
+        transform = self._get_crop_transform(subject, index_ini, patch_size)
         return transform(subject)
 
     @staticmethod
-    def get_crop_transform(
+    def _get_crop_transform(
             subject,
-            index_ini,
+            index_ini: TypeTripletInt,
             patch_size: TypePatchSize,
             ):
         from ...transforms.preprocessing.spatial.crop import Crop
         shape = np.array(subject.spatial_shape, dtype=np.uint16)
         index_ini = np.array(index_ini, dtype=np.uint16)
         patch_size = np.array(patch_size, dtype=np.uint16)
+        assert len(index_ini) == 3
+        assert len(patch_size) == 3
         index_fin = index_ini + patch_size
         crop_ini = index_ini.tolist()
         crop_fin = (shape - index_fin).tolist()
         start = ()
         cropping = sum(zip(crop_ini, crop_fin), start)
         return Crop(cropping)
+
+    def __call__(
+            self,
+            subject: Subject,
+            num_patches: Optional[int] = None,
+            ) -> Generator[Subject, None, None]:
+        subject.check_consistent_space()
+        if np.any(self.patch_size > subject.spatial_shape):
+            message = (
+                f'Patch size {tuple(self.patch_size)} cannot be'
+                f' larger than image size {tuple(subject.spatial_shape)}'
+            )
+            raise RuntimeError(message)
+        kwargs = {} if num_patches is None else {'num_patches': num_patches}
+        return self._generate_patches(subject, **kwargs)
+
+    def _generate_patches(
+            self,
+            subject: Subject,
+            num_patches: Optional[int] = None,
+            ) -> Generator[Subject, None, None]:
+        raise NotImplementedError
 
 
 class RandomSampler(PatchSampler):
@@ -74,12 +98,5 @@ class RandomSampler(PatchSampler):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
     """
-    def __call__(
-            self,
-            subject: Subject,
-            num_patches: Optional[int] = None,
-            ) -> Generator[Subject, None, None]:
-        raise NotImplementedError
-
     def get_probability_map(self, subject: Subject):
         raise NotImplementedError

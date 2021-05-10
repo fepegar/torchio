@@ -1,10 +1,12 @@
 import warnings
 from typing import Tuple
+
 import torch
 import numpy as np
+
 from ...typing import TypeData
 from ...constants import CHANNELS_DIMENSION
-from .grid_sampler import GridSampler
+from ..sampler import GridSampler
 
 
 class GridAggregator:

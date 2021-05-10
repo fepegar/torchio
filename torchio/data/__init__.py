@@ -2,8 +2,9 @@ from .queue import Queue
 from .subject import Subject
 from .dataset import SubjectsDataset
 from .image import Image, ScalarImage, LabelMap
-from .inference import GridSampler, GridAggregator
+from .inference import GridAggregator
 from .sampler import (
+    GridSampler,
     PatchSampler,
     LabelSampler,
     WeightedSampler,
