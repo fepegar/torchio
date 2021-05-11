@@ -125,7 +125,7 @@ def _ensure_axes_indices(subject, axes):
 def _flip_image(image, axes):
     spatial_axes = np.array(axes, int) + 1
     data = image.numpy()
-    data = np.flip(data, axis=spatial_axes)
+    data = np.flip(data, axis=spatial_axes.tolist())
     data = data.copy()  # remove negative strides
     data = torch.as_tensor(data)
     image.set_data(data)
