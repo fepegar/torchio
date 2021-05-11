@@ -41,7 +41,7 @@ class SubjectsDataset(Dataset):
         ... )
         >>> subjects_list = [subject_a, subject_b]
         >>> transforms = [
-        ...     tio.RescaleIntensity((0, 1)),
+        ...     tio.RescaleIntensity(out_min_max=(0, 1)),
         ...     tio.RandomAffine(),
         ... ]
         >>> transform = tio.Compose(transforms)

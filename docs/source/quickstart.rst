@@ -66,7 +66,7 @@ in parallel::
 
     # Let's use one preprocessing transform and one augmentation transform
     # This transform will be applied only to scalar images:
-    rescale = tio.RescaleIntensity((0, 1))
+    rescale = tio.RescaleIntensity(out_min_max=(0, 1))
 
     # As RandomAffine is faster then RandomElasticDeformation, we choose to
     # apply RandomAffine 80% of the times and RandomElasticDeformation the rest

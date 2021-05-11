@@ -66,7 +66,7 @@ We can type::
     ... }
     >>> transform = tio.Compose([
     ...     tio.OneOf(spatial_transforms, p=0.5),
-    ...     tio.RescaleIntensity((0, 1)),
+    ...     tio.RescaleIntensity(out_min_max=(0, 1)),
     ... ])
 
 

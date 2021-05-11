@@ -81,7 +81,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         >>> transform = tio.Compose([simulation_transform, blurring_transform])
         >>> transformed = transform(subject)  # subject has a new key 'image_from_labels' with the simulated image
         >>> # Filling holes of the simulated image with the original T1 image
-        >>> rescale_transform = tio.RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes
+        >>> rescale_transform = tio.RescaleIntensity(
+        ...     out_min_max=(0, 1), percentiles=(1, 99))   # Rescale intensity before filling holes
         >>> simulation_transform = tio.RandomLabelsToImage(
         ...     label_key='tissues',
         ...     image_key='t1',

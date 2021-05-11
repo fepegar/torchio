@@ -37,7 +37,7 @@ class TestTransforms(TorchioTestCase):
             tio.RandomSwap(patch_size=swap_patch, num_iterations=5),
             tio.Lambda(lambda x: 2 * x, types_to_apply=tio.INTENSITY),
             tio.RandomBiasField(),
-            tio.RescaleIntensity((0, 1)),
+            tio.RescaleIntensity(out_min_max=(0, 1)),
             tio.ZNormalization(),
             tio.HistogramStandardization(landmarks_dict),
             elastic,
