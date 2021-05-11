@@ -282,6 +282,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "hsiangyuzhao",
+      "name": "Xiangyu Zhao",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53631393?v=4",
+      "profile": "https://github.com/hsiangyuzhao",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
