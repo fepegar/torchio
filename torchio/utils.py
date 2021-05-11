@@ -154,10 +154,16 @@ def get_torchio_cache_dir() -> Path:
     return Path('~/.cache/torchio').expanduser()
 
 
-def compress(input_path: TypePath, output_path: TypePath) -> None:
+def compress(
+        input_path: TypePath,
+        output_path: Optional[TypePath] = None,
+        ) -> Path:
+    if output_path is None:
+        output_path = Path(input_path).with_suffix('.nii.gz')
     with open(input_path, 'rb') as f_in:
         with gzip.open(output_path, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+    return Path(output_path)
 
 
 def check_sequence(sequence: Sequence, name: str) -> None:
