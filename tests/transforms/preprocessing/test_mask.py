@@ -1,3 +1,4 @@
+import torch
 import torchio as tio
 from ...utils import TorchioTestCase
 
@@ -33,6 +34,23 @@ class TestMask(TorchioTestCase):
         transformed = transform(self.sample_subject)
 
         assert (transformed.t1.data[masked_voxel_indices] == 0).all()
+
+    def test_mask_specified_label_small(self):
+
+        def to_image(*numbers):
+            return torch.as_tensor(numbers).reshape(1, 1, 1, len(numbers))
+
+        image_tensor = to_image(1, 6, 7, 3, 0)
+        label_tensor = to_image(0, 1, 2, 3, 4)
+        mask_labels = [1, 2]
+        subject = tio.Subject(
+            image=tio.ScalarImage(tensor=image_tensor),
+            label=tio.LabelMap(tensor=label_tensor),
+        )
+        transform = tio.Mask(masking_method='label', labels=mask_labels)
+        transformed = transform(subject)
+        masked_list = transformed.image.data.flatten().tolist()
+        assert masked_list == [0, 6, 7, 0, 0]
 
     def test_mask_example(self):
         subject = tio.datasets.Colin27()
