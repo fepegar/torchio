@@ -2,7 +2,7 @@ import torchio as tio
 from ...utils import TorchioTestCase
 
 
-class TestMasking(TorchioTestCase):
+class TestMask(TorchioTestCase):
     """Tests for :class:`tio.Mask` class."""
 
     def test_single_mask(self):
@@ -18,7 +18,7 @@ class TestMasking(TorchioTestCase):
         masked_voxel_indices = negated_mask.nonzero(as_tuple=True)
 
         transform = tio.Mask(masking_method='label',
-                             outside_mask_value=background_value)
+                             outside_value=background_value)
         transformed = transform(self.sample_subject)
 
         assert (transformed.t1.data[masked_voxel_indices]
@@ -29,7 +29,7 @@ class TestMasking(TorchioTestCase):
         negated_mask = self.sample_subject.label.data.logical_not()
         masked_voxel_indices = negated_mask.nonzero(as_tuple=True)
 
-        transform = tio.Mask(masking_method='label', masking_labels=mask_label)
+        transform = tio.Mask(masking_method='label', labels=mask_label)
         transformed = transform(self.sample_subject)
 
         assert (transformed.t1.data[masked_voxel_indices] == 0).all()

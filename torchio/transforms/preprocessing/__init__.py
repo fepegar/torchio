@@ -5,10 +5,10 @@ from .spatial.crop_or_pad import CropOrPad
 from .spatial.to_canonical import ToCanonical
 from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 
+from .intensity.mask import Mask
 from .intensity.rescale import RescaleIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
-from .intensity.masking import Mask
 
 from .label.one_hot import OneHot
 from .label.contour import Contour
@@ -25,8 +25,9 @@ __all__ = [
     'ToCanonical',
     'CropOrPad',
     'EnsureShapeMultiple',
-    'ZNormalization',
+    'Mask',
     'RescaleIntensity',
+    'ZNormalization',
     'HistogramStandardization',
     'OneHot',
     'Contour',
@@ -34,5 +35,4 @@ __all__ = [
     'RemoveLabels',
     'SequentialLabels',
     'KeepLargestComponent',
-    'Mask'
 ]
