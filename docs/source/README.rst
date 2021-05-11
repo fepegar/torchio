@@ -19,6 +19,12 @@ simulation of intensity artifacts due to
 `MRI magnetic field inhomogeneity (bias) <http://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
+TorchIO is part of the official `PyTorch Ecosystem <https://pytorch.org/ecosystem/>`_,
+and it was featured at the `PyTorch Ecosystem Day 2021 <https://pytorch.org/ecosystem/pted/2021>`_.
+
+Many groups have used TorchIO for their research.
+The complete list of citations is available on `Google Scholar <https://scholar.google.co.uk/scholar?cites=8711392719159421861&sciodt=0,5&hl=en>`_.
+
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
 If you like TorchIO, please give the repo a star!
 
@@ -101,7 +107,8 @@ This project is supported by the
     :width: 250
     :alt: School of Biomedical Engineering & Imaging Sciences
 
-This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
+This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_
+which is no longer maintained.
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
