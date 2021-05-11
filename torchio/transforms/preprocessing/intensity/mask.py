@@ -27,7 +27,8 @@ class Mask(IntensityTransform):
         >>> subject
         Colin27(Keys: ('t1', 'head', 'brain'); images: 3)
         >>> mask = tio.Mask(masking_method='brain')  # Use "brain" image to mask
-        >>> transformed = mask(subject)  # Set values outside of the brain to 0
+        >>> transformed = mask(subject)  # Set voxels outside of the brain to 0
+
     """  # noqa: E501
     def __init__(
             self,
@@ -40,7 +41,6 @@ class Mask(IntensityTransform):
         self.masking_method = masking_method
         self.masking_labels = labels
         self.outside_value = outside_value
-        self.args_names = ('masking_method',)
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
