@@ -1,6 +1,6 @@
 import urllib.parse
 from ... import ScalarImage, LabelMap
-from ...utils import get_torchio_cache_dir
+from ...utils import get_torchio_cache_dir, compress
 from ...download import download_and_extract_archive
 from .mni import SubjectMNI
 
@@ -58,9 +58,14 @@ class Pediatric(SubjectMNI):
                 download_root=download_root,
                 filename=self.filename,
             )
+            (download_root / self.filename).unlink()
+            for path in download_root.glob('*.nii'):
+                compress(path)
+                path.unlink()
+
         super().__init__(
-            t1=ScalarImage(download_root / f'nihpd_{file_id}_t1w.nii'),
-            t2=ScalarImage(download_root / f'nihpd_{file_id}_t2w.nii'),
-            pd=ScalarImage(download_root / f'nihpd_{file_id}_pdw.nii'),
-            mask=LabelMap(download_root / f'nihpd_{file_id}_mask.nii'),
+            t1=ScalarImage(download_root / f'nihpd_{file_id}_t1w.nii.gz'),
+            t2=ScalarImage(download_root / f'nihpd_{file_id}_t2w.nii.gz'),
+            pd=ScalarImage(download_root / f'nihpd_{file_id}_pdw.nii.gz'),
+            mask=LabelMap(download_root / f'nihpd_{file_id}_mask.nii.gz'),
         )

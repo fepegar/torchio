@@ -1,6 +1,6 @@
 import urllib.parse
 from ...data import ScalarImage, LabelMap
-from ...utils import get_torchio_cache_dir
+from ...utils import get_torchio_cache_dir, compress
 from ...download import download_and_extract_archive
 from .mni import SubjectMNI
 
@@ -70,6 +70,7 @@ class Colin27(SubjectMNI):
                 download_root=download_root,
                 filename=self.filename,
             )
+
             # Fix label map (https://github.com/fepegar/torchio/issues/220)
             if version == 2008:
                 path = download_root / 'colin27_cls_tal_hires.nii'
@@ -77,9 +78,14 @@ class Colin27(SubjectMNI):
                 cls_image.set_data(cls_image.data.round().byte())
                 cls_image.save(path)
 
+            (download_root / self.filename).unlink()
+            for path in download_root.glob('*.nii'):
+                compress(path)
+                path.unlink()
+
         if version == 1998:
             t1, head, mask = [
-                download_root / f'colin27_t1_tal_lin{suffix}.nii'
+                download_root / f'colin27_t1_tal_lin{suffix}.nii.gz'
                 for suffix in ('', '_headmask', '_mask')
             ]
             super().__init__(
@@ -89,7 +95,7 @@ class Colin27(SubjectMNI):
             )
         elif version == 2008:
             t1, t2, pd, label = [
-                download_root / f'colin27_{name}_tal_hires.nii'
+                download_root / f'colin27_{name}_tal_hires.nii.gz'
                 for name in ('t1', 't2', 'pd', 'cls')
             ]
             super().__init__(
