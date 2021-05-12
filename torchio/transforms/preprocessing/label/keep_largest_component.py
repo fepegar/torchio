@@ -20,7 +20,12 @@ class KeepLargestComponent(LabelTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
-            assert image.data.ndim == 4 and image.data.shape[0] == 1
+            if image.num_channels > 1:
+                message = (
+                    'The number of input channels must be 1,'
+                    f' but it is {image.num_channels}'
+                )
+                raise RuntimeError(message)
             sitk_image = image.as_sitk()
             connected_components = sitk.ConnectedComponent(sitk_image)
             labeled_cc = sitk.RelabelComponent(connected_components)

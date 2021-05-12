@@ -370,8 +370,7 @@ class LabelsToImage(IntensityTransform):
             std: float,
             ) -> TypeData:
         # Create the simulated tissue using a gaussian random variable
-        data_shape = data.shape
-        gaussian = torch.randn(data_shape) * std + mean
+        gaussian = torch.randn(data.shape) * std + mean
         return gaussian * data
 
 
