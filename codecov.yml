@@ -1,4 +1,5 @@
 ignore:
   - "setup.py"
   - "torchio/external/due.py"
-  - "torchio/datasets/**/*.py"
+  - "torchio/datasets"
+  - "torchio/download.py"
