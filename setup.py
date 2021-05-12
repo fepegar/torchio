@@ -15,7 +15,7 @@ requirements = [
     'Deprecated',
     'humanize',
     'nibabel',
-    'numpy',
+    'numpy>=1.15',
     'scipy',
     'torch>=1.1',
     'tqdm',
