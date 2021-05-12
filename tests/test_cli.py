@@ -3,7 +3,7 @@
 """Tests for CLI tool package."""
 
 from click.testing import CliRunner
-from torchio.cli import apply_transform
+from torchio.cli import apply_transform, print_info
 from .utils import TorchioTestCase
 
 
@@ -16,10 +16,16 @@ class TestCLI(TorchioTestCase):
         assert help_result.exit_code == 0
         assert 'Show this message and exit.' in help_result.output
 
-    def test_cli(self):
+    def test_cli_transform(self):
         image = str(self.get_image_path('cli'))
         runner = CliRunner()
-        args = [image, 'RandomFlip', image]
+        args = [
+            image,
+            'RandomFlip',
+            '--seed', '0',
+            '--kwargs', 'axes=(0,1,2)',
+            image,
+        ]
         result = runner.invoke(apply_transform.main, args)
         assert result.exit_code == 0
         assert result.output == ''
@@ -31,3 +37,11 @@ class TestCLI(TorchioTestCase):
         args = [image, 'RandomRandom', image]
         result = runner.invoke(apply_transform.main, args)
         assert result.exit_code == 1
+
+    def test_cli_hd(self):
+        image = str(self.get_image_path('cli'))
+        runner = CliRunner()
+        args = [image]
+        result = runner.invoke(print_info.main, args)
+        assert result.exit_code == 0
+        assert result.output == 'ScalarImage(shape: (1, 10, 20, 30); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 46.9 KiB; dtype: torch.DoubleTensor)\n'  # noqa: E501
