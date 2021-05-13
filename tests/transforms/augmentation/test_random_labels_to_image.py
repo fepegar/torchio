@@ -245,3 +245,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(label_key='label', std=[1, 2, 3])
         with self.assertRaises(RuntimeError):
             transform(self.sample_subject)
+
+    def test_bad_range(self):
+        with self.assertRaises(ValueError):
+            RandomLabelsToImage(default_mean=(2, 1))
+
+    def test_no_labels(self):
+        transform = RandomLabelsToImage()
+        with self.assertRaises(RuntimeError):
+            transform(self.sample_subject.t1)

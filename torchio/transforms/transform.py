@@ -450,6 +450,7 @@ class Transform(ABC):
             anatomical_label: str,
             tensor: torch.Tensor,
             ) -> torch.Tensor:
+        # Assume the image is in RAS orientation
         anatomical_label = anatomical_label.title()
         if anatomical_label.title() not in anat_axes:
             message = (
