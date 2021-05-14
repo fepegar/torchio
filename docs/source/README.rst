@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status|
-|Build-status| |Coverage-codecov| |Coverage-coveralls| |Code-Quality|
+|Build-status| |Coverage-codecov| |Code-Quality|
 |Code-Maintainability| |pre-commit| |Slack|
 
 
@@ -133,10 +133,6 @@ which is no longer maintained.
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
-   :alt: Coverage status
-
-.. |Coverage-coveralls| image:: https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master
-   :target: https://coveralls.io/github/fepegar/torchio?branch=master
    :alt: Coverage status
 
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer

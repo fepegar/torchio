@@ -34,34 +34,21 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     </tr>
     <tr>
         <td align="left">
-            <b>Docs</b>
-        </td>
-        <td align="center">
-            <a href="http://torchio.rtfd.io/?badge=latest">
-                <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td align="left">
-            <b>Build</b>
+            <b>CI</b>
         </td>
         <td align="center">
             <a href="https://travis-ci.org/fepegar/torchio">
                 <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
             </a>
         </td>
-    </tr>
-    <tr>
-        <td align="left">
-            <b>Coverage</b>
+        <td align="center">
+            <a href="http://torchio.rtfd.io/?badge=latest">
+                <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
+            </a>
         </td>
         <td align="center">
             <a href="https://codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
-            </a>
-            <a href='https://coveralls.io/github/fepegar/torchio?branch=master'>
-                <img src='https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master' alt='Coverage Status' />
             </a>
         </td>
     </tr>
