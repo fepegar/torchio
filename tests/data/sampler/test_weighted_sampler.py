@@ -11,7 +11,7 @@ class TestWeightedSampler(TorchioTestCase):
         subject = self.get_sample((1, 7, 7, 7))
         sampler = WeightedSampler(5, 'prob')
         patch = tio.utils.get_first_item(sampler(subject))
-        self.assertEqual(tuple(patch['index_ini']), (1, 1, 1))
+        self.assertEqual(tuple(patch[tio.LOCATION][:3]), (1, 1, 1))
 
     def get_sample(self, image_shape):
         t1 = torch.rand(*image_shape)

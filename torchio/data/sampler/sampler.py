@@ -1,9 +1,11 @@
 from typing import Optional, Generator
 
+import torch
 import numpy as np
 
 from ...typing import TypePatchSize, TypeTripletInt
 from ...data.subject import Subject
+from ...constants import LOCATION
 from ...utils import to_tuple
 
 
@@ -36,7 +38,6 @@ class PatchSampler:
             index_ini: TypeTripletInt,
             ) -> Subject:
         cropped_subject = self.crop(subject, index_ini, self.patch_size)
-        cropped_subject['index_ini'] = np.array(index_ini).astype(int)
         return cropped_subject
 
     def crop(
@@ -46,7 +47,14 @@ class PatchSampler:
             patch_size: TypeTripletInt,
             ) -> Subject:
         transform = self._get_crop_transform(subject, index_ini, patch_size)
-        return transform(subject)
+        cropped_subject = transform(subject)
+        index_ini = np.asarray(index_ini)
+        patch_size = np.asarray(patch_size)
+        index_fin = index_ini + patch_size
+        location = index_ini.tolist() + index_fin.tolist()
+        cropped_subject[LOCATION] = torch.as_tensor(location)
+        cropped_subject.update_attributes()
+        return cropped_subject
 
     @staticmethod
     def _get_crop_transform(
