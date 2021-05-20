@@ -328,7 +328,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://github.com/TylerSpears"><img src="https://avatars.githubusercontent.com/u/7096950?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tyler Spears</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ATylerSpears" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://dagut.ru"><img src="https://avatars.githubusercontent.com/u/7759336?v=4?s=100" width="100px;" alt=""/><br /><sub><b>DaGuT</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=DaGuT" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/hsiangyuzhao"><img src="https://avatars.githubusercontent.com/u/53631393?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Xiangyu Zhao</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ahsiangyuzhao" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://siahuat0727.github.io"><img src="https://avatars.githubusercontent.com/u/17688111?v=4?s=100" width="100px;" alt=""/><br /><sub><b>siahuat0727</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=siahuat0727" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://siahuat0727.github.io"><img src="https://avatars.githubusercontent.com/u/17688111?v=4?s=100" width="100px;" alt=""/><br /><sub><b>siahuat0727</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=siahuat0727" title="Documentation">📖</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Asiahuat0727" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
