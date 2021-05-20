@@ -378,7 +378,7 @@ class Image(dict):
             ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
-        if isinstance(path, list):
+        if isinstance(path, Iterable) and not isinstance(path, str):
             return [self._parse_single_path(p) for p in path]
         else:
             return self._parse_single_path(path)
