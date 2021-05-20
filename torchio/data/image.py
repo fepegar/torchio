@@ -1,5 +1,6 @@
 import warnings
 from pathlib import Path
+from collections.abc import Iterable
 from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
 
 import torch
@@ -377,10 +378,10 @@ class Image(dict):
             ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
-        if isinstance(path, (str, Path)):
-            return self._parse_single_path(path)
-        else:
+        if isinstance(path, Iterable) and not isinstance(path, str):
             return [self._parse_single_path(p) for p in path]
+        else:
+            return self._parse_single_path(path)
 
     def _parse_tensor(
             self,
