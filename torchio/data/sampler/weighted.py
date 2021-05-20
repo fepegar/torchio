@@ -219,13 +219,9 @@ class WeightedSampler(RandomSampler):
         """  # noqa: E501
         # Get first value larger than random number ensuring the random number
         # is not exactly 0 (see https://github.com/fepegar/torchio/issues/510)
-        random_number = max(MIN_FLOAT_32, torch.rand(1).item())
+        random_number = max(MIN_FLOAT_32, torch.rand(1).item()) * cdf[-1]
 
-        # Accumulated floating point errors might make cdf.max() less than 1
-        if random_number > cdf.max():
-            random_location_index = -1
-        else:  # proceed as usual
-            random_location_index = np.searchsorted(cdf, random_number)
+        random_location_index = np.searchsorted(cdf, random_number)
 
         center = np.unravel_index(
             random_location_index,
