@@ -30,6 +30,7 @@ def plot_volume(
         cmap=None,
         output_path=None,
         show=True,
+        xlabels=True,
         ):
     _, plt = import_mpl_plt()
     fig = None
@@ -61,21 +62,24 @@ def plot_volume(
 
     sag_aspect = ss / sa
     sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)
-    sag_axis.set_xlabel('A')
+    if xlabels:
+        sag_axis.set_xlabel('A')
     sag_axis.set_ylabel('S')
     sag_axis.invert_xaxis()
     sag_axis.set_title('Sagittal')
 
     cor_aspect = ss / sr
     cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
-    cor_axis.set_xlabel('R')
+    if xlabels:
+        cor_axis.set_xlabel('R')
     cor_axis.set_ylabel('S')
     cor_axis.invert_xaxis()
     cor_axis.set_title('Coronal')
 
     axi_aspect = sa / sr
     axi_axis.imshow(slice_z, aspect=axi_aspect, **kwargs)
-    axi_axis.set_xlabel('R')
+    if xlabels:
+        axi_axis.set_xlabel('R')
     axi_axis.set_ylabel('A')
     axi_axis.invert_xaxis()
     axi_axis.set_title('Axial')
@@ -93,21 +97,38 @@ def plot_subject(
         show=True,
         output_path=None,
         figsize=None,
+        clear_axes=True,
         **kwargs,
         ):
     _, plt = import_mpl_plt()
-    fig, axes = plt.subplots(len(subject), 3, figsize=figsize)
+    subplots_kwargs = {'figsize': figsize}
+    try:
+        if clear_axes:
+            subject.check_consistent_spatial_shape()
+            subplots_kwargs['sharex'] = 'col'
+            subplots_kwargs['sharey'] = 'col'
+    except RuntimeError:  # different shapes in subject
+        pass
+    fig, axes = plt.subplots(len(subject), 3, **subplots_kwargs)
     # The array of axes must be 2D so that it can be indexed correctly within
     # the plot_volume() function
     axes = axes.reshape(-1, 3)
     iterable = enumerate(subject.get_images_dict(intensity_only=False).items())
     axes_names = 'sagittal', 'coronal', 'axial'
-    for row, (name, image) in iterable:
-        row_axes = axes[row]
+    for row_index, (name, image) in iterable:
+        row_axes = axes[row_index]
         cmap = None
         if cmap_dict is not None and name in cmap_dict:
             cmap = cmap_dict[name]
-        plot_volume(image, axes=row_axes, show=False, cmap=cmap, **kwargs)
+        last_row = row_index == len(axes) - 1
+        plot_volume(
+            image,
+            axes=row_axes,
+            show=False,
+            cmap=cmap,
+            xlabels=last_row,
+            **kwargs,
+        )
         for axis, axis_name in zip(row_axes, axes_names):
             axis.set_title(f'{name} ({axis_name})')
     plt.tight_layout()
