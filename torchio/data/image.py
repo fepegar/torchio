@@ -585,8 +585,6 @@ class ScalarImage(Image):
 class LabelMap(Image):
     """Image whose pixel values represent categorical labels.
 
-    Intensity transforms are not applied to these images.
-
     Example:
         >>> import torch
         >>> import torchio as tio
@@ -597,6 +595,12 @@ class LabelMap(Image):
         ...     'white_matter.nii.gz',
         ...     'csf.nii.gz',
         ... )
+
+    Intensity transforms are not applied to these images.
+
+    Nearest neighbor interpolation is always used to resample label maps,
+    independently of the specified interpolation type in the transform
+    instantiation.
 
     See :class:`~torchio.Image` for more information.
     """

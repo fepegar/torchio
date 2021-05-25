@@ -50,7 +50,7 @@ class Resample(SpatialTransform):
         >>> ref_path = tio.datasets.Colin27().t1.path  # this image is in the MNI space, so we can use it as reference/target
         >>> affine_matrix = tio.io.read_matrix('transform_to_mni.txt')  # from a NiftyReg registration. Would also work with e.g. .tfm from SimpleITK
         >>> image = tio.ScalarImage(tensor=torch.rand(1, 256, 256, 180), to_mni=affine_matrix)  # 'to_mni' is an arbitrary name
-        >>> transform = tio.Resample(colin.t1.path, pre_affine_name='to_mni')
+        >>> transform = tio.Resample(colin.t1.path, pre_affine_name='to_mni')  # nearest neighbor interpolation is used for label maps
         >>> transformed = transform(image)  # "image" is now in the MNI space
     """  # noqa: E501
     def __init__(

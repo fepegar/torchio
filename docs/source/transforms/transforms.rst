@@ -171,18 +171,23 @@ The available interpolation strategies can be inferred from the elements of
 ``'nearest'`` can be used for quick experimentation as it is very
 fast, but produces relatively poor results.
 
-``'linear'``, default in TorchIO, is usually a good compromise
-between image quality and speed to be used for data augmentation during training.
+``'linear'``, default in TorchIO, is usually a good compromise between image
+quality and speed to be used for data augmentation during training.
+
+Instances of :class:`~torchio.data.image.LabelMap` are always resampled using
+nearest neighbor interpolation, independently of the interpolation type
+specified at transform instantiation, which will be used for instances of
+:class:`~torchio.data.image.ScalarImage`.
 
 Methods such as ``'bspline'`` or ``'lanczos'`` generate
 high-quality results, but are generally slower. They can be used to obtain
 optimal resampling results during offline data preprocessing.
 
 Visit the
-`ITK docs <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
+`SimpleITK docs <https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5>`_
 for technical documentation and
 `Cambridge in Colour <https://www.cambridgeincolour.com/tutorials/image-interpolation.htm>`_
-for some further generalexplanations of digital image interpolation.
+for some further general explanations of digital image interpolation.
 
 .. currentmodule:: torchio.transforms.interpolation
 
