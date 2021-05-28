@@ -40,13 +40,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://travis-ci.org/fepegar/torchio">
                 <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
             </a>
-        </td>
-        <td align="center">
             <a href="http://torchio.rtfd.io/?badge=latest">
                 <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
             </a>
-        </td>
-        <td align="center">
             <a href="https://codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
             </a>
