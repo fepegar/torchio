@@ -67,6 +67,8 @@ class Image(dict):
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image. If ``False``, images will not be checked for the
             presence of NaNs.
+        channels_last: If ``True``, the read tensor will be permuted so the
+            last dimension becomes the first.
         reader: Callable object that takes a path and returns a 4D tensor and a
             2D, :math:`4 \times 4` affine matrix. This can be used if your data
             is saved in a custom format, such as ``.npy`` (see example below).
