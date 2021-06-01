@@ -301,6 +301,15 @@
         "doc",
         "bug"
       ]
+    },
+    {
+      "login": "Svdvoort",
+      "name": "Svdvoort",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23049683?v=4",
+      "profile": "https://github.com/Svdvoort",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
