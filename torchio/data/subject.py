@@ -258,6 +258,9 @@ class Subject(dict):
         self.check_consistent_spatial_shape()
         self.check_consistent_affine()
 
+    def get_images_names(self) -> List[str]:
+        return list(self.get_images_dict(intensity_only=False).keys())
+
     def get_images_dict(
             self,
             intensity_only=True,

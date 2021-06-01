@@ -33,6 +33,7 @@ from .preprocessing import CropOrPad
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
+from .preprocessing import Mask
 from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
 from .preprocessing.intensity.histogram_standardization import train_histogram
@@ -84,6 +85,7 @@ __all__ = [
     'ZNormalization',
     'HistogramStandardization',
     'RescaleIntensity',
+    'Mask',
     'CropOrPad',
     'EnsureShapeMultiple',
     'train_histogram',
