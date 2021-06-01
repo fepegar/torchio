@@ -1,7 +1,6 @@
 from typing import Optional, Sequence
 
 import torch
-import numpy as np
 
 from ....data.image import LabelMap
 from ....data.subject import Subject
@@ -44,25 +43,26 @@ class Mask(IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
-            label_map = self.get_mask_from_masking_method(
+            mask_data = self.get_mask_from_masking_method(
                 self.masking_method,
                 subject,
                 image.data,
                 self.masking_labels,
             )
-            self.apply_masking(image, label_map)
+            self.apply_masking(image, mask_data)
         return subject
 
-    def apply_masking(self, image: LabelMap, label_map: torch.Tensor) -> None:
-        masked = self.mask(image.data, label_map)
+    def apply_masking(self, image: LabelMap, mask_data: torch.Tensor) -> None:
+        masked = mask(image.data, mask_data, self.outside_value)
         image.set_data(masked)
 
-    def mask(
-            self,
-            tensor: torch.Tensor,
-            label_map: torch.Tensor,
-            ) -> torch.Tensor:
-        array = tensor.clone().numpy()
-        label_map = label_map.numpy()
-        array[~label_map] = self.outside_value
-        return torch.as_tensor(array)
+
+def mask(
+        tensor: torch.Tensor,
+        mask: torch.Tensor,
+        outside_value: float,
+        ) -> torch.Tensor:
+    array = tensor.clone().numpy()
+    mask = mask.numpy()
+    array[~mask] = outside_value
+    return torch.as_tensor(array)
