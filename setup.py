@@ -15,7 +15,7 @@ requirements = [
     'Deprecated',
     'humanize',
     'nibabel',
-    'numpy',
+    'numpy>=1.15',
     'scipy',
     'torch>=1.1',
     'tqdm',
@@ -51,6 +51,7 @@ setup(
     entry_points={
         'console_scripts': [
             'torchio-transform=torchio.cli.apply_transform:main',
+            'tiotr=torchio.cli.apply_transform:main',
             'tiohd=torchio.cli.print_info:main',
         ],
     },
@@ -69,6 +70,6 @@ setup(
     test_suite='tests',
     tests_require=[],
     url='https://github.com/fepegar/torchio',
-    version='0.18.37',
+    version='0.18.39',
     zip_safe=False,
 )

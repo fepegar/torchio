@@ -34,7 +34,8 @@ class RescaleIntensity(NormalizationTransform):
         >>> import torchio as tio
         >>> ct = tio.ScalarImage('ct_scan.nii.gz')
         >>> ct_air, ct_bone = -1000, 1000
-        >>> rescale = tio.RescaleIntensity(out_min_max=(-1, 1), in_min_max=(ct_air, ct_bone))
+        >>> rescale = tio.RescaleIntensity(
+        ...     out_min_max=(-1, 1), in_min_max=(ct_air, ct_bone))
         >>> ct_normalized = rescale(ct)
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py

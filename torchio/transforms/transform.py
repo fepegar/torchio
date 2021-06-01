@@ -40,17 +40,18 @@ ANATOMICAL_AXES = (
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
-    All subclasses must overwrite
-    :meth:`~torchio.transforms.Transform.apply_transform`,
-    which takes some input, applies a transformation and returns the result.
-
-    The input can be an instance of
+    When called, the input can be an instance of
     :class:`torchio.Subject`,
     :class:`torchio.Image`,
     :class:`numpy.ndarray`,
     :class:`torch.Tensor`,
     :class:`SimpleITK.Image`,
-    or :class:`dict`.
+    or :class:`dict` containing 4D tensors as values.
+
+    All subclasses must overwrite
+    :meth:`~torchio.transforms.Transform.apply_transform`,
+    which takes an instance of :class:`~torchio.Subject`,
+    modifies it and returns the result.
 
     Args:
         p: Probability that this transform will be applied.
@@ -465,6 +466,7 @@ class Transform(ABC):
             anatomical_label: str,
             tensor: torch.Tensor,
             ) -> torch.Tensor:
+        # Assume the image is in RAS orientation
         anatomical_label = anatomical_label.capitalize()
         if anatomical_label not in ANATOMICAL_AXES:
             message = (

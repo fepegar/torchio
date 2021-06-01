@@ -1,5 +1,6 @@
 import SimpleITK as sitk
 
+from ....data.subject import Subject
 from .label_transform import LabelTransform
 
 
@@ -17,9 +18,14 @@ class KeepLargestComponent(LabelTransform):
     .. _open a new issue: https://github.com/fepegar/torchio/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=Improve%20KeepLargestComponent%20transform
     """  # noqa: E501
 
-    def apply_transform(self, subject):
+    def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
-            assert image.data.ndim == 4 and image.data.shape[0] == 1
+            if image.num_channels > 1:
+                message = (
+                    'The number of input channels must be 1,'
+                    f' but it is {image.num_channels}'
+                )
+                raise RuntimeError(message)
             sitk_image = image.as_sitk()
             connected_components = sitk.ConnectedComponent(sitk_image)
             labeled_cc = sitk.RelabelComponent(connected_components)

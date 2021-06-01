@@ -34,34 +34,17 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     </tr>
     <tr>
         <td align="left">
-            <b>Docs</b>
-        </td>
-        <td align="center">
-            <a href="http://torchio.rtfd.io/?badge=latest">
-                <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td align="left">
-            <b>Build</b>
+            <b>CI</b>
         </td>
         <td align="center">
             <a href="https://travis-ci.org/fepegar/torchio">
                 <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
             </a>
-        </td>
-    </tr>
-    <tr>
-        <td align="left">
-            <b>Coverage</b>
-        </td>
-        <td align="center">
+            <a href="http://torchio.rtfd.io/?badge=latest">
+                <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
+            </a>
             <a href="https://codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
-            </a>
-            <a href='https://coveralls.io/github/fepegar/torchio?branch=master'>
-                <img src='https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master' alt='Coverage Status' />
             </a>
         </td>
     </tr>
@@ -340,6 +323,8 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   <tr>
     <td align="center"><a href="https://github.com/TylerSpears"><img src="https://avatars.githubusercontent.com/u/7096950?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tyler Spears</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ATylerSpears" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://dagut.ru"><img src="https://avatars.githubusercontent.com/u/7759336?v=4?s=100" width="100px;" alt=""/><br /><sub><b>DaGuT</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=DaGuT" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/hsiangyuzhao"><img src="https://avatars.githubusercontent.com/u/53631393?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Xiangyu Zhao</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ahsiangyuzhao" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://siahuat0727.github.io"><img src="https://avatars.githubusercontent.com/u/17688111?v=4?s=100" width="100px;" alt=""/><br /><sub><b>siahuat0727</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=siahuat0727" title="Documentation">📖</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Asiahuat0727" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

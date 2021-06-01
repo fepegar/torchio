@@ -376,7 +376,7 @@ def get_borders_mean(image, filter_otsu=True):
     return default_value
 
 def _parse_scales_isotropic(scales, isotropic):
-    params = to_tuple(scales)
+    scales = to_tuple(scales)
     if isotropic and len(scales) in (3, 6):
         message = (
             'If "isotropic" is True, the value for "scales" must have'

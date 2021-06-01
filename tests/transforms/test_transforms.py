@@ -37,7 +37,7 @@ class TestTransforms(TorchioTestCase):
             tio.RandomSwap(patch_size=swap_patch, num_iterations=5),
             tio.Lambda(lambda x: 2 * x, types_to_apply=tio.INTENSITY),
             tio.RandomBiasField(),
-            tio.RescaleIntensity((0, 1)),
+            tio.RescaleIntensity(out_min_max=(0, 1)),
             tio.ZNormalization(),
             tio.HistogramStandardization(landmarks_dict),
             elastic,
@@ -123,6 +123,7 @@ class TestTransforms(TorchioTestCase):
         subject = self.flip_affine_x(subject)
         transformed = None
         for transform in composed.transforms:
+            repr(transform)  # cover __repr__
             transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)
             assert trsf_channels > 1, f'Lost channels in {transform.name}'
@@ -243,3 +244,66 @@ class TestTransform(TorchioTestCase):
         transform = tio.Noise(0, {'im': 1}, {'im': 0})
         with self.assertRaises(ValueError):
             transform.arguments_are_dict()
+
+    def test_bad_over_max(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range(2, 'name', max_constraint=1)
+
+    def test_bad_over_max_range(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range((0, 2), 'name', max_constraint=1)
+
+    def test_bad_type(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range(2.5, 'name', type_constraint=int)
+
+    def test_no_numbers(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range('j', 'name')
+
+    def test_apply_transform_missing(self):
+        class T(tio.Transform):
+            pass
+        with self.assertRaises(TypeError):
+            T().apply_transform(0)
+
+    def test_non_invertible(self):
+        transform = tio.RandomBlur()
+        with self.assertRaises(RuntimeError):
+            transform.inverse()
+
+    def test_bad_bounds_mask(self):
+        transform = tio.ZNormalization(masking_method='test')
+        with self.assertRaises(ValueError):
+            transform(self.sample_subject)
+
+    def test_bounds_mask(self):
+        transform = tio.ZNormalization()
+        with self.assertRaises(ValueError):
+            transform.get_mask_from_anatomical_label('test', 0)
+        tensor = torch.rand((1, 2, 2, 2))
+
+        def get_mask(label):
+            mask = transform.get_mask_from_anatomical_label(label, tensor)
+            return mask
+
+        left = get_mask('Left')
+        assert left[:, 0].sum() == 4 and left[:, 1].sum() == 0
+        right = get_mask('Right')
+        assert right[:, 1].sum() == 4 and right[:, 0].sum() == 0
+        posterior = get_mask('Posterior')
+        assert posterior[:, :, 0].sum() == 4 and posterior[:, :, 1].sum() == 0
+        anterior = get_mask('Anterior')
+        assert anterior[:, :, 1].sum() == 4 and anterior[:, :, 0].sum() == 0
+        inferior = get_mask('Inferior')
+        assert inferior[..., 0].sum() == 4 and inferior[..., 1].sum() == 0
+        superior = get_mask('Superior')
+        assert superior[..., 1].sum() == 4 and superior[..., 0].sum() == 0
+
+        mask = transform.get_mask_from_bounds(3 * (0, 1), tensor)
+        assert mask[0, 0, 0, 0] == 1
+        assert mask.sum() == 1

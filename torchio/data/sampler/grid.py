@@ -3,7 +3,6 @@ from typing import Union, Generator, Optional
 import numpy as np
 
 from ...utils import to_tuple
-from ...constants import LOCATION
 from ...data.subject import Subject
 from ...typing import TypePatchSize
 from ...typing import TypeTripletInt
@@ -85,7 +84,6 @@ class GridSampler(PatchSampler):
         location = self.locations[index]
         index_ini = location[:3]
         cropped_subject = self.crop(self.subject, index_ini, self.patch_size)
-        cropped_subject[LOCATION] = location
         return cropped_subject
 
     def _pad(self, subject: Subject) -> Subject:

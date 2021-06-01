@@ -91,7 +91,7 @@ If you use ``conda``, this is how you can set up your fork for local development
 5) Create a branch for local development using the issue number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For example, if the issue nu ber is 55::
+For example, if the issue number is 55::
 
     git checkout -b 55-name-of-your-bugfix-or-feature
 

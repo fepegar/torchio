@@ -58,6 +58,19 @@ class TestRandomAffine(TorchioTestCase):
             transformed.t1.data,
         )
 
+    def test_isotropic(self):
+        RandomAffine(isotropic=True)(self.sample_subject)
+
+    def test_mean(self):
+        RandomAffine(default_pad_value='mean')(self.sample_subject)
+
+    def test_otsu(self):
+        RandomAffine(default_pad_value='otsu')(self.sample_subject)
+
+    def test_bad_center(self):
+        with self.assertRaises(ValueError):
+            RandomAffine(center='bad')
+
     def test_translation(self):
         transform = RandomAffine(
             scales=(1, 1),

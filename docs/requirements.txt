@@ -5,7 +5,7 @@ furo
 humanize
 matplotlib
 nibabel
-numpy
+numpy>=1.15
 scipy
 sphinx-copybutton
 sphinx-gallery

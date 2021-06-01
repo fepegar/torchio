@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status|
-|Build-status| |Coverage-codecov| |Coverage-coveralls| |Code-Quality|
+|Build-status| |Coverage-codecov| |Code-Quality|
 |Code-Maintainability| |pre-commit| |Slack|
 
 
@@ -18,6 +18,12 @@ such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
 `MRI magnetic field inhomogeneity (bias) <http://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
+
+TorchIO is part of the official `PyTorch Ecosystem <https://pytorch.org/ecosystem/>`_,
+and it was featured at the `PyTorch Ecosystem Day 2021 <https://pytorch.org/ecosystem/pted/2021>`_.
+
+Many groups have used TorchIO for their research.
+The complete list of citations is available on `Google Scholar <https://scholar.google.co.uk/scholar?cites=8711392719159421861&sciodt=0,5&hl=en>`_.
 
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
 If you like TorchIO, please give the repo a star!
@@ -101,7 +107,8 @@ This project is supported by the
     :width: 250
     :alt: School of Biomedical Engineering & Imaging Sciences
 
-This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
+This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_
+which is no longer maintained.
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
@@ -126,10 +133,6 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
-   :alt: Coverage status
-
-.. |Coverage-coveralls| image:: https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master
-   :target: https://coveralls.io/github/fepegar/torchio?branch=master
    :alt: Coverage status
 
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer

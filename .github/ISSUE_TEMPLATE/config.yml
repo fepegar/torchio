@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Ask a question
+    url: https://github.com/fepegar/torchio/discussions/new
+    about: Ask and answer TorchIO-related questions
+  - name: 💬 Slack
+    url: https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg
+    about: Chat with our community

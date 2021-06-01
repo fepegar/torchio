@@ -25,7 +25,7 @@ transform = tio.Compose((
     tio.RandomGamma(p=0.75),
     tio.RandomBlur(p=0.5),
     tio.RandomFlip(),
-    tio.RescaleIntensity((-1, 1)),
+    tio.RescaleIntensity(out_min_max=(-1, 1)),
 ))
 
 dataset = tio.SubjectsDataset(subjects, transform=transform)
