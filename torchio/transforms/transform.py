@@ -425,6 +425,7 @@ class Transform(ABC):
             masking_method: TypeMaskingMethod,
             subject: Subject,
             tensor: torch.Tensor,
+            labels: list = None,
             ) -> torch.Tensor:
         if masking_method is None:
             return self.ones(tensor)
@@ -432,8 +433,11 @@ class Transform(ABC):
             return masking_method(tensor)
         elif type(masking_method) is str:
             in_subject = masking_method in subject
-            if in_subject and isinstance(subject[masking_method], LabelMap):
+            if in_subject and isinstance(subject[masking_method], LabelMap) and labels is None:
                 return subject[masking_method].data.bool()
+            elif in_subject and isinstance(subject[masking_method], LabelMap) and labels is not None:
+                mask_data = subject[masking_method].data
+                return torch.stack([i_label == mask_data for i_label in labels]).sum(0).bool()
             possible_axis = masking_method.capitalize()
             if possible_axis in ANATOMICAL_AXES:
                 return self.get_mask_from_anatomical_label(

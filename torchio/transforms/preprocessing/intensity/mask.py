@@ -48,22 +48,21 @@ class Mask(IntensityTransform):
                 self.masking_method,
                 subject,
                 image.data,
+                self.masking_labels,
             )
             self.apply_masking(image, label_map)
         return subject
 
     def apply_masking(self, image: LabelMap, label_map: torch.Tensor) -> None:
-        masked = self.mask(image.data, label_map, self.masking_labels)
+        masked = self.mask(image.data, label_map)
         image.set_data(masked)
 
     def mask(
             self,
             tensor: torch.Tensor,
             label_map: torch.Tensor,
-            labels: Optional[Sequence[int]] = None,
             ) -> torch.Tensor:
         array = tensor.clone().numpy()
         label_map = label_map.numpy()
-        mask = label_map if labels is None else np.isin(label_map, labels)
-        array[~mask] = self.outside_value
+        array[~label_map] = self.outside_value
         return torch.as_tensor(array)
