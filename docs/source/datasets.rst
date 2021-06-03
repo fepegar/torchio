@@ -8,7 +8,15 @@ The interface is similar to :mod:`torchvision.datasets`.
 
 If you use any of them, please visit the corresponding website (linked in each
 description) and make sure you comply with any data usage agreement and you
-acknowledge the authors by citing the necessary citations.
+acknowledge the corresponding authors' publications.
+
+If you would like to add a dataset here, please open a discussion on the
+GitHub repository:
+
+.. raw:: html
+
+   <a class="github-button" href="https://github.com/fepegar/torchio/discussions" data-icon="octicon-comment-discussion" aria-label="Discuss fepegar/torchio on GitHub">Discuss</a>
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 
 IXI
