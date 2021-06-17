@@ -3,13 +3,16 @@
 # and calls this with duecredit (as in `python -m duecredit script.py`):
 from .external.due import due, Doi, BibTeX
 
-BIBTEX = r"""@misc{fern2020torchio,
-   title={TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
-   author={Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin},
-   year={2020},
-   eprint={2003.04696},
-   archivePrefix={arXiv},
-   primaryClass={eess.IV}
+BIBTEX = r"""@article{perez-garcia_torchio_2021,
+    title = {TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+    journal = {Computer Methods and Programs in Biomedicine},
+    pages = {106236},
+    year = {2021},
+    issn = {0169-2607},
+    doi = {https://doi.org/10.1016/j.cmpb.2021.106236},
+    url = {https://www.sciencedirect.com/science/article/pii/S0169260721003102},
+    author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, S{\'e}bastien},
+    keywords = {Medical image computing, Deep learning, Data augmentation, Preprocessing},
 } """  # noqa: E501
 
 TITLE = (

@@ -235,22 +235,21 @@ If you use this package for your research, please cite the paper:
 
 > [Pérez-García, F., Sparks, R., Ourselin, S.: TorchIO: a Python library for efficient
 loading, preprocessing, augmentation and patch-based sampling of medical images
-in deep learning. arXiv:2003.04696 [cs, eess, stat] (Mar 2020), http://arxiv.org/abs/2003.04696, arXiv: 2003.04696](http://arxiv.org/abs/2003.04696)
+in deep learning. Computer Methods and Programs in Biomedicine (Jun 2021), https://doi.org/10.1016/j.cmpb.2021.106236](https://doi.org/10.1016/j.cmpb.2021.106236)
 
 BibTeX entry:
 
 ```bibtex
-@article{perez-garcia_torchio_2020,
-    title = {{TorchIO}: a {Python} library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
-    shorttitle = {{TorchIO}},
-    url = {http://arxiv.org/abs/2003.04696},
-    urldate = {2020-03-11},
-    journal = {arXiv:2003.04696 [cs, eess, stat]},
-    author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, Sebastien},
-    month = mar,
-    year = {2020},
-    note = {arXiv: 2003.04696},
-    keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing, Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Statistics - Machine Learning},
+@article{perez-garcia_torchio_2021,
+    title = {TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+    journal = {Computer Methods and Programs in Biomedicine},
+    pages = {106236},
+    year = {2021},
+    issn = {0169-2607},
+    doi = {https://doi.org/10.1016/j.cmpb.2021.106236},
+    url = {https://www.sciencedirect.com/science/article/pii/S0169260721003102},
+    author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, S{\'e}bastien},
+    keywords = {Medical image computing, Deep learning, Data augmentation, Preprocessing},
 }
 ```
 
