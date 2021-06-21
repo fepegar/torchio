@@ -112,7 +112,9 @@ class DataParser:
         if data.ndim != 4:
             message = (
                 'The input must be a 4D tensor with dimensions'
-                f' (channels, x, y, z) but it has shape {tuple(data.shape)}'
+                f' (channels, x, y, z) but it has shape {tuple(data.shape)}.'
+                ' Tips: if it is a volume, please add the channels dimension;'
+                ' if it is 2D, also add a dimension of size 1 for the z axis'
             )
             raise ValueError(message)
         return self._get_subject_from_tensor(data)
