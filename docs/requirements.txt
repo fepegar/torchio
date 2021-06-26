@@ -1,6 +1,6 @@
-Click
 Deprecated
-SimpleITK<2
+SimpleITK!=2.0
+click
 furo
 humanize
 matplotlib

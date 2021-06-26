@@ -11,8 +11,9 @@ with open('HISTORY.rst', encoding='utf8') as history_file:
     history = history_file.read()
 
 requirements = [
-    'Click',
     'Deprecated',
+    'SimpleITK!=2.0',  # https://github.com/SimpleITK/SimpleITK/issues/1239
+    'click',
     'humanize',
     'nibabel',
     'numpy>=1.15',
@@ -22,14 +23,6 @@ requirements = [
 ]
 
 
-# New versions of Slicer need SimpleITK 2, but SimpleITK is preferred
-# because of https://github.com/SimpleITK/SimpleITK/issues/1239
-try:
-    import SimpleITK  # noqa: F401
-except ImportError:
-    requirements.append('SimpleITK<2')
-
-
 setup(
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
@@ -37,7 +30,6 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.6',
@@ -59,7 +51,7 @@ setup(
         'plot': ['matplotlib'],
     },
     install_requires=requirements,
-    license='MIT license',
+    license='Apache license',
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
     include_package_data=True,
