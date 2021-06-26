@@ -37,7 +37,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <b>CI</b>
         </td>
         <td align="center">
-            <a href="https://travis-ci.org/fepegar/torchio">
+            <a href="https://travis-ci.com/fepegar/torchio">
                 <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
             </a>
             <a href="http://torchio.rtfd.io/?badge=latest">

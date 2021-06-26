@@ -117,7 +117,7 @@ which is no longer maintained.
    :alt: Documentation status
 
 .. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
-   :target: https://travis-ci.org/fepegar/torchio
+   :target: https://travis-ci.com/fepegar/torchio
    :alt: Build status
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
