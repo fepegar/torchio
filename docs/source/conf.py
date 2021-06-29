@@ -87,6 +87,18 @@ exclude_patterns: List[str] = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# sphinx-notfound-page
+# https://github.com/readthedocs/sphinx-notfound-page
+notfound_context = {
+    'title': 'Page not found',
+    'body': (
+        '<h1>Page not found</h1>'
+        "<p>Sorry, we couldn't find that page.</p>"
+        '<p>Try using the search box or go to the'
+        ' <a href="http://torchio.rtfd.io/">homepage</a>.</p>'
+    ),
+}
+
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky
 # This generates a lot of warnings because of the broken internal links, which
 # makes the docs build fail because of the "fail_on_warning: true" option in
