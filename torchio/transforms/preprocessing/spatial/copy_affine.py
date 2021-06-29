@@ -1,15 +1,16 @@
 from ... import SpatialTransform
-from ....data.image import LabelMap
 from ....data.subject import Subject
+import numpy as np
 import copy
 
 
 class CopyAffine(SpatialTransform):
     """
-    Copy the affine of a volume to all LabelMap.
+    Copy the affine of a target image to all images that have a
+    different affine than the target.
 
     Args:
-        target_key: copy the affine from this key name
+        target_key: copy the affine from this image key name
     Example:
     >>> import torchio as tio
     >>> subject = tio.datasets.Colin27()
@@ -26,6 +27,6 @@ class CopyAffine(SpatialTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         affine = subject[self.target_key].affine
         for image in subject.get_images(intensity_only=False):
-            if isinstance(image, LabelMap):
+            if not np.array_equal(affine, image.affine):
                 image.affine = copy.deepcopy(affine)
         return subject
