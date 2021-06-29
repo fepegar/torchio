@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'matplotlib.sphinxext.plot_directive',
     'sphinx_gallery.gen_gallery',
+    'notfound.extension',
 ]
 
 # Add mappings
