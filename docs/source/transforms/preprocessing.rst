@@ -72,6 +72,13 @@ Spatial
     :show-inheritance:
 
 
+:class:`CopyAffine`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: CopyAffine
+    :show-inheritance:
+
+
 :class:`Crop`
 ~~~~~~~~~~~~~
 
