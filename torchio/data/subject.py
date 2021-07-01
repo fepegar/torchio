@@ -243,6 +243,7 @@ class Subject(dict):
                                 first_image: first_attr,
                                 image_name: curr_attr
                             }))
+                        raise RuntimeError(message)
 
         except TypeError:
             # fallback for non-numeric values
