@@ -214,19 +214,45 @@ class Subject(dict):
 
     def clear_history(self) -> None:
         self.applied_transforms = []
-
-    def check_consistent_attribute(self, attribute: str) -> None:
-        values_dict = {}
+        
+    def check_consistent_attribute(self,
+                               attribute: str,
+                               rtol=1e-6,
+                               atol=1e-6,
+                               message: Optional[str] = None) -> None:
         iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            values_dict[image_name] = getattr(image, attribute)
-        num_unique_values = len(set(values_dict.values()))
-        if num_unique_values > 1:
+        if message is None:
             message = (
-                f'More than one {attribute} found in subject images:'
-                f'\n{pprint.pformat(values_dict)}'
-            )
-            raise RuntimeError(message)
+                f'More than one value for {attribute} found in subject images:'
+                '\n{}')
+        try:
+            first_attr = None
+            first_image = None
+
+            for image_name, image in iterable:
+                if first_attr is None:
+                    first_attr = getattr(image, attribute)
+                    first_image = image_name
+
+                else:
+                    curr_attr = getattr(image, attribute)
+                    if not np.allclose(curr_attr, first_attr, rtol=rtol,
+                                       atol=atol):
+                        message = message.format(
+                            pprint.pformat({
+                                first_image: first_attr,
+                                image_name: curr_attr
+                            }))
+
+        except TypeError:
+            # fallback for non-numeric values
+            values_dict = {}
+            for image_name, image in iterable:
+                values_dict[image_name] = getattr(image, attribute)
+            num_unique_values = len(set(values_dict.values()))
+            if num_unique_values > 1:
+                message = message.format(pprint.pformat(values_dict))
+                raise RuntimeError(message)
 
     def check_consistent_spatial_shape(self) -> None:
         self.check_consistent_attribute('spatial_shape')
@@ -235,24 +261,7 @@ class Subject(dict):
         self.check_consistent_attribute('orientation')
 
     def check_consistent_affine(self):
-        # https://github.com/fepegar/torchio/issues/354
-        affine = None
-        first_image = None
-        iterable = self.get_images_dict(intensity_only=False).items()
-        for image_name, image in iterable:
-            if affine is None:
-                affine = image.affine
-                first_image = image_name
-            elif not np.allclose(affine, image.affine, rtol=1e-6, atol=1e-6):
-                message = (
-                    f'Images "{first_image}" and "{image_name}" do not occupy'
-                    ' the same physical space.'
-                    f'\nAffine of "{first_image}":'
-                    f'\n{pprint.pformat(affine)}'
-                    f'\nAffine of "{image_name}":'
-                    f'\n{pprint.pformat(image.affine)}'
-                )
-                raise RuntimeError(message)
+        self.check_consistent_attribute('affine')
 
     def check_consistent_space(self):
         self.check_consistent_spatial_shape()
