@@ -12,7 +12,7 @@ with open('HISTORY.rst', encoding='utf8') as history_file:
 
 requirements = [
     'Deprecated',
-    'SimpleITK!=2.0',  # https://github.com/SimpleITK/SimpleITK/issues/1239
+    'SimpleITK!=2.0.*',  # https://github.com/SimpleITK/SimpleITK/issues/1239
     'click',
     'humanize',
     'nibabel',
