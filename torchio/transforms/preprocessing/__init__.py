@@ -3,6 +3,7 @@ from .spatial.crop import Crop
 from .spatial.resample import Resample
 from .spatial.crop_or_pad import CropOrPad
 from .spatial.to_canonical import ToCanonical
+from .spatial.copy_affine import CopyAffine
 from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 
 from .intensity.mask import Mask
@@ -24,6 +25,7 @@ __all__ = [
     'Resample',
     'ToCanonical',
     'CropOrPad',
+    'CopyAffine',
     'EnsureShapeMultiple',
     'Mask',
     'RescaleIntensity',

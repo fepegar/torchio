@@ -30,6 +30,7 @@ from .preprocessing import Pad
 from .preprocessing import Crop
 from .preprocessing import Resample
 from .preprocessing import CropOrPad
+from .preprocessing import CopyAffine
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
@@ -87,6 +88,7 @@ __all__ = [
     'RescaleIntensity',
     'Mask',
     'CropOrPad',
+    'CopyAffine',
     'EnsureShapeMultiple',
     'train_histogram',
     'OneHot',
