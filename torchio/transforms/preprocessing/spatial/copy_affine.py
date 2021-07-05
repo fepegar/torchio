@@ -53,12 +53,12 @@ class CopyAffine(SpatialTransform):
 
     .. note:: For more information, see some related discussions on GitHub:
 
-    * https://github.com/fepegar/torchio/issues/354
-    * https://github.com/fepegar/torchio/discussions/489
-    * https://github.com/fepegar/torchio/pull/584
-    * https://github.com/fepegar/torchio/issues/430
-    * https://github.com/fepegar/torchio/issues/382
-    * https://github.com/fepegar/torchio/pull/592
+        * https://github.com/fepegar/torchio/issues/354
+        * https://github.com/fepegar/torchio/discussions/489
+        * https://github.com/fepegar/torchio/pull/584
+        * https://github.com/fepegar/torchio/issues/430
+        * https://github.com/fepegar/torchio/issues/382
+        * https://github.com/fepegar/torchio/pull/592
     """  # noqa: E501
     def __init__(self, target: str, **kwargs):
         super().__init__(**kwargs)
