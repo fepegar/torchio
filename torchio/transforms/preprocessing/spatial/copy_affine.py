@@ -1,59 +1,79 @@
-from ... import SpatialTransform
-from ....data.subject import Subject
-import numpy as np
 import copy
+from ....data.subject import Subject
+from ... import SpatialTransform
 
 
 class CopyAffine(SpatialTransform):
-    """
-    Copy the affine of a target image to all images that have a
-    different affine than the target.
+    """Copy the spatial metadata from a reference image in the subject.
 
-    This transform should be used with caution: be sure that you know
-    what you are doing.
-    In general having different affines between the volumes
-    need to be taken into account with resampling or cropping transform.
-    For some special cases related to the rounding error in the affine nifti
-    parameter or because the affine has been changed (for instance after a
-    spm coregister) one may want to erase the original affine read from the
-    nifti volume and take the one of another volume.
-    But you must check if it is correct to copy the reference affine.
-    This is fine if you have the same voxel grid and the same voxel ordering.
+    Small unexpected differences in spatial metadata across different images
+    of a subject can arise due to rounding errors while converting formats.
+
+    If the ``shape`` and ``orientation`` of the images are the same and their
+    ``affine`` attributes are different but very similar, this transform can be
+    used to avoid errors during safety checks in other transforms and samplers.
 
     Args:
-        target_key: copy the affine from this image key name
+        target: Name of the image within the subject whose affine matrix will
+            be used.
+
     Example:
+        >>> import torch
         >>> import torchio as tio
-        >>> subject = tio.datasets.Colin27()
-        >>> subject['t1'].affine *= 1.1
-        >>> transform = tio.CopyAffine(target_key='t1')
-        >>> transformed = transform(subject)
-        >>> transformed['t1'].affine
-        array([[   1.1,    0. ,    0. ,  -99. ],
-               [   0. ,    1.1,    0. , -138.6],
-               [   0. ,    0. ,    1.1,  -79.2],
-               [   0. ,    0. ,    0. ,    1.1]])
-        >>> transformed['head'].affine
-        array([[   1.1,    0. ,    0. ,  -99. ],
-               [   0. ,    1.1,    0. , -138.6],
-               [   0. ,    0. ,    1.1,  -79.2],
-               [   0. ,    0. ,    0. ,    1.1]])
-        >>> transformed['brain'].affine
-        array([[   1.1,    0. ,    0. ,  -99. ],
-               [   0. ,    1.1,    0. , -138.6],
-               [   0. ,    0. ,    1.1,  -79.2],
-               [   0. ,    0. ,    0. ,    1.1]])
-    """
-    def __init__(self,
-                 target_key: str,
-                 **kwargs):
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> affine = np.diag((*(np.random.rand(3) + 0.5), 1))
+        >>> t1 = tio.ScalarImage(tensor=torch.rand(1, 100, 100, 100), affine=affine)
+        >>> # Let's simulate a loss of precision
+        >>> # (caused for example by NIfTI storing spatial metadata in single precision)
+        >>> bad_affine = affine.astype(np.float16)
+        >>> t2 = tio.ScalarImage(tensor=torch.rand(1, 100, 100, 100), affine=bad_affine)
+        >>> subject = tio.Subject(t1=t1, t2=t2)
+        >>> resample = tio.Resample(0.5)
+        >>> resample(subject).shape  # error as images are in different spaces
+        Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+        File "/Users/fernando/git/torchio/torchio/data/subject.py", line 101, in shape
+            self.check_consistent_attribute('shape')
+        File "/Users/fernando/git/torchio/torchio/data/subject.py", line 229, in check_consistent_attribute
+            raise RuntimeError(message)
+        RuntimeError: More than one shape found in subject images:
+        {'t1': (1, 210, 244, 221), 't2': (1, 210, 243, 221)}
+        >>> transform = tio.CopyAffine('t1')
+        >>> fixed = transform(subject)
+        >>> resample(fixed).shape
+        (1, 210, 244, 221)
+
+
+    .. warning:: This transform should be used with caution. Modifying the
+        spatial metadata of an image manually can lead to incorrect processing
+        of the position of anatomical structures. For example, a machine
+        learning algorithm might incorrectly predict that a lesion on the right
+        lung is on the left lung.
+
+    .. note:: For more information, see some related discussions on GitHub:
+
+    * https://github.com/fepegar/torchio/issues/354
+    * https://github.com/fepegar/torchio/discussions/489
+    * https://github.com/fepegar/torchio/pull/584
+    * https://github.com/fepegar/torchio/issues/430
+    * https://github.com/fepegar/torchio/issues/382
+    * https://github.com/fepegar/torchio/pull/592
+    """  # noqa: E501
+    def __init__(self, target: str, **kwargs):
         super().__init__(**kwargs)
-        self.target_key = target_key
-        self.args_names = ['target_key']
+        if not isinstance(target, str):
+            message = (
+                f'The target must be a string, but "{type(target)}" was found'
+            )
+            raise ValueError(message)
+        self.target = target
 
     def apply_transform(self, subject: Subject) -> Subject:
-        affine = subject[self.target_key].affine
-        for image in subject.get_images(intensity_only=False):
-            if not np.array_equal(affine, image.affine):
-                image.affine = copy.deepcopy(affine)
+        if self.target not in subject:
+            message = f'Target image "{self.target}" not found in subject'
+            raise RuntimeError(message)
+        affine = subject[self.target].affine
+        for image in self.get_images(subject):
+            image.affine = copy.deepcopy(affine)
         return subject
