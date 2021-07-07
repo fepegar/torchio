@@ -401,7 +401,10 @@ class Image(dict):
             tensor = check_uint_to_int(tensor)
             tensor = torch.as_tensor(tensor)
         elif not isinstance(tensor, torch.Tensor):
-            message = 'Input tensor must be a PyTorch tensor or NumPy array'
+            message = (
+                'Input tensor must be a PyTorch tensor or NumPy array,'
+                f' but type "{type(tensor)}" was found'
+            )
             raise TypeError(message)
         ndim = tensor.ndim
         if ndim != 4:
