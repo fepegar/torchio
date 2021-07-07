@@ -1,6 +1,6 @@
 ---
 name: "\U0001F41B Bug Report"
-about: Create a report to help us improve TorchIO
+about: If you are pretty sure you are getting a bug, please create a report to help us improve TorchIO
 title: ''
 labels: bug
 assignees: ''
