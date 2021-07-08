@@ -1,6 +1,6 @@
 from pathlib import Path
 from numbers import Number
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Sequence
 
 import torch
 import numpy as np
@@ -98,14 +98,14 @@ class Resample(SpatialTransform):
 
     @staticmethod
     def parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
-        if isinstance(spacing, tuple) and len(spacing) == 3:
+        if isinstance(spacing, Sequence) and len(spacing) == 3:
             result = spacing
         elif isinstance(spacing, Number):
             result = 3 * (spacing,)
         else:
             message = (
                 'Target must be a string, a positive number'
-                f' or a tuple of positive numbers, not {type(spacing)}'
+                f' or a sequence of positive numbers, not {type(spacing)}'
             )
             raise ValueError(message)
         if np.any(np.array(spacing) <= 0):
