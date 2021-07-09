@@ -14,6 +14,7 @@ class OneHot(LabelTransform):
     def __init__(self, num_classes: int = -1, **kwargs):
         super().__init__(**kwargs)
         self.num_classes = num_classes
+        self.args_names = ('num_classes',)
 
     def apply_transform(self, subject):
         for image in self.get_images(subject):
