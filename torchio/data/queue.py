@@ -1,10 +1,10 @@
 import random
+import numpy as np
 import warnings
 from itertools import islice
 from typing import List, Iterator, Optional
 
 import humanize
-from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
 from .subject import Subject
@@ -59,9 +59,10 @@ class Queue(Dataset):
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
-        samples_per_volume: Number of patches to extract from each volume.
-            A small number of patches ensures a large variability in the queue,
-            but training will be slower.
+        samples_per_volume: List with the number of patches to extract from each
+            volume. If a number is given, the same number of patches per volume
+            is used. A small number of patches ensures a large variability in
+            the queue, but training will be slower.
         sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
             to extract patches from the volumes.
         num_workers: Number of subprocesses to use for data loading
@@ -146,14 +147,38 @@ class Queue(Dataset):
         self.shuffle_subjects = shuffle_subjects
         self.shuffle_patches = shuffle_patches
         self.samples_per_volume = samples_per_volume
+        if type(samples_per_volume) == int:
+            self.samples_per_volume = [samples_per_volume for _ in range(
+                self.num_subjects)]
+        assert type(self.samples_per_volume) == list, ('`samples_per_volume`'
+                                                       'should be an int'
+                                                       'or a list')
+        assert len(self.samples_per_volume) == self.num_subjects, (
+            '`samples_per_volume` (list) length must be equal'
+            'to the number of subjects')
         self.sampler = sampler
         self.num_workers = num_workers
         self.verbose = verbose
         self._subjects_iterable = None
-        if start_background:
-            self._initialize_subjects_iterable()
         self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
+
+        # Same random shuffling applied to subjects and volumes
+        if self.shuffle_subjects:
+            tmp_seed = np.random.random()
+            random.Random(tmp_seed).shuffle(self.subjects_dataset._subjects)
+            random.Random(tmp_seed).shuffle(self.samples_per_volume)
+
+        if start_background:
+            self._initialize_subjects_iterable()
+
+        # Keeps a list of the remaining patches to be extracted
+        self.counter_samples_per_volume = self.samples_per_volume.copy()
+        # Helps keeping track of which subject it needs to extract patches
+        self.idx_subject = -1
+        # Subject. Save as an object property to save computations later
+        # (more details in _fill())
+        self.curr_subject = None
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -202,11 +227,11 @@ class Queue(Dataset):
 
     @property
     def iterations_per_epoch(self) -> int:
-        return self.num_subjects * self.samples_per_volume
+        return sum(self.samples_per_volume)
 
     def _fill(self) -> None:
         assert self.sampler is not None
-        if self.max_length % self.samples_per_volume != 0:
+        if self.max_length % self.iterations_per_epoch != 0:
             message = (
                 f'Queue length ({self.max_length})'
                 ' not divisible by the number of'
@@ -214,24 +239,57 @@ class Queue(Dataset):
             )
             warnings.warn(message, RuntimeWarning)
 
-        # If there are e.g. 4 subjects and 1 sample per volume and max_length
-        # is 6, we just need to load 4 subjects, not 6
-        max_num_subjects_for_queue = self.max_length // self.samples_per_volume
-        num_subjects_for_queue = min(
-            self.num_subjects, max_num_subjects_for_queue)
+        # If the counter of samples per volume is empty (i.e., end of the
+        # epoch), refill it.
+        if sum(self.counter_samples_per_volume) == 0:
+            if self.shuffle_subjects:
+                tmp_seed = np.random.random()
+                random.Random(tmp_seed).shuffle(
+                    self.subjects_dataset._subjects)
+                random.Random(tmp_seed).shuffle(self.samples_per_volume)
+                self._initialize_subjects_iterable()
 
-        self._print(f'Filling queue from {num_subjects_for_queue} subjects...')
-        if self.verbose:
-            iterable = trange(num_subjects_for_queue, leave=False)
-        else:
-            iterable = range(num_subjects_for_queue)
-        for _ in iterable:
-            subject = self._get_next_subject()
-            iterable = self.sampler(subject)
-            patches = list(islice(iterable, self.samples_per_volume))
+            self.counter_samples_per_volume = self.samples_per_volume.copy()
+            self.idx_subject = -1
+            self.curr_subject = None
+
+        # Add patches
+        # 3 stopping conditions (OR):
+        #   1) The number of current patches in patches_list >= max patches
+        #   2) There are no more patches that need to be added
+        #      (i.e., remaining patches -> 0)
+        #   3) There are no more subjects to extract patches.
+        while (len(self.patches_list) < self.max_length
+                and sum(self.counter_samples_per_volume) != 0
+                and self.idx_subject < self.num_subjects):
+
+            if (self.curr_subject is None
+                    or self.counter_samples_per_volume[self.idx_subject] == 0):
+
+                self.curr_subject = self._get_next_subject()
+                self.idx_subject += 1
+
+            # Whether to fill the Queue with a "portion" of patches
+            # of a specific subject, or all patches of that subject.
+            if (len(self.patches_list)
+                    + self.counter_samples_per_volume[self.idx_subject]
+                    > self.max_length):
+                # Take a portion
+                spv = self.max_length - len(self.patches_list)
+            else:
+                spv = self.counter_samples_per_volume[self.idx_subject]
+
+            self.counter_samples_per_volume[self.idx_subject] -= spv
+            iterable = self.sampler(self.curr_subject)
+            patches = list(islice(iterable, spv))
             self.patches_list.extend(patches)
+
         if self.shuffle_patches:
             random.shuffle(self.patches_list)
+        else:
+            # Reverse the order of the patches so that list().pop starts
+            # from the beginning
+            self.patches_list = self.patches_list[::-1]
 
     def _get_next_subject(self) -> Subject:
         # A StopIteration exception is expected when the queue is empty
@@ -257,7 +315,7 @@ class Queue(Dataset):
             num_workers=self.num_workers,
             batch_size=1,
             collate_fn=self._get_first_item,
-            shuffle=self.shuffle_subjects,
+            shuffle=False,  # Shuffling is done is Queue's constructor
         )
         return iter(subjects_loader)
 
