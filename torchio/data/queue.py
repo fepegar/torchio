@@ -1,7 +1,7 @@
 import random
 import warnings
 from itertools import islice
-from typing import List, Iterator, Optional, Sequence
+from typing import List, Iterator, Optional, Sequence, Union
 
 import humanize
 from torch.utils.data import Dataset, DataLoader, RandomSampler
@@ -133,7 +133,7 @@ class Queue(Dataset):
             self,
             subjects_dataset: SubjectsDataset,
             max_length: int,
-            samples_per_volume: int,
+            samples_per_volume: Union[int, Sequence[int]],
             sampler: PatchSampler,
             num_workers: int = 0,
             shuffle_subjects: bool = True,
@@ -145,17 +145,8 @@ class Queue(Dataset):
         self.max_length = max_length
         self.shuffle_subjects = shuffle_subjects
         self.shuffle_patches = shuffle_patches
-        self.samples_per_volume = samples_per_volume
-        if isinstance(samples_per_volume, int):
-            self.samples_per_volume = self.num_subjects * [samples_per_volume]
-
-        if not isinstance(self.samples_per_volume, Sequence):
-            raise TypeError('`samples_per_volume` should be an int or a list')
-
-        if len(self.samples_per_volume) != self.num_subjects:
-            raise ValueError('`samples_per_volume` (list) length must be equal'
-                             'to the number of subjects')
-
+        self.samples_per_volume = self._parse_samples_per_volume(
+            samples_per_volume)
         self.sampler = sampler
         self.num_workers = num_workers
         self.verbose = verbose
@@ -197,6 +188,26 @@ class Queue(Dataset):
         ]
         attributes_string = ', '.join(attributes)
         return f'Queue({attributes_string})'
+
+    def _parse_samples_per_volume(self, samples_per_volume):
+        if isinstance(samples_per_volume, int):
+            samples_per_volume = self.num_subjects * [samples_per_volume]
+        message = (
+            'The value of samples_per_volume must be an integer'
+            ' or a sequence of integers'
+        )
+        if isinstance(samples_per_volume, Sequence):
+            if not all(isinstance(n, int) for n in samples_per_volume):
+                raise TypeError(message)
+        else:
+            raise TypeError(message)
+        if len(samples_per_volume) != self.num_subjects:
+            message = (
+                'The length of samples_per_volume must be equal to the number'
+                ' of subjects in the subjects dataset'
+            )
+            raise ValueError(message)
+        return samples_per_volume
 
     def _print(self, *args):
         if self.verbose:
@@ -313,7 +324,7 @@ class Queue(Dataset):
             num_workers=self.num_workers,
             batch_size=1,
             collate_fn=self._get_first_item,
-            shuffle=False,  # Shuffling is done is Queue's constructor
+            shuffle=False,  # shuffling is done in _get_subjects_iterable
         )
         return iter(subjects_loader)
 
