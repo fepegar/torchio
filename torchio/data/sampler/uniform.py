@@ -24,7 +24,7 @@ class UniformSampler(RandomSampler):
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
             index_ini = [
-                torch.randint(int(x) + 1, (1,)).item()
+                torch.randint(x + 1, (1,)).item()
                 for x in valid_range
             ]
             index_ini_array = np.asarray(index_ini)

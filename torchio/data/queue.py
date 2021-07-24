@@ -1,11 +1,10 @@
 import random
-import numpy as np
 import warnings
 from itertools import islice
-from typing import List, Iterator, Optional
+from typing import List, Iterator, Optional, Sequence
 
 import humanize
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, RandomSampler
 
 from .subject import Subject
 from .sampler import PatchSampler
@@ -147,27 +146,22 @@ class Queue(Dataset):
         self.shuffle_subjects = shuffle_subjects
         self.shuffle_patches = shuffle_patches
         self.samples_per_volume = samples_per_volume
-        if type(samples_per_volume) == int:
-            self.samples_per_volume = [samples_per_volume for _ in range(
-                self.num_subjects)]
-        assert type(self.samples_per_volume) == list, ('`samples_per_volume`'
-                                                       'should be an int'
-                                                       'or a list')
-        assert len(self.samples_per_volume) == self.num_subjects, (
-            '`samples_per_volume` (list) length must be equal'
-            'to the number of subjects')
+        if isinstance(samples_per_volume, int):
+            self.samples_per_volume = self.num_subjects * [samples_per_volume]
+
+        if not isinstance(self.samples_per_volume, Sequence):
+            raise TypeError('`samples_per_volume` should be an int or a list')
+
+        if len(self.samples_per_volume) != self.num_subjects:
+            raise ValueError('`samples_per_volume` (list) length must be equal'
+                             'to the number of subjects')
+
         self.sampler = sampler
         self.num_workers = num_workers
         self.verbose = verbose
         self._subjects_iterable = None
         self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
-
-        # Same random shuffling applied to subjects and volumes
-        if self.shuffle_subjects:
-            tmp_seed = np.random.random()
-            random.Random(tmp_seed).shuffle(self.subjects_dataset._subjects)
-            random.Random(tmp_seed).shuffle(self.samples_per_volume)
 
         if start_background:
             self._initialize_subjects_iterable()
@@ -242,13 +236,7 @@ class Queue(Dataset):
         # If the counter of samples per volume is empty (i.e., end of the
         # epoch), refill it.
         if sum(self.counter_samples_per_volume) == 0:
-            if self.shuffle_subjects:
-                tmp_seed = np.random.random()
-                random.Random(tmp_seed).shuffle(
-                    self.subjects_dataset._subjects)
-                random.Random(tmp_seed).shuffle(self.samples_per_volume)
-                self._initialize_subjects_iterable()
-
+            self._initialize_subjects_iterable()
             self.counter_samples_per_volume = self.samples_per_volume.copy()
             self.idx_subject = -1
             self.curr_subject = None
@@ -308,10 +296,20 @@ class Queue(Dataset):
     def _get_subjects_iterable(self) -> Iterator:
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
+
+        # Same random shuffling applied to subjects and volumes
+        if self.shuffle_subjects:
+            random_idx = list(RandomSampler(self.subjects_dataset))
+            local_sub_dataset = [self.subjects_dataset[i] for i in random_idx]
+            self.samples_per_volume = [self.samples_per_volume[i]
+                                       for i in random_idx]
+        else:
+            local_sub_dataset = self.subjects_dataset
+
         self._print(
             f'\nCreating subjects loader with {self.num_workers} workers')
         subjects_loader = DataLoader(
-            self.subjects_dataset,
+            local_sub_dataset,
             num_workers=self.num_workers,
             batch_size=1,
             collate_fn=self._get_first_item,
