@@ -215,11 +215,12 @@ class Subject(dict):
     def clear_history(self) -> None:
         self.applied_transforms = []
         
-    def check_consistent_attribute(self,
-                               attribute: str,
-                               rtol=1e-6,
-                               atol=1e-6,
-                               message: Optional[str] = None) -> None:
+    def check_consistent_attribute(
+            self,
+            attribute: str,
+            relative_tolerance: float = 1e-6,
+            absolute_tolerance: float = 1e-6,
+            message: Optional[str] = None) -> None:
         iterable = self.get_images_dict(intensity_only=False).items()
         if message is None:
             message = (
@@ -236,8 +237,9 @@ class Subject(dict):
 
                 else:
                     curr_attr = getattr(image, attribute)
-                    if not np.allclose(curr_attr, first_attr, rtol=rtol,
-                                       atol=atol):
+                    if not np.allclose(curr_attr, first_attr, 
+                                       tol=relative_tolerance,
+                                       atol=absolute_tolerance):
                         message = message.format(
                             pprint.pformat({
                                 first_image: first_attr,
