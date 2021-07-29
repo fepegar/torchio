@@ -274,7 +274,7 @@ class Subject(dict):
                 else:
                     curr_attr = getattr(image, attribute)
                     if not np.allclose(curr_attr, first_attr, 
-                                       tol=relative_tolerance,
+                                       rtol=relative_tolerance,
                                        atol=absolute_tolerance):
                         message = message.format(
                             pprint.pformat({
