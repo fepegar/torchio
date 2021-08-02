@@ -273,6 +273,7 @@ def sitk_to_nib(
         keepdim: bool = False,
         ) -> Tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
+    data = check_uint_to_int(data)
     num_components = image.GetNumberOfComponentsPerPixel()
     if num_components == 1:
         data = data[np.newaxis]  # add channels dimension
