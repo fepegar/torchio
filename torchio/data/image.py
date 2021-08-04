@@ -18,6 +18,7 @@ from .io import (
     read_image,
     write_image,
     nib_to_sitk,
+    sitk_to_nib,
     check_uint_to_int,
     get_rotation_and_spacing_from_affine,
 )
@@ -502,6 +503,11 @@ class Image(dict):
     def as_sitk(self, **kwargs) -> sitk.Image:
         """Get the image as an instance of :class:`sitk.Image`."""
         return nib_to_sitk(self.data, self.affine, **kwargs)
+
+    @classmethod
+    def from_sitk(cls, sitk_image):
+        tensor, affine = sitk_to_nib(sitk_image)
+        return cls(tensor=tensor, affine=affine)
 
     def as_pil(self, transpose=True):
         """Get the image as an instance of :class:`PIL.Image`.
