@@ -509,14 +509,14 @@ class Image(dict):
         """Instantiate a new TorchIO image from a :class:`sitk.Image`.
 
         Example:
-        >>> import torchio as tio
-        >>> import SimpleITK as sitk
-        >>> sitk_image = sitk.Image(20, 30, 40, sitk.sitkUInt16)
-        >>> tio.LabelMap.from_sitk(sitk_image)
-        LabelMap(shape: (1, 20, 30, 40); spacing: (1.00, 1.00, 1.00); orientation: LPS+; memory: 93.8 KiB; dtype: torch.IntTensor)
-        >>> sitk_image = sitk.Image((224, 224), sitk.sitkVectorFloat32, 3)
-        >>> tio.ScalarImage.from_sitk(sitk_image)
-        ScalarImage(shape: (3, 224, 224, 1); spacing: (1.00, 1.00, 1.00); orientation: LPS+; memory: 588.0 KiB; dtype: torch.FloatTensor)
+            >>> import torchio as tio
+            >>> import SimpleITK as sitk
+            >>> sitk_image = sitk.Image(20, 30, 40, sitk.sitkUInt16)
+            >>> tio.LabelMap.from_sitk(sitk_image)
+            LabelMap(shape: (1, 20, 30, 40); spacing: (1.00, 1.00, 1.00); orientation: LPS+; memory: 93.8 KiB; dtype: torch.IntTensor)
+            >>> sitk_image = sitk.Image((224, 224), sitk.sitkVectorFloat32, 3)
+            >>> tio.ScalarImage.from_sitk(sitk_image)
+            ScalarImage(shape: (3, 224, 224, 1); spacing: (1.00, 1.00, 1.00); orientation: LPS+; memory: 588.0 KiB; dtype: torch.FloatTensor)
         """
         tensor, affine = sitk_to_nib(sitk_image)
         return cls(tensor=tensor, affine=affine)
