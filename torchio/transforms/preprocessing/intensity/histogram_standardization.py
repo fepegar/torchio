@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 
+import sys
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -177,6 +178,11 @@ class HistogramStandardization(NormalizationTransform):
                         path = mask_path
                     mask, _ = read_image(path)
                     mask = mask.numpy() > 0
+
+            # check empty tenzor
+            if tensor.min() == tensor.max():
+                print("Warning. Empty tensor", image_file_path, "skipped.", file=sys.stderr)
+                continue
             array = tensor.numpy()
             percentile_values = np.percentile(array[mask], percentiles)
             percentiles_database.append(percentile_values)
