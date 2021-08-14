@@ -132,6 +132,10 @@ which is no longer maintained.
    :target: https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg
    :alt: Slack
 
+.. |Twitter| image:: https://img.shields.io/twitter/url/https/twitter.com/TorchIOLib.svg?style=social&label=Follow%20%40TorchIOLib
+   :target: https://twitter.com/TorchIOLib
+   :alt: Twitter
+
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
    :target: https://codeclimate.com/github/fepegar/torchio/maintainability
    :alt: Maintainability
