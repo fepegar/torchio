@@ -33,9 +33,16 @@ Intensity
 
 
 :class:`Mask`
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 .. autoclass:: Mask
+    :show-inheritance:
+
+
+:class:`Clamp`
+~~~~~~~~~~~~~~
+
+.. autoclass:: Clamp
     :show-inheritance:
 
 
