@@ -27,13 +27,6 @@ class Clamp(IntensityTransform):
         super().__init__(**kwargs)
         self.out_min, self.out_max = out_min, out_max
 
-    def __repr__(self):
-        string = (
-            f'{self.__class__.__name__}'
-            f'(out_min={self.out_min}, out_max={self.out_max})'
-        )
-        return string
-
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
             self.apply_clamp(image)
