@@ -16,6 +16,7 @@ sphinx
 sphinx-autobuild
 sphinx-copybutton
 sphinx-gallery
+sphinx-notfound-page
 tox
 twine
 watchdog
