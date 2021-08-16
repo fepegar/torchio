@@ -8,6 +8,7 @@ from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 
 from .intensity.mask import Mask
 from .intensity.rescale import RescaleIntensity
+from .intensity.clamp import ClampIntensity
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
@@ -29,6 +30,7 @@ __all__ = [
     'EnsureShapeMultiple',
     'Mask',
     'RescaleIntensity',
+    'ClampIntensity',
     'ZNormalization',
     'HistogramStandardization',
     'OneHot',
