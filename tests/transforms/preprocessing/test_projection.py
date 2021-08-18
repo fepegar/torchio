@@ -38,3 +38,23 @@ class TestProjection(TorchioTestCase):
         axis_index = sub.t1.axis_name_to_index('S')
         self.assertEqual(transformed1.t1.shape[axis_index], 1)
         self.assertEqual(transformed2.t1.shape[axis_index], 2)
+
+    def test_maximum_intensity_projection(self):
+        transform = tio.Projection('S', projection_type='max')
+        transform(self.sample_subject)
+
+    def test_minimum_intensity_projection(self):
+        transform = tio.Projection('S', projection_type='min')
+        transform(self.sample_subject)
+
+    def test_mean_intensity_projection(self):
+        transform = tio.Projection('S', projection_type='mean')
+        transform(self.sample_subject)
+
+    def test_median_intensity_projection(self):
+        transform = tio.Projection('S', projection_type='median')
+        transform(self.sample_subject)
+
+    def test_quantile_intensity_projection(self):
+        transform = tio.Projection('S', projection_type='quantile', q=0.75)
+        transform(self.sample_subject)

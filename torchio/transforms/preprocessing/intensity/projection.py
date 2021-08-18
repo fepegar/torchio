@@ -86,11 +86,11 @@ class Projection(IntensityTransform):
     def validate_quantile(self):
         message = (
             'For `projection_type="quantile"`, `q` must be a scalar value'
-            f'between 0 and 1, not {self.q}.'
+            f'in the range [0, 1], not {self.q}.'
             )
         if self.q is None:
             raise ValueError(message)
-        elif 0 < self.q < 1:
+        elif 0 <= self.q <= 1:
             pass
         else:
             raise ValueError(message)
@@ -110,6 +110,9 @@ class Projection(IntensityTransform):
         image.set_data(self.projection(image.data))
 
     def projection(self, tensor: torch.Tensor) -> torch.Tensor:
+        if self.projection_type in ['mean', 'quantile']:
+            tensor = tensor.to(torch.float)
+
         if self.full_slabs_only:
             start_index = 0
             num_slabs = 0
