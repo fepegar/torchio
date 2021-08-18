@@ -31,11 +31,13 @@ def plot_volume(
         output_path=None,
         show=True,
         xlabels=True,
+        percentiles=(0.5, 99.5),
+        figsize=None,
         ):
     _, plt = import_mpl_plt()
     fig = None
     if axes is None:
-        fig, axes = plt.subplots(1, 3)
+        fig, axes = plt.subplots(1, 3, figsize=figsize)
     sag_axis, cor_axis, axi_axis = axes
 
     image = ToCanonical()(image)
@@ -59,6 +61,11 @@ def plot_volume(
 
     sr, sa, ss = image.spacing
     kwargs['origin'] = 'lower'
+
+    if percentiles is not None:
+        p1, p2 = np.percentile(data, percentiles)
+        kwargs['vmin'] = p1
+        kwargs['vmax'] = p2
 
     sag_aspect = ss / sa
     sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)

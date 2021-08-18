@@ -44,6 +44,15 @@ class CropOrPad(BoundsTransform):
         >>> transformed = transform(subject)
         >>> transformed.chest_ct.shape
         torch.Size([1, 120, 80, 180])
+
+    .. plot::
+
+        import torchio as tio
+        t1 = tio.datasets.Colin27().t1
+        crop_pad = tio.CropOrPad((512, 512, 32))
+        t1_pad_crop = crop_pad(t1)
+        subject = tio.Subject(t1=t1, crop_pad=t1_pad_crop)
+        subject.plot()
     """
     def __init__(
             self,
