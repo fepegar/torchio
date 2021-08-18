@@ -32,10 +32,10 @@ class CopyAffine(SpatialTransform):
         >>> resample = tio.Resample(0.5)
         >>> resample(subject).shape  # error as images are in different spaces
         Traceback (most recent call last):
-        File "<stdin>", line 1, in <module>
-        File "/Users/fernando/git/torchio/torchio/data/subject.py", line 101, in shape
+          File "<stdin>", line 1, in <module>
+          File "/Users/fernando/git/torchio/torchio/data/subject.py", line 101, in shape
             self.check_consistent_attribute('shape')
-        File "/Users/fernando/git/torchio/torchio/data/subject.py", line 229, in check_consistent_attribute
+          File "/Users/fernando/git/torchio/torchio/data/subject.py", line 229, in check_consistent_attribute
             raise RuntimeError(message)
         RuntimeError: More than one shape found in subject images:
         {'t1': (1, 210, 244, 221), 't2': (1, 210, 243, 221)}
