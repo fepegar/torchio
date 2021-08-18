@@ -28,6 +28,16 @@ class Mask(IntensityTransform):
         >>> mask = tio.Mask(masking_method='brain')  # Use "brain" image to mask
         >>> transformed = mask(subject)  # Set voxels outside of the brain to 0
 
+    .. plot::
+
+        import torchio as tio
+        subject = tio.datasets.Colin27()
+        subject.remove_image('head')
+        mask = tio.Mask('brain')
+        masked = mask(subject)
+        subject.add_image(masked.t1, 'Masked')
+        subject.plot()
+
     """  # noqa: E501
     def __init__(
             self,
