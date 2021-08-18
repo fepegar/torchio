@@ -65,9 +65,9 @@ class Projection(IntensityTransform):
 
     def get_projection_function(self):
         if self.projection_type == 'max':
-            projection_fun = torch.max
+            projection_fun = torch.amax
         elif self.projection_type == 'min':
-            projection_fun = torch.min
+            projection_fun = torch.amin
         elif self.projection_type == 'mean':
             projection_fun = torch.mean
         elif self.projection_type == 'median':
@@ -126,14 +126,14 @@ class Projection(IntensityTransform):
         for _ in range(num_slabs):
             slab_indices = torch.tensor(list(range(start_index, end_index)))
             slab = tensor.index_select(self.axis_index, slab_indices)
-            if self.projection_type == 'mean':
-                projected = self.projection_fun(
+            if self.projection_type == 'median':
+                projected, _ = self.projection_fun(
                     slab, dim=self.axis_index, keepdim=True)
-            elif self.projection_type == 'quantile':
+            if self.projection_type == 'quantile':
                 projected = self.projection_fun(
                     slab, q=self.q, dim=self.axis_index, keepdim=True)
             else:
-                projected, _ = self.projection_fun(
+                projected = self.projection_fun(
                     slab, dim=self.axis_index, keepdim=True)
             slabs.append(projected)
             start_index += self.stride
