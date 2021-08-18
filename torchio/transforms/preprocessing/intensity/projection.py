@@ -129,7 +129,7 @@ class Projection(IntensityTransform):
             if self.projection_type == 'median':
                 projected, _ = self.projection_fun(
                     slab, dim=self.axis_index, keepdim=True)
-            if self.projection_type == 'quantile':
+            elif self.projection_type == 'quantile':
                 projected = self.projection_fun(
                     slab, q=self.q, dim=self.axis_index, keepdim=True)
             else:
