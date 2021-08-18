@@ -52,6 +52,17 @@ class Resample(SpatialTransform):
         >>> image = tio.ScalarImage(tensor=torch.rand(1, 256, 256, 180), to_mni=affine_matrix)  # 'to_mni' is an arbitrary name
         >>> transform = tio.Resample(colin.t1.path, pre_affine_name='to_mni')  # nearest neighbor interpolation is used for label maps
         >>> transformed = transform(image)  # "image" is now in the MNI space
+
+    .. plot::
+
+        import torchio as tio
+        subject = tio.datasets.FPG()
+        subject.remove_image('seg')
+        resample = tio.Resample(8)
+        t1_resampled = resample(subject.t1)
+        subject.add_image(t1_resampled, 'Downsampled')
+        subject.plot()
+
     """  # noqa: E501
     def __init__(
             self,
