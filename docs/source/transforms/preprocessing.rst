@@ -46,6 +46,13 @@ Intensity
     :show-inheritance:
 
 
+:class:`Projection`
+~~~~~~~~~~~~~~
+
+.. autoclass:: Projection
+    :show-inheritance:
+
+
 .. currentmodule:: torchio.transforms.preprocessing.intensity
 
 
