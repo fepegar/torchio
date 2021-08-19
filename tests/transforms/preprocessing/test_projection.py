@@ -58,3 +58,7 @@ class TestProjection(TorchioTestCase):
     def test_quantile_intensity_projection(self):
         transform = tio.Projection('S', projection_type='quantile', q=0.75)
         transform(self.sample_subject)
+
+    def test_very_large_slab_thickness(self):
+        transform = tio.Projection('S', slab_thickness=1e6)
+        transform(self.sample_subject)

@@ -46,7 +46,7 @@ class Projection(IntensityTransform):
         sub = tio.datasets.Slicer('CTChest')
         ct = sub.CT_chest
         axial_mips = tio.Projection("S", slab_thickness=20, stride=20)
-        ct_mips= axial_mips(ct)
+        ct_mips = axial_mips(ct)
         sub.add_image(ct_mips, 'MIP')
         sub.plot()
 
