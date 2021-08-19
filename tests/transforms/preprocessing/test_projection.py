@@ -61,4 +61,6 @@ class TestProjection(TorchioTestCase):
 
     def test_very_large_slab_thickness(self):
         transform = tio.Projection('S', slab_thickness=1e6)
-        transform(self.sample_subject)
+        transformed = transform(self.sample_subject)
+        axis_index = self.sample_subject.t1.axis_name_to_index('S')
+        self.assertEqual(transformed.t1.shape[axis_index], 1)
