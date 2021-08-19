@@ -35,10 +35,21 @@ class Projection(IntensityTransform):
 
     Example:
         >>> import torchio as tio
-        >>> sub = tio.datasets.Colin27()
-        >>> axial_mips = tio.Projection("S", slab_thickness=20)
-        >>> sub_t = axial_mips(sub)
-        >>> sub_t.t1.plot()
+        >>> ct = tio.datasets.Slicer('CTChest').CT_chest
+        >>> axial_mips = tio.Projection("S", slab_thickness=20, stride=20)
+        >>> ct_t = axial_mips(ct)
+        >>> ct_t.plot()
+
+    .. plot::
+
+        import torchio as tio
+        sub = tio.datasets.Slicer('CTChest')
+        ct = sub.CT_chest
+        axial_mips = tio.Projection("S", slab_thickness=20, stride=20)
+        ct_mips= axial_mips(ct)
+        sub.add_image(ct_mips, 'MIP')
+        sub.plot()
+
     """
     def __init__(
             self,

@@ -47,7 +47,7 @@ Intensity
 
 
 :class:`Projection`
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: Projection
     :show-inheritance:
