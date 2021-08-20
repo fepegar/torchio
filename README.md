@@ -333,6 +333,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://www.linkedin.com/in/alban-steff-260ab715b/"><img src="https://avatars.githubusercontent.com/u/59876036?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Albans98</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=Albans98" title="Code">💻</a></td>
     <td align="center"><a href="https://mattwarkentin.github.io/"><img src="https://avatars.githubusercontent.com/u/27825069?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Matthew T. Warkentin</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=mattwarkentin" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/glupol"><img src="https://avatars.githubusercontent.com/u/57905234?v=4?s=100" width="100px;" alt=""/><br /><sub><b>glupol</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aglupol" title="Bug reports">🐛</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
