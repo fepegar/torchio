@@ -9,7 +9,7 @@ from .spatial.ensure_shape_multiple import EnsureShapeMultiple
 from .intensity.mask import Mask
 from .intensity.rescale import RescaleIntensity
 from .intensity.clamp import Clamp
-from .intensity.projection import Projection
+from .intensity.slab_projection import SlabProjection
 from .intensity.z_normalization import ZNormalization
 from .intensity.histogram_standardization import HistogramStandardization
 
@@ -32,7 +32,7 @@ __all__ = [
     'Mask',
     'RescaleIntensity',
     'Clamp',
-    'Projection',
+    'SlabProjection',
     'ZNormalization',
     'HistogramStandardization',
     'OneHot',

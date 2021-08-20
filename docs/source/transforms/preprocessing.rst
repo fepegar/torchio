@@ -46,10 +46,10 @@ Intensity
     :show-inheritance:
 
 
-:class:`Projection`
-~~~~~~~~~~~~~~~~~~~
+:class:`SlabProjection`
+~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: Projection
+.. autoclass:: SlabProjection
     :show-inheritance:
 
 

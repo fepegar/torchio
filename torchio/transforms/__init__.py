@@ -35,7 +35,7 @@ from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
 from .preprocessing import Clamp
-from .preprocessing import Projection
+from .preprocessing import SlabProjection
 from .preprocessing import Mask
 from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
@@ -89,7 +89,7 @@ __all__ = [
     'HistogramStandardization',
     'RescaleIntensity',
     'Clamp',
-    'Projection',
+    'SlabProjection',
     'Mask',
     'CropOrPad',
     'CopyAffine',
