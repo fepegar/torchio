@@ -64,7 +64,7 @@ Credits
   From https://stackoverflow.com/a/10766650/3956024
 
 If you use this library for your research,
-please cite our preprint:
+please cite our paper:
 
 `F. Pérez-García, R. Sparks, and S. Ourselin. TorchIO: a Python library for
 efficient loading, preprocessing, augmentation and patch-based sampling of
