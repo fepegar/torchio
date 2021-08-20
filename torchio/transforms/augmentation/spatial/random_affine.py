@@ -259,11 +259,6 @@ class Affine(SpatialTransform):
         translation_params = np.array(self.translation).copy()
         subject.check_consistent_spatial_shape()
         for image in self.get_images(subject):
-            if image[TYPE] != INTENSITY:
-                interpolation = 'nearest'
-            else:
-                interpolation = self.image_interpolation
-
             if image.is_2d():
                 scaling_params[2] = 1
                 rotation_params[:-1] = 0
@@ -275,13 +270,33 @@ class Affine(SpatialTransform):
 
             transformed_tensors = []
             for tensor in image.data:
-                transformed_tensor = self.apply_affine_transform(
-                    tensor,
+                sitk_image = nib_to_sitk(
+                    tensor[np.newaxis],
                     image.affine,
+                    force_3d=True,
+                )
+                if image[TYPE] != INTENSITY:
+                    interpolation = 'nearest'
+                    default_value = 0
+                else:
+                    interpolation = self.image_interpolation
+                    if self.default_pad_value == 'minimum':
+                        default_value = tensor.min().item()
+                    elif self.default_pad_value == 'mean':
+                        default_value = get_borders_mean(
+                            sitk_image, filter_otsu=False)
+                    elif self.default_pad_value == 'otsu':
+                        default_value = get_borders_mean(
+                            sitk_image, filter_otsu=True)
+                    else:
+                        default_value = self.default_pad_value
+                transformed_tensor = self.apply_affine_transform(
+                    sitk_image,
                     scaling_params.tolist(),
                     rotation_params.tolist(),
                     translation_params.tolist(),
                     interpolation,
+                    default_value,
                     center_lps=center,
                 )
                 transformed_tensors.append(transformed_tensor)
@@ -290,18 +305,15 @@ class Affine(SpatialTransform):
 
     def apply_affine_transform(
             self,
-            tensor: torch.Tensor,
-            affine: np.ndarray,
+            sitk_image: sitk.Image,
             scaling_params: Sequence[float],
             rotation_params: Sequence[float],
             translation_params: Sequence[float],
             interpolation: str,
+            default_value: float,
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
-        assert tensor.ndim == 3
-
-        image = nib_to_sitk(tensor[np.newaxis], affine, force_3d=True)
-        floating = reference = image
+        floating = reference = sitk_image
 
         scaling_transform = self.get_scaling_transform(
             scaling_params,
@@ -324,15 +336,6 @@ class Affine(SpatialTransform):
 
         if self.invert_transform:
             transform = transform.GetInverse()
-
-        if self.default_pad_value == 'minimum':
-            default_value = tensor.min().item()
-        elif self.default_pad_value == 'mean':
-            default_value = get_borders_mean(image, filter_otsu=False)
-        elif self.default_pad_value == 'otsu':
-            default_value = get_borders_mean(image, filter_otsu=True)
-        else:
-            default_value = self.default_pad_value
 
         resampler = sitk.ResampleImageFilter()
         resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
