@@ -263,6 +263,11 @@ class Image(dict):
         return tuple(spacing)
 
     @property
+    def origin(self) -> Tuple[float, float, float]:
+        """Center of first voxel in array, in mm."""
+        return tuple(self.affine[:3, 3])
+
+    @property
     def itemsize(self):
         """Element size of the data type."""
         return self.data.element_size()
