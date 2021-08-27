@@ -250,7 +250,7 @@ class Subject(dict):
             ...   image = tio.ScalarImage(tensor=img, affine=af1),
             ...   mask = tio.LabelMap(tensor=mask, affine=af2)
             ... )
-            >>> sub.check_consistent_attribute('spacing') # passes due to introduced tolerances
+            >>> sub.check_consistent_attribute('spacing') # passes as tolerances are > 0
 
         .. note:: To check that all values for a specific attribute are close
             between all images in the subject, :func:`numpy.allclose()` is used.
