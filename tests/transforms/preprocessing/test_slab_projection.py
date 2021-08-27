@@ -21,7 +21,7 @@ class TestProjection(TorchioTestCase):
             tio.SlabProjection('S', projection_type='bad')
 
     def test_percentile_is_required(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             tio.SlabProjection('S', projection_type='percentile')
 
     def test_percentile_is_invalid(self):

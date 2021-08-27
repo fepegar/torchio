@@ -1,4 +1,5 @@
-from typing import Union, Tuple, List
+from torchio.data.image import Image
+from typing import Union, Sequence, List, Tuple
 import torch
 import numpy as np
 from ....data.subject import Subject
@@ -36,7 +37,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
 
     def __init__(
             self,
-            axes: Union[int, Tuple[int, ...]] = 0,
+            axes: Union[int, Sequence[int], str, Sequence[str]] = 0,
             flip_probability: float = 0.5,
             **kwargs
             ):
@@ -99,7 +100,7 @@ class Flip(SpatialTransform):
         return self
 
 
-def _parse_axes(axes: Union[int, Tuple[int, ...]]):
+def _parse_axes(axes: Union[int, Sequence[int]]) -> Tuple[int, ...]:
     axes_tuple = to_tuple(axes)
     for axis in axes_tuple:
         is_int = isinstance(axis, int)
@@ -114,7 +115,10 @@ def _parse_axes(axes: Union[int, Tuple[int, ...]]):
     return axes_tuple
 
 
-def _ensure_axes_indices(subject, axes):
+def _ensure_axes_indices(
+        subject: Subject,
+        axes: Sequence[int],
+        ) -> Sequence[int]:
     if any(isinstance(n, str) for n in axes):
         subject.check_consistent_orientation()
         image = subject.get_first_image()
@@ -122,7 +126,7 @@ def _ensure_axes_indices(subject, axes):
     return axes
 
 
-def _flip_image(image, axes):
+def _flip_image(image: Image, axes: Sequence[int]) -> Image:
     spatial_axes = np.array(axes, int) + 1
     data = image.numpy()
     data = np.flip(data, axis=spatial_axes)

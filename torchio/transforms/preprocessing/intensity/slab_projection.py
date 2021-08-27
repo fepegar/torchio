@@ -1,17 +1,19 @@
+from numbers import Real
+from typing import Union, Optional, Callable
+
 import torch
 from torchio.data.image import ScalarImage
 from ....data.subject import Subject
 from ...intensity_transform import IntensityTransform
-from typing import Optional
 
 
 class SlabProjection(IntensityTransform):
     """Project intensities along a given axis, possibly with sliding slabs.
 
     Args:
-        axis: Index for the axis dimension to project across. For 3D images,
-            possible values are 0, 1, or 2, for the 1st, 2nd, or 3rd spatial
-            dimension (ignoring the channel dimension).
+        axis: Index for the spatial dimension to project across.
+            See :class:`~.torchio.RandomFlip` for information on the accepted
+            types.
         slab_thickness: Thickness of slab projections. In other words, the
             number of voxels in the ``axis`` dimension to project across.
             If ``None``, the projection will be done across the entire span of
@@ -52,7 +54,7 @@ class SlabProjection(IntensityTransform):
     """
     def __init__(
             self,
-            axis: str,
+            axis: Union[int, str],
             slab_thickness: Optional[int] = None,
             stride: int = 1,
             projection_type: str = 'max',
@@ -68,45 +70,47 @@ class SlabProjection(IntensityTransform):
         self.axis = axis
         self.slab_thickness = slab_thickness
         self.stride = stride
+        self.projection_fun = self.get_projection_function(projection_type)
         self.projection_type = projection_type
-        self.percentile = self.validate_percentile(percentile)
+        self.percentile = self.validate_percentile(percentile, projection_type)
         self.full_slabs_only = full_slabs_only
-        self.projection_fun = self.get_projection_function()
 
-    def validate_percentile(self, percentile):
-        if not self.projection_type == 'percentile':
+    @staticmethod
+    def validate_percentile(percentile, projection_type):
+        if not projection_type == 'percentile':
             return percentile
         message = (
             "For projection_type='percentile', `percentile` must be a scalar"
-            f' value in the range [0, 1], not {percentile}.'
-            )
-        if percentile is None:
-            raise ValueError(message)
+            f' value in the range [0, 1], but "{percentile}" was passed'
+        )
+        if not isinstance(percentile, Real):
+            raise TypeError(message)
         elif 0 <= percentile <= 100:
             return percentile / 100
         else:
             raise ValueError(message)
 
-    def get_projection_function(self):
-        if self.projection_type == 'max':
-            projection_fun = torch.amax
-        elif self.projection_type == 'min':
-            projection_fun = torch.amin
-        elif self.projection_type == 'mean':
-            projection_fun = torch.mean
-        elif self.projection_type == 'median':
-            projection_fun = torch.median
-        elif self.projection_type == 'percentile':
-            projection_fun = torch.quantile
-        else:
+    @staticmethod
+    def get_projection_function(projection_type: str) -> Callable:
+        arg_to_function = {
+            'max': 'amax',
+            'min': 'amin',
+            'mean': 'mean',
+            'median': 'median',
+            'percentile': 'quantile',
+        }
+        try:
+            function_name = arg_to_function[projection_type]
+        except KeyError:
             message = (
-                '`projection_type` must be one of "max", "min", "mean",'
-                ' "median", or "percentile".'
-                )
+                f'The projection type must be in {arg_to_function.keys()}, '
+                f' but {projection_type} was passed'
+            )
             raise ValueError(message)
-        return projection_fun
+        projection_function = getattr(torch, function_name)
+        return projection_function
 
-    def get_num_slabs(self):
+    def get_num_slabs(self) -> int:
         if self.full_slabs_only:
             start_index = 0
             num_slabs = 0
