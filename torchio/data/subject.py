@@ -214,21 +214,24 @@ class Subject(dict):
 
     def clear_history(self) -> None:
         self.applied_transforms = []
-        
+
     def check_consistent_attribute(
             self,
             attribute: str,
             relative_tolerance: float = 1e-6,
             absolute_tolerance: float = 1e-6,
             message: Optional[str] = None) -> None:
-        """Checks for consistency of an attribute across all images in the current subject.
-        
+        """Check for consistency of an attribute across all images.
+
         Args:
             attribute: The name of the image attribute to check
-            relative_tolerance: The relative tolerance for the consistency check (see formula below)
-            absolute_tolerance: The absolute tolerance for the consistency check (see formula below)
-            message: The error message to be raised if attributes are not consistent.
-            
+            relative_tolerance: The relative tolerance for the consistency
+                check (see formula below)
+            absolute_tolerance: The absolute tolerance for the consistency
+                check (see formula below)
+            message: The error message to be raised if attributes are not
+                consistent.
+
         Example:
             >>> import numpy as np
             >>> import torch
@@ -244,49 +247,49 @@ class Subject(dict):
             ...                 [0, 0, 2.49999999999999, 0], # small difference here (e.g. due to different reader)
             ...                 [0, 0, 0, 1]])
             >>> sub = tio.Subject(
-            ...   image = tio.ScalarImage(tensor = img, affine = af1),
-            ...   mask = tio.LabelMap(tensor = mask, affine = af2)
+            ...   image = tio.ScalarImage(tensor=img, affine=af1),
+            ...   mask = tio.LabelMap(tensor=mask, affine=af2)
             ... )
             >>> sub.check_consistent_attribute('spacing') # passes due to introduced tolerances
-            
-    
-        
-        Note:
-            As stated in the numpy docs, this computes the following:
-                absolute(a - b) <= (absolute_tolerance + relative_tolerance * absolute(b))
-            with a beeing the attribute of the first image and b being the attributes of all 
-            other images respectively.
+
+        .. note:: To check that all values for a specific attribute are close
+            between all images in the subject, :func:`numpy.allclose()` is used.
         """
-        iterable = self.get_images_dict(intensity_only=False).items()
         if message is None:
             message = (
                 f'More than one value for {attribute} found in subject images:'
-                '\n{}')
+                '\n{}'
+            )
+
+        names_images = self.get_images_dict(intensity_only=False).items()
         try:
-            first_attr = None
+            first_attribute = None
             first_image = None
 
-            for image_name, image in iterable:
-                if first_attr is None:
-                    first_attr = getattr(image, attribute)
+            for image_name, image in names_images:
+                if first_attribute is None:
+                    first_attribute = getattr(image, attribute)
                     first_image = image_name
-
-                else:
-                    curr_attr = getattr(image, attribute)
-                    if not np.allclose(curr_attr, first_attr, 
-                                       rtol=relative_tolerance,
-                                       atol=absolute_tolerance):
-                        message = message.format(
-                            pprint.pformat({
-                                first_image: first_attr,
-                                image_name: curr_attr
-                            }))
-                        raise RuntimeError(message)
-
+                    continue
+                current_attribute = getattr(image, attribute)
+                all_close = np.allclose(
+                    current_attribute,
+                    first_attribute,
+                    rtol=relative_tolerance,
+                    atol=absolute_tolerance,
+                )
+                if not all_close:
+                    message = message.format(
+                        pprint.pformat({
+                            first_image: first_attribute,
+                            image_name: current_attribute
+                        }),
+                    )
+                    raise RuntimeError(message)
         except TypeError:
             # fallback for non-numeric values
             values_dict = {}
-            for image_name, image in iterable:
+            for image_name, image in names_images:
                 values_dict[image_name] = getattr(image, attribute)
             num_unique_values = len(set(values_dict.values()))
             if num_unique_values > 1:
