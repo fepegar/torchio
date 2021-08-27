@@ -220,46 +220,42 @@ class Subject(dict):
             attribute: str,
             relative_tolerance: float = 1e-6,
             absolute_tolerance: float = 1e-6,
-            message: Optional[str] = None) -> None:
-        """Check for consistency of an attribute across all images.
+            message: Optional[str] = None,
+            ) -> None:
+        r"""Check for consistency of an attribute across all images.
 
         Args:
-            attribute: The name of the image attribute to check
-            relative_tolerance: The relative tolerance for the consistency
-                check (see formula below)
-            absolute_tolerance: The absolute tolerance for the consistency
-                check (see formula below)
-            message: The error message to be raised if attributes are not
-                consistent.
+            attribute: Name of the image attribute to check
+            relative_tolerance: Relative tolerance for :func:`numpy.allclose()`
+            absolute_tolerance: Absolute tolerance for :func:`numpy.allclose()`
 
         Example:
             >>> import numpy as np
             >>> import torch
             >>> import torchio as tio
-            >>> img = torch.randn(1, 512, 512, 100)
-            >>> mask = torch.tensor(img > 0).type(torch.int16)
-            >>> af1 = np.array([[0.8, 0, 0, 0],
-            ...                 [0, 0.8, 0, 0],
-            ...                 [0, 0, 2.50000000000001, 0],
-            ...                 [0, 0, 0, 1]])
-            >>> af2 = np.array([[0.8, 0, 0, 0],
-            ...                 [0, 0.8, 0, 0],
-            ...                 [0, 0, 2.49999999999999, 0], # small difference here (e.g. due to different reader)
-            ...                 [0, 0, 0, 1]])
-            >>> sub = tio.Subject(
-            ...   image = tio.ScalarImage(tensor=img, affine=af1),
+            >>> scalars = torch.randn(1, 512, 512, 100)
+            >>> mask = torch.tensor(scalars > 0).type(torch.int16)
+            >>> af1 = np.eye([0.8, 0.8, 2.50000000000001, 1])
+            >>> af2 = np.eye([0.8, 0.8, 2.49999999999999, 1])  # small difference here (e.g. due to different reader)
+            >>> subject = tio.Subject(
+            ...   image = tio.ScalarImage(tensor=scalars, affine=af1),
             ...   mask = tio.LabelMap(tensor=mask, affine=af2)
             ... )
-            >>> sub.check_consistent_attribute('spacing') # passes as tolerances are > 0
+            >>> subject.check_consistent_attribute('spacing')  # no error as tolerances are > 0
 
         .. note:: To check that all values for a specific attribute are close
             between all images in the subject, :func:`numpy.allclose()` is used.
+            This function returns ``True`` if
+            :math:`|a_i - b_i| \leq t_{abs} + t_{rel} * |b_i|`, where
+            :math:`a_i` and :math:`b_i` are the :math:`i`-th element of the same
+            attribute of two images being compared,
+            :math:`t_{abs}` is the ``absolute_tolerance`` and
+            :math:`t_{rel}` is the ``relative_tolerance``.
         """
-        if message is None:
-            message = (
-                f'More than one value for {attribute} found in subject images:'
-                '\n{}'
-            )
+        message = (
+            f'More than one value for "{attribute}" found in subject images:'
+            '\n{}'
+        )
 
         names_images = self.get_images_dict(intensity_only=False).items()
         try:
