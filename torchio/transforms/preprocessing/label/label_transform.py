@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from ....data.image import LabelMap
 from ....data.subject import Subject
@@ -16,7 +16,7 @@ class LabelTransform(Transform):
         )
         return [im for im in images if isinstance(im, LabelMap)]
 
-    def get_images_dict(self, subject: Subject) -> List[LabelMap]:
+    def get_images_dict(self, subject: Subject) -> Dict[str, LabelMap]:
         images = subject.get_images_dict(
             intensity_only=False,
             include=self.include,
