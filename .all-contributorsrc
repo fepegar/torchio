@@ -346,6 +346,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "justusschock",
+      "name": "Justus Schock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12886177?v=4",
+      "profile": "https://github.com/justusschock",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
