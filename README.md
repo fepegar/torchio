@@ -335,6 +335,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/glupol"><img src="https://avatars.githubusercontent.com/u/57905234?v=4?s=100" width="100px;" alt=""/><br /><sub><b>glupol</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aglupol" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/ramonemiliani93"><img src="https://avatars.githubusercontent.com/u/14314888?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ramonemiliani93</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=ramonemiliani93" title="Documentation">📖</a></td>
   </tr>
 </table>
 
