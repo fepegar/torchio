@@ -94,3 +94,11 @@ class TestSubject(TorchioTestCase):
     def test_2d(self):
         subject = self.make_2d(self.sample_subject)
         assert subject.is_2d()
+
+    def test_different_non_numeric(self):
+        with self.assertRaises(RuntimeError):
+            self.sample_subject.check_consistent_attribute('path')
+
+    def test_bad_arg(self):
+        with self.assertRaises(ValueError):
+            tio.Subject(0)
