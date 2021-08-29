@@ -1,9 +1,8 @@
 from torchio.data.image import Image
-from typing import Union, Sequence, List, Tuple
+from typing import Union, Sequence, List
 import torch
 import numpy as np
 from ....data.subject import Subject
-from ....utils import to_tuple
 from ... import SpatialTransform
 from .. import RandomTransform
 
@@ -42,11 +41,11 @@ class RandomFlip(RandomTransform, SpatialTransform):
             **kwargs
             ):
         super().__init__(**kwargs)
-        self.axes = _parse_axes(axes)
+        self.axes = self.parse_axes(axes)
         self.flip_probability = self.parse_probability(flip_probability)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        potential_axes = _ensure_axes_indices(subject, self.axes)
+        potential_axes = self.ensure_axes_indices(subject, self.axes)
         axes_to_flip_hot = self.get_params(self.flip_probability)
         for i in range(3):
             if i not in potential_axes:
@@ -83,11 +82,11 @@ class Flip(SpatialTransform):
 
     def __init__(self, axes, **kwargs):
         super().__init__(**kwargs)
-        self.axes = _parse_axes(axes)
+        self.axes = self.parse_axes(axes)
         self.args_names = ('axes',)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        axes = _ensure_axes_indices(subject, self.axes)
+        axes = self.ensure_axes_indices(subject, self.axes)
         for image in self.get_images(subject):
             _flip_image(image, axes)
         return subject
@@ -98,32 +97,6 @@ class Flip(SpatialTransform):
 
     def inverse(self):
         return self
-
-
-def _parse_axes(axes: Union[int, Sequence[int]]) -> Tuple[int, ...]:
-    axes_tuple = to_tuple(axes)
-    for axis in axes_tuple:
-        is_int = isinstance(axis, int)
-        is_string = isinstance(axis, str)
-        valid_number = is_int and axis in (0, 1, 2)
-        if not is_string and not valid_number:
-            message = (
-                f'All axes must be 0, 1 or 2, but found "{axis}"'
-                f' with type {type(axis)}'
-            )
-            raise ValueError(message)
-    return axes_tuple
-
-
-def _ensure_axes_indices(
-        subject: Subject,
-        axes: Sequence[int],
-        ) -> Sequence[int]:
-    if any(isinstance(n, str) for n in axes):
-        subject.check_consistent_orientation()
-        image = subject.get_first_image()
-        axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
-    return axes
 
 
 def _flip_image(image: Image, axes: Sequence[int]) -> Image:

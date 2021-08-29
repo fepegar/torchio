@@ -67,7 +67,7 @@ class SlabProjection(IntensityTransform):
             'axis', 'slab_thickness', 'stride',
             'projection_type', 'percentile', 'full_slabs_only'
             )
-        self.axis = axis
+        self.axis = self.parse_axes(axis)[0]
         self.slab_thickness = slab_thickness
         self.stride = stride
         self.projection_fun = self.get_projection_function(projection_type)
@@ -110,37 +110,42 @@ class SlabProjection(IntensityTransform):
         projection_function = getattr(torch, function_name)
         return projection_function
 
-    def get_num_slabs(self) -> int:
+    def get_num_slabs(self, axis_span: int) -> int:
         if self.full_slabs_only:
             start_index = 0
             num_slabs = 0
-            while start_index + self.slab_thickness <= self.axis_span:
+            while start_index + self.slab_thickness <= axis_span:
                 num_slabs += 1
                 start_index += self.stride
         else:
-            num_slabs = torch.ceil(torch.tensor(self.axis_span) / self.stride)
+            num_slabs = torch.ceil(torch.tensor(axis_span) / self.stride)
             num_slabs = int(num_slabs.item())
         return num_slabs
 
     def apply_transform(self, subject: Subject) -> Subject:
+        axis_index = self.ensure_axes_indices(subject, [self.axis])[0]
         for image in self.get_images(subject):
-            self.apply_projection(image)
+            self.apply_projection(image, axis_index)
         return subject
 
-    def apply_projection(self, image: ScalarImage) -> None:
-        self.axis_index = image.axis_name_to_index(self.axis)
-        self.axis_span = image.shape[self.axis_index]
+    def apply_projection(self, image: ScalarImage, axis_index: int) -> None:
+        axis_span = image.shape[axis_index]
         if self.slab_thickness is None:
-            self.slab_thickness = self.axis_span
-        elif self.slab_thickness > self.axis_span:
-            self.slab_thickness = self.axis_span
-        image.set_data(self.projection(image.data))
+            self.slab_thickness = axis_span
+        elif self.slab_thickness > axis_span:
+            self.slab_thickness = axis_span
+        image.set_data(self.projection(image.data, axis_index, axis_span))
 
-    def projection(self, tensor: torch.Tensor) -> torch.Tensor:
+    def projection(
+            self,
+            tensor: torch.Tensor,
+            axis_index: int,
+            axis_span: int,
+            ) -> torch.Tensor:
         if self.projection_type in ['mean', 'percentile']:
             tensor = tensor.to(torch.float)
 
-        num_slabs = self.get_num_slabs()
+        num_slabs = self.get_num_slabs(axis_span)
 
         slabs = []
         start_index = 0
@@ -148,21 +153,21 @@ class SlabProjection(IntensityTransform):
 
         for _ in range(num_slabs):
             slab_indices = torch.arange(start_index, end_index)
-            slab = tensor.index_select(self.axis_index, slab_indices)
+            slab = tensor.index_select(axis_index, slab_indices)
             if self.projection_type == 'median':
                 projected, _ = self.projection_fun(
-                    slab, dim=self.axis_index, keepdim=True)
+                    slab, dim=axis_index, keepdim=True)
             elif self.projection_type == 'percentile':
                 projected = self.projection_fun(
-                    slab, q=self.percentile, dim=self.axis_index,
+                    slab, q=self.percentile, dim=axis_index,
                     keepdim=True)
             else:
                 projected = self.projection_fun(
-                    slab, dim=self.axis_index, keepdim=True)
+                    slab, dim=axis_index, keepdim=True)
             slabs.append(projected)
             start_index += self.stride
             end_index = start_index + self.slab_thickness
-            if end_index > self.axis_span:
-                end_index = self.axis_span
+            if end_index > axis_span:
+                end_index = axis_span
 
-        return torch.cat(slabs, dim=self.axis_index)
+        return torch.cat(slabs, dim=axis_index)

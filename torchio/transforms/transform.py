@@ -3,7 +3,7 @@ import numbers
 import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Union, Tuple, Optional, Dict
+from typing import Union, Tuple, Optional, Dict, Sequence
 
 import torch
 import numpy as np
@@ -503,3 +503,30 @@ class Transform(ABC):
         mask = torch.zeros_like(tensor, dtype=torch.bool)
         mask[:, i0:i1, j0:j1, k0:k1] = True
         return mask
+
+    @staticmethod
+    def parse_axes(axes: Union[int, Sequence[int]]) -> Tuple[int, ...]:
+        """Ensure that all values in sequence are in [0, 1, 2] or strings."""
+        axes_tuple = to_tuple(axes)
+        for axis in axes_tuple:
+            is_int = isinstance(axis, int)
+            is_string = isinstance(axis, str)
+            valid_number = is_int and axis in (0, 1, 2)
+            if not is_string and not valid_number:
+                message = (
+                    f'All axes must be 0, 1 or 2, but found "{axis}"'
+                    f' with type {type(axis)}'
+                )
+                raise ValueError(message)
+        return axes_tuple
+
+    @staticmethod
+    def ensure_axes_indices(
+            subject: Subject,
+            axes: Sequence[int],
+            ) -> Sequence[int]:
+        if any(isinstance(n, str) for n in axes):
+            subject.check_consistent_orientation()
+            image = subject.get_first_image()
+            axes = sorted(3 + image.axis_name_to_index(n) for n in axes)
+        return axes
