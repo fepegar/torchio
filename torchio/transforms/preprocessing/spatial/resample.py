@@ -74,8 +74,6 @@ class Resample(SpatialTransform):
             image_interpolation)
         self.pre_affine_name = pre_affine_name
         self.scalars_only = scalars_only
-        self.target_shape = None
-        self.target_affine = None
         self.args_names = (
             'target',
             'image_interpolation',
