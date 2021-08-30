@@ -13,25 +13,25 @@ class SlabProjection(IntensityTransform):
     Args:
         axis: Index for the spatial dimension to project across.
             See :class:`~.torchio.RandomFlip` for information on the accepted
-            types.
-        slab_thickness: Thickness of slab projections. In other words, the
-            number of voxels in the ``axis`` dimension to project across.
+            options.
+        slab_thickness: Thickness of slab projections (number of voxels along
+            the ``axis`` dimension to project across).
             If ``None``, the projection will be done across the entire span of
             the ``axis`` dimension (i.e. ``axis`` dimension will be reduced to
             1).
         stride: Number of voxels to stride along the ``axis`` dimension between
             slab projections. Default is 1.
         projection_type: Type of intensity projection. Possible inputs are
-            ``'max'`` (the default), ``'min'``, ``'mean'``, ``'median'``, or
+            ``'max'``, ``'min'``, ``'mean'``, ``'median'``, or
             ``'percentile'``. If ``'percentile'`` is used, the ``percentile``
             argument must also be supplied.
-        percentile: Percetile to use for intensity projections. This argument
+        percentile: Percentile to use for intensity projections. This argument
             is required if ``projection_type`` is ``'percentile'`` and is
             silently ignored otherwise.
-        full_slabs_only: Boolean. Should projections be done only for slabs
-            that are ``slab_thickness`` thick? Default is ``True``.
-            If ``False``, some slabs may not be ``slab_thickness`` thick
-            depending on the size of the image, slab thickness, and stride.
+        full_slabs_only: If ``True``, projections will be done only for slabs
+            that are ``slab_thickness`` thick. If ``False``, some slabs may not
+            be ``slab_thickness`` thick depending on the size of the image,
+            slab thickness, and stride.
 
     Example:
         >>> import torchio as tio
@@ -123,9 +123,10 @@ class SlabProjection(IntensityTransform):
         return num_slabs
 
     def apply_transform(self, subject: Subject) -> Subject:
-        axis_index = self.ensure_axes_indices(subject, [self.axis])[0]
+        spatial_axis_index = self.ensure_axes_indices(subject, [self.axis])[0]
+        tensor_axis_index = spatial_axis_index + 1  # channels is 0
         for image in self.get_images(subject):
-            self.apply_projection(image, axis_index)
+            self.apply_projection(image, tensor_axis_index)
         return subject
 
     def apply_projection(self, image: ScalarImage, axis_index: int) -> None:
