@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 import torch
 import numpy as np
@@ -8,7 +8,7 @@ import nibabel as nib
 import SimpleITK as sitk
 
 from ..constants import REPO_URL
-from ..typing import TypePath, TypeData, TypeTripletInt
+from ..typing import TypePath, TypeData, TypeTripletFloat
 
 
 FLIPXY = np.diag([-1, -1, 1, 1])
@@ -83,15 +83,17 @@ def read_shape(path: TypePath) -> Tuple[int, int, int, int]:
 
 
 def read_affine(path: TypePath) -> np.ndarray:
+    reader = get_reader(path)
+    affine = get_ras_affine_from_sitk(reader)
+    return affine
+
+
+def get_reader(path: TypePath, read: bool = True) -> sitk.ImageFileReader:
     reader = sitk.ImageFileReader()
     reader.SetFileName(str(path))
-    reader.ReadImageInformation()
-    affine = get_ras_affine_from_sitk_metadata(
-        reader.GetSpacing(),
-        reader.GetDirection(),
-        reader.GetOrigin(),
-    )
-    return affine
+    if read:
+        reader.ReadImageInformation()
+    return reader
 
 
 def write_image(
@@ -275,19 +277,19 @@ def nib_to_sitk(
     array = array.transpose()  # (W, H, D, C) or (W, H, D)
     image = sitk.GetImageFromArray(array, isVector=is_multichannel)
 
-    rotation, spacing = get_rotation_and_spacing_from_affine(affine)
-    flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
-    origin = np.dot(flip_xy, affine[:3, 3])
-    direction = np.dot(flip_xy, rotation)
-    if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
-        direction = direction[:2, :2]
+    origin, spacing, direction = get_sitk_metadata_from_ras_affine(
+        affine,
+        is_2d=is_2d,
+    )
     image.SetOrigin(origin)  # should I add a 4th value if force_4d?
     image.SetSpacing(spacing)
-    image.SetDirection(direction.flatten())
+    image.SetDirection(direction)
+
     if data.ndim == 4:
         assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
     num_spatial_dims = 2 if is_2d else 3
     assert image.GetSize() == data.shape[1: 1 + num_spatial_dims]
+
     return image
 
 
@@ -307,31 +309,26 @@ def sitk_to_nib(
         data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
     assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
-    affine = get_ras_affine_from_sitk_metadata(
-        image.GetSpacing(),
-        image.GetDirection(),
-        image.GetOrigin(),
-    )
+    affine = get_ras_affine_from_sitk(image)
     return data, affine
 
 
-def get_ras_affine_from_sitk_metadata(
-        spacing: TypeTripletInt,
-        direction_lps: TypeTripletInt,
-        origin_lps: TypeTripletInt,
+def get_ras_affine_from_sitk(
+        sitk_object: Union[sitk.Image, sitk.ImageFileReader]
         ) -> np.ndarray:
-    spacing = np.array(spacing)
-    direction = np.array(direction_lps)
-    if len(direction) == 9:
-        rotation = direction.reshape(3, 3)
-    elif len(direction) == 4:  # ignore first dimension if 2D (1, W, H, 1)
-        rotation_2d = direction.reshape(2, 2)
+    spacing = np.array(sitk_object.GetSpacing())
+    direction_lps = np.array(sitk_object.GetDirection())
+    origin_lps = np.array(sitk_object.GetOrigin())
+    if len(direction_lps) == 9:
+        rotation = direction_lps.reshape(3, 3)
+    elif len(direction_lps) == 4:  # ignore first dimension if 2D (1, W, H, 1)
+        rotation_2d = direction_lps.reshape(2, 2)
         rotation = np.eye(3)
         rotation[:2, :2] = rotation_2d
         spacing = *spacing, 1
         origin_lps = *origin_lps, 0
     else:
-        raise RuntimeError(f'Direction not understood: {direction}')
+        raise RuntimeError(f'Direction not understood: {direction_lps}')
     flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
     rotation = np.dot(flip_xy, rotation)
     rotation_zoom = rotation * spacing
@@ -340,6 +337,20 @@ def get_ras_affine_from_sitk_metadata(
     affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation
     return affine
+
+
+def get_sitk_metadata_from_ras_affine(
+        affine: np.ndarray,
+        is_2d: bool = False,
+        ) -> Tuple[TypeTripletFloat, TypeTripletFloat, Tuple[float, ...]]:
+    rotation, spacing = get_rotation_and_spacing_from_affine(affine)
+    flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
+    origin = np.dot(flip_xy, affine[:3, 3])
+    direction = np.dot(flip_xy, rotation)
+    if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
+        direction = direction[:2, :2]
+    direction = tuple(direction.flatten())
+    return origin, spacing, direction
 
 
 def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:

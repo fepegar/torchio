@@ -51,16 +51,16 @@ class TestResample(TorchioTestCase):
             self.assertTensorAlmostEqual(reference_image.affine, image.affine)
 
     def test_wrong_spacing_length(self):
-        with self.assertRaises(ValueError):
-            tio.Resample((1, 2))
+        with self.assertRaises(RuntimeError):
+            tio.Resample((1, 2))(self.sample_subject)
 
     def test_wrong_spacing_value(self):
         with self.assertRaises(ValueError):
-            tio.Resample(0)
+            tio.Resample(0)(self.sample_subject)
 
     def test_wrong_target_type(self):
-        with self.assertRaises(ValueError):
-            tio.Resample(None)
+        with self.assertRaises(RuntimeError):
+            tio.Resample(None)(self.sample_subject)
 
     def test_missing_reference(self):
         transform = tio.Resample('missing')
