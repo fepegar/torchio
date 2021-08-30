@@ -8,7 +8,7 @@ import nibabel as nib
 import SimpleITK as sitk
 
 from ..constants import REPO_URL
-from ..typing import TypePath, TypeData
+from ..typing import TypePath, TypeData, TypeTripletInt
 
 
 FLIPXY = np.diag([-1, -1, 1, 1])
@@ -69,6 +69,29 @@ def _read_dicom(directory: TypePath):
     reader.SetFileNames(dicom_names)
     image = reader.Execute()
     return image
+
+
+def read_shape(path: TypePath) -> Tuple[int, int, int, int]:
+    reader = sitk.ImageFileReader()
+    reader.SetFileName(str(path))
+    reader.ReadImageInformation()
+    num_channels = reader.GetNumberOfComponents()
+    spatial_shape = reader.GetSize()
+    if reader.GetDimension() == 2:
+        spatial_shape = *spatial_shape, 1
+    return num_channels, *spatial_shape
+
+
+def read_affine(path: TypePath) -> np.ndarray:
+    reader = sitk.ImageFileReader()
+    reader.SetFileName(str(path))
+    reader.ReadImageInformation()
+    affine = get_ras_affine_from_sitk_metadata(
+        reader.GetSpacing(),
+        reader.GetDirection(),
+        reader.GetOrigin(),
+    )
+    return affine
 
 
 def write_image(
@@ -284,9 +307,21 @@ def sitk_to_nib(
         data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
     assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
-    spacing = np.array(image.GetSpacing())
-    direction = np.array(image.GetDirection())
-    origin = image.GetOrigin()
+    affine = get_ras_affine_from_sitk_metadata(
+        image.GetSpacing(),
+        image.GetDirection(),
+        image.GetOrigin(),
+    )
+    return data, affine
+
+
+def get_ras_affine_from_sitk_metadata(
+        spacing: TypeTripletInt,
+        direction_lps: TypeTripletInt,
+        origin_lps: TypeTripletInt,
+        ) -> np.ndarray:
+    spacing = np.array(spacing)
+    direction = np.array(direction_lps)
     if len(direction) == 9:
         rotation = direction.reshape(3, 3)
     elif len(direction) == 4:  # ignore first dimension if 2D (1, W, H, 1)
@@ -294,17 +329,17 @@ def sitk_to_nib(
         rotation = np.eye(3)
         rotation[:2, :2] = rotation_2d
         spacing = *spacing, 1
-        origin = *origin, 0
+        origin_lps = *origin_lps, 0
     else:
         raise RuntimeError(f'Direction not understood: {direction}')
     flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
     rotation = np.dot(flip_xy, rotation)
     rotation_zoom = rotation * spacing
-    translation = np.dot(flip_xy, origin)
+    translation = np.dot(flip_xy, origin_lps)
     affine = np.eye(4)
     affine[:3, :3] = rotation_zoom
     affine[:3, 3] = translation
-    return data, affine
+    return affine
 
 
 def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:

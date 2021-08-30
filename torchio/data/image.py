@@ -21,6 +21,8 @@ from .io import (
     sitk_to_nib,
     check_uint_to_int,
     get_rotation_and_spacing_from_affine,
+    read_shape,
+    read_affine,
 )
 
 
@@ -214,7 +216,11 @@ class Image(dict):
     @property
     def affine(self) -> np.ndarray:
         """Affine matrix to transform voxel indices into world coordinates."""
-        return self[AFFINE]
+        if self._loaded:
+            affine = self[AFFINE]
+        else:
+            affine = read_affine(self.path)
+        return affine
 
     @affine.setter
     def affine(self, matrix):
@@ -227,7 +233,13 @@ class Image(dict):
     @property
     def shape(self) -> Tuple[int, int, int, int]:
         """Tensor shape as :math:`(C, W, H, D)`."""
-        return tuple(self.data.shape)
+        custom_reader = self.reader is not read_image
+        multipath = not isinstance(self.path, (str, Path))
+        if self._loaded or custom_reader or multipath:
+            shape = tuple(self.data.shape)
+        else:
+            shape = read_shape(self.path)
+        return shape
 
     @property
     def spatial_shape(self) -> TypeTripletInt:
