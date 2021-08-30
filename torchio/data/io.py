@@ -79,7 +79,7 @@ def read_shape(path: TypePath) -> Tuple[int, int, int, int]:
     spatial_shape = reader.GetSize()
     if reader.GetDimension() == 2:
         spatial_shape = *spatial_shape, 1
-    return num_channels, *spatial_shape
+    return (num_channels,) + spatial_shape
 
 
 def read_affine(path: TypePath) -> np.ndarray:
