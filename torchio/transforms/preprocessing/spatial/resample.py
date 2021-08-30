@@ -20,12 +20,19 @@ class Resample(SpatialTransform):
     """Change voxel spacing by resampling.
 
     Args:
-        target: Tuple :math:`(s_h, s_w, s_d)`. If only one value
-            :math:`n` is specified, then :math:`s_h = s_w = s_d = n`.
-            If a string or :class:`~pathlib.Path` is given,
-            all images will be resampled using the image
-            with that name as reference or found at the path.
-            An instance of :class:`~torchio.Image` can also be passed.
+        target: Argument to define the output space. Can be one of:
+
+            - Output spacing :math:`(s_w, s_h, s_d)`, in mm. If only one value
+              :math:`s` is specified, then :math:`s_w = s_h = s_d = s`.
+
+            - Path to an image that will be used as reference.
+
+            - Instance of :class:`~torchio.Image`.
+
+            - Name of an image key in the subject.
+
+            - Tuple ``(spaial_shape, affine)`` defining the output space.
+
         pre_affine_name: Name of the *image key* (not subject key) storing an
             affine matrix that will be applied to the image header before
             resampling. If ``None``, the image is resampled with an identity
