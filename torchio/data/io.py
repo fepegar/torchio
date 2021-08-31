@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 
 import torch
 import numpy as np
@@ -11,9 +11,13 @@ from ..constants import REPO_URL
 from ..typing import TypePath, TypeData, TypeTripletFloat, TypeDirection
 
 
-# Matrice used to switch between LPS and RAS
+# Matrices used to switch between LPS and RAS
 FLIPXY_33 = np.diag([-1, -1, 1])
 FLIPXY_44 = np.diag([-1, -1, 1, 1])
+
+# Image formats that are typically 2D
+formats = ['.jpg', '.jpeg', '.bmp', '.png', '.tif', '.tiff']
+IMAGE_2D_FORMATS = formats + [s.upper() for s in formats]
 
 
 def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
@@ -102,20 +106,19 @@ def write_image(
         tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
-        squeeze: bool = True,
+        squeeze: Optional[bool] = None,
         ) -> None:
     args = tensor, affine, path
     try:
-        _write_sitk(*args)
+        _write_sitk(*args, squeeze=squeeze)
     except RuntimeError:  # try with NiBabel
-        _write_nibabel(*args, squeeze=squeeze)
+        _write_nibabel(*args)
 
 
 def _write_nibabel(
         tensor: TypeData,
         affine: TypeData,
         path: TypePath,
-        squeeze: bool = False,
         ) -> None:
     """
     Expects a path with an extension that can be used by nibabel.save
@@ -129,7 +132,6 @@ def _write_nibabel(
         tensor = tensor[0]
     else:
         tensor = tensor[np.newaxis].permute(2, 3, 4, 0, 1)
-    tensor = tensor.squeeze() if squeeze else tensor
     suffix = Path(str(path).replace('.gz', '')).suffix
     if '.nii' in suffix:
         img = nib.Nifti1Image(np.asarray(tensor), affine)
@@ -149,16 +151,21 @@ def _write_sitk(
         affine: TypeData,
         path: TypePath,
         use_compression: bool = True,
+        squeeze: Optional[bool] = None,
         ) -> None:
     assert tensor.ndim == 4
     path = Path(path)
-    if path.suffix in ('.png', '.jpg', '.jpeg'):
+    if path.suffix in ('.png', '.jpg', '.jpeg', '.bmp'):
         warnings.warn(
             f'Casting to uint 8 before saving to {path}',
             RuntimeWarning,
         )
         tensor = tensor.numpy().astype(np.uint8)
-    image = nib_to_sitk(tensor, affine)
+    if squeeze is None:
+        force_3d = path.suffix not in IMAGE_2D_FORMATS
+    else:
+        force_3d = not squeeze
+    image = nib_to_sitk(tensor, affine, force_3d=force_3d)
     sitk.WriteImage(image, str(path), use_compression)
 
 
@@ -290,7 +297,7 @@ def nib_to_sitk(
     if data.ndim == 4:
         assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
     num_spatial_dims = 2 if is_2d else 3
-    assert image.GetSize() == data.shape[1: 1 + num_spatial_dims]
+    assert image.GetSize() == data.shape[1:1 + num_spatial_dims]
 
     return image
 
@@ -323,7 +330,7 @@ def get_ras_affine_from_sitk(
     origin_lps = np.array(sitk_object.GetOrigin())
     if len(direction_lps) == 9:
         rotation_lps = direction_lps.reshape(3, 3)
-    elif len(direction_lps) == 4:  # ignore first dimension if 2D (1, W, H, 1)
+    elif len(direction_lps) == 4:  # ignore last dimension if 2D (1, W, H, 1)
         rotation_lps_2d = direction_lps.reshape(2, 2)
         rotation_lps = np.eye(3)
         rotation_lps[:2, :2] = rotation_lps_2d
@@ -345,8 +352,8 @@ def get_sitk_metadata_from_ras_affine(
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
     origin = np.dot(FLIPXY_33, affine[:3, 3])
     direction = np.dot(FLIPXY_33, rotation)
-    if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
-        direction = direction[:2, :2]
+    if is_2d:  # ignore orientation if 2D (1, W, H, 1)
+        direction = np.diag((-1, -1)).astype(np.float64)
     direction = tuple(direction.flatten())
     return origin, spacing, direction
 
