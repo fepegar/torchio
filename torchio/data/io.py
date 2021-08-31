@@ -8,10 +8,12 @@ import nibabel as nib
 import SimpleITK as sitk
 
 from ..constants import REPO_URL
-from ..typing import TypePath, TypeData, TypeTripletFloat
+from ..typing import TypePath, TypeData, TypeTripletFloat, TypeDirection
 
 
-FLIPXY = np.diag([-1, -1, 1, 1])
+# Matrice used to switch between LPS and RAS
+FLIPXY_33 = np.diag([-1, -1, 1])
+FLIPXY_44 = np.diag([-1, -1, 1, 1])
 
 
 def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
@@ -185,16 +187,16 @@ def write_matrix(matrix: torch.Tensor, path: TypePath):
 
 def _to_itk_convention(matrix):
     """RAS to LPS"""
-    matrix = np.dot(FLIPXY, matrix)
-    matrix = np.dot(matrix, FLIPXY)
+    matrix = np.dot(FLIPXY_44, matrix)
+    matrix = np.dot(matrix, FLIPXY_44)
     matrix = np.linalg.inv(matrix)
     return matrix
 
 
 def _from_itk_convention(matrix):
     """LPS to RAS"""
-    matrix = np.dot(matrix, FLIPXY)
-    matrix = np.dot(FLIPXY, matrix)
+    matrix = np.dot(matrix, FLIPXY_44)
+    matrix = np.dot(FLIPXY_44, matrix)
     matrix = np.linalg.inv(matrix)
     return matrix
 
@@ -314,39 +316,35 @@ def sitk_to_nib(
 
 
 def get_ras_affine_from_sitk(
-        sitk_object: Union[sitk.Image, sitk.ImageFileReader]
+        sitk_object: Union[sitk.Image, sitk.ImageFileReader],
         ) -> np.ndarray:
     spacing = np.array(sitk_object.GetSpacing())
     direction_lps = np.array(sitk_object.GetDirection())
     origin_lps = np.array(sitk_object.GetOrigin())
     if len(direction_lps) == 9:
-        rotation = direction_lps.reshape(3, 3)
+        rotation_lps = direction_lps.reshape(3, 3)
     elif len(direction_lps) == 4:  # ignore first dimension if 2D (1, W, H, 1)
-        rotation_2d = direction_lps.reshape(2, 2)
-        rotation = np.eye(3)
-        rotation[:2, :2] = rotation_2d
+        rotation_lps_2d = direction_lps.reshape(2, 2)
+        rotation_lps = np.eye(3)
+        rotation_lps[:2, :2] = rotation_lps_2d
         spacing = *spacing, 1
         origin_lps = *origin_lps, 0
-    else:
-        raise RuntimeError(f'Direction not understood: {direction_lps}')
-    flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
-    rotation = np.dot(flip_xy, rotation)
-    rotation_zoom = rotation * spacing
-    translation = np.dot(flip_xy, origin_lps)
+    rotation_ras = np.dot(FLIPXY_33, rotation_lps)
+    rotation_ras_zoom = rotation_ras * spacing
+    translation_ras = np.dot(FLIPXY_33, origin_lps)
     affine = np.eye(4)
-    affine[:3, :3] = rotation_zoom
-    affine[:3, 3] = translation
+    affine[:3, :3] = rotation_ras_zoom
+    affine[:3, 3] = translation_ras
     return affine
 
 
 def get_sitk_metadata_from_ras_affine(
         affine: np.ndarray,
         is_2d: bool = False,
-        ) -> Tuple[TypeTripletFloat, TypeTripletFloat, Tuple[float, ...]]:
+        ) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
     rotation, spacing = get_rotation_and_spacing_from_affine(affine)
-    flip_xy = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
-    origin = np.dot(flip_xy, affine[:3, 3])
-    direction = np.dot(flip_xy, rotation)
+    origin = np.dot(FLIPXY_33, affine[:3, 3])
+    direction = np.dot(FLIPXY_33, rotation)
     if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
         direction = direction[:2, :2]
     direction = tuple(direction.flatten())

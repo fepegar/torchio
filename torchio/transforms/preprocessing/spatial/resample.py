@@ -199,14 +199,14 @@ class Resample(SpatialTransform):
         # 5) A tuple of shape, affine
         # The fourth case is the different one
         if isinstance(target, (str, Path, Image)):
-            if Path(target).is_file():
+            if isinstance(target, Image):
+                # It's a TorchIO image
+                image = target
+            elif Path(target).is_file():
                 # It's an existing file
                 path = target
                 image = ScalarImage(path)
-            elif isinstance(target, Image):
-                # It's a TorchIO image
-                image = target
-            else:  # assume it's an image in the subject
+            else:  # assume it's the name of an image in the subject
                 try:
                     image = subject[target]
                 except KeyError as error:

@@ -8,7 +8,6 @@ import SimpleITK as sitk
 
 from ..utils import TorchioTestCase
 from torchio.data import io, ScalarImage
-from torchio.data.io import ensure_4d, nib_to_sitk, sitk_to_nib
 
 
 class TestIO(TorchioTestCase):
@@ -69,47 +68,61 @@ class TestIO(TorchioTestCase):
 
     def test_ensure_4d_5d(self):
         tensor = torch.rand(3, 4, 5, 1, 2)
-        assert ensure_4d(tensor).shape == (2, 3, 4, 5)
+        assert io.ensure_4d(tensor).shape == (2, 3, 4, 5)
 
     def test_ensure_4d_5d_t_gt_1(self):
         tensor = torch.rand(3, 4, 5, 2, 2)
         with self.assertRaises(ValueError):
-            ensure_4d(tensor)
+            io.ensure_4d(tensor)
 
     def test_ensure_4d_2d(self):
         tensor = torch.rand(4, 5)
-        assert ensure_4d(tensor).shape == (1, 4, 5, 1)
+        assert io.ensure_4d(tensor).shape == (1, 4, 5, 1)
 
     def test_ensure_4d_2d_3dims_rgb_first(self):
         tensor = torch.rand(3, 4, 5)
-        assert ensure_4d(tensor).shape == (3, 4, 5, 1)
+        assert io.ensure_4d(tensor).shape == (3, 4, 5, 1)
 
     def test_ensure_4d_2d_3dims_rgb_last(self):
         tensor = torch.rand(4, 5, 3)
-        assert ensure_4d(tensor).shape == (3, 4, 5, 1)
+        assert io.ensure_4d(tensor).shape == (3, 4, 5, 1)
 
     def test_ensure_4d_3d(self):
         tensor = torch.rand(4, 5, 6)
-        assert ensure_4d(tensor).shape == (1, 4, 5, 6)
+        assert io.ensure_4d(tensor).shape == (1, 4, 5, 6)
 
     def test_ensure_4d_2_spatial_dims(self):
         tensor = torch.rand(4, 5, 6)
-        assert ensure_4d(tensor, num_spatial_dims=2).shape == (4, 5, 6, 1)
+        assert io.ensure_4d(tensor, num_spatial_dims=2).shape == (4, 5, 6, 1)
 
     def test_ensure_4d_3_spatial_dims(self):
         tensor = torch.rand(4, 5, 6)
-        assert ensure_4d(tensor, num_spatial_dims=3).shape == (1, 4, 5, 6)
+        assert io.ensure_4d(tensor, num_spatial_dims=3).shape == (1, 4, 5, 6)
 
     def test_ensure_4d_nd_not_supported(self):
         tensor = torch.rand(1, 2, 3, 4, 5)
         with self.assertRaises(ValueError):
-            ensure_4d(tensor)
+            io.ensure_4d(tensor)
 
     def test_sitk_to_nib(self):
         data = np.random.rand(10, 12)
         image = sitk.GetImageFromArray(data)
-        tensor, _ = sitk_to_nib(image)
+        tensor, _ = io.sitk_to_nib(image)
         self.assertAlmostEqual(data.sum(), tensor.sum())
+
+    def test_sitk_to_affine(self):
+        spacing = 1, 2, 3
+        direction_lps = -1, 0, 0, 0, -1, 0, 0, 0, 1
+        origin_lps = l, p, s = -10, -20, 30
+        image = sitk.GetImageFromArray(np.random.rand(10, 20, 30))
+        image.SetDirection(direction_lps)
+        image.SetSpacing(spacing)
+        image.SetOrigin(origin_lps)
+        origin_ras = -l, -p, s
+        fixture = np.diag((*spacing, 1))
+        fixture[:3, 3] = origin_ras
+        affine = io.get_ras_affine_from_sitk(image)
+        self.assertTensorAlmostEqual(fixture, affine)
 
 
 # This doesn't work as a method of the class
@@ -152,46 +165,46 @@ class TestNibabelToSimpleITK(TorchioTestCase):
 
     def test_wrong_num_dims(self):
         with self.assertRaises(ValueError):
-            nib_to_sitk(np.random.rand(10, 10), self.affine)
+            io.nib_to_sitk(np.random.rand(10, 10), self.affine)
 
     def test_2d_single(self):
         data = np.random.rand(1, 10, 12, 1)
-        image = nib_to_sitk(data, self.affine)
+        image = io.nib_to_sitk(data, self.affine)
         assert image.GetDimension() == 2
         assert image.GetSize() == (10, 12)
         assert image.GetNumberOfComponentsPerPixel() == 1
 
     def test_2d_multi(self):
         data = np.random.rand(5, 10, 12, 1)
-        image = nib_to_sitk(data, self.affine)
+        image = io.nib_to_sitk(data, self.affine)
         assert image.GetDimension() == 2
         assert image.GetSize() == (10, 12)
         assert image.GetNumberOfComponentsPerPixel() == 5
 
     def test_2d_3d_single(self):
         data = np.random.rand(1, 10, 12, 1)
-        image = nib_to_sitk(data, self.affine, force_3d=True)
+        image = io.nib_to_sitk(data, self.affine, force_3d=True)
         assert image.GetDimension() == 3
         assert image.GetSize() == (10, 12, 1)
         assert image.GetNumberOfComponentsPerPixel() == 1
 
     def test_2d_3d_multi(self):
         data = np.random.rand(5, 10, 12, 1)
-        image = nib_to_sitk(data, self.affine, force_3d=True)
+        image = io.nib_to_sitk(data, self.affine, force_3d=True)
         assert image.GetDimension() == 3
         assert image.GetSize() == (10, 12, 1)
         assert image.GetNumberOfComponentsPerPixel() == 5
 
     def test_3d_single(self):
         data = np.random.rand(1, 8, 10, 12)
-        image = nib_to_sitk(data, self.affine)
+        image = io.nib_to_sitk(data, self.affine)
         assert image.GetDimension() == 3
         assert image.GetSize() == (8, 10, 12)
         assert image.GetNumberOfComponentsPerPixel() == 1
 
     def test_3d_multi(self):
         data = np.random.rand(5, 8, 10, 12)
-        image = nib_to_sitk(data, self.affine)
+        image = io.nib_to_sitk(data, self.affine)
         assert image.GetDimension() == 3
         assert image.GetSize() == (8, 10, 12)
         assert image.GetNumberOfComponentsPerPixel() == 5

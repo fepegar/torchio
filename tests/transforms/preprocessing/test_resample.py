@@ -75,3 +75,14 @@ class TestResample(TorchioTestCase):
 
     def test_input_list(self):
         tio.Resample([1, 2, 3])
+
+    def test_image_target(self):
+        tio.Resample(self.sample_subject.t1)(self.sample_subject)
+
+    def test_bad_affine(self):
+        shape = 1, 2, 3
+        affine = np.eye(3)
+        target = shape, affine
+        transform = tio.Resample(target)
+        with self.assertRaises(RuntimeError):
+            transform(self.sample_subject)
