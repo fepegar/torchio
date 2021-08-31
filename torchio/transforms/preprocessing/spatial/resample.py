@@ -17,7 +17,10 @@ TypeSpacing = Union[float, Tuple[float, float, float]]
 
 
 class Resample(SpatialTransform):
-    """Change voxel spacing by resampling.
+    """Resample image to a different physical space.
+
+    This is a powerful transform that can be used to change the image shape
+    or spatial metadata, or to apply a spatial transformation.
 
     Args:
         target: Argument to define the output space. Can be one of:

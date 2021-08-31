@@ -30,11 +30,13 @@ class EnsureShapeMultiple(SpatialTransform):
         >>> x_down.shape
         torch.Size([3, 5, 10, 15])
 
-    If we upsample this tensor:
+    If we upsample this tensor, the original shape is lost:
 
         >>> x_down_up = torch.nn.functional.interpolate(x_down, scale_factor=2)
         >>> x_down_up.shape
-        torch.Size([3, 5, 20, 30])
+        torch.Size([3, 10, 20, 30])
+        >>> x.shape
+        torch.Size([3, 10, 20, 31])
 
     If we try to concatenate ``x_down`` and ``x_down_up`` (to create skip
     connections), we will get an error. It is therefore good practice to ensure

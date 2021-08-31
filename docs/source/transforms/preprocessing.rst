@@ -72,6 +72,20 @@ Spatial
     :members: _get_six_bounds_parameters
 
 
+:class:`ToCanonical`
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: ToCanonical
+    :show-inheritance:
+
+
+:class:`Resample`
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Resample
+    :show-inheritance:
+
+
 :class:`EnsureShapeMultiple`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -97,20 +111,6 @@ Spatial
 ~~~~~~~~~~~~
 
 .. autoclass:: Pad
-    :show-inheritance:
-
-
-:class:`Resample`
-~~~~~~~~~~~~~~~~~
-
-.. autoclass:: Resample
-    :show-inheritance:
-
-
-:class:`ToCanonical`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: ToCanonical
     :show-inheritance:
 
 

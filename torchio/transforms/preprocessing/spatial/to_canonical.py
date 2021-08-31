@@ -11,9 +11,9 @@ class ToCanonical(SpatialTransform):
     This transform reorders the voxels and modifies the affine matrix so that
     the voxel orientations are nearest to:
 
-    1. First voxel axis goes from left to **R**ight
-    2. Second voxel axis goes from posterior to **A**nterior
-    3. Third voxel axis goes from inferior to **S**uperior
+    1. First voxel axis goes from left to Right
+    2. Second voxel axis goes from posterior to Anterior
+    3. Third voxel axis goes from inferior to Superior
 
     See `NiBabel docs about image orientation`_ for more information.
 
