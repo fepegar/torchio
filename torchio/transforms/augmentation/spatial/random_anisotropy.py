@@ -103,12 +103,14 @@ class RandomAnisotropy(RandomTransform):
         }
 
         downsample = Resample(
-            tuple(target_spacing),
+            target=tuple(target_spacing),
             **self.add_include_exclude(arguments)
         )
         downsampled = downsample(subject)
+        image = subject.get_first_image()
+        target = image.spatial_shape, image.affine
         upsample = Resample(
-            subject.get_first_image(),
+            target=target,
             image_interpolation=self.image_interpolation,
             scalars_only=self.scalars_only,
         )

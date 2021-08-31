@@ -19,3 +19,7 @@ TypeRangeInt = Union[int, Tuple[int, int]]
 TypePatchSize = Union[int, Tuple[int, int, int]]
 TypeRangeFloat = Union[float, Tuple[float, float]]
 TypeCallable = Callable[[torch.Tensor], torch.Tensor]
+TypeDirection2D = Tuple[float, float, float, float]
+TypeDirection3D = Tuple[
+    float, float, float, float, float, float, float, float, float]
+TypeDirection = Union[TypeDirection2D, TypeDirection3D]
