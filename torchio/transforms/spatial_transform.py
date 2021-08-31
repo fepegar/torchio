@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 
 from .transform import Transform
 from ..data import Image
@@ -15,11 +15,3 @@ class SpatialTransform(Transform):
             exclude=self.exclude,
         )
         return images
-
-    def get_images_dict(self, subject: Subject) -> Dict[str, Image]:
-        images_dict = subject.get_images_dict(
-            intensity_only=False,
-            include=self.include,
-            exclude=self.exclude,
-        )
-        return images_dict
