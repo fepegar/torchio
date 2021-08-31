@@ -66,10 +66,10 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     </tr>
     <tr>
         <td align="left">
-            <b>Notebooks</b>
+            <b>Tutorials</b>
         </td>
         <td align="center">
-            <a href="https://github.com/fepegar/torchio/blob/master/notebooks/README.md">
+            <a href="https://github.com/fepegar/torchio/blob/master/tutorials/README.md">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Google Colab">
             </a>
         </td>
@@ -270,7 +270,7 @@ and a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world
 example.
 
 Longer usage examples can be found in the
-[notebooks](https://github.com/fepegar/torchio/blob/master/notebooks/README.md).
+[tutorials](https://github.com/fepegar/torchio/blob/master/tutorials/README.md).
 
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).

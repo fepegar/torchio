@@ -102,7 +102,7 @@ Tutorials
 |Google-Colab-notebook|
 
 The best way to quickly understand and try the library is the
-`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/notebooks/README.md>`_
+`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/tutorials/README.md>`_
 hosted on Google Colab.
 
 They include multiple examples and visualization of most of the classes,
@@ -111,5 +111,5 @@ brain segmentation on :math:`T_1`-weighted MRI with full volumes and
 with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/master/notebooks/README.md
+   :target: https://github.com/fepegar/torchio/blob/master/tutorials/README.md
    :alt: Google Colab notebook
