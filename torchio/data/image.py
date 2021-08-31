@@ -349,7 +349,7 @@ class Image(dict):
         elif axis == 'P': flipped_axis = 'A'
         elif axis == 'I': flipped_axis = 'S'
         elif axis == 'S': flipped_axis = 'I'
-        elif axis == 'T': flipped_axis = 'B'
+        elif axis == 'T': flipped_axis = 'B'  # top / bottom
         elif axis == 'B': flipped_axis = 'T'
         else:
             values = ', '.join('LRPAISTB')
@@ -495,13 +495,14 @@ class Image(dict):
             warnings.warn(f'NaNs found in file "{path}"', RuntimeWarning)
         return tensor, affine
 
-    def save(self, path: TypePath, squeeze: bool = True) -> None:
+    def save(self, path: TypePath, squeeze: Optional[bool] = None) -> None:
         """Save image to disk.
 
         Args:
             path: String or instance of :class:`pathlib.Path`.
-            squeeze: If ``True``, singleton dimensions will be removed
-                before saving.
+            squeeze: Whether to remove singleton dimensions before saving.
+                If ``None``, the array will be squeezed if the output format is
+                JP(E)G, PNG, BMP or TIF(F).
         """
         write_image(
             self.data,
