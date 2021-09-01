@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 from ...constants import MIN_FLOAT_32
-from ...typing import TypePatchSize
+from ...typing import TypeSpatialShape
 from ..image import Image
 from ..subject import Subject
 from .sampler import RandomSampler
@@ -50,7 +50,7 @@ class WeightedSampler(RandomSampler):
     """  # noqa: E501
     def __init__(
             self,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             probability_map: str,
             ):
         super().__init__(patch_size)
@@ -120,7 +120,7 @@ class WeightedSampler(RandomSampler):
     @staticmethod
     def clear_probability_borders(
             probability_map: np.ndarray,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             ) -> None:
         # Set probability to 0 on voxels that wouldn't possibly be sampled
         # given the current patch size

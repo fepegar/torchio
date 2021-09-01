@@ -4,7 +4,7 @@ import numpy as np
 
 from ...utils import to_tuple
 from ...data.subject import Subject
-from ...typing import TypePatchSize
+from ...typing import TypeSpatialShape
 from ...typing import TypeTripletInt
 from .sampler import PatchSampler
 
@@ -62,8 +62,8 @@ class GridSampler(PatchSampler):
     def __init__(
             self,
             subject: Optional[Subject] = None,
-            patch_size: TypePatchSize = None,
-            patch_overlap: TypePatchSize = (0, 0, 0),
+            patch_size: TypeSpatialShape = None,
+            patch_overlap: TypeSpatialShape = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
             ):
         if patch_size is None:

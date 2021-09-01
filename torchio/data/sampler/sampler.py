@@ -3,7 +3,7 @@ from typing import Optional, Generator
 import torch
 import numpy as np
 
-from ...typing import TypePatchSize, TypeTripletInt
+from ...typing import TypeSpatialShape, TypeTripletInt
 from ...data.subject import Subject
 from ...constants import LOCATION
 from ...utils import to_tuple
@@ -21,7 +21,7 @@ class PatchSampler:
         using child classes such as :class:`~torchio.data.UniformSampler` and
         :class:`~torchio.data.WeightedSampler`.
     """
-    def __init__(self, patch_size: TypePatchSize):
+    def __init__(self, patch_size: TypeSpatialShape):
         patch_size_array = np.array(to_tuple(patch_size, length=3))
         for n in patch_size_array:
             if n < 1 or not isinstance(n, (int, np.integer)):
@@ -60,7 +60,7 @@ class PatchSampler:
     def _get_crop_transform(
             subject,
             index_ini: TypeTripletInt,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             ):
         from ...transforms.preprocessing.spatial.crop import Crop
         shape = np.array(subject.spatial_shape, dtype=np.uint16)

@@ -5,7 +5,7 @@ import numpy as np
 
 from ...data.image import LabelMap
 from ...data.subject import Subject
-from ...typing import TypePatchSize
+from ...typing import TypeSpatialShape
 from ...constants import TYPE, LABEL
 from .weighted import WeightedSampler
 
@@ -59,7 +59,7 @@ class LabelSampler(WeightedSampler):
     """
     def __init__(
             self,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             label_name: Optional[str] = None,
             label_probabilities: Optional[Dict[int, float]] = None,
             ):
