@@ -1,6 +1,7 @@
 from pathlib import Path
 from numbers import Number
-from typing import Union, Tuple, Optional, Sequence
+from typing import Union, Tuple, Optional
+from collections.abc import Iterable
 
 import torch
 import numpy as np
@@ -93,7 +94,7 @@ class Resample(SpatialTransform):
 
     @staticmethod
     def _parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
-        if isinstance(spacing, Sequence) and len(spacing) == 3:
+        if isinstance(spacing, Iterable) and len(spacing) == 3:
             result = spacing
         elif isinstance(spacing, Number):
             result = 3 * (spacing,)
@@ -232,9 +233,9 @@ class Resample(SpatialTransform):
             )
         elif isinstance(target, Number):  # one number for target was passed
             self._set_resampler_from_spacing(resampler, target, floating_sitk)
-        elif isinstance(target, Sequence) and len(target) == 2:
+        elif isinstance(target, Iterable) and len(target) == 2:
             shape, affine = target
-            if not (isinstance(shape, Sequence) and len(shape) == 3):
+            if not (isinstance(shape, Iterable) and len(shape) == 3):
                 message = (
                     f'Target shape must be a sequence of three integers, but'
                     f' "{shape}" was passed'
@@ -251,7 +252,7 @@ class Resample(SpatialTransform):
                 shape,
                 affine,
             )
-        elif isinstance(target, Sequence) and len(target) == 3:
+        elif isinstance(target, Iterable) and len(target) == 3:
             self._set_resampler_from_spacing(resampler, target, floating_sitk)
         else:
             raise RuntimeError(f'Target not understood: "{target}"')
