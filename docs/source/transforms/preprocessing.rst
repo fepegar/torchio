@@ -86,6 +86,13 @@ Spatial
     :show-inheritance:
 
 
+:class:`Resize`
+~~~~~~~~~~~~~~~
+
+.. autoclass:: Resize
+    :show-inheritance:
+
+
 :class:`EnsureShapeMultiple`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

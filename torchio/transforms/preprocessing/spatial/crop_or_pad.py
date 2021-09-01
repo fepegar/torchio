@@ -11,7 +11,7 @@ from ....data.subject import Subject
 
 
 class CropOrPad(BoundsTransform):
-    """Crop and/or pad an image to a target shape.
+    """Modify the field of view by cropping or padding to match a target shape.
 
     This transform modifies the affine matrix associated to the volume so that
     physical positions of the voxels are maintained.

@@ -1,5 +1,6 @@
 from .spatial.pad import Pad
 from .spatial.crop import Crop
+from .spatial.resize import Resize
 from .spatial.resample import Resample
 from .spatial.crop_or_pad import CropOrPad
 from .spatial.to_canonical import ToCanonical
@@ -23,6 +24,7 @@ from .label.keep_largest_component import KeepLargestComponent
 __all__ = [
     'Pad',
     'Crop',
+    'Resize',
     'Resample',
     'ToCanonical',
     'CropOrPad',
