@@ -74,7 +74,11 @@ class TestResample(TorchioTestCase):
         self.assertEqual(shape, (1, 4, 6, 1))
 
     def test_input_list(self):
-        tio.Resample([1, 2, 3])
+        tio.Resample([1, 2, 3])(self.sample_subject)
+
+    def test_input_array(self):
+        resample = tio.Resample(np.asarray([1, 2, 3]))
+        resample(self.sample_subject)
 
     def test_image_target(self):
         tio.Resample(self.sample_subject.t1)(self.sample_subject)
