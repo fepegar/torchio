@@ -34,7 +34,7 @@ class Resample(SpatialTransform):
 
             - Name of an image key in the subject.
 
-            - Tuple ``(spaial_shape, affine)`` defining the output space.
+            - Tuple ``(spatial_shape, affine)`` defining the output space.
 
         pre_affine_name: Name of the *image key* (not subject key) storing an
             affine matrix that will be applied to the image header before
