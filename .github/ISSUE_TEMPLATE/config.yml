@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ❗ Stack Overflow
-    url: https://stackoverflow.com/questions/ask
-    about: If you got an error and you are not sure if it's a bug, please ask a question on Stack Overflow using the `torchio` tag
   - name: ❓ Discussions tab
     url: https://github.com/fepegar/torchio/discussions/new
     about: Ask and answer TorchIO-related questions or start a general discussion
