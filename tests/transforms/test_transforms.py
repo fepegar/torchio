@@ -17,6 +17,7 @@ class TestTransforms(TorchioTestCase):
         disp = 1 if is_3d else (1, 1, 0.01)
         elastic = tio.RandomElasticDeformation(max_displacement=disp)
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
+        resize_args = (10, 20, 30) if is_3d else (10, 20, 1)
         flip_axes = axes_downsample = (0, 1, 2) if is_3d else (0, 1)
         swap_patch = (2, 3, 4) if is_3d else (3, 4, 1)
         pad_args = (1, 2, 3, 0, 5, 6) if is_3d else (0, 0, 3, 0, 5, 6)
@@ -24,9 +25,10 @@ class TestTransforms(TorchioTestCase):
         remapping = {1: 2, 2: 1, 3: 20, 4: 25}
         transforms = [
             tio.CropOrPad(cp_args),
+            tio.EnsureShapeMultiple(2, method='crop'),
+            tio.Resize(resize_args),
             tio.ToCanonical(),
             tio.RandomAnisotropy(downsampling=(1.75, 2), axes=axes_downsample),
-            tio.EnsureShapeMultiple(2, method='crop'),
             tio.CopyAffine(channels[0]),
             tio.Resample((1, 1.1, 1.25)),
             tio.RandomFlip(axes=flip_axes, flip_probability=1),
