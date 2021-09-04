@@ -20,19 +20,39 @@ class RSNAMICCAI(SubjectsDataset):
     U.Baid, et al., "The RSNA-ASNR-MICCAI BraTS 2021 Benchmark on Brain Tumor
     Segmentation and Radiogenomic Classification", arXiv:2107.02314, 2021.
 
+    Args:
+        root_dir: Directory containing the dataset (``train`` directory,
+            ``test`` directory, etc.).
+        train: If ``True``, the training set will be used. Otherwise the
+            validation set will be used.
+        ignore_empty: If ``True``, the three subjects flagged as "presenting
+            issues" (empty images) by the challenge organizers will be ignored.
+
     .. _RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge: https://www.kaggle.com/c/rsna-miccai-brain-tumor-radiogenomic-classification
     """
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'
     modalities = 'T1w', 'T1wCE', 'T2w', 'FLAIR'
+    bad_subjects = '00109', '00123', '00709'
 
-    def __init__(self, root_dir: TypePath, train: bool = True, **kwargs):
+    def __init__(
+            self,
+            root_dir: TypePath,
+            train: bool = True,
+            ignore_empty: bool = True,
+            **kwargs,
+            ):
         self.root_dir = Path(root_dir).expanduser().resolve()
-        subjects = self._get_subjects(self.root_dir, train)
+        subjects = self._get_subjects(self.root_dir, train, ignore_empty)
         super().__init__(subjects, **kwargs)
         self.train = train
 
-    def _get_subjects(self, root_dir: Path, train: bool) -> List[Subject]:
+    def _get_subjects(
+            self,
+            root_dir: Path,
+            train: bool,
+            ignore_empty: bool,
+            ) -> List[Subject]:
         subjects = []
         if train:
             csv_path = root_dir / 'train_labels.csv'
@@ -48,6 +68,8 @@ class RSNAMICCAI(SubjectsDataset):
 
         for subject_dir in sorted(subjects_dir.iterdir()):
             subject_id = subject_dir.name
+            if ignore_empty and subject_id in self.bad_subjects:
+                continue
             try:
                 int(subject_id)
             except ValueError:
