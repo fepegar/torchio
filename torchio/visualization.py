@@ -116,27 +116,30 @@ def plot_subject(
             subplots_kwargs['sharey'] = 'col'
     except RuntimeError:  # different shapes in subject
         pass
-    fig, axes = plt.subplots(len(subject), 3, **subplots_kwargs)
+    num_images = len(subject)
+    many_images = num_images > 2
+    args = (3, num_images) if many_images else (num_images, 3)
+    fig, axes = plt.subplots(*args, **subplots_kwargs)
     # The array of axes must be 2D so that it can be indexed correctly within
     # the plot_volume() function
-    axes = axes.reshape(-1, 3)
+    axes = axes.T if many_images else axes.reshape(-1, 3)
     iterable = enumerate(subject.get_images_dict(intensity_only=False).items())
     axes_names = 'sagittal', 'coronal', 'axial'
-    for row_index, (name, image) in iterable:
-        row_axes = axes[row_index]
+    for image_index, (name, image) in iterable:
+        image_axes = axes[image_index]
         cmap = None
         if cmap_dict is not None and name in cmap_dict:
             cmap = cmap_dict[name]
-        last_row = row_index == len(axes) - 1
+        last_row = image_index == len(axes) - 1
         plot_volume(
             image,
-            axes=row_axes,
+            axes=image_axes,
             show=False,
             cmap=cmap,
             xlabels=last_row,
             **kwargs,
         )
-        for axis, axis_name in zip(row_axes, axes_names):
+        for axis, axis_name in zip(image_axes, axes_names):
             axis.set_title(f'{name} ({axis_name})')
     plt.tight_layout()
     if output_path is not None:
