@@ -216,7 +216,8 @@ class Image(dict):
     @property
     def affine(self) -> np.ndarray:
         """Affine matrix to transform voxel indices into world coordinates."""
-        if self._loaded:
+        # If path is a dir (probably DICOM), just load the data
+        if self._loaded or self.path.is_dir():
             affine = self[AFFINE]
         else:
             affine = read_affine(self.path)
@@ -235,7 +236,7 @@ class Image(dict):
         """Tensor shape as :math:`(C, W, H, D)`."""
         custom_reader = self.reader is not read_image
         multipath = not isinstance(self.path, (str, Path))
-        if self._loaded or custom_reader or multipath:
+        if self._loaded or custom_reader or multipath or self.path.is_dir():
             shape = tuple(self.data.shape)
         else:
             shape = read_shape(self.path)
