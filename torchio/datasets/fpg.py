@@ -12,6 +12,9 @@ class FPG(Subject):
 
         self.filenames = {
             't1': 't1.nii.gz',
+            't2': 't2.nii.gz',
+            'fmri': 'fmri.nrrd',
+            'dmri': 'dmri.nrrd',
             'seg': 't1_seg_gif.nii.gz',
             'rigid': 't1_to_mni.tfm',
             'affine': 't1_to_mni_affine.h5',
@@ -38,6 +41,9 @@ class FPG(Subject):
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),
+            't2': ScalarImage(download_root / self.filenames['t2']),
+            'fmri': ScalarImage(download_root / self.filenames['fmri']),
+            'dmri': ScalarImage(download_root / self.filenames['dmri']),
         }
         super().__init__(subject_dict)
         self.gif_colors = GIF_COLORS
