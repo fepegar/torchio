@@ -54,6 +54,19 @@ EPISURG
     :show-inheritance:
 
 
+RSNAMICCAI
+----------
+
+.. currentmodule:: torchio.datasets.rsna_miccai
+
+:class:`RSNAMICCAI`
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RSNAMICCAI
+    :members:
+    :show-inheritance:
+
+
 MNI
 ---
 
