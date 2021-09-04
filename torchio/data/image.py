@@ -154,17 +154,17 @@ class Image(dict):
 
     def __repr__(self):
         properties = []
-        if self._loaded:
-            properties.extend([
-                f'shape: {self.shape}',
-                f'spacing: {self.get_spacing_string()}',
-                f'orientation: {"".join(self.orientation)}+',
-                f'memory: {humanize.naturalsize(self.memory, binary=True)}',
-            ])
-        else:
-            properties.append(f'path: "{self.path}"')
+        properties.extend([
+            f'shape: {self.shape}',
+            f'spacing: {self.get_spacing_string()}',
+            f'orientation: {"".join(self.orientation)}+',
+        ])
         if self._loaded:
             properties.append(f'dtype: {self.data.type()}')
+            properties.append(f'memory: {humanize.naturalsize(self.memory, binary=True)}')
+        else:
+            properties.append(f'path: "{self.path}"')
+
         properties = '; '.join(properties)
         string = f'{self.__class__.__name__}({properties})'
         return string
