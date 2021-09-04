@@ -33,6 +33,7 @@ def plot_volume(
         xlabels=True,
         percentiles=(0.5, 99.5),
         figsize=None,
+        reorient=True,
         ):
     _, plt = import_mpl_plt()
     fig = None
@@ -40,7 +41,8 @@ def plot_volume(
         fig, axes = plt.subplots(1, 3, figsize=figsize)
     sag_axis, cor_axis, axi_axis = axes
 
-    image = ToCanonical()(image)
+    if reorient:
+        image = ToCanonical()(image)
     data = image.data[channel]
     indices = np.array(data.shape) // 2
     i, j, k = indices
