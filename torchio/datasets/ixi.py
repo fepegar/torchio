@@ -30,8 +30,7 @@ from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
 
 
 class IXI(SubjectsDataset):
-    """
-    Full IXI dataset.
+    """Full IXI dataset.
 
     Args:
         root: Root directory to which the dataset will be downloaded.

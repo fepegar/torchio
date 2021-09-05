@@ -3,6 +3,7 @@ from .bite import BITE3
 from .slicer import Slicer
 from .episurg import EPISURG
 from .ixi import IXI, IXITiny
+from .rsna_miccai import RSNAMICCAI
 from .itk_snap import BrainTumor, T1T2, AorticValve
 from .mni import Colin27, Sheep, Pediatric, ICBM2009CNonlinearSymmetric
 
@@ -13,6 +14,7 @@ __all__ = [
     'BITE3',
     'IXI',
     'IXITiny',
+    'RSNAMICCAI',
     'EPISURG',
     'BrainTumor',
     'T1T2',
