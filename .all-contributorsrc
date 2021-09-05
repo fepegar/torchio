@@ -355,6 +355,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "cepa995",
+      "name": "Stefan Milorad Radonjić",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67524891?v=4",
+      "profile": "https://github.com/cepa995",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
