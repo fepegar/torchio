@@ -237,6 +237,7 @@ class CropOrPad(BoundsTransform):
         return padding_params, cropping_params
 
     def apply_transform(self, subject: Subject) -> Subject:
+        subject.check_consistent_space()
         padding_params, cropping_params = self.compute_crop_or_pad(subject)
         padding_kwargs = {'padding_mode': self.padding_mode}
         if padding_params is not None:
