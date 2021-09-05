@@ -348,13 +348,18 @@ def get_ras_affine_from_sitk(
 def get_sitk_metadata_from_ras_affine(
         affine: np.ndarray,
         is_2d: bool = False,
+        lps: bool = True,
         ) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
-    rotation, spacing = get_rotation_and_spacing_from_affine(affine)
-    origin = np.dot(FLIPXY_33, affine[:3, 3])
-    direction = np.dot(FLIPXY_33, rotation)
+    direction_ras, spacing = get_rotation_and_spacing_from_affine(affine)
+    origin_ras = affine[:3, 3]
+    origin_lps = np.dot(FLIPXY_33, origin_ras)
+    direction_lps = np.dot(FLIPXY_33, direction_ras)
     if is_2d:  # ignore orientation if 2D (1, W, H, 1)
-        direction = np.diag((-1, -1)).astype(np.float64)
-    direction = tuple(direction.flatten())
+        direction_lps = np.diag((-1, -1)).astype(np.float64)
+        direction_ras = np.diag((1, 1)).astype(np.float64)
+    direction_lps = tuple(direction_lps.flatten())
+    origin = origin_lps if lps else origin_ras
+    direction = direction_lps if lps else direction_ras
     return origin, spacing, direction
 
 

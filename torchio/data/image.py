@@ -11,7 +11,13 @@ import SimpleITK as sitk
 from deprecated import deprecated
 
 from ..utils import get_stem
-from ..typing import TypeData, TypePath, TypeTripletInt, TypeTripletFloat
+from ..typing import (
+    TypeData,
+    TypePath,
+    TypeTripletInt,
+    TypeTripletFloat,
+    TypeDirection3D,
+)
 from ..constants import DATA, TYPE, AFFINE, PATH, STEM, INTENSITY, LABEL
 from .io import (
     ensure_4d,
@@ -21,6 +27,7 @@ from .io import (
     sitk_to_nib,
     check_uint_to_int,
     get_rotation_and_spacing_from_affine,
+    get_sitk_metadata_from_ras_affine,
     read_shape,
     read_affine,
 )
@@ -268,6 +275,12 @@ class Image(dict):
     def orientation(self) -> Tuple[str, str, str]:
         """Orientation codes."""
         return nib.aff2axcodes(self.affine)
+
+    @property
+    def direction(self) -> TypeDirection3D:
+        _, _, direction = get_sitk_metadata_from_ras_affine(
+            self.affine, lps=False)
+        return direction
 
     @property
     def spacing(self) -> Tuple[float, float, float]:

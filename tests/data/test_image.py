@@ -62,9 +62,9 @@ class TestImage(TorchioTestCase):
         subject = tio.Subject(
             t1=tio.ScalarImage(self.get_image_path('repr_test')),
         )
-        assert 'shape' not in repr(subject['t1'])
+        assert 'memory' not in repr(subject['t1'])
         subject.load()
-        assert 'shape' in repr(subject['t1'])
+        assert 'memory' in repr(subject['t1'])
 
     def test_data_tensor(self):
         subject = copy.deepcopy(self.sample_subject)

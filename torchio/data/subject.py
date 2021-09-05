@@ -298,12 +298,14 @@ class Subject(dict):
     def check_consistent_orientation(self) -> None:
         self.check_consistent_attribute('orientation')
 
-    def check_consistent_affine(self):
+    def check_consistent_affine(self) -> None:
         self.check_consistent_attribute('affine')
 
-    def check_consistent_space(self):
+    def check_consistent_space(self) -> None:
         self.check_consistent_spatial_shape()
-        self.check_consistent_affine()
+        self.check_consistent_attribute('origin')
+        self.check_consistent_attribute('direction')
+        self.check_consistent_attribute('spacing')
 
     def get_images_names(self) -> List[str]:
         return list(self.get_images_dict(intensity_only=False).keys())
