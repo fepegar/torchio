@@ -290,7 +290,7 @@ class Subject(dict):
             num_unique_values = len(set(values_dict.values()))
             if num_unique_values > 1:
                 message = message.format(pprint.pformat(values_dict))
-                raise RuntimeError(message)
+                raise RuntimeError(message) from None
 
     def check_consistent_spatial_shape(self) -> None:
         self.check_consistent_attribute('spatial_shape')
