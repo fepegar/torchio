@@ -110,16 +110,16 @@ def plot_subject(
         **kwargs,
         ):
     _, plt = import_mpl_plt()
+    num_images = len(subject)
+    many_images = num_images > 2
     subplots_kwargs = {'figsize': figsize}
     try:
         if clear_axes:
             subject.check_consistent_spatial_shape()
-            subplots_kwargs['sharex'] = 'col'
-            subplots_kwargs['sharey'] = 'col'
+            subplots_kwargs['sharex'] = 'row' if many_images else 'col'
+            subplots_kwargs['sharey'] = 'row' if many_images else 'col'
     except RuntimeError:  # different shapes in subject
         pass
-    num_images = len(subject)
-    many_images = num_images > 2
     args = (3, num_images) if many_images else (num_images, 3)
     fig, axes = plt.subplots(*args, **subplots_kwargs)
     # The array of axes must be 2D so that it can be indexed correctly within
