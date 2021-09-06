@@ -14,6 +14,9 @@ class RSNAMICCAI(SubjectsDataset):
     `kaggle <https://www.kaggle.com/>`_. The dataset must be downloaded before
     instantiating this class (as oposed to, e.g., :class:`torchio.datasets.IXI`).
 
+    This `kaggle kernel <https://www.kaggle.com/fepegar/preprocessing-mri-with-torchio/>`_
+    includes a usage example including preprocessing of all the scans.
+
     If you reference or use the dataset in any form, include the following
     citation:
 
@@ -23,13 +26,25 @@ class RSNAMICCAI(SubjectsDataset):
     Args:
         root_dir: Directory containing the dataset (``train`` directory,
             ``test`` directory, etc.).
-        train: If ``True``, the training set will be used. Otherwise the
-            validation set will be used.
+        train: If ``True``, the ``train`` set will be used. Otherwise the
+            ``test`` set will be used.
         ignore_empty: If ``True``, the three subjects flagged as "presenting
             issues" (empty images) by the challenge organizers will be ignored.
+            The subject IDs are ``00109``, ``00123`` and ``00709``.
+
+    Example:
+        >>> import torchio as tio
+        >>> from subprocess import call
+        >>> call('kaggle competitions download -c rsna-miccai-brain-tumor-radiogenomic-classification'.split())
+        >>> root_dir = 'rsna-miccai-brain-tumor-radiogenomic-classification'
+        >>> train_set = tio.datasets.RSNAMICCAI(root_dir, train=True)
+        >>> test_set = tio.datasets.RSNAMICCAI(root_dir, train=False)
+        >>> len(train_set), len(test_set)
+        (582, 87)
+
 
     .. _RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge: https://www.kaggle.com/c/rsna-miccai-brain-tumor-radiogenomic-classification
-    """
+    """  # noqa: E501
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'
     modalities = 'T1w', 'T1wCE', 'T2w', 'FLAIR'
