@@ -1,3 +1,4 @@
+import copy
 import torch
 import torchio as tio
 import numpy as np
@@ -92,3 +93,10 @@ class TestRescaleIntensity(TorchioTestCase):
     def test_wrong_percentiles_type(self):
         with self.assertRaises(ValueError):
             tio.RescaleIntensity(out_min_max=(0, 1), percentiles='wrong')
+
+    def test_empty_mask(self):
+        subject = copy.deepcopy(self.sample_subject)
+        subject.label.set_data(subject.label.data * 0)
+        rescale = tio.RescaleIntensity(masking_method='label')
+        with self.assertWarns(RuntimeWarning):
+            rescale(subject)
