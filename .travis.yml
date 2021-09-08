@@ -12,6 +12,7 @@ install:
 
 script:
   - tox
+  - codecov
 
 deploy:
   provider: pypi
