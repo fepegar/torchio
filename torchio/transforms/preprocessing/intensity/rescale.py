@@ -76,6 +76,13 @@ class RescaleIntensity(NormalizationTransform):
         # The tensor is cloned as in-place operations will be used
         array = tensor.clone().float().numpy()
         mask = mask.numpy()
+        if not mask.any():
+            message = (
+                f'Rescaling image "{image_name}" not possible'
+                ' because the mask to compute the statistics is empty'
+            )
+            warnings.warn(message, RuntimeWarning)
+            return tensor
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
         np.clip(array, *cutoff, out=array)
@@ -83,15 +90,15 @@ class RescaleIntensity(NormalizationTransform):
             in_min, in_max = array.min(), array.max()
         else:
             in_min, in_max = self.in_min_max
-        array -= in_min
         in_range = in_max - in_min
         if in_range == 0:  # should this be compared using a tolerance?
             message = (
                 f'Rescaling image "{image_name}" not possible'
-                ' due to division by zero'
+                ' because all the intensity values are the same'
             )
             warnings.warn(message, RuntimeWarning)
             return tensor
+        array -= in_min
         array /= in_range
         out_range = self.out_max - self.out_min
         array *= out_range
