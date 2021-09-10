@@ -202,7 +202,7 @@ class Image(dict):
         """Tensor data. Same as :class:`Image.tensor`."""
         return self[DATA]
 
-    @data.setter
+    @data.setter  # type: ignore
     @deprecated(version='0.18.16', reason=deprecation_message)
     def data(self, tensor: TypeData):
         self.set_data(tensor)
@@ -224,7 +224,8 @@ class Image(dict):
     def affine(self) -> np.ndarray:
         """Affine matrix to transform voxel indices into world coordinates."""
         # If path is a dir (probably DICOM), just load the data
-        if self._loaded or self.path.is_dir():
+        # Same if it's a list of paths (used to create a 4D image)
+        if self._loaded or (isinstance(self.path, Path) and self.path.is_dir()):
             affine = self[AFFINE]
         else:
             affine = read_affine(self.path)
@@ -410,7 +411,7 @@ class Image(dict):
 
     def _parse_path(
             self,
-            path: Union[TypePath, Sequence[TypePath]]
+            path: Union[TypePath, Sequence[TypePath], None]
             ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
@@ -421,9 +422,9 @@ class Image(dict):
 
     def _parse_tensor(
             self,
-            tensor: TypeData,
+            tensor: Optional[TypeData],
             none_ok: bool = True,
-            ) -> torch.Tensor:
+            ) -> Optional[torch.Tensor]:
         if tensor is None:
             if none_ok:
                 return None
@@ -447,11 +448,12 @@ class Image(dict):
             warnings.warn(f'NaNs found in tensor', RuntimeWarning)
         return tensor
 
-    def parse_tensor_shape(self, tensor: torch.Tensor) -> torch.Tensor:
+    @staticmethod
+    def _parse_tensor_shape(tensor: torch.Tensor) -> TypeData:
         return ensure_4d(tensor)
 
     @staticmethod
-    def _parse_affine(affine: TypeData) -> np.ndarray:
+    def _parse_affine(affine: Optional[TypeData]) -> np.ndarray:
         if affine is None:
             return np.eye(4)
         if isinstance(affine, torch.Tensor):
@@ -500,7 +502,7 @@ class Image(dict):
 
     def read_and_check(self, path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
         tensor, affine = self.reader(path)
-        tensor = self.parse_tensor_shape(tensor)
+        tensor = self._parse_tensor_shape(tensor)
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
         if self.channels_last:

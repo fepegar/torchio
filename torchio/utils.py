@@ -3,7 +3,7 @@ import gzip
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence, Dict
+from typing import Union, Tuple, Any, Optional, List, Sequence, Dict
 
 import torch
 from torch.utils.data._utils.collate import default_collate
@@ -17,7 +17,7 @@ from .typing import TypeNumber, TypePath
 
 
 def to_tuple(
-        value: Union[TypeNumber, Iterable[TypeNumber]],
+        value: Any,
         length: int = 1,
         ) -> Tuple[TypeNumber, ...]:
     """
@@ -38,7 +38,7 @@ def to_tuple(
 
 
 def get_stem(
-        path: Union[TypePath, List[TypePath]]
+        path: Union[TypePath, Sequence[TypePath]]
         ) -> Union[str, List[str]]:
     """
     '/home/user/image.nii.gz' -> 'image'
@@ -131,6 +131,7 @@ def guess_type(string: str) -> Any:
     # Adapted from
     # https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
     string = string.replace(' ', '')
+    result_type: Any
     try:
         value = ast.literal_eval(string)
     except ValueError:
@@ -195,7 +196,9 @@ def history_collate(batch: Sequence, collate_transforms=True) -> Dict:
         }
         if hasattr(first_element, attr):
             dictionary.update({attr: [getattr(d, attr) for d in batch]})
-        return dictionary
+    else:
+        dictionary = {}
+    return dictionary
 
 
 def get_subclasses(target_class: type) -> List[type]:

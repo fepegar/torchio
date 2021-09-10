@@ -19,5 +19,6 @@ sphinx-gallery
 sphinx-notfound-page
 tox
 twine
+types-Deprecated
 watchdog
 wheel

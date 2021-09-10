@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 from typing import Union, Tuple, Callable, Optional, Sequence
 
 import torch
@@ -6,7 +6,7 @@ import numpy as np
 
 
 # For typing hints
-TypePath = Union[Path, str]
+TypePath = Union[str, os.PathLike]  # https://www.python.org/dev/peps/pep-0519/#provide-specific-type-hinting-support  # noqa: E501
 TypeNumber = Union[int, float]
 TypeKeys = Optional[Sequence[str]]
 TypeData = Union[torch.Tensor, np.ndarray]

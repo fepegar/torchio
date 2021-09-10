@@ -334,8 +334,8 @@ def get_ras_affine_from_sitk(
         rotation_lps_2d = direction_lps.reshape(2, 2)
         rotation_lps = np.eye(3)
         rotation_lps[:2, :2] = rotation_lps_2d
-        spacing = *spacing, 1
-        origin_lps = *origin_lps, 0
+        spacing = np.append(spacing, 1)
+        origin_lps = np.append(origin_lps, 0)
     rotation_ras = np.dot(FLIPXY_33, rotation_lps)
     rotation_ras_zoom = rotation_ras * spacing
     translation_ras = np.dot(FLIPXY_33, origin_lps)
@@ -350,16 +350,28 @@ def get_sitk_metadata_from_ras_affine(
         is_2d: bool = False,
         lps: bool = True,
         ) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
-    direction_ras, spacing = get_rotation_and_spacing_from_affine(affine)
+    direction_ras, spacing_array = get_rotation_and_spacing_from_affine(affine)
     origin_ras = affine[:3, 3]
     origin_lps = np.dot(FLIPXY_33, origin_ras)
     direction_lps = np.dot(FLIPXY_33, direction_ras)
     if is_2d:  # ignore orientation if 2D (1, W, H, 1)
         direction_lps = np.diag((-1, -1)).astype(np.float64)
         direction_ras = np.diag((1, 1)).astype(np.float64)
-    direction_lps = tuple(direction_lps.flatten())
-    origin = origin_lps if lps else origin_ras
-    direction = direction_lps if lps else direction_ras
+    origin_array = origin_lps if lps else origin_ras
+    direction_array = direction_lps if lps else direction_ras
+    direction_array = direction_array.flatten()
+    # The following are to comply with typing hints
+    # (there must be prettier ways to do this)
+    ox, oy, oz = origin_array
+    sx, sy, sz = spacing_array
+    if is_2d:
+        d1, d2, d3, d4 = direction_array
+        direction = d1, d2, d3, d4
+    else:
+        d1, d2, d3, d4, d5, d6, d7, d8, d9 = direction_array
+        direction = d1, d2, d3, d4, d5, d6, d7, d8, d9
+    origin = ox, oy, oz
+    spacing = sx, sy, sz
     return origin, spacing, direction
 
 
