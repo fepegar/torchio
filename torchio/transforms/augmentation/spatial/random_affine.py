@@ -18,7 +18,7 @@ TypeOneToSixFloat = Union[TypeRangeFloat, TypeTripletFloat, TypeSextetFloat]
 
 
 class RandomAffine(RandomTransform, SpatialTransform):
-    r"""Random affine transformation.
+    r"""Apply a random affine transformation and resample the image.
 
     Args:
         scales: Tuple :math:`(a_1, b_1, a_2, b_2, a_3, b_3)` defining the
@@ -226,7 +226,7 @@ class Affine(SpatialTransform):
         )
 
     @staticmethod
-    def get_scaling_transform(
+    def _get_scaling_transform(
             scaling_params: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.ScaleTransform:
@@ -240,7 +240,7 @@ class Affine(SpatialTransform):
         return transform
 
     @staticmethod
-    def get_rotation_transform(
+    def _get_rotation_transform(
             degrees: Sequence[float],
             translation: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
@@ -253,21 +253,48 @@ class Affine(SpatialTransform):
             transform.SetCenter(center_lps)
         return transform
 
+    def get_affine_transform(self, image):
+        scaling = np.array(self.scales).copy()
+        rotation = np.array(self.degrees).copy()
+        translation = np.array(self.translation).copy()
+
+        if image.is_2d():
+            scaling[2] = 1
+            rotation[:-1] = 0
+
+        if self.use_image_center:
+            center_lps = image.get_center(lps=True)
+        else:
+            center_lps = None
+
+        scaling_transform = self._get_scaling_transform(
+            scaling,
+            center_lps=center_lps,
+        )
+        rotation_transform = self._get_rotation_transform(
+            rotation,
+            translation,
+            center_lps=center_lps,
+        )
+
+        sitk_major_version = get_major_sitk_version()
+        if sitk_major_version == 1:
+            transform = sitk.Transform(3, sitk.sitkComposite)
+            transform.AddTransform(scaling_transform)
+            transform.AddTransform(rotation_transform)
+        elif sitk_major_version == 2:
+            transforms = [scaling_transform, rotation_transform]
+            transform = sitk.CompositeTransform(transforms)
+
+        if self.invert_transform:
+            transform = transform.GetInverse()
+
+        return transform
+
     def apply_transform(self, subject: Subject) -> Subject:
-        scaling_params = np.array(self.scales).copy()
-        rotation_params = np.array(self.degrees).copy()
-        translation_params = np.array(self.translation).copy()
         subject.check_consistent_spatial_shape()
         for image in self.get_images(subject):
-            if image.is_2d():
-                scaling_params[2] = 1
-                rotation_params[:-1] = 0
-
-            if self.use_image_center:
-                center = image.get_center(lps=True)
-            else:
-                center = None
-
+            transform = self.get_affine_transform(image)
             transformed_tensors = []
             for tensor in image.data:
                 sitk_image = nib_to_sitk(
@@ -292,12 +319,9 @@ class Affine(SpatialTransform):
                         default_value = self.default_pad_value
                 transformed_tensor = self.apply_affine_transform(
                     sitk_image,
-                    scaling_params.tolist(),
-                    rotation_params.tolist(),
-                    translation_params.tolist(),
+                    transform,
                     interpolation,
                     default_value,
-                    center_lps=center,
                 )
                 transformed_tensors.append(transformed_tensor)
             image.set_data(torch.stack(transformed_tensors))
@@ -306,36 +330,12 @@ class Affine(SpatialTransform):
     def apply_affine_transform(
             self,
             sitk_image: sitk.Image,
-            scaling_params: Sequence[float],
-            rotation_params: Sequence[float],
-            translation_params: Sequence[float],
+            transform: sitk.Transform,
             interpolation: str,
             default_value: float,
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
         floating = reference = sitk_image
-
-        scaling_transform = self.get_scaling_transform(
-            scaling_params,
-            center_lps=center_lps,
-        )
-        rotation_transform = self.get_rotation_transform(
-            rotation_params,
-            translation_params,
-            center_lps=center_lps,
-        )
-
-        sitk_major_version = get_major_sitk_version()
-        if sitk_major_version == 1:
-            transform = sitk.Transform(3, sitk.sitkComposite)
-            transform.AddTransform(scaling_transform)
-            transform.AddTransform(rotation_transform)
-        elif sitk_major_version == 2:
-            transforms = [scaling_transform, rotation_transform]
-            transform = sitk.CompositeTransform(transforms)
-
-        if self.invert_transform:
-            transform = transform.GetInverse()
 
         resampler = sitk.ResampleImageFilter()
         resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
