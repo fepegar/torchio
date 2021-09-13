@@ -29,6 +29,10 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
     topic on ScienceDirect contains useful articles explaining interpolation of
     displacement fields using cubic B-splines.
 
+    .. warning:: This transform is slow as it requires expensive computations.
+        If your images are large you might want to use
+        math:`~torchio.transforms.RandomAffine` instead.
+
     Args:
         num_control_points: Number of control points along each dimension of
             the coarse grid :math:`(n_x, n_y, n_z)`.
@@ -212,11 +216,16 @@ class ElasticDeformation(SpatialTransform):
             'max_displacement',
         )
 
-    @staticmethod
     def get_bspline_transform(
+            self,
             image: sitk.Image,
-            control_points: np.ndarray,
             ) -> sitk.BSplineTransformInitializer:
+        control_points = self.control_points.copy()
+        if self.invert_transform:
+            control_points *= -1
+        is_2d = image.GetSize()[2] == 1
+        if is_2d:
+            control_points[..., -1] = 0  # no displacement in IS axis
         num_control_points = control_points.shape[:-1]
         mesh_shape = [n - SPLINE_ORDER for n in num_control_points]
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
@@ -248,20 +257,14 @@ class ElasticDeformation(SpatialTransform):
         if no_displacement:
             return subject
         subject.check_consistent_spatial_shape()
-        control_points = self.control_points.copy()
-        if self.invert_transform:
-            control_points *= -1
         for image in self.get_images(subject):
             if not isinstance(image, ScalarImage):
                 interpolation = 'nearest'
             else:
                 interpolation = self.image_interpolation
-            if image.is_2d():
-                control_points[..., -1] = 0  # no displacement in IS axis
             transformed = self.apply_bspline_transform(
                 image.data,
                 image.affine,
-                control_points,
                 interpolation,
             )
             image.set_data(transformed)
@@ -271,7 +274,6 @@ class ElasticDeformation(SpatialTransform):
             self,
             tensor: torch.Tensor,
             affine: np.ndarray,
-            control_points: np.ndarray,
             interpolation: str,
             ) -> torch.Tensor:
         assert tensor.dim() == 4
@@ -279,10 +281,7 @@ class ElasticDeformation(SpatialTransform):
         for component in tensor:
             image = nib_to_sitk(component[np.newaxis], affine, force_3d=True)
             floating = reference = image
-            bspline_transform = self.get_bspline_transform(
-                image,
-                control_points,
-            )
+            bspline_transform = self.get_bspline_transform(image)
             self.parse_free_form_transform(
                 bspline_transform,
                 self.max_displacement,
