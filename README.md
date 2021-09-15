@@ -27,9 +27,6 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://anaconda.org/conda-forge/torchio">
                 <img src="https://img.shields.io/conda/vn/conda-forge/torchio" alt="Conda version">
             </a>
-            <a href="https://github.com/fepegar/torchio#contributors">
-                <img src="https://img.shields.io/badge/Contributors-27-orange.svg" alt="Contributors">
-            </a>
         </td>
     </tr>
     <tr>
@@ -87,6 +84,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             </a>
             <a href="https://www.youtube.com/watch?v=UEUVSw5-M9M">
                 <img src="https://img.shields.io/youtube/views/UEUVSw5-M9M?label=watch&style=social" alt="YouTube">
+            </a>
+            <a href="https://github.com/fepegar/torchio#contributors">
+                <img src="https://img.shields.io/badge/Contributors-27-orange.svg" alt="Contributors">
             </a>
         </td>
     </tr>
