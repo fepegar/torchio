@@ -1,10 +1,15 @@
 #!/usr/bin/env python
+import torch
 
 from torchio import DATA, SubjectsDataset
 from ..utils import TorchioTestCase
 
 
 class TestSubjectsDataset(TorchioTestCase):
+    
+    def test_indexing_nonint(self):
+        dset = SubjectsDataset(self.subjects_list)
+        dset[torch.tensor(0)]
 
     def test_images(self):
         self.iterate_dataset(self.subjects_list)
