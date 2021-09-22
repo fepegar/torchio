@@ -4,8 +4,7 @@ from torchio import DATA, SubjectsDataset
 from ..utils import TorchioTestCase
 
 
-class TestSubjectsDataset(TorchioTestCase):
-    
+class TestSubjectsDataset(TorchioTestCase):  
     def test_indexing_nonint(self):
         dset = SubjectsDataset(self.subjects_list)
         dset[torch.tensor(0)]
