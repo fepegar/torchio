@@ -310,7 +310,7 @@ class Subject(dict):
         except RuntimeError as e:
             message = (
                 'As described above, some images in the subject are not in the'
-                ' same space. You probably can use the tranforms ToCanonical'
+                ' same space. You probably can use the transforms ToCanonical'
                 ' and Resample to fix this, as explained at'
                 ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'
             )
