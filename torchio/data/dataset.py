@@ -73,7 +73,6 @@ class SubjectsDataset(Dataset):
         return len(self._subjects)
 
     def __getitem__(self, index: int) -> Subject:
-        
         try:
             index = int(index)
         except (RuntimeError, TypeError):
