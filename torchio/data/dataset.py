@@ -1,6 +1,7 @@
 import copy
 from typing import Sequence, Optional, Callable, Iterable
 
+import torch
 from torch.utils.data import Dataset
 
 from .subject import Subject
