@@ -31,7 +31,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
 
     .. warning:: This transform is slow as it requires expensive computations.
         If your images are large you might want to use
-        math:`~torchio.transforms.RandomAffine` instead.
+        :class:`~torchio.transforms.RandomAffine` instead.
 
     Args:
         num_control_points: Number of control points along each dimension of
