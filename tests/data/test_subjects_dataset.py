@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import torch
 
 from torchio import DATA, SubjectsDataset
 from ..utils import TorchioTestCase
