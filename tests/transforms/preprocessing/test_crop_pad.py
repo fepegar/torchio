@@ -173,3 +173,15 @@ class TestCropOrPad(TorchioTestCase):
         transform = tio.CropOrPad((12, 12, 1), mask_name='mask')
         transformed = transform(subject)
         assert transformed.shape == (1, 12, 12, 1)
+
+    def test_no_target_no_mask(self):
+        with self.assertRaises(ValueError):
+            tio.CropOrPad()
+
+    def test_labels_but_no_mask(self):
+        with self.assertRaises(ValueError):
+            tio.CropOrPad(target_shape=(3, 4, 5), labels=[2, 3])
+
+    def test_no_target(self):
+        crop_with_mask = tio.CropOrPad(mask_name='label')
+        crop_with_mask(self.sample_subject)
