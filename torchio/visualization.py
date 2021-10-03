@@ -1,8 +1,13 @@
+import warnings
+
+import torch
 import numpy as np
 
-from .data.image import Image, LabelMap
+from .typing import TypePath
 from .data.subject import Subject
+from .data.image import Image, LabelMap
 from .transforms.preprocessing.spatial.to_canonical import ToCanonical
+from .transforms.preprocessing.intensity.rescale import RescaleIntensity
 
 
 def import_mpl_plt():
@@ -14,9 +19,9 @@ def import_mpl_plt():
     return mpl, plt
 
 
-def rotate(image, radiological=True):
+def rotate(image, radiological=True, n=-1):
     # Rotate for visualization purposes
-    image = np.rot90(image, -1)
+    image = np.rot90(image, n)
     if radiological:
         image = np.fliplr(image)
     return image
@@ -163,3 +168,60 @@ def color_labels(arrays, cmap_dict):
             rgb[array == label] = color
         results.append(rgb)
     return results
+
+
+def make_gif(
+        tensor: torch.Tensor,
+        axis: int,
+        duration: float,  # of full gif
+        output_path: TypePath,
+        loop: int = 0,
+        optimize: bool = True,
+        rescale: bool = True,
+        reverse: bool = False,
+        ) -> None:
+    try:
+        from PIL import Image as ImagePIL
+    except ModuleNotFoundError as e:
+        message = (
+            'Please install Pillow to use Image.to_gif():'
+            ' pip install Pillow'
+        )
+        raise RuntimeError(message) from e
+    tensor = RescaleIntensity((0, 255))(tensor) if rescale else tensor
+    single_channel = len(tensor) == 1
+
+    # Move channels dimension to the end and bring selected axis to 0
+    axes = np.roll(range(1, 4), -axis)
+    tensor = tensor.permute(*axes, 0)
+
+    if single_channel:
+        mode = 'P'
+        tensor = tensor[..., 0]
+    else:
+        mode = 'RGB'
+    array = tensor.byte().numpy()
+    n = 2 if axis == 1 else 1
+    images = [ImagePIL.fromarray(rotate(i, n=n)).convert(mode) for i in array]
+    num_images = len(images)
+    images = list(reversed(images)) if reverse else images
+    frame_duration_ms = duration / num_images * 1000
+    if frame_duration_ms < 10:
+        fps = round(1000 / frame_duration_ms)
+        frame_duration_ms = 10
+        new_duration = frame_duration_ms * num_images / 1000
+        message = (
+            'The computed frame rate from the given duration is too high'
+            f' ({fps} fps). The highest possible frame rate in the GIF'
+            ' file format specification is 100 fps. The duration has been set'
+            f' to {new_duration:.1f} seconds, instead of {duration:.1f}'
+        )
+        warnings.warn(message)
+    images[0].save(
+        output_path,
+        save_all=True,
+        append_images=images[1:],
+        optimize=optimize,
+        duration=frame_duration_ms,
+        loop=loop,
+    )

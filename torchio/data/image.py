@@ -584,6 +584,43 @@ class Image(dict):
         array = tensor.clamp(0, 255).numpy()[0]
         return ImagePIL.fromarray(array.astype(np.uint8))
 
+    def to_gif(
+            self,
+            axis: int,
+            duration: float,  # of full gif
+            output_path: TypePath,
+            loop: int = 0,
+            rescale: bool = True,
+            optimize: bool = True,
+            reverse: bool = False,
+        ) -> None:
+        """Save an animated GIF of the image.
+
+        Args:
+            axis: Spatial axis (0, 1 or 2).
+            duration: Duration of the full animation in seconds.
+            output_path: Path to the output GIF file.
+            loop: Number of times the GIF should loop.
+                ``0`` means that it will loop forever.
+            rescale: Use :class:`~torchio.transforms.preprocessing.intensity.rescale.RescaleIntensity`
+                to rescale the intensity values to :math:`[0, 255]`.
+            optimize: If ``True``, attempt to compress the palette by
+                eliminating unused colors. This is only useful if the palette
+                can be compressed to the next smaller power of 2 elements.
+            reverse: Reverse the temporal order of frames.
+        """  # noqa: E501
+        from ..visualization import make_gif  # avoid circular import
+        make_gif(
+            self.data,
+            axis,
+            duration,
+            output_path,
+            loop=loop,
+            rescale=rescale,
+            optimize=optimize,
+            reverse=reverse,
+        )
+
     def get_center(self, lps: bool = False) -> TypeTripletFloat:
         """Get image center in RAS+ or LPS+ coordinates.
 
