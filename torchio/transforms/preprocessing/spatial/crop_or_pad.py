@@ -1,5 +1,5 @@
 import warnings
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Sequence
 
 import numpy as np
 
@@ -18,7 +18,9 @@ class CropOrPad(BoundsTransform):
 
     Args:
         target_shape: Tuple :math:`(W, H, D)`. If a single value :math:`N` is
-            provided, then :math:`W = H = D = N`.
+            provided, then :math:`W = H = D = N`. If ``None``, the shape will
+            be computed from the :attr:`mask_name` (and the :attr:`labels`, if
+            :attr:`labels` is not ``None``).
         padding_mode: Same as :attr:`padding_mode` in
             :class:`~torchio.transforms.Pad`.
         mask_name: If ``None``, the centers of the input and output volumes
@@ -26,6 +28,8 @@ class CropOrPad(BoundsTransform):
             If a string is given, the output volume center will be the center
             of the bounding box of non-zero values in the image named
             :attr:`mask_name`.
+        labels: If a label map is used to generate the mask, sequence of labels
+            to consider.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
@@ -45,6 +49,13 @@ class CropOrPad(BoundsTransform):
         >>> transformed.chest_ct.shape
         torch.Size([1, 120, 80, 180])
 
+    .. warning:: If :attr:`target_shape` is ``None``, subjects in the dataset
+        will probably have different shapes. This is probably fine if you are
+        using `patch-based training <https://torchio.readthedocs.io/data/patch_based.html>`_.
+        If you are using full volumes for training and a batch size larger than
+        one, an error will be raised by the :class:`~torch.utils.data.DataLoader`
+        while trying to collate the batches.
+
     .. plot::
 
         import torchio as tio
@@ -53,14 +64,18 @@ class CropOrPad(BoundsTransform):
         t1_pad_crop = crop_pad(t1)
         subject = tio.Subject(t1=t1, crop_pad=t1_pad_crop)
         subject.plot()
-    """
+    """  # noqa: E501
     def __init__(
             self,
-            target_shape: Union[int, TypeTripletInt],
+            target_shape: Union[int, TypeTripletInt, None] = None,
             padding_mode: Union[str, float] = 0,
             mask_name: Optional[str] = None,
+            labels: Optional[Sequence[int]] = None,
             **kwargs
             ):
+        if target_shape is None and mask_name is None:
+            message = 'If mask_name is None, a target shape must be passed'
+            raise ValueError(message)
         super().__init__(target_shape, **kwargs)
         self.padding_mode = padding_mode
         if mask_name is not None and not isinstance(mask_name, str):
@@ -69,8 +84,13 @@ class CropOrPad(BoundsTransform):
                 f' not {type(mask_name)}'
             )
             raise ValueError(message)
-        self.mask_name = mask_name
-        if self.mask_name is None:
+        if mask_name is None:
+            if labels is not None:
+                message = (
+                    'If mask_name is None, labels should be None,'
+                    f' but "{labels}" was passed'
+                )
+                raise ValueError(message)
             self.compute_crop_or_pad = self._compute_center_crop_or_pad
         else:
             if not isinstance(mask_name, str):
@@ -80,6 +100,8 @@ class CropOrPad(BoundsTransform):
                 )
                 raise ValueError(message)
             self.compute_crop_or_pad = self._compute_mask_center_crop_or_pad
+        self.mask_name = mask_name
+        self.labels = labels
 
     @staticmethod
     def _bbox_mask(mask_volume: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -178,9 +200,14 @@ class CropOrPad(BoundsTransform):
             warnings.warn(message, RuntimeWarning)
             return self._compute_center_crop_or_pad(subject=subject)
 
-        mask = subject[self.mask_name].numpy()
+        mask_data = self.get_mask_from_masking_method(
+            self.mask_name,
+            subject,
+            subject[self.mask_name].data,
+            self.labels,
+        ).numpy()
 
-        if not np.any(mask):
+        if not np.any(mask_data):
             message = (
                 f'All values found in the mask "{self.mask_name}"'
                 ' are zero. Using volume center instead'
@@ -191,10 +218,18 @@ class CropOrPad(BoundsTransform):
         # Let's assume that the center of first voxel is at coordinate 0.5
         # (which is typically not the case)
         subject_shape = subject.spatial_shape
-        bb_min, bb_max = self._bbox_mask(mask[0])
+        bb_min, bb_max = self._bbox_mask(mask_data[0])
         center_mask = np.mean((bb_min, bb_max), axis=0)
         padding = []
         cropping = []
+
+        # If no target shape was passed at initialization, then
+        # bounds_parameters is None. Let's set it now using the bounding box
+        # computed from the mask
+        if self.bounds_parameters is None:
+            target_shape = bb_max - bb_min
+            self.bounds_parameters = tuple(np.repeat(target_shape, 2))
+
         target_shape = np.array(self.target_shape)
 
         for dim in range(3):

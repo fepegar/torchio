@@ -28,6 +28,7 @@ TypeBounds = Union[
     int,
     TypeTripletInt,
     TypeSixBounds,
+    None,
 ]
 TypeMaskingMethod = Union[str, TypeCallable, TypeBounds, None]
 ANATOMICAL_AXES = (
@@ -385,6 +386,8 @@ class Transform(ABC):
 
     @staticmethod
     def parse_bounds(bounds_parameters: TypeBounds) -> TypeSixBounds:
+        if bounds_parameters is None:
+            return None
         try:
             bounds_parameters = tuple(bounds_parameters)
         except TypeError:
