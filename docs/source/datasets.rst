@@ -99,15 +99,15 @@ MNI
 :class:`Pediatric`
 ~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: Pediatric
-    :members:
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
     subject = tio.datasets.Pediatric((4.5, 8.5))
     subject.plot()
+
+.. autoclass:: Pediatric
+    :members:
+    :show-inheritance:
 
 
 :class:`Sheep`
@@ -134,6 +134,46 @@ MNI
     :show-inheritance:
 
 
+.. currentmodule:: torchio.datasets.vhp
+
+
+Visible Human Project
+---------------------
+
+The `Visible Human Project <https://www.nlm.nih.gov/research/visible/visible_human.html>`_
+is an effort to create a detailed data set of cross-sectional photographs of
+the human body, in order to facilitate anatomy visualization applications.
+It is used as a tool for the progression of medical findings, in which these
+findings link anatomy to its audiences.
+A male and a female cadaver were cut into thin slices which were then
+photographed and digitized (from `Wikipedia <https://en.wikipedia.org/wiki/Visible_Human_Project>`_).
+
+:class:`VisibleMale`
+~~~~~~~~~~~~~~~~~~~~
+
+.. plot::
+
+    import torchio as tio
+    tio.datasets.VisibleMale('Shoulder').plot()
+
+.. autoclass:: VisibleMale
+    :members:
+    :show-inheritance:
+
+
+:class:`VisibleFemale`
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. plot::
+
+    import torchio as tio
+    tio.datasets.VisibleFemale('Shoulder').plot()
+
+.. autoclass:: VisibleFemale
+    :members:
+    :show-inheritance:
+
+
 ITK-SNAP
 --------
 
@@ -143,6 +183,11 @@ ITK-SNAP
 
 :class:`BrainTumor`
 ~~~~~~~~~~~~~~~~~~~
+
+.. plot::
+
+    import torchio as tio
+    tio.datasets.BrainTumor().plot()
 
 .. autoclass:: BrainTumor
     :members:
