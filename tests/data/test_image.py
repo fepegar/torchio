@@ -201,3 +201,12 @@ class TestImage(TorchioTestCase):
         assert_shape((5, 5, 5), (1, 5, 5, 5))
         assert_shape((1, 5, 5, 5), (1, 5, 5, 5))
         assert_shape((4, 5, 5, 5), (4, 5, 5, 5))
+
+    def test_fast_gif(self):
+        with self.assertWarns(UserWarning):
+            with tempfile.NamedTemporaryFile(suffix='.gif') as f:
+                self.sample_subject.t1.to_gif(0, 0.0001, f.name)
+
+    def test_gif_rgb(self):
+        with tempfile.NamedTemporaryFile(suffix='.gif') as f:
+            tio.ScalarImage(tensor=torch.rand(3, 4, 5, 6)).to_gif(0, 1, f.name)
