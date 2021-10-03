@@ -4,8 +4,8 @@ from .slicer import Slicer
 from .episurg import EPISURG
 from .ixi import IXI, IXITiny
 from .rsna_miccai import RSNAMICCAI
-from .vhp import VisibleFemale, VisibleMale
 from .itk_snap import BrainTumor, T1T2, AorticValve
+from .visible_human import VisibleFemale, VisibleMale
 from .mni import Colin27, Sheep, Pediatric, ICBM2009CNonlinearSymmetric
 
 
@@ -23,7 +23,7 @@ __all__ = [
     'Colin27',
     'Sheep',
     'Pediatric',
+    'ICBM2009CNonlinearSymmetric',
     'VisibleFemale',
     'VisibleMale',
-    'ICBM2009CNonlinearSymmetric',
 ]
