@@ -49,6 +49,13 @@ class CropOrPad(BoundsTransform):
         >>> transformed.chest_ct.shape
         torch.Size([1, 120, 80, 180])
 
+    .. warning:: If :attr:`target_shape` is ``None``, subjects in the dataset
+        will probably have different shapes. This is probably fine if you are
+        using `patch-based training <https://torchio.readthedocs.io/data/patch_based.html>`_.
+        If you are using full volumes for training and a batch size larger than
+        one, an error will be raised by the :class:`~torch.utils.data.DataLoader`
+        while trying to collate the batches.
+
     .. plot::
 
         import torchio as tio
@@ -57,7 +64,7 @@ class CropOrPad(BoundsTransform):
         t1_pad_crop = crop_pad(t1)
         subject = tio.Subject(t1=t1, crop_pad=t1_pad_crop)
         subject.plot()
-    """
+    """  # noqa: E501
     def __init__(
             self,
             target_shape: Union[int, TypeTripletInt, None] = None,
