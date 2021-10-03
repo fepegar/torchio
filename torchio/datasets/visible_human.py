@@ -8,7 +8,7 @@ from ..download import download_and_extract_archive
 
 class VisibleHuman(abc.ABC, Subject):
 
-    URL = 'https://mri.radiology.uiowa.edu/website_documents/visible_human_tar_files/%s%s.tar.gz'  # noqa: E501
+    URL = 'https://mri.radiology.uiowa.edu/website_documents/visible_human_tar_files/{}{}.tar.gz'  # noqa: E501, FS003
 
     def __init__(self, part: str):
         self.part = self._parse_part(part)
