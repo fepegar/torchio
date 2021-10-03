@@ -134,7 +134,7 @@ MNI
     :show-inheritance:
 
 
-.. currentmodule:: torchio.datasets.vhp
+.. currentmodule:: torchio.datasets.visible_human
 
 
 Visible Human Project
