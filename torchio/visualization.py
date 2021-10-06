@@ -99,6 +99,8 @@ def plot_volume(
     axi_axis.set_ylabel('A')
     axi_axis.invert_xaxis()
     axi_axis.set_title('Axial')
+    
+    axes.axis('off')
 
     plt.tight_layout()
     if output_path is not None and fig is not None:
