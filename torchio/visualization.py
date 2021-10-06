@@ -101,10 +101,13 @@ def plot_volume(
     #axi_axis.set_title('Axial')
     
     sag_axis.axis('off')
+    sag_axis.subplots_adjust(wspace=0, hspace=0)
     cor_axis.axis('off')
+    cor_axis.subplots_adjust(wspace=0, hspace=0)
     axi_axis.axis('off')
+    axi_axis.subplots_adjust(wspace=0, hspace=0)
 
-    plt.tight_layout()
+    #plt.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
     if output_path is not None and fig is not None:
         fig.savefig(output_path, transparent=True)
@@ -159,7 +162,7 @@ def plot_subject(
     plt.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
     if output_path is not None:
-        fig.savefig(output_path)
+        fig.savefig(output_path, transparent=True))
     if show:
         plt.show()
     plt.close(fig) 
