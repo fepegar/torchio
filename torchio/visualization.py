@@ -122,7 +122,6 @@ def plot_subject(
         **kwargs,
         ):
     _, plt = import_mpl_plt()
-    plt.subplots_adjust(wspace=0, hspace=0)
     num_images = len(subject)
     many_images = num_images > 2
     subplots_kwargs = {'figsize': figsize}
@@ -154,16 +153,13 @@ def plot_subject(
             xlabels=last_row,
             **kwargs,
         )
-        #for axis, axis_name in zip(image_axes, axes_names):
-        #    axis.set_title(f'{name} ({axis_name})')
-
+        for axis, axis_name in zip(image_axes, axes_names):
+            axis.set_title(f'{name} ({axis_name})')
     plt.tight_layout()
-    plt.subplots_adjust(wspace=0, hspace=0)
     if output_path is not None:
-        fig.savefig(output_path, transparent=True)
+        fig.savefig(output_path)
     if show:
         plt.show()
-    plt.close(fig) 
 
 
 def color_labels(arrays, cmap_dict):
