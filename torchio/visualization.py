@@ -104,7 +104,7 @@ def plot_volume(
 
     plt.tight_layout()
     if output_path is not None and fig is not None:
-        fig.savefig(output_path)
+        fig.savefig(output_path, transparent=True)
     if show:
         plt.show()
 
