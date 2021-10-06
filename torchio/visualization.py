@@ -77,7 +77,8 @@ def plot_volume(
         kwargs['vmax'] = p2
 
     sag_aspect = ss / sa
-    sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)
+    #sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)
+    sag_axis.imshow(slice_x, **kwargs)
     if xlabels:
         sag_axis.set_xlabel('A')
     sag_axis.set_ylabel('S')
@@ -85,7 +86,8 @@ def plot_volume(
     #sag_axis.set_title('Sagittal')
 
     cor_aspect = ss / sr
-    cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
+    #cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
+    cor_axis.imshow(slice_y, **kwargs)
     if xlabels:
         cor_axis.set_xlabel('R')
     cor_axis.set_ylabel('S')
@@ -93,7 +95,8 @@ def plot_volume(
     #cor_axis.set_title('Coronal')
 
     axi_aspect = sa / sr
-    axi_axis.imshow(slice_z, aspect=axi_aspect, **kwargs)
+    #axi_axis.imshow(slice_z, aspect=axi_aspect, **kwargs)
+    axi_axis.imshow(slice_z, **kwargs)
     if xlabels:
         axi_axis.set_xlabel('R')
     axi_axis.set_ylabel('A')
@@ -105,7 +108,7 @@ def plot_volume(
     axi_axis.axis('off')
 
     #plt.tight_layout()
-    plt.subplots_adjust(wspace=0, hspace=0)
+
     if output_path is not None and fig is not None:
         fig.savefig(output_path, transparent=True)
     if show:
