@@ -77,8 +77,7 @@ def plot_volume(
         kwargs['vmax'] = p2
 
     sag_aspect = ss / sa
-    #sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)
-    sag_axis.imshow(slice_x, **kwargs)
+    sag_axis.imshow(slice_x, aspect=sag_aspect, **kwargs)
     if xlabels:
         sag_axis.set_xlabel('A')
     sag_axis.set_ylabel('S')
@@ -86,8 +85,7 @@ def plot_volume(
     #sag_axis.set_title('Sagittal')
 
     cor_aspect = ss / sr
-    #cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
-    cor_axis.imshow(slice_y, **kwargs)
+    cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
     if xlabels:
         cor_axis.set_xlabel('R')
     cor_axis.set_ylabel('S')
@@ -95,7 +93,6 @@ def plot_volume(
     #cor_axis.set_title('Coronal')
 
     axi_aspect = sa / sr
-    #axi_axis.imshow(slice_z, aspect=axi_aspect, **kwargs)
     axi_axis.imshow(slice_z, **kwargs)
     if xlabels:
         axi_axis.set_xlabel('R')
@@ -125,6 +122,7 @@ def plot_subject(
         **kwargs,
         ):
     _, plt = import_mpl_plt()
+    plt.subplots_adjust(wspace=0, hspace=0)
     num_images = len(subject)
     many_images = num_images > 2
     subplots_kwargs = {'figsize': figsize}
