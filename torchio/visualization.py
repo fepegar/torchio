@@ -82,7 +82,7 @@ def plot_volume(
         sag_axis.set_xlabel('A')
     sag_axis.set_ylabel('S')
     sag_axis.invert_xaxis()
-    sag_axis.set_title('Sagittal')
+    #sag_axis.set_title('Sagittal')
 
     cor_aspect = ss / sr
     cor_axis.imshow(slice_y, aspect=cor_aspect, **kwargs)
@@ -90,7 +90,7 @@ def plot_volume(
         cor_axis.set_xlabel('R')
     cor_axis.set_ylabel('S')
     cor_axis.invert_xaxis()
-    cor_axis.set_title('Coronal')
+    #cor_axis.set_title('Coronal')
 
     axi_aspect = sa / sr
     axi_axis.imshow(slice_z, aspect=axi_aspect, **kwargs)
@@ -98,7 +98,7 @@ def plot_volume(
         axi_axis.set_xlabel('R')
     axi_axis.set_ylabel('A')
     axi_axis.invert_xaxis()
-    axi_axis.set_title('Axial')
+    #axi_axis.set_title('Axial')
     
     sag_axis.axis('off')
     cor_axis.axis('off')
