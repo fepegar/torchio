@@ -100,7 +100,6 @@ def plot_volume(
     axi_axis.invert_xaxis()
     axi_axis.set_title('Axial')
     
-    axes.axis('off')
     sag_axis.axis('off')
     cor_axis.axis('off')
     axi_axis.axis('off')
