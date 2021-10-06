@@ -162,7 +162,7 @@ def plot_subject(
     plt.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
     if output_path is not None:
-        fig.savefig(output_path, transparent=True))
+        fig.savefig(output_path, transparent=True)
     if show:
         plt.show()
     plt.close(fig) 
