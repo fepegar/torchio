@@ -158,13 +158,12 @@ def plot_subject(
             xlabels=last_row,
             **kwargs,
         )
-        for axis, axis_name in zip(image_axes, axes_names):
-            axis.set_title(f'{name} ({axis_name})')
+        #for axis, axis_name in zip(image_axes, axes_names):
+        #    axis.set_title(f'{name} ({axis_name})')
     plt.tight_layout()
     
-    axis.axis('off')
     if output_path is not None:
-        fig.savefig(output_path, transparent=True)
+        fig.savefig(output_path)
     if show:
         plt.show()
     plt.close(fig) 
