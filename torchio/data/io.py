@@ -23,17 +23,21 @@ IMAGE_2D_FORMATS = formats + [s.upper() for s in formats]
 def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     try:
         result = _read_sitk(path)
-    except RuntimeError:  # try with NiBabel
+    except RuntimeError as e:  # try with NiBabel
+        message = (
+            f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
+        )
+        warnings.warn(message)
         try:
             result = _read_nibabel(path)
-        except nib.loadsave.ImageFileError:
+        except nib.loadsave.ImageFileError as e:
             message = (
                 f'File "{path}" not understood.'
                 ' Check supported formats by at'
                 ' https://simpleitk.readthedocs.io/en/master/IO.html#images'
                 ' and https://nipy.org/nibabel/api.html#file-formats'
             )
-            raise RuntimeError(message)
+            raise RuntimeError(message) from e
     return result
 
 
@@ -83,9 +87,13 @@ def read_shape(path: TypePath) -> Tuple[int, int, int, int]:
     reader.ReadImageInformation()
     num_channels = reader.GetNumberOfComponents()
     spatial_shape = reader.GetSize()
-    if reader.GetDimension() == 2:
+    num_dimensions = reader.GetDimension()
+    if num_dimensions == 2:
         spatial_shape = *spatial_shape, 1
-    return (num_channels,) + spatial_shape
+    elif num_dimensions == 4:  # assume bad NIfTI
+        *spatial_shape, num_channels = spatial_shape
+    shape = (num_channels,) + tuple(spatial_shape)
+    return shape
 
 
 def read_affine(path: TypePath) -> np.ndarray:
@@ -314,10 +322,15 @@ def sitk_to_nib(
     input_spatial_dims = image.GetDimension()
     if input_spatial_dims == 2:
         data = data[..., np.newaxis]
+    elif input_spatial_dims == 4:  # probably a bad NIfTI (1, sx, sy, sz, c)
+        # Try to fix it
+        num_components = data.shape[-1]
+        data = data[0]
+        data = data.transpose(3, 0, 1, 2)
+        input_spatial_dims = 3
     if not keepdim:
         data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
     assert data.shape[0] == num_components
-    assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
     affine = get_ras_affine_from_sitk(image)
     return data, affine
 
@@ -328,14 +341,19 @@ def get_ras_affine_from_sitk(
     spacing = np.array(sitk_object.GetSpacing())
     direction_lps = np.array(sitk_object.GetDirection())
     origin_lps = np.array(sitk_object.GetOrigin())
-    if len(direction_lps) == 9:
+    direction_length = len(direction_lps)
+    if direction_length == 9:
         rotation_lps = direction_lps.reshape(3, 3)
-    elif len(direction_lps) == 4:  # ignore last dimension if 2D (1, W, H, 1)
+    elif direction_length == 4:  # ignore last dimension if 2D (1, W, H, 1)
         rotation_lps_2d = direction_lps.reshape(2, 2)
         rotation_lps = np.eye(3)
         rotation_lps[:2, :2] = rotation_lps_2d
         spacing = np.append(spacing, 1)
         origin_lps = np.append(origin_lps, 0)
+    elif direction_length == 16:  # probably a bad NIfTI. Let's try to fix it
+        rotation_lps = direction_lps.reshape(4, 4)[:3, :3]
+        spacing = spacing[:-1]
+        origin_lps = origin_lps[:-1]
     rotation_ras = np.dot(FLIPXY_33, rotation_lps)
     rotation_ras_zoom = rotation_ras * spacing
     translation_ras = np.dot(FLIPXY_33, origin_lps)
