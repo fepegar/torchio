@@ -145,6 +145,13 @@ class Image(dict):
             if key in kwargs:
                 message = f'Key "{key}" is reserved. Use a different one'
                 raise ValueError(message)
+        if 'channels_last' in kwargs:
+            message = (
+                'The "channels_last" keyword argument is deprecated after'
+                ' https://github.com/fepegar/torchio/pull/685 and will be'
+                ' removed in the future'
+            )
+            warnings.warn(message, DeprecationWarning)
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
