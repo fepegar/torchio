@@ -383,6 +383,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "laynr",
+      "name": "laynr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/775607?v=4",
+      "profile": "https://github.com/laynr",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
