@@ -77,10 +77,6 @@ class Image(dict):
         check_nans: If ``True``, issues a warning if NaNs are found
             in the image. If ``False``, images will not be checked for the
             presence of NaNs.
-        channels_last: If ``True``, the read tensor will be permuted so the
-            last dimension becomes the first. This is useful, e.g., when
-            NIfTI images have been saved with the channels dimension being the
-            fourth instead of the fifth.
         reader: Callable object that takes a path and returns a 4D tensor and a
             2D, :math:`4 \times 4` affine matrix. This can be used if your data
             is saved in a custom format, such as ``.npy`` (see example below).
@@ -121,12 +117,10 @@ class Image(dict):
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default
-            channels_last: bool = False,
             reader: Callable = read_image,
             **kwargs: Dict[str, Any],
             ):
         self.check_nans = check_nans
-        self.channels_last = channels_last
         self.reader = reader
 
         if type is None:
@@ -505,8 +499,6 @@ class Image(dict):
         tensor = self._parse_tensor_shape(tensor)
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
-        if self.channels_last:
-            tensor = tensor.permute(3, 0, 1, 2)
         if self.check_nans and torch.isnan(tensor).any():
             warnings.warn(f'NaNs found in file "{path}"', RuntimeWarning)
         return tensor, affine

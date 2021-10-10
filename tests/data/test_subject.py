@@ -24,7 +24,8 @@ class TestSubject(TorchioTestCase):
             input_dict = {'image': tio.ScalarImage(f.name)}
             subject = tio.Subject(input_dict)
             with self.assertRaises(RuntimeError):
-                tio.RandomFlip()(subject)
+                with self.assertWarns(UserWarning):
+                    tio.RandomFlip()(subject)
 
     def test_history(self):
         transformed = tio.RandomGamma()(self.sample_subject)
