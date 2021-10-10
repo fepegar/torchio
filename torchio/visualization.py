@@ -39,6 +39,7 @@ def plot_volume(
         percentiles=(0.5, 99.5),
         figsize=None,
         reorient=True,
+        indices=None,
         ):
     _, plt = import_mpl_plt()
     fig = None
@@ -49,7 +50,8 @@ def plot_volume(
     if reorient:
         image = ToCanonical()(image)
     data = image.data[channel]
-    indices = np.array(data.shape) // 2
+    if indices is None:
+        indices = np.array(data.shape) // 2
     i, j, k = indices
     slice_x = rotate(data[i, :, :], radiological=radiological)
     slice_y = rotate(data[:, j, :], radiological=radiological)
@@ -153,6 +155,7 @@ def plot_subject(
         fig.savefig(output_path)
     if show:
         plt.show()
+    plt.close(fig) 
 
 
 def color_labels(arrays, cmap_dict):
