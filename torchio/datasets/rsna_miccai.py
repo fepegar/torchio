@@ -1,6 +1,7 @@
 import csv
-from typing import List
+import warnings
 from pathlib import Path
+from typing import List, Sequence
 
 from ..typing import TypePath
 from .. import SubjectsDataset, Subject, ScalarImage
@@ -47,7 +48,6 @@ class RSNAMICCAI(SubjectsDataset):
     """  # noqa: E501
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'
-    modalities = 'T1w', 'T1wCE', 'T2w', 'FLAIR'
     bad_subjects = '00109', '00123', '00709'
 
     def __init__(
@@ -55,9 +55,13 @@ class RSNAMICCAI(SubjectsDataset):
             root_dir: TypePath,
             train: bool = True,
             ignore_empty: bool = True,
+            modalities: Sequence[str] = ('T1w', 'T1wCE', 'T2w', 'FLAIR'),
             **kwargs,
             ):
         self.root_dir = Path(root_dir).expanduser().resolve()
+        if isinstance(modalities, str):
+            modalities = [modalities]
+        self.modalities = modalities
         subjects = self._get_subjects(self.root_dir, train, ignore_empty)
         super().__init__(subjects, **kwargs)
         self.train = train
@@ -71,12 +75,16 @@ class RSNAMICCAI(SubjectsDataset):
         subjects = []
         if train:
             csv_path = root_dir / 'train_labels.csv'
-            with open(csv_path) as csvfile:
-                reader = csv.DictReader(csvfile)
-                labels_dict = {
-                    row[self.id_key]: int(row[self.label_key])
-                    for row in reader
-                }
+            try:
+                with open(csv_path) as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    labels_dict = {
+                        row[self.id_key]: int(row[self.label_key])
+                        for row in reader
+                    }
+            except FileNotFoundError:
+                warnings.warn('Labels CSV not found. Ignoring MGMT labels')
+                labels_dict = {}
             subjects_dir = root_dir / 'train'
         else:
             subjects_dir = root_dir / 'test'
@@ -90,7 +98,7 @@ class RSNAMICCAI(SubjectsDataset):
             except ValueError:
                 continue
             images_dict = {self.id_key: subject_dir.name}
-            if train:
+            if train and labels_dict:
                 images_dict[self.label_key] = labels_dict[subject_id]
             for modality in self.modalities:
                 image_dir = subject_dir / modality
