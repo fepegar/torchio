@@ -23,7 +23,7 @@ class Compose(Transform):
 
     """
     def __init__(self, transforms: Sequence[Transform], **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(parse_input=False, **kwargs)
         for transform in transforms:
             if not callable(transform):
                 message = (
@@ -98,7 +98,7 @@ class OneOf(RandomTransform):
             transforms: TypeTransformsDict,
             **kwargs
             ):
-        super().__init__(**kwargs)
+        super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
     def apply_transform(self, subject: Subject) -> Subject:
