@@ -25,7 +25,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
                 <img src="https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white" alt="PyPI version">
             </a>
             <a href="https://anaconda.org/conda-forge/torchio">
-                <img src="https://img.shields.io/conda/vn/conda-forge/torchio" alt="Conda version">
+                <img src="https://img.shields.io/conda/v/conda-forge/torchio.svg?label=conda-forge&logo=conda-forge" alt="Conda version">
             </a>
         </td>
     </tr>

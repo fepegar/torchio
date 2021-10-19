@@ -2,7 +2,7 @@
 TorchIO
 #######
 
-|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status|
+|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
 |Build-status| |Coverage-codecov| |Code-Quality|
 |Code-Maintainability| |pre-commit| |Slack|
 
@@ -107,6 +107,10 @@ which is no longer maintained.
 .. |PyPI-version| image:: https://img.shields.io/pypi/v/torchio?label=PyPI%20version&logo=python&logoColor=white
    :target: https://pypi.org/project/torchio/
    :alt: PyPI version
+
+.. |Conda-version| image:: https://img.shields.io/conda/v/conda-forge/torchio.svg?label=conda-forge&logo=conda-forge
+   :target: https://anaconda.org/conda-forge/torchio
+   :alt: Conda version
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://github.com/fepegar/torchio/blob/master/tutorials/README.md
