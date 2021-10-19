@@ -23,7 +23,8 @@ class Resize(SpatialTransform):
 
     Args:
         target_shape: Tuple :math:`(W, H, D)`. If a single value :math:`N` is
-            provided, then :math:`W = H = D = N`.
+            provided, then :math:`W = H = D = N`. The size of dimensions set to
+            -1 will be kept.
         image_interpolation: See :ref:`Interpolation`.
     """
     def __init__(
@@ -44,6 +45,8 @@ class Resize(SpatialTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         shape_in = np.asarray(subject.spatial_shape)
         shape_out = self.target_shape
+        negative_mask = shape_out == -1
+        shape_out[negative_mask] = shape_in[negative_mask]
         spacing_in = np.asarray(subject.spacing)
         spacing_out = shape_in / shape_out * spacing_in
         resample = Resample(
