@@ -43,6 +43,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
             </a>
+            <a href="https://github.com/fepegar/torchio/actions/workflows/lint.yml">
+                <img src="https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg" alt="Linting status">
+            </a>
         </td>
     </tr>
     <tr>

@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
-|Build-status| |Coverage-codecov| |Code-Quality|
+|Lint-status| |Build-status| |Coverage-codecov| |Code-Quality|
 |Code-Maintainability| |pre-commit| |Slack|
 
 
@@ -122,6 +122,10 @@ which is no longer maintained.
 
 .. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
    :target: https://travis-ci.com/fepegar/torchio
+   :alt: Build status
+
+.. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg
+   :target: https://github.com/fepegar/torchio/actions/workflows/lint.yml
    :alt: Build status
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
