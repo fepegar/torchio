@@ -155,7 +155,7 @@ def plot_subject(
         fig.savefig(output_path)
     if show:
         plt.show()
-    plt.close(fig) 
+    plt.close(fig)
 
 
 def color_labels(arrays, cmap_dict):

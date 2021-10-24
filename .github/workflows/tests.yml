@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+  unit:
+    strategy:
+      matrix:
+        # TODO: add windows-latest
+        os: [ubuntu-latest, macos-latest]
+        python: ['3.6', '3.7', '3.8', '3.9']
+
+    runs-on: ${{ matrix.os }}
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python }}
+
+    steps:
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install dev requirements
+        run: pip install -r requirements-dev.txt
+
+      - name: Run unit tests
+        run: tox -e py
+
+      - name: Upload coverage
+        run: codecov
+
+  cli:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install project
+        run: pip install .
+
+      - name: Test CLI
+        run: |
+          tiotr --help
+          tiohd --help
