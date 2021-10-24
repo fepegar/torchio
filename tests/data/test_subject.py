@@ -102,3 +102,7 @@ class TestSubject(TorchioTestCase):
     def test_bad_arg(self):
         with self.assertRaises(ValueError):
             tio.Subject(0)
+
+    def test_no_images(self):
+        with self.assertRaises(ValueError):
+            tio.Subject(a=0)
