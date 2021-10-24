@@ -334,7 +334,6 @@ class Affine(SpatialTransform):
             transform: sitk.Transform,
             interpolation: str,
             default_value: float,
-            center_lps: Optional[TypeTripletFloat] = None,
             ) -> torch.Tensor:
         floating = reference = sitk_image
 
