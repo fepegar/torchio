@@ -1,4 +1,4 @@
-name: lint
+name: Lint
 
 on: [push]
 
@@ -12,17 +12,17 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-      
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-        
+
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
-    
+
     - name: Install dependencies
       run: pip install -r requirements-dev.txt
-    
+
     - name: Run lint
       run: tox -e lint
