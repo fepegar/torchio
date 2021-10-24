@@ -394,6 +394,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "omarespejel",
+      "name": "Omar U. Espejel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4755430?v=4",
+      "profile": "https://github.com/omarespejel",
+      "contributions": [
+        "audio"
+      ]
     }
   ],
   "contributorsPerLine": 7,
