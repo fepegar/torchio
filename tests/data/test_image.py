@@ -2,9 +2,11 @@
 
 """Tests for Image."""
 
+import sys
 import copy
 import tempfile
 
+import pytest
 import torch
 import numpy as np
 import nibabel as nib
@@ -20,6 +22,7 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             tio.ScalarImage('nopath')
 
+    @pytest.mark.skipif(sys.platform == 'win32')
     def test_wrong_path_value(self):
         with self.assertRaises(RuntimeError):
             tio.ScalarImage('~&./@#"!?X7=+')
