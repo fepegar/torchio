@@ -55,6 +55,10 @@ class RandomAffine(RandomTransform, SpatialTransform):
             then :math:`t_i \sim \mathcal{U}(-x, x)`.
             If three values :math:`(x_1, x_2, x_3)` are provided,
             then :math:`t_i \sim \mathcal{U}(-x_i, x_i)`.
+            For example, if the image is in RAS orientation (e.g., after
+            applying :class:`~torchio.transforms.preprocessing.ToCanonical`)
+            and the translation is :math:`(10, 20, 30)`, the sample will move
+            10 mm to the right, 20 mm to the front, and 30 mm upwards.
         isotropic: If ``True``, the scaling factor along all dimensions is the
             same, i.e. :math:`s_1 = s_2 = s_3`.
         center: If ``'image'``, rotations and scaling will be performed around
