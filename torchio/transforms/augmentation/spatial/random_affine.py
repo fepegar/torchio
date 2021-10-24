@@ -77,15 +77,24 @@ class RandomAffine(RandomTransform, SpatialTransform):
         >>> subject = tio.datasets.Colin27()
         >>> transform = tio.RandomAffine(
         ...     scales=(0.9, 1.2),
-        ...     degrees=10,
-        ...     isotropic=True,
-        ...     image_interpolation='nearest',
+        ...     degrees=15,
         ... )
         >>> transformed = transform(subject)
 
+    .. plot::
+
+        import torchio as tio
+        subject = tio.datasets.Colin27()
+        transform = tio.RandomAffine(
+            scales=(0.9, 1.2),
+            degrees=15,
+        )
+        transformed = transform(subject)
+        transformed.plot()
+
     From the command line::
 
-        $ torchio-transform t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=10 isotropic=True image_interpolation=nearest" --seed 42 affine_min.nii.gz
+        $ tiotr t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=10 " t1_affine.nii.gz
 
     """
     def __init__(
