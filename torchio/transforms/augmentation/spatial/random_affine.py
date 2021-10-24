@@ -78,22 +78,22 @@ class RandomAffine(RandomTransform, SpatialTransform):
 
     Example:
         >>> import torchio as tio
-        >>> subject = tio.datasets.Colin27()
+        >>> image = tio.datasets.Colin27().t1
         >>> transform = tio.RandomAffine(
         ...     scales=(0.9, 1.2),
         ...     degrees=15,
         ... )
-        >>> transformed = transform(subject)
+        >>> transformed = transform(image)
 
     .. plot::
 
         import torchio as tio
-        subject = tio.datasets.Colin27()
+        image = tio.datasets.Colin27().t1
         transform = tio.RandomAffine(
             scales=(0.9, 1.2),
             degrees=15,
         )
-        transformed = transform(subject)
+        transformed = transform(image)
         transformed.plot()
 
     From the command line::
