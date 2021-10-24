@@ -6,19 +6,25 @@ from ..utils import get_torchio_cache_dir
 
 
 class FPG(Subject):
-    """3T :math:`T_1`-weighted brain MRI and corresponding parcellation."""
-    def __init__(self):
+    """3T :math:`T_1`-weighted brain MRI and corresponding parcellation.
+
+    Args:
+        load_all: If ``True``, three more images will be loaded: a
+            :math:`T_2`-weighted MRI, a diffusion MRI and a functional MRI.
+    """
+    def __init__(self, load_all: bool = False):
         repo_dir = urllib.parse.urljoin(DATA_REPO, 'fernando/')
 
         self.filenames = {
             't1': 't1.nii.gz',
-            't2': 't2.nii.gz',
-            'fmri': 'fmri.nrrd',
-            'dmri': 'dmri.nrrd',
             'seg': 't1_seg_gif.nii.gz',
             'rigid': 't1_to_mni.tfm',
             'affine': 't1_to_mni_affine.h5',
         }
+        if load_all:
+            self.filenames['t2'] = 't2.nii.gz'
+            self.filenames['fmri'] = 'fmri.nrrd'
+            self.filenames['dmri'] = 'dmri.nrrd'
 
         download_root = get_torchio_cache_dir() / 'fpg'
         for filename in self.filenames.values():
@@ -41,10 +47,14 @@ class FPG(Subject):
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),
-            't2': ScalarImage(download_root / self.filenames['t2']),
-            'fmri': ScalarImage(download_root / self.filenames['fmri']),
-            'dmri': ScalarImage(download_root / self.filenames['dmri']),
         }
+        if load_all:
+            subject_dict['t2'] = ScalarImage(
+                download_root / self.filenames['t2'])
+            subject_dict['fmri'] = ScalarImage(
+                download_root / self.filenames['fmri'])
+            subject_dict['dmri'] = ScalarImage(
+                download_root / self.filenames['dmri'])
         super().__init__(subject_dict)
         self.gif_colors = GIF_COLORS
 
