@@ -126,7 +126,11 @@ which is no longer maintained.
 
 .. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg
    :target: https://github.com/fepegar/torchio/actions/workflows/lint.yml
-   :alt: Build status
+   :alt: Lint status
+
+.. |Tests-status| image:: https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/fepegar/torchio/actions/workflows/tests.yml
+   :alt: Tests status
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
