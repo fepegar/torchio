@@ -248,6 +248,7 @@ class Affine(SpatialTransform):
         transform = sitk.Euler3DTransform()
         radians = np.radians(degrees)
         transform.SetRotation(*radians)
+        translation = np.array(translation).astype(float)
         transform.SetTranslation(translation)
         if center_lps is not None:
             transform.SetCenter(center_lps)
