@@ -216,7 +216,7 @@ class Ghosting(IntensityTransform, FourierTransform):
 def _parse_restore(restore):
     try:
         restore = float(restore)
-    except Exception as e:
+    except ValueError as e:
         raise TypeError(f'Restore must be a float, not "{restore}"') from e
     if not 0 <= restore <= 1:
         message = (

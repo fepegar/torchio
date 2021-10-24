@@ -76,8 +76,12 @@ class SubjectsDataset(Dataset):
         try:
             index = int(index)
         except (RuntimeError, TypeError):
-            raise ValueError(f'Index "{index}" must be int or compatible dtype, not {type(index)}')
-            
+            message = (
+                f'Index "{index}" must be int or compatible dtype,'
+                f' but an object of type "{type(index)}" was passed'
+            )
+            raise ValueError(message)
+
         subject = self._subjects[index]
         subject = copy.deepcopy(subject)  # cheap since images not loaded yet
         if self.load_getitem:
