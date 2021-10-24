@@ -22,7 +22,7 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             tio.ScalarImage('nopath')
 
-    @pytest.mark.skipif(sys.platform == 'win32')
+    @pytest.mark.skipif(sys.platform == 'win32', reason='Path not valid')
     def test_wrong_path_value(self):
         with self.assertRaises(RuntimeError):
             tio.ScalarImage('~&./@#"!?X7=+')
