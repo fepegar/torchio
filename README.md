@@ -253,7 +253,6 @@ BibTeX entry:
     doi = {https://doi.org/10.1016/j.cmpb.2021.106236},
     url = {https://www.sciencedirect.com/science/article/pii/S0169260721003102},
     author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, S{\'e}bastien},
-    keywords = {Medical image computing, Deep learning, Data augmentation, Preprocessing},
 }
 ```
 
