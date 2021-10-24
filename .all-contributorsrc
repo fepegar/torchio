@@ -404,6 +404,15 @@
       "contributions": [
         "audio"
       ]
+    },
+    {
+      "login": "jamesobutler",
+      "name": "James Butler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15837524?v=4",
+      "profile": "https://github.com/jamesobutler",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
