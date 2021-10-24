@@ -98,7 +98,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
 
     From the command line::
 
-        $ tiotr t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=10 " t1_affine.nii.gz
+        $ tiotr t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=15" t1_affine.nii.gz
 
     """
     def __init__(
