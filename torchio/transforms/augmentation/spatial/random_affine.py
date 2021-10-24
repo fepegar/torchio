@@ -230,14 +230,16 @@ class Affine(SpatialTransform):
             scaling_params: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
             ) -> sitk.ScaleTransform:
-        # scaling_params are inverted so that they are more intuitive
-        # For example, 1.5 means the objects look 1.5 times larger
+        # 1.5 means the objects look 1.5 times larger
         transform = sitk.ScaleTransform(3)
-        scaling_params = 1 / np.array(scaling_params)
+        scaling_params = np.array(scaling_params).astype(float)
         transform.SetScale(scaling_params)
         if center_lps is not None:
             transform.SetCenter(center_lps)
         return transform
+
+    def _ras_to_lps(self):
+        return np.array((-1, -1, 1), dtype=float)
 
     @staticmethod
     def _get_rotation_transform(
@@ -247,9 +249,14 @@ class Affine(SpatialTransform):
             ) -> sitk.Euler3DTransform:
         transform = sitk.Euler3DTransform()
         radians = np.radians(degrees)
-        transform.SetRotation(*radians)
-        translation = np.array(translation).astype(float)
-        transform.SetTranslation(translation)
+
+        # SimpleITK uses LPS
+        ras_to_lps = np.array((-1, -1, 1), dtype=float)
+        radians_lps = ras_to_lps * radians
+        translation_lps = np.array(translation) * ras_to_lps
+
+        transform.SetRotation(*radians_lps)
+        transform.SetTranslation(translation_lps)
         if center_lps is not None:
             transform.SetCenter(center_lps)
         return transform
@@ -286,6 +293,13 @@ class Affine(SpatialTransform):
         elif sitk_major_version == 2:
             transforms = [scaling_transform, rotation_transform]
             transform = sitk.CompositeTransform(transforms)
+
+        # ResampleImageFilter expects the transform from the output space to
+        # the input space. Intuitively, the passed arguments should take us
+        # from the input space to the output space, so we need to invert the
+        # transform.
+        # More info at https://github.com/fepegar/torchio/discussions/693
+        transform = transform.GetInverse()
 
         if self.invert_transform:
             transform = transform.GetInverse()

@@ -72,26 +72,6 @@ class TestRandomAffine(TorchioTestCase):
         with self.assertRaises(ValueError):
             tio.RandomAffine(center='bad')
 
-    def test_translation(self):
-        transform = tio.RandomAffine(
-            scales=(1, 1),
-            degrees=0,
-            translation=(5, 5)
-        )
-        transformed = transform(self.sample_subject)
-
-        # I think the right test should be the following one:
-        # self.assertTensorAlmostEqual(
-        #     self.sample_subject.t1.data[:, :-5, :-5, :-5],
-        #     transformed.t1.data[:, 5:, 5:, 5:]
-        # )
-
-        # However the passing test is this one:
-        self.assertTensorAlmostEqual(
-            self.sample_subject.t1.data[:, :-5, :-5, 5:],
-            transformed.t1.data[:, 5:, 5:, :-5]
-        )
-
     def test_negative_scales(self):
         with self.assertRaises(ValueError):
             tio.RandomAffine(scales=(-1, 1))
@@ -171,3 +151,19 @@ class TestRandomAffine(TorchioTestCase):
         aff = tio.RandomAffine(translation=(0, 1, 1), default_pad_value='otsu')
         transformed = aff(image)
         assert all(n in (0, 1) for n in transformed.data.flatten())
+
+    def test_no_inverse(self):
+        tensor = torch.zeros((1, 2, 2, 2))
+        tensor[0, 1, 1, 1] = 1  # most RAS voxel
+        expected = torch.zeros((1, 2, 2, 2))
+        expected[0, 0, 1, 1] = 1
+        scales = 1, 1, 1
+        degrees = 0, 0, 90  # anterior should go left
+        translation = 0, 0, 0
+        apply_affine = tio.Affine(
+            scales,
+            degrees,
+            translation,
+        )
+        transformed = apply_affine(tensor)
+        self.assertTensorAlmostEqual(transformed, expected)
