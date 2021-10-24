@@ -153,7 +153,7 @@ class IXI(SubjectsDataset):
             url = self.base_url.format(modality=modality)
             md5 = self.md5_dict[modality]
 
-            with NamedTemporaryFile(suffix='.tar') as f:
+            with NamedTemporaryFile(suffix='.tar', delete=False) as f:
                 download_and_extract_archive(
                     url,
                     download_root=modality_dir,
@@ -229,7 +229,7 @@ class IXITiny(SubjectsDataset):
             return
         print('Root directory for IXITiny not found:', root)  # noqa: T001
         print('Downloading...')  # noqa: T001
-        with NamedTemporaryFile(suffix='.zip') as f:
+        with NamedTemporaryFile(suffix='.zip', delete=False) as f:
             download_and_extract_archive(
                 self.url,
                 download_root=root,

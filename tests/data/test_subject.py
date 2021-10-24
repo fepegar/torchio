@@ -10,17 +10,16 @@ class TestSubject(TorchioTestCase):
     """Tests for `Subject`."""
     def test_positional_args(self):
         with self.assertRaises(ValueError):
-            with tempfile.NamedTemporaryFile() as f:
-                tio.Subject(tio.ScalarImage(f.name))
+            tio.Subject(0)
 
     def test_input_dict(self):
-        with tempfile.NamedTemporaryFile() as f:
+        with tempfile.NamedTemporaryFile(delete=False) as f:
             input_dict = {'image': tio.ScalarImage(f.name)}
             tio.Subject(input_dict)
             tio.Subject(**input_dict)
 
     def test_no_sample(self):
-        with tempfile.NamedTemporaryFile() as f:
+        with tempfile.NamedTemporaryFile(delete=False) as f:
             input_dict = {'image': tio.ScalarImage(f.name)}
             subject = tio.Subject(input_dict)
             with self.assertRaises(RuntimeError):
@@ -103,3 +102,7 @@ class TestSubject(TorchioTestCase):
     def test_bad_arg(self):
         with self.assertRaises(ValueError):
             tio.Subject(0)
+
+    def test_no_images(self):
+        with self.assertRaises(ValueError):
+            tio.Subject(a=0)

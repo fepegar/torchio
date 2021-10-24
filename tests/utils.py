@@ -1,3 +1,4 @@
+import os
 import copy
 import shutil
 import random
@@ -16,7 +17,7 @@ class TorchioTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.gettempdir()) / '.torchio_tests'
+        self.dir = Path(tempfile.gettempdir()) / os.urandom(24).hex()
         self.dir.mkdir(exist_ok=True)
         random.seed(42)
         np.random.seed(42)

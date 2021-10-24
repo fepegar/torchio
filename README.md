@@ -46,6 +46,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://github.com/fepegar/torchio/actions/workflows/lint.yml">
                 <img src="https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg" alt="Linting status">
             </a>
+            <a href="https://github.com/fepegar/torchio/actions/workflows/tests.yml">
+                <img src="https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg" alt="Tests status">
+            </a>
         </td>
     </tr>
     <tr>

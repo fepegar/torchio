@@ -2,9 +2,11 @@
 
 """Tests for Image."""
 
+import sys
 import copy
 import tempfile
 
+import pytest
 import torch
 import numpy as np
 import nibabel as nib
@@ -20,6 +22,7 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             tio.ScalarImage('nopath')
 
+    @pytest.mark.skipif(sys.platform == 'win32', reason='Path not valid')
     def test_wrong_path_value(self):
         with self.assertRaises(RuntimeError):
             tio.ScalarImage('~&./@#"!?X7=+')
@@ -157,7 +160,7 @@ class TestImage(TorchioTestCase):
         for dtype in np.uint16, np.uint32:
             data = np.ones((3, 3, 3), dtype=dtype)
             img = nib.Nifti1Image(data, affine)
-            with tempfile.NamedTemporaryFile(suffix='.nii') as f:
+            with tempfile.NamedTemporaryFile(suffix='.nii', delete=False) as f:
                 nib.save(img, f.name)
                 tio.ScalarImage(f.name).load()
 
@@ -204,9 +207,9 @@ class TestImage(TorchioTestCase):
 
     def test_fast_gif(self):
         with self.assertWarns(UserWarning):
-            with tempfile.NamedTemporaryFile(suffix='.gif') as f:
+            with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
                 self.sample_subject.t1.to_gif(0, 0.0001, f.name)
 
     def test_gif_rgb(self):
-        with tempfile.NamedTemporaryFile(suffix='.gif') as f:
+        with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
             tio.ScalarImage(tensor=torch.rand(3, 4, 5, 6)).to_gif(0, 1, f.name)
