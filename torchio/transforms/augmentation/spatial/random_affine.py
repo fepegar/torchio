@@ -238,8 +238,6 @@ class Affine(SpatialTransform):
             transform.SetCenter(center_lps)
         return transform
 
-
-
     @staticmethod
     def _get_rotation_transform(
             degrees: Sequence[float],
