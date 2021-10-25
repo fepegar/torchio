@@ -57,7 +57,8 @@ jobs:
       - name: Install project
         run: pip install .
 
-      - name: Test CLI
-        run: |
-          tiotr --help
-          tiohd --help
+      - name: Test transforms CLI tool
+        run: tiotr --help
+
+      - name: Test info CLI tool
+        run: tiohd --help
