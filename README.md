@@ -34,20 +34,17 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <b>CI</b>
         </td>
         <td align="center">
-            <a href="https://travis-ci.com/fepegar/torchio">
-                <img src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis" alt="Build status">
+            <a href="https://github.com/fepegar/torchio/actions/workflows/tests.yml">
+                <img src="https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg" alt="Tests status">
+            </a>
+            <a href="https://github.com/fepegar/torchio/actions/workflows/lint.yml">
+                <img src="https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg" alt="Linting status">
             </a>
             <a href="http://torchio.rtfd.io/?badge=latest">
                 <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
             </a>
             <a href="https://codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
-            </a>
-            <a href="https://github.com/fepegar/torchio/actions/workflows/lint.yml">
-                <img src="https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg" alt="Linting status">
-            </a>
-            <a href="https://github.com/fepegar/torchio/actions/workflows/tests.yml">
-                <img src="https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg" alt="Tests status">
             </a>
         </td>
     </tr>
@@ -243,7 +240,7 @@ This package has been greatly inspired by NiftyNet,
 
 If you like this repository, please click on Star!
 
-If you use this package for your research, please cite the paper:
+If you use this package for your research, please cite our paper:
 
 [F. Pérez-García, R. Sparks, and S. Ourselin. *TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning*. Computer Methods and Programs in Biomedicine (June 2021), p. 106236. ISSN: 0169-2607.doi:10.1016/j.cmpb.2021.106236.](https://doi.org/10.1016/j.cmpb.2021.106236)
 

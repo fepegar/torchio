@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
-|Lint-status| |Build-status| |Coverage-codecov| |Code-Quality|
+|Tests-status| |Lint-status| |Coverage-codecov| |Code-Quality|
 |Code-Maintainability| |pre-commit| |Slack|
 
 
@@ -86,7 +86,6 @@ BibTeX:
       doi = {https://doi.org/10.1016/j.cmpb.2021.106236},
       url = {https://www.sciencedirect.com/science/article/pii/S0169260721003102},
       author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, S{\'e}bastien},
-      keywords = {Medical image computing, Deep learning, Data augmentation, Preprocessing},
    }
 
 This project is supported by the following institutions:
@@ -119,10 +118,6 @@ which is no longer maintained.
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
    :target: http://torchio.rtfd.io/?badge=latest
    :alt: Documentation status
-
-.. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
-   :target: https://travis-ci.com/fepegar/torchio
-   :alt: Build status
 
 .. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg
    :target: https://github.com/fepegar/torchio/actions/workflows/lint.yml
