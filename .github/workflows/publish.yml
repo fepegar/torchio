@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@raw/main
+    - uses: actions/checkout@main
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v1
@@ -36,6 +36,6 @@ jobs:
     # Publish only tagged commits
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@raw/main
+      uses: pypa/gh-action-pypi-publish@main
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
