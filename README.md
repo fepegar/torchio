@@ -1,9 +1,10 @@
+<!-- markdownlint-disable -->
 <p align="center">
   <a href="http://torchio.rtfd.io/">
     <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/source/favicon_io/for_readme_2000x462.png" alt="TorchIO logo">
   </a>
 </p>
-
+<!-- markdownlint-restore -->
 
 > *Tools like TorchIO are a symptom of the maturation of medical AI research using deep learning techniques*.
 
@@ -12,6 +13,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
+<!-- markdownlint-disable -->
 <table align="center">
     <tr>
         <td align="left">
@@ -210,11 +212,10 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
-
-
 <a href="https://torchio.readthedocs.io/data/patch_based.html">
     <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/queue.gif" alt="Queue">
 </a>
+<!-- markdownlint-restore -->
 
 ([Queue](https://torchio.readthedocs.io/data/patch_training.html#queue)
 for [patch-based training](https://torchio.readthedocs.io/data/patch_based.html))
@@ -234,7 +235,6 @@ or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by NiftyNet,
 [which is not actively maintained anymore](https://github.com/NifTK/NiftyNet/commit/935bf4334cd00fa9f9d50f6a95ddcbfdde4031e0).
-
 
 ## Credits
 
@@ -283,7 +283,6 @@ All the documentation is hosted on
 Please
 [open a new issue](https://github.com/fepegar/torchio/issues/new/choose)
 if you think something is missing.
-
 
 ## Contributors
 
