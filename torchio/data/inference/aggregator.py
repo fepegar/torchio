@@ -23,7 +23,7 @@ class GridAggregator:
             will be averaged with equal weights. See the
             `grid aggregator tests`_ for a raw visualization of both modes.
 
-    .. _grid aggregator tests: https://github.com/fepegar/torchio/blob/master/tests/data/inference/test_aggregator.py
+    .. _grid aggregator tests: https://github.com/fepegar/torchio/blob/main/tests/data/inference/test_aggregator.py
 
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more

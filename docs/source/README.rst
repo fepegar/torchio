@@ -37,7 +37,7 @@ See :doc:`Getting started <quickstart>` for installation instructions and a
 usage overview.
 
 Contributions are more than welcome.
-Please check our `contributing guide <https://github.com/fepegar/torchio/blob/master/CONTRIBUTING.rst>`_
+Please check our `contributing guide <https://github.com/fepegar/torchio/blob/main/CONTRIBUTING.rst>`_
 if you would like to contribute.
 
 If you have questions, feel free to ask in the discussions tab:
@@ -112,7 +112,7 @@ which is no longer maintained.
    :alt: Conda version
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/master/tutorials/README.md
+   :target: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
    :alt: Google Colab notebooks
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
@@ -127,12 +127,12 @@ which is no longer maintained.
    :target: https://github.com/fepegar/torchio/actions/workflows/tests.yml
    :alt: Tests status
 
-.. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
+.. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
    :alt: Coverage status
 
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer
-   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master
+   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main
    :alt: Code quality
 
 .. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack

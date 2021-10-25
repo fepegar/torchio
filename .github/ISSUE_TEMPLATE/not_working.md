@@ -41,7 +41,7 @@ assignees: ''
 
 **System info**
 
-Output of `python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/master/print_system.py)`:
+Output of `python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/main/print_system.py)`:
 
 ```
 # Paste here the output of that command in a terminal
