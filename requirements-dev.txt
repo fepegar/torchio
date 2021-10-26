@@ -1,15 +1,11 @@
 bump2version
-click
 codecov
 coverage
-coveralls
 flake8
 furo
 matplotlib
 mypy
-pip
 pre-commit
-pylint
 pytest
 pytest-cov
 sphinx
@@ -18,7 +14,4 @@ sphinx-copybutton
 sphinx-gallery
 sphinx-notfound-page
 tox
-twine
 types-Deprecated
-watchdog
-wheel
