@@ -53,11 +53,9 @@ class TestMask(TorchioTestCase):
         assert masked_list == [0, 6, 7, 0, 0]
 
     def test_mask_example(self):
-        subject = tio.datasets.Colin27()
-        negated_mask = subject.brain.data.logical_not()
+        subject = self.sample_subject
+        negated_mask = subject.label.data.logical_not()
         masked_voxel_indices = negated_mask.nonzero(as_tuple=True)
-
-        transform = tio.Mask(masking_method='brain')
+        transform = tio.Mask(masking_method='label')
         transformed = transform(subject)
-
         assert (transformed.t1.data[masked_voxel_indices] == 0).all()
