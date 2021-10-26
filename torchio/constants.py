@@ -26,7 +26,7 @@ CHANNELS_DIMENSION = 1
 REPO_URL = 'https://github.com/fepegar/torchio/'
 
 # Data repository
-DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/master/data/'
+DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/main/data/'
 
 # Floating point error
 MIN_FLOAT_32 = torch.finfo(torch.float32).eps

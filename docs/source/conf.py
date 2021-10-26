@@ -234,7 +234,7 @@ sphinx_gallery_conf = {
         # Required keys
         'org': 'fepegar',
         'repo': 'torchio',
-        'branch': 'master',
+        'branch': 'main',
         'binderhub_url': 'https://mybinder.org',
         'dependencies': '../requirements.txt',
         # Optional keys

@@ -1,7 +1,7 @@
 <!-- markdownlint-disable -->
 <p align="center">
   <a href="http://torchio.rtfd.io/">
-    <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/source/favicon_io/for_readme_2000x462.png" alt="TorchIO logo">
+    <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/source/favicon_io/for_readme_2000x462.png" alt="TorchIO logo">
   </a>
 </p>
 <!-- markdownlint-restore -->
@@ -46,7 +46,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
                 <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
             </a>
             <a href="https://codecov.io/github/fepegar/torchio">
-                <img src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" alt="Coverage status">
+                <img src="https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg" alt="Coverage status">
             </a>
         </td>
     </tr>
@@ -55,7 +55,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <b>Code</b>
         </td>
         <td align="center">
-            <a href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master">
+            <a href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main">
                 <img src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer" alt="Code quality">
             </a>
             <a href="https://codeclimate.com/github/fepegar/torchio/maintainability">
@@ -71,7 +71,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <b>Tutorials</b>
         </td>
         <td align="center">
-            <a href="https://github.com/fepegar/torchio/blob/master/tutorials/README.md">
+            <a href="https://github.com/fepegar/torchio/blob/main/tutorials/README.md">
                 <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Google Colab">
             </a>
         </td>
@@ -101,13 +101,13 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 <p align="center">
   <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
-    <img style="width: 600px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/fpg_progressive.gif" alt="Progressive artifacts">
+    <img style="width: 600px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/fpg_progressive.gif" alt="Progressive artifacts">
   </a>
 </p>
 
 <p align="center">
   <a href="https://torchio.readthedocs.io/transforms/augmentation.html">
-    <img style="width: 360px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/augmentation.gif" alt="Augmentation">
+    <img style="width: 360px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/augmentation.gif" alt="Augmentation">
   </a>
 </p>
 
@@ -121,10 +121,10 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
         </td>
     </tr>
     <tr>
-        <td align="center"><img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/1_Lambda_mri.png" alt="Original"></td>
+        <td align="center"><img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/1_Lambda_mri.png" alt="Original"></td>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomblur">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/2_RandomBlur_mri.gif" alt="Random blur">
             </a>
         </td>
     </tr>
@@ -139,12 +139,12 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     <tr>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomflip">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/3_RandomFlip_mri.gif" alt="Random flip">
             </a>
         </td>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomnoise">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/4_Compose_mri.gif" alt="Random noise">
             </a>
         </td>
     </tr>
@@ -159,12 +159,12 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     <tr>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomaffine">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/5_RandomAffine_mri.gif" alt="Random affine transformation">
             </a>
         </td>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomelasticdeformation">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/6_RandomElasticDeformation_mri.gif" alt="Random elastic transformation">
             </a>
         </td>
     </tr>
@@ -179,12 +179,12 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     <tr>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randombiasfield">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/7_RandomBiasField_mri.gif" alt="Random bias field artifact">
             </a>
         </td>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randommotion">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/8_RandomMotion_mri.gif" alt="Random motion artifact">
             </a>
         </td>
     </tr>
@@ -199,12 +199,12 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
     <tr>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomspike">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/9_RandomSpike_mri.gif" alt="Random spike artifact">
             </a>
         </td>
         <td align="center">
             <a href="http://torchio.rtfd.io/transforms/augmentation.html#randomghosting">
-                <img src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact">
+                <img src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/gifs_readme/10_RandomGhosting_mri.gif" alt="Random ghosting artifact">
             </a>
         </td>
     </tr>
@@ -213,7 +213,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 ---
 
 <a href="https://torchio.readthedocs.io/data/patch_based.html">
-    <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/queue.gif" alt="Queue">
+    <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/queue.gif" alt="Queue">
 </a>
 <!-- markdownlint-restore -->
 
@@ -275,7 +275,7 @@ and a [Hello, World!](https://torchio.readthedocs.io/quickstart.html#hello-world
 example.
 
 Longer usage examples can be found in the
-[tutorials](https://github.com/fepegar/torchio/blob/master/tutorials/README.md).
+[tutorials](https://github.com/fepegar/torchio/blob/main/tutorials/README.md).
 
 All the documentation is hosted on
 [Read the Docs](http://torchio.rtfd.io/).

@@ -63,5 +63,5 @@ repos:
   #   hooks:
   #     - id: pre-commit-sync
   #       args: [
-  #         '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/master/.pre-commit-config.yaml',
+  #         '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/main/.pre-commit-config.yaml',
   #       ]
