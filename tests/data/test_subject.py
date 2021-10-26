@@ -112,8 +112,18 @@ class TestSubject(TorchioTestCase):
             def __init__(self, img: tio.Image, *args, **kwargs):
                 kwargs['img'] = img
                 super().__init__(*args, **kwargs)
-
-        subject = CustomSubject(img=tio.ScalarImage(tensor=torch.rand(1, 3, 3, 4)))
+        tensor = torch.rand(1, 3, 3, 4)
+        subject = CustomSubject(img=tio.ScalarImage(tensor=tensor))
         new_subject = copy.copy(subject)
+        assert isinstance(new_subject, CustomSubject)
 
+    def test_copy_subclass_no_kwargs(self):
+        class CustomSubject(tio.Subject):
+            def __init__(self):
+                tensor = torch.rand(1, 3, 3, 4)
+                img = tio.ScalarImage(tensor=tensor)
+                kwargs = {'img': img}
+                super().__init__(**kwargs)
+        subject = CustomSubject()
+        new_subject = copy.copy(subject)
         assert isinstance(new_subject, CustomSubject)
