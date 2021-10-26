@@ -71,7 +71,7 @@ class Subject(dict):
             else:
                 value = copy.deepcopy(value)
             result_dict[key] = value
-        new = Subject(result_dict)
+        new = self.__class__(**result_dict)
         new.applied_transforms = self.applied_transforms[:]
         return new
 
