@@ -241,6 +241,13 @@ class Queue(Dataset):
             self._print('Queue is empty:', exception)
             self._initialize_subjects_iterable()
             subject = next(self.subjects_iterable)
+        except AssertionError as exception:
+            if 'can only test a child process' in str(exception):
+                message = (
+                    'The number of workers for the data loader used to pop'
+                    ' patches from the queue should be 0. Is it?'
+                )
+                raise RuntimeError(message) from exception
         return subject
 
     @staticmethod
