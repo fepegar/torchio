@@ -350,6 +350,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://github.com/omarespejel"><img src="https://avatars.githubusercontent.com/u/4755430?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Omar U. Espejel</b></sub></a><br /><a href="#audio-omarespejel" title="Audio">🔊</a></td>
     <td align="center"><a href="https://github.com/jamesobutler"><img src="https://avatars.githubusercontent.com/u/15837524?v=4?s=100" width="100px;" alt=""/><br /><sub><b>James Butler</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ajamesobutler" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/res191"><img src="https://avatars.githubusercontent.com/u/6549034?v=4?s=100" width="100px;" alt=""/><br /><sub><b>res191</b></sub></a><br /><a href="#fundingFinding-res191" title="Funding Finding">🔍</a></td>
+    <td align="center"><a href="https://github.com/nengwp"><img src="https://avatars.githubusercontent.com/u/44516353?v=4?s=100" width="100px;" alt=""/><br /><sub><b>nengwp</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Anengwp" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=nengwp" title="Documentation">📖</a></td>
   </tr>
 </table>
 
