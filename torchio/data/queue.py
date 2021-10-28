@@ -119,7 +119,11 @@ class Queue(Dataset):
     ...     sampler,
     ...     num_workers=4,
     ... )
-    >>> patches_loader = DataLoader(patches_queue, batch_size=16)
+    >>> patches_loader = DataLoader(
+    ...     patches_queue,
+    ...     batch_size=16,
+    ...     num_workers=0,  # this must be 0
+    ... )
     >>> num_epochs = 2
     >>> model = torch.nn.Identity()
     >>> for epoch_index in range(num_epochs):
