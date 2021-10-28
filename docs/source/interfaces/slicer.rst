@@ -5,19 +5,20 @@
 medical image informatics, image processing,
 and three-dimensional visualization.
 
-You can download and install Slicer 4.11 from
-`their download website <https://download.slicer.org/>`_ or, if you are on
-macOS, using `Homebrew <https://docs.brew.sh/>`_:
-``brew cask install slicer-nightly``.
-
 TorchIO provides a 3D Slicer extension for quick experimentation and
 visualization of the package features without any coding.
 
 The TorchIO extension can be easily installed using the
-`Extensions Manager <https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager>`_.
+`Extensions Manager <https://slicer.readthedocs.io/en/latest/user_guide/extensions_manager.html>`_.
 
 The code and installation instructions are available on
 `GitHub <https://github.com/fepegar/SlicerTorchIO>`_.
+
+.. note:: The Preview version (built nightly) is recommended. You can download
+    and install Slicer from `their download website <https://download.slicer.org/>`_
+    or, if you are on macOS, using `Homebrew <https://docs.brew.sh/>`_::
+
+        brew tap homebrew/cask-versions && brew cask install slicer-preview
 
 
 TorchIO Transforms
@@ -62,7 +63,7 @@ Hovering the mouse over the transforms will show tooltips extracted from the
 TorchIO documentation.
 
 .. image:: https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_4.png
-    :alt: Select volume nodes
+    :alt: Apply transform
 
 
 You can click on the ``Toggle volumes`` button to switch between input and output
