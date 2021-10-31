@@ -1,4 +1,6 @@
 import ast
+import os
+import sys
 import gzip
 import shutil
 import tempfile
@@ -289,3 +291,19 @@ def add_images_from_batch(
             kwargs['filename'] = one_image['filename']
         image = class_(**kwargs)
         subject.add_image(image, name)
+
+
+def guess_external_viewer() -> Optional[Path]:
+    if 'SITK_SHOW_COMMAND' in os.environ:
+        return os.environ['SITK_SHOW_COMMAND']
+    platform = sys.platform
+    if platform == 'darwin':
+        apps_dir = Path('/Applications')
+        itk_snap_path = apps_dir / 'ITK-SNAP.app/Contents/MacOS/ITK-SNAP'
+        if itk_snap_path.is_file():
+            return itk_snap_path
+        slicer_path = apps_dir / 'Slicer.app/Contents/MacOS/Slicer'
+        if slicer_path.is_file():
+            return slicer_path
+    elif platform == 'win32':
+        pass
