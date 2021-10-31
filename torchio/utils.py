@@ -297,12 +297,14 @@ def guess_external_viewer() -> Optional[Path]:
     if 'SITK_SHOW_COMMAND' in os.environ:
         return os.environ['SITK_SHOW_COMMAND']
     platform = sys.platform
+    itk = 'ITK-SNAP'
+    slicer = 'Slicer'
     if platform == 'darwin':
-        apps_dir = Path('/Applications')
-        itk_snap_path = apps_dir / 'ITK-SNAP.app/Contents/MacOS/ITK-SNAP'
+        app_path = '/Applications/{}.app/Contents/MacOS/{}'  # noqa: FS003
+        itk_snap_path = Path(app_path.format(2 * (itk,)))
         if itk_snap_path.is_file():
             return itk_snap_path
-        slicer_path = apps_dir / 'Slicer.app/Contents/MacOS/Slicer'
+        slicer_path = Path(app_path.format(2 * (slicer,)))
         if slicer_path.is_file():
             return slicer_path
     elif platform == 'win32':
