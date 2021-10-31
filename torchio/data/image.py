@@ -647,7 +647,7 @@ class Image(dict):
             from ..visualization import plot_volume  # avoid circular import
             plot_volume(self, **kwargs)
 
-    def show(self, viewer_path=None):
+    def show(self, viewer_path: Optional[TypePath] = None) -> None:
         """Open the image using external software.
 
         Args:
