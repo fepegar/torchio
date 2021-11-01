@@ -158,6 +158,26 @@ def plot_subject(
     plt.close(fig)
 
 
+def num_bins(x: np.ndarray) -> int:
+    # Freedman–Diaconis number of bins
+    q25, q75 = np.percentile(x, [25, 75])
+    bin_width = 2 * (q75 - q25) * len(x) ** (-1 / 3)
+    bins = round((x.max() - x.min()) / bin_width)
+    return bins
+
+
+def plot_histogram(x: np.ndarray, **kwargs) -> None:
+    _, plt = import_mpl_plt()
+    plt.hist(x, bins=num_bins(x), **kwargs)
+    plt.xlabel('Intensity')
+    density = kwargs.pop('density', False)
+    if density:
+        plt.ylabel('Density')
+    else:
+        plt.ylabel('Frequency')
+    plt.show()
+
+
 def color_labels(arrays, cmap_dict):
     results = []
     for array in arrays:

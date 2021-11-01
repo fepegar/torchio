@@ -677,6 +677,13 @@ class ScalarImage(Image):
         super().__init__(*args, **kwargs)
 
 
+    def hist(self, **kwargs) -> None:
+        """Plot histogram."""
+        from ..visualization import plot_histogram
+        x = self.data.flatten().numpy()
+        plot_histogram(x, **kwargs)
+
+
 class LabelMap(Image):
     """Image whose pixel values represent categorical labels.
 
@@ -704,3 +711,11 @@ class LabelMap(Image):
             raise ValueError('Type of LabelMap is always torchio.LABEL')
         kwargs.update({'type': LABEL})
         super().__init__(*args, **kwargs)
+
+    def count_nonzero(self) -> int:
+        return int(self.data.count_nonzero())
+
+    def count_labels(self) -> dict:
+        counts = self.data.unique(return_counts=True)
+        counts_dict = {int(l):int(c) for l,c in zip(counts[0], counts[1])}
+        return counts_dict
