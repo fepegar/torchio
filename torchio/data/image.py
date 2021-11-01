@@ -665,7 +665,6 @@ class Image(dict):
         image_viewer = sitk.ImageViewer()
         # This is so that 3D Slicer creates segmentation nodes from label maps
         if self.__class__.__name__ == 'LabelMap':
-            print('Im here')
             image_viewer.SetFileExtension('.seg.nrrd')
         if viewer_path is not None:
             image_viewer.SetApplication(str(viewer_path))
