@@ -8,8 +8,9 @@ import click
 @click.command()
 @click.argument('input-path', type=click.Path(exists=True))
 @click.option('--plot/--no-plot', '-p', default=False)
-def main(input_path, plot):
-    """Print information about an image.
+@click.option('--show/--no-show', '-s', default=False)
+def main(input_path, plot, show):
+    """Print information about an image and, optionally, show it.
 
     \b
     Example:
@@ -22,6 +23,8 @@ def main(input_path, plot):
     print(image)  # noqa: T001
     if plot:
         image.plot()
+    if show:
+        image.show()
     return 0
 
 
