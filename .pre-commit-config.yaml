@@ -18,33 +18,33 @@ repos:
       - id: trailing-whitespace        # This hook trims trailing whitespace
       - id: file-contents-sorter       # Sort the lines in specified files
         files: .*requirements.*\.txt$
-  # - repo: https://github.com/pycqa/flake8
-  #   rev: 4.0.1
-  #   hooks:
-  #     - id: flake8
-  #       additional_dependencies: [
-  #         flake8-blind-except,      # check for blind, catch-all "except:" statements
-  #         flake8-breakpoint,        # check forgotten breakpoints
-  #         flake8-broken-line,       # forbid backslashes for line breaks
-  #         flake8-bugbear,           # find likely bugs and design problems
-  #         flake8-builtins,          # check for python builtins being used as variables or parameters
-  #         flake8-class-newline,     # lint for newline after class definitions
-  #         flake8-comprehensions,    # write better list/set/dict comprehensions
-  #         flake8-debugger,          # check for pdb;idbp imports and set traces
-  #         flake8-fixme,             # check for FIXME, TODO and other temporary developer notes
-  #         flake8-logging-format,    # validate (lack of) logging format strings
-  #         flake8-markdown,          # lint Python code blocks in Markdown files using flake8
-  #         flake8-pep3101,           # check for old string formatting
-  #         flake8-polyfill,          # help support Flake8 2.x and 3.x simultaneously
-  #         flake8-print,             # check for Print statements
-  #         flake8-type-annotations,  # enforce consistent type annotation styles
-  #         flake8-use-fstring,       # enforce use of f-string
-  #         flake8-2020,              # check for misuse of `sys.version` or `sys.version_info`
-  #         pep8-naming,              # check PEP-8 naming conventions
-  #       ]
-  #       args: [
-  #         '--ignore=N813,E123,W503,B902',  # import SimpleITK as sitk, brackets indentation, line break before binary operator
-  #       ]
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+          flake8-blind-except,      # check for blind, catch-all "except:" statements
+          flake8-breakpoint,        # check forgotten breakpoints
+          flake8-broken-line,       # forbid backslashes for line breaks
+          flake8-bugbear,           # find likely bugs and design problems
+          flake8-builtins,          # check for python builtins being used as variables or parameters
+          flake8-class-newline,     # lint for newline after class definitions
+          flake8-comprehensions,    # write better list/set/dict comprehensions
+          flake8-debugger,          # check for pdb;idbp imports and set traces
+          flake8-fixme,             # check for FIXME, TODO and other temporary developer notes
+          flake8-logging-format,    # validate (lack of) logging format strings
+          flake8-markdown,          # lint Python code blocks in Markdown files using flake8
+          flake8-pep3101,           # check for old string formatting
+          flake8-polyfill,          # help support Flake8 2.x and 3.x simultaneously
+          flake8-print,             # check for Print statements
+          flake8-type-annotations,  # enforce consistent type annotation styles
+          flake8-use-fstring,       # enforce use of f-string
+          flake8-2020,              # check for misuse of `sys.version` or `sys.version_info`
+          pep8-naming,              # check PEP-8 naming conventions
+        ]
+        args: [
+          '--ignore=N813,E123,W503,B902',  # import SimpleITK as sitk, brackets indentation, line break before binary operator
+        ]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0  # Use the ref you want to point at
     hooks:
@@ -58,10 +58,3 @@ repos:
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']
-  # - repo: https://github.com/dvolgyes/pre-commit-sync
-  #   rev: "v0.2.0"
-  #   hooks:
-  #     - id: pre-commit-sync
-  #       args: [
-  #         '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/main/.pre-commit-config.yaml',
-  #       ]
