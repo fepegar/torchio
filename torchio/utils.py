@@ -326,3 +326,10 @@ def guess_external_viewer() -> Optional[Path]:
             slicer_path = slicer_dir / 'slicer.exe'
             if slicer_path.is_file():
                 return slicer_path
+    elif 'linux' in platform:
+        itk_snap_path = shutil.which('itksnap')
+        if itk_snap_path is not None:
+            return Path(itk_snap_path)
+        slicer_path = shutil.which('Slicer')
+        if slicer_path is not None:
+            return Path(slicer_path)
