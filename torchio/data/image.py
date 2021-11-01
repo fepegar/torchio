@@ -10,7 +10,7 @@ import nibabel as nib
 import SimpleITK as sitk
 from deprecated import deprecated
 
-from ..utils import get_stem
+from ..utils import get_stem, guess_external_viewer
 from ..typing import (
     TypeData,
     TypePath,
@@ -646,6 +646,41 @@ class Image(dict):
         else:
             from ..visualization import plot_volume  # avoid circular import
             plot_volume(self, **kwargs)
+
+    def show(self, viewer_path: Optional[TypePath] = None) -> None:
+        """Open the image using external software.
+
+        Args:
+            viewer_path: Path to the application used to view the image. If
+                ``None``, the value of the environment variable
+                ``SITK_SHOW_COMMAND`` will be used. If this variable is also
+                not set, TorchIO will try to guess the location of
+                `ITK-SNAP <http://www.itksnap.org/pmwiki/pmwiki.php>`_ and
+                `3D Slicer <https://www.slicer.org/>`_.
+
+        Raises:
+            RuntimeError: If the viewer is not found.
+        """
+        sitk_image = self.as_sitk()
+        image_viewer = sitk.ImageViewer()
+        # This is so that 3D Slicer creates segmentation nodes from label maps
+        if self.__class__.__name__ == 'LabelMap':
+            image_viewer.SetFileExtension('.seg.nrrd')
+        if viewer_path is not None:
+            image_viewer.SetApplication(str(viewer_path))
+        try:
+            image_viewer.Execute(sitk_image)
+        except RuntimeError as e:
+            viewer_path = guess_external_viewer()
+            if viewer_path is None:
+                message = (
+                    'No external viewer has been found. Please set the'
+                    ' environment variable SITK_SHOW_COMMAND to a viewer of'
+                    ' your choice'
+                )
+                raise RuntimeError(message) from e
+            image_viewer.SetApplication(str(viewer_path))
+            image_viewer.Execute(sitk_image)
 
 
 class ScalarImage(Image):
