@@ -294,6 +294,11 @@ def add_images_from_batch(
 
 
 def guess_external_viewer() -> Optional[Path]:
+    """Guess the path to an executable that could be used to visualize images.
+
+    Currently, it looks for 1) ITK-SNAP and 2) 3D Slicer. Implemented for macOS
+    and Windows.
+    """
     if 'SITK_SHOW_COMMAND' in os.environ:
         return os.environ['SITK_SHOW_COMMAND']
     platform = sys.platform
@@ -308,4 +313,16 @@ def guess_external_viewer() -> Optional[Path]:
         if slicer_path.is_file():
             return slicer_path
     elif platform == 'win32':
-        pass
+        program_files_dir = Path(os.environ['ProgramW6432'])
+        itk_snap_dirs = list(program_files_dir.glob('ITK-SNAP*'))
+        if itk_snap_dirs:
+            itk_snap_dir = itk_snap_dirs[-1]
+            itk_snap_path = itk_snap_dir / 'bin/itk-snap.exe'
+            if itk_snap_path.is_file():
+                return itk_snap_path
+        slicer_dirs = list(program_files_dir.glob('Slicer*'))
+        if slicer_dirs:
+            slicer_dir = slicer_dirs[-1]
+            slicer_path = slicer_dir / 'slicer.exe'
+            if slicer_path.is_file():
+                return slicer_path
