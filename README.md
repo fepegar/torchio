@@ -42,7 +42,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://github.com/fepegar/torchio/actions/workflows/lint.yml">
                 <img src="https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg" alt="Linting status">
             </a>
-            <a href="http://torchio.rtfd.io/?badge=latest">
+            <a href="https://torchio.rtfd.io/?badge=latest">
                 <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
             </a>
             <a href="https://codecov.io/github/fepegar/torchio">
@@ -230,7 +230,7 @@ for data augmentation and preprocessing.
 Transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
-[MRI magnetic field inhomogeneity](http://mriquestions.com/why-homogeneity.html)
+[MRI magnetic field inhomogeneity](https://mriquestions.com/why-homogeneity.html)
 or [k-space motion artifacts](http://proceedings.mlr.press/v102/shaw19a.html).
 
 This package has been greatly inspired by NiftyNet,

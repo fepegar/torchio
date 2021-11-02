@@ -52,5 +52,5 @@ See also
 
 PyTorch implementations of 2D and 3D network architectures:
 
-* `HighResNet <https://www.github.com/fepegar/highresnet>`_
-* `U-Net <https://www.github.com/fepegar/unet>`_
+* `HighResNet <https://github.com/fepegar/highresnet>`_
+* `U-Net <https://github.com/fepegar/unet>`_

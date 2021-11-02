@@ -106,7 +106,7 @@ The best way to quickly understand and try the library is the
 hosted on Google Colab.
 
 They include multiple examples and visualization of most of the classes,
-including training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for
+including training of a `3D U-Net <https://github.com/fepegar/unet>`_ for
 brain segmentation on :math:`T_1`-weighted MRI with full volumes and
 with subvolumes (aka patches or windows).
 

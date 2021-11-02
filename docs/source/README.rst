@@ -16,7 +16,7 @@ preprocessing.
 These transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
-`MRI magnetic field inhomogeneity (bias) <http://mriquestions.com/why-homogeneity.html>`_
+`MRI magnetic field inhomogeneity (bias) <https://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
 TorchIO is part of the official `PyTorch Ecosystem <https://pytorch.org/ecosystem/>`_,
@@ -95,8 +95,8 @@ This project is supported by the following institutions:
 * `Wellcome / EPSRC Centre for Interventional and Surgical Sciences (WEISS) <https://www.ucl.ac.uk/interventional-surgical-sciences/>`_ (University College London)
 * `School of Biomedical Engineering & Imaging Sciences (BMEIS) <https://www.kcl.ac.uk/bmeis>`_ (King's College London)
 
-This library has been greatly inspired by `NiftyNet <https://niftynet.io/>`_
-which is no longer maintained.
+This library has been greatly inspired by
+`NiftyNet <https://github.com/NifTK/NiftyNet>`_ which is no longer maintained.
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
@@ -116,7 +116,7 @@ which is no longer maintained.
    :alt: Google Colab notebooks
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
-   :target: http://torchio.rtfd.io/?badge=latest
+   :target: https://torchio.rtfd.io/?badge=latest
    :alt: Documentation status
 
 .. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg

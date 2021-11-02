@@ -25,7 +25,7 @@ class Colin27(SubjectMNI):
     r"""Colin27 MNI template.
 
     More information can be found in the website of the
-    `1998 <http://nist.mni.mcgill.ca/?p=935>`_ and
+    `1998 <http://nist.mni.mcgill.ca/colin-27-average-brain/>`_ and
     `2008 <http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres>`_
     versions.
 

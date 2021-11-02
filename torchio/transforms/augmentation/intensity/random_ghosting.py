@@ -19,7 +19,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
     important patient-related causes of ghost artifacts in clinical MR imaging
     (from `mriquestions.com`_).
 
-    .. _mriquestions.com: http://mriquestions.com/why-discrete-ghosts.html
+    .. _mriquestions.com: https://mriquestions.com/why-discrete-ghosts.html
 
     Args:
         num_ghosts: Number of 'ghosts' :math:`n` in the image.
