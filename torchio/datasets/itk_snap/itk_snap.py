@@ -37,10 +37,10 @@ class BrainTumor(SubjectITKSNAP):
         super().__init__('braintumor', '6161')
 
     def get_kwargs(self):
-        t1, t1c, t2, flair, seg = [
+        t1, t1c, t2, flair, seg = (
             self.download_root / self.name / f'BRATS_HG0015_{name}.mha'
             for name in ('T1', 'T1C', 'T2', 'FLAIR', 'truth')
-        ]
+        )
         return {
             't1': ScalarImage(t1),
             't1c': ScalarImage(t1c),
@@ -70,10 +70,10 @@ class AorticValve(SubjectITKSNAP):
         super().__init__('bav_example', '11021')
 
     def get_kwargs(self):
-        b14, b14_seg, b25, b25_seg = [
+        b14, b14_seg, b25, b25_seg = (
             self.download_root / self.name / f'bav_frame_{name}.nii.gz'
             for name in ('14', '14_manseg', '25', '25_manseg')
-        ]
+        )
         return {
             'b14': ScalarImage(b14),
             'b14_seg': LabelMap(b14_seg),

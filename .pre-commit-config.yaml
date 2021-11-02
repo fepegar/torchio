@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v4.0.1
     hooks:
       - id: check-ast                  # Simply check whether the files parse as valid python
       - id: check-case-conflict        # Check for files that would conflict in case-insensitive filesystems
@@ -18,8 +18,8 @@ repos:
       - id: trailing-whitespace        # This hook trims trailing whitespace
       - id: file-contents-sorter       # Sort the lines in specified files
         files: .*requirements.*\.txt$
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.3
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -46,7 +46,7 @@ repos:
           '--ignore=N813,E123,W503,B902',  # import SimpleITK as sitk, brackets indentation, line break before binary operator
         ]
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.6.0  # Use the ref you want to point at
+    rev: v1.9.0  # Use the ref you want to point at
     hooks:
       - id: python-check-blanket-noqa  # enforce that noqa annotations always occur with specific codes
       - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
@@ -54,14 +54,7 @@ repos:
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
       # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.2
+    rev: v2.29.0
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']
-  # - repo: https://github.com/dvolgyes/pre-commit-sync
-  #   rev: "v0.2.0"
-  #   hooks:
-  #     - id: pre-commit-sync
-  #       args: [
-  #         '--sync=.pre-commit-config.yaml:https://raw.githubusercontent.com/fepegar/torchio/main/.pre-commit-config.yaml',
-  #       ]

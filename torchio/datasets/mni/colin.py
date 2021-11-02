@@ -92,20 +92,20 @@ class Colin27(SubjectMNI):
 
     def get_subject_dict(self, extension):
         if self.version == 1998:
-            t1, head, mask = [
+            t1, head, mask = (
                 self.download_root / f'colin27_t1_tal_lin{suffix}{extension}'
                 for suffix in ('', '_headmask', '_mask')
-            ]
+            )
             subject_dict = {
                 't1': ScalarImage(t1),
                 'head': LabelMap(head),
                 'brain': LabelMap(mask),
             }
         elif self.version == 2008:
-            t1, t2, pd, label = [
+            t1, t2, pd, label = (
                 self.download_root / f'colin27_{name}_tal_hires{extension}'
                 for name in ('t1', 't2', 'pd', 'cls')
-            ]
+            )
             subject_dict = {
                 't1': ScalarImage(t1),
                 't2': ScalarImage(t2),
