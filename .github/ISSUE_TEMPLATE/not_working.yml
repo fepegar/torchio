@@ -1,0 +1,76 @@
+name: "\U00002757 Something is not working"
+description: >
+  If something is not working as expected but you're not sure if it's a bug,
+  please follow the instructions in this template.
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the problem you encountered.
+      options:
+      - label: I have searched the existing issues
+        required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Problem summary
+      description: Please provide 1-2 short sentences that succinctly describe the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Code for reproduction
+      description: >
+        If possible, please provide a [minimum self-contained example](https://stackoverflow.com/help/minimal-reproducible-example).
+        It will be automatically formatted.
+        Here's another useful resource: [How To Ask Questions The Smart Way](http://www.catb.org/~esr/faqs/smart-questions.html).
+      placeholder: Your code here
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual outcome
+      description: Please describe the outcome of running the above code.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages
+      description: >
+        Please copy and paste any relevant log output.
+        Paste the full error traceback, not just the last error.
+        It will be automatically formatted.
+      placeholder: Your errors here
+      render: python-traceback
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected outcome
+      description: >
+        Please provide a description (or visual example) of the expected outcome
+        from the code snippet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: system
+    attributes:
+      label: System info
+      description: |
+        Please run this command in your console and paste the output below
+
+        ```shell
+        python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/main/print_system.py)
+        ```
+      placeholder: Your system info
+      render: shell
