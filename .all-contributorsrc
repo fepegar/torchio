@@ -442,6 +442,15 @@
       "contributions": [
         "design"
       ]
+    },
+    {
+      "login": "nepersica",
+      "name": "nepersica",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45097022?v=4",
+      "profile": "http://nepersica.tistory.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
