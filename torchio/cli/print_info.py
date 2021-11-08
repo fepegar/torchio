@@ -9,7 +9,8 @@ import click
 @click.argument('input-path', type=click.Path(exists=True))
 @click.option('--plot/--no-plot', '-p', default=False)
 @click.option('--show/--no-show', '-s', default=False)
-def main(input_path, plot, show):
+@click.option('--label/--scalar', '-l', default=False)
+def main(input_path, plot, show, label):
     """Print information about an image and, optionally, show it.
 
     \b
@@ -18,7 +19,8 @@ def main(input_path, plot, show):
     """
     # Imports are placed here so that the tool loads faster if not being run
     import torchio as tio
-    image = tio.ScalarImage(input_path)
+    class_ = tio.LabelMap if label else tio.ScalarImage
+    image = class_(input_path)
     image.load()
     print(image)  # noqa: T001
     if plot:
