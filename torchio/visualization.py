@@ -71,7 +71,7 @@ def plot_volume(
     sr, sa, ss = image.spacing
     kwargs['origin'] = 'lower'
 
-    if percentiles is not None:
+    if percentiles is not None and not is_label:
         p1, p2 = np.percentile(data, percentiles)
         kwargs['vmin'] = p1
         kwargs['vmax'] = p2
