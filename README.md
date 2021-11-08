@@ -355,6 +355,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://github.com/res191"><img src="https://avatars.githubusercontent.com/u/6549034?v=4?s=100" width="100px;" alt=""/><br /><sub><b>res191</b></sub></a><br /><a href="#fundingFinding-res191" title="Funding Finding">🔍</a></td>
     <td align="center"><a href="https://github.com/nengwp"><img src="https://avatars.githubusercontent.com/u/44516353?v=4?s=100" width="100px;" alt=""/><br /><sub><b>nengwp</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Anengwp" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=nengwp" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/susanveraclarke"><img src="https://avatars.githubusercontent.com/u/93313094?v=4?s=100" width="100px;" alt=""/><br /><sub><b>susanveraclarke</b></sub></a><br /><a href="#design-susanveraclarke" title="Design">🎨</a></td>
+    <td align="center"><a href="http://nepersica.tistory.com"><img src="https://avatars.githubusercontent.com/u/45097022?v=4?s=100" width="100px;" alt=""/><br /><sub><b>nepersica</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Anepersica" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
