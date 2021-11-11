@@ -167,3 +167,11 @@ class TestRandomAffine(TorchioTestCase):
         )
         transformed = apply_affine(tensor)
         self.assertTensorAlmostEqual(transformed, expected)
+
+    def test_different_spaces(self):
+        t1 = self.sample_subject.t1
+        label = tio.Resample(2)(self.sample_subject.label)
+        new_subject = tio.Subject(t1=t1, label=label)
+        with self.assertRaises(RuntimeError):
+            tio.RandomAffine()(new_subject)
+        tio.RandomAffine(check_shape=False)(new_subject)

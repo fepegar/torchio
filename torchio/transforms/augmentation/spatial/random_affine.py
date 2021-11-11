@@ -75,6 +75,9 @@ class RandomAffine(RandomTransform, SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
+        check_shape: If ``True`` an error will be raised if the images are in
+            different physical spaces. If ``False``, :attr:`center` should
+            probably not be ``'image'`` but ``'center'``.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
@@ -112,6 +115,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             center: str = 'image',
             default_pad_value: Union[str, float] = 'minimum',
             image_interpolation: str = 'linear',
+            check_shape: bool = True,
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -129,6 +133,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         self.center = center
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.check_shape = check_shape
 
     def get_params(
             self,
@@ -145,7 +150,6 @@ class RandomAffine(RandomTransform, SpatialTransform):
         return scaling_params, rotation_params, translation_params
 
     def apply_transform(self, subject: Subject) -> Subject:
-        subject.check_consistent_spatial_shape()
         scaling_params, rotation_params, translation_params = self.get_params(
             self.scales,
             self.degrees,
@@ -159,6 +163,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             center=self.center,
             default_pad_value=self.default_pad_value,
             image_interpolation=self.image_interpolation,
+            check_shape=self.check_shape,
         )
         transform = Affine(**self.add_include_exclude(arguments))
         transformed = transform(subject)
@@ -187,6 +192,9 @@ class Affine(SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
+        check_shape: If ``True`` an error will be raised if the images are in
+            different physical spaces. If ``False``, :attr:`center` should
+            probably not be ``'image'`` but ``'center'``.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
@@ -198,6 +206,7 @@ class Affine(SpatialTransform):
             center: str = 'image',
             default_pad_value: Union[str, float] = 'minimum',
             image_interpolation: str = 'linear',
+            check_shape: bool = True,
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -231,6 +240,7 @@ class Affine(SpatialTransform):
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(image_interpolation)
         self.invert_transform = False
+        self.check_shape = check_shape
         self.args_names = (
             'scales',
             'degrees',
@@ -238,6 +248,7 @@ class Affine(SpatialTransform):
             'center',
             'default_pad_value',
             'image_interpolation',
+            'check_shape',
         )
 
     @staticmethod
@@ -322,7 +333,8 @@ class Affine(SpatialTransform):
         return transform
 
     def apply_transform(self, subject: Subject) -> Subject:
-        subject.check_consistent_spatial_shape()
+        if self.check_shape:
+            subject.check_consistent_spatial_shape()
         for image in self.get_images(subject):
             transform = self.get_affine_transform(image)
             transformed_tensors = []
