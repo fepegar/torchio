@@ -256,3 +256,33 @@ FPG
 .. autoclass:: FPG
     :members:
     :show-inheritance:
+
+
+MedMNIST
+--------
+
+.. currentmodule:: torchio.datasets.medmnist
+
+.. autoclass:: OrganMNIST3D
+
+.. plot:: plot_medmnist.py plot_organ_mnist
+
+.. autoclass:: NoduleMNIST3D
+
+.. plot:: plot_medmnist.py plot_nodule_mnist
+
+.. autoclass:: AdrenalMNIST3D
+
+.. plot:: plot_medmnist.py plot_adrenal_mnist
+
+.. autoclass:: FractureMNIST3D
+
+.. plot:: plot_medmnist.py plot_fracture_mnist
+
+.. autoclass:: VesselMNIST3D
+
+.. plot:: plot_medmnist.py plot_vessel_mnist
+
+.. autoclass:: SynapseMNIST3D
+
+.. plot:: plot_medmnist.py plot_synapse_mnist

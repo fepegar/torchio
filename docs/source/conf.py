@@ -15,7 +15,6 @@ import os
 import sys
 from typing import List
 sys.path.insert(0, os.path.abspath('../..'))
-sys.path.append(os.path.abspath('sphinxext'))
 
 # -- Project information -----------------------------------------------------
 

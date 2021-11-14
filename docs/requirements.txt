@@ -1,6 +1,7 @@
 Deprecated
 SimpleITK!=2.0.*
 click
+einops
 furo
 humanize
 matplotlib
