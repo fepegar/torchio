@@ -13,7 +13,7 @@ class RSNAMICCAI(SubjectsDataset):
     This is a helper class for the dataset used in the
     `RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge`_ hosted on
     `kaggle <https://www.kaggle.com/>`_. The dataset must be downloaded before
-    instantiating this class (as oposed to, e.g., :class:`torchio.datasets.IXI`).
+    instantiating this class (as opposed to, e.g., :class:`torchio.datasets.IXI`).
 
     This `kaggle kernel <https://www.kaggle.com/fepegar/preprocessing-mri-with-torchio/>`_
     includes a usage example including preprocessing of all the scans.
