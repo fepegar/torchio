@@ -251,6 +251,13 @@ FPG
     subject = tio.datasets.FPG()
     subject.plot()
 
+.. plot::
+
+    import torchio as tio
+    subject = tio.datasets.FPG(load_all=True)
+    subject.plot()
+
+
 .. currentmodule:: torchio.datasets.fpg
 
 .. autoclass:: FPG
