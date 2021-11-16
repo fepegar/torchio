@@ -53,8 +53,8 @@ class Image(dict):
     Args:
         path: Path to a file or sequence of paths to files that can be read by
             :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing
-            DICOM files. If :attr:`tensor` is given, the data in
-            :attr:`path` will not be read.
+            DICOM files, or any bioformat in :mod:`aicsimageio`. If :attr:`tensor`
+            is given, the data in :attr:`path` will not be read.
             If a sequence of paths is given, data
             will be concatenated on the channel dimension so spatial
             dimensions must match.
@@ -108,6 +108,7 @@ class Image(dict):
     .. _3D Slicer wiki: https://www.slicer.org/wiki/Coordinate_systems
     .. _FSL docs: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained
     .. _SimpleITK docs: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html
+    .. _aicsimageio docs: https://allencellmodeling.github.io/aicsimageio/
     .. _Graham Wideman's website: http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm
     """
     def __init__(
@@ -117,11 +118,23 @@ class Image(dict):
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default
-            reader: Callable = read_image,
+            reader: Callable = None,
             **kwargs: Dict[str, Any],
             ):
         self.check_nans = check_nans
-        self.reader = reader
+
+        if reader is not None:
+            self.reader = reader
+        elif 'dims_bioformat' in kwargs:
+            from aicsimageio import AICSImage
+            dims = kwargs.pop('dims_bioformat')
+            # Note: the return type from aicsimageio is uint16, but torch cannot convert
+            # uint16, can only support: float64, float32, float16, complex64, complex128,
+            # int64, int32, int16, int8, uint8, and bool. So, we convert the data to float
+            bio_reader = lambda path: (torch.as_tensor(AICSImage(path).get_image_dask_data(dims, **kwargs).compute().astype(float)), np.eye(4))
+            self.reader = bio_reader
+        else:
+            self.reader = read_image
 
         if type is None:
             warnings.warn(
