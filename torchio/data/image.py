@@ -128,10 +128,12 @@ class Image(dict):
         elif 'dims_bioformat' in kwargs:
             from aicsimageio import AICSImage
             dims = kwargs.pop('dims_bioformat')
-            # Note: the return type from aicsimageio is uint16, but torch cannot convert
-            # uint16, can only support: float64, float32, float16, complex64, complex128,
-            # int64, int32, int16, int8, uint8, and bool. So, we convert the data to float
-            bio_reader = lambda path: (torch.as_tensor(AICSImage(path).get_image_dask_data(dims, **kwargs).compute().astype(float)), np.eye(4))
+            bio_reader = lambda path: (
+                check_uint_to_int(
+                    AICSImage(path).get_image_dask_data(dims, **kwargs).compute()
+                ),
+                np.eye(4)
+            )
             self.reader = bio_reader
         else:
             self.reader = read_image
