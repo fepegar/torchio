@@ -460,6 +460,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "Bigsealion",
+      "name": "Bigsealion",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23148550?v=4",
+      "profile": "https://github.com/Bigsealion",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
