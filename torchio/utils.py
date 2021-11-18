@@ -256,6 +256,10 @@ def get_subjects_from_batch(batch: Dict) -> List:
             image = klass(tensor=data, affine=affine, filename=path.name)
             subject_dict[image_name] = image
         subject = Subject(subject_dict)
+        if constants.HISTORY in batch:
+            applied_transforms = batch[constants.HISTORY][i]
+            for transform in applied_transforms:
+                transform.add_transform_to_subject_history(subject)
         subjects.append(subject)
     return subjects
 

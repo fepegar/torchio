@@ -270,6 +270,21 @@ class TestTransform(TorchioTestCase):
         with self.assertRaises(RuntimeError):
             transform.inverse()
 
+    def test_batch_history(self):
+        # https://github.com/fepegar/torchio/discussions/743
+        subject = self.sample_subject
+        original_shape = subject.spatial_shape
+        transform = tio.Compose([tio.RandomAffine(), tio.CropOrPad(5)])
+        dataset = tio.SubjectsDataset([subject], transform=transform)
+        loader = torch.utils.data.DataLoader(
+            dataset,
+            collate_fn=tio.utils.history_collate
+        )
+        batch = tio.utils.get_first_item(loader)
+        subject: tio.Subject = tio.utils.get_subjects_from_batch(batch)[0]
+        inverse = subject.apply_inverse_transform()
+        assert inverse.spatial_shape == original_shape
+
     def test_bad_bounds_mask(self):
         transform = tio.ZNormalization(masking_method='test')
         with self.assertRaises(ValueError):
