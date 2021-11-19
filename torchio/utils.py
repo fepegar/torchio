@@ -251,7 +251,7 @@ def get_subjects_from_batch(batch: Dict) -> List:
             data = image_dict[constants.DATA][i]
             affine = image_dict[constants.AFFINE][i]
             path = Path(image_dict[constants.PATH][i])
-            is_label = image_dict[constants.TYPE] == constants.LABEL
+            is_label = image_dict[constants.TYPE][i] == constants.LABEL
             klass = LabelMap if is_label else ScalarImage
             image = klass(tensor=data, affine=affine, filename=path.name)
             subject_dict[image_name] = image

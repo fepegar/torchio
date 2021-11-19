@@ -273,17 +273,23 @@ class TestTransform(TorchioTestCase):
     def test_batch_history(self):
         # https://github.com/fepegar/torchio/discussions/743
         subject = self.sample_subject
-        original_shape = subject.spatial_shape
-        transform = tio.Compose([tio.RandomAffine(), tio.CropOrPad(5)])
+        transform = tio.Compose([
+            tio.RandomAffine(),
+            tio.CropOrPad(5),
+            tio.OneHot(),
+        ])
         dataset = tio.SubjectsDataset([subject], transform=transform)
         loader = torch.utils.data.DataLoader(
             dataset,
             collate_fn=tio.utils.history_collate
         )
         batch = tio.utils.get_first_item(loader)
-        subject: tio.Subject = tio.utils.get_subjects_from_batch(batch)[0]
-        inverse = subject.apply_inverse_transform()
-        assert inverse.spatial_shape == original_shape
+        transformed: tio.Subject = tio.utils.get_subjects_from_batch(batch)[0]
+        inverse = transformed.apply_inverse_transform()
+        images1 = subject.get_images(intensity_only=False)
+        images2 = inverse.get_images(intensity_only=False)
+        for image1, image2 in zip(images1, images2):
+            assert image1.shape == image2.shape
 
     def test_bad_bounds_mask(self):
         transform = tio.ZNormalization(masking_method='test')
