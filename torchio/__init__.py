@@ -2,7 +2,7 @@
 
 __author__ = """Fernando Perez-Garcia"""
 __email__ = 'fepegar@gmail.com'
-__version__ = '0.18.67'
+__version__ = '0.18.68'
 
 
 from . import utils
