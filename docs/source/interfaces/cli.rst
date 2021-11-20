@@ -1,8 +1,10 @@
+.. _cli:
+
 Command-line tools
-==================
+------------------
 
 ``tiotr``
----------
+^^^^^^^^^
 
 A transform can be quickly applied to an image file using the command-line
 tool ``tiotr``, which is automatically installed by ``pip``
@@ -14,7 +16,7 @@ For more information, run ``tiotr --help``.
 
 
 ``tiohd``
----------
+^^^^^^^^^
 
 To print some image metadata, ``tiohd`` can be used. Adding the ``--plot``
 argument will plot the image using Matplotlib::

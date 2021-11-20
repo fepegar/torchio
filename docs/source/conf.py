@@ -14,17 +14,20 @@
 import os
 import sys
 from typing import List
+from datetime import date
 sys.path.insert(0, os.path.abspath('../..'))
+import torchio  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
 project = 'TorchIO'
-copyright = '2020, Fernando Pérez-García'  # noqa: A001
 author = 'Fernando Pérez-García'
+# A001 is "variable "copyright" is shadowing a python builtin"
+copyright = f'{date.today().year}, {author}'  # noqa: A001
 
 # version is the short X.Y version
 # release is the full version, including alpha/beta/rc tags
-version = release = '0.18.68'
+version = release = torchio.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -45,7 +48,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'matplotlib.sphinxext.plot_directive',
     'sphinx_gallery.gen_gallery',
-    'notfound.extension',
 ]
 
 # Add mappings
@@ -84,19 +86,7 @@ language = None
 exclude_patterns: List[str] = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
-
-# sphinx-notfound-page
-# https://github.com/readthedocs/sphinx-notfound-page
-notfound_context = {
-    'title': 'Page not found',
-    'body': (
-        '<h1>Page not found</h1>'
-        "<p>Sorry, we couldn't find that page.</p>"
-        '<p>Try using the search box or go to the'
-        ' <a href="http://torchio.rtfd.io/">homepage</a>.</p>'
-    ),
-}
+pygments_style = 'friendly'
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky
 # This generates a lot of warnings because of the broken internal links, which
@@ -110,12 +100,13 @@ notfound_context = {
 # a list of builtin themes.
 #
 html_theme = 'furo'
+html_title = 'TorchIO'
 
 html_favicon = 'favicon_io/favicon.ico'
 html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
+# further. For a list of options available for each theme, see the
 # documentation.
 #
 url = 'https://pytorch.org/blog/pytorch-developer-day-2021'
@@ -241,3 +232,5 @@ sphinx_gallery_conf = {
         'use_jupyter_lab': False,
     }
 }
+
+# autosummary_generate = True  # Turn on sphinx.ext.autosummary

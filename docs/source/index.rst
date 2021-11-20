@@ -2,49 +2,18 @@
 .. include:: README.rst
 
 .. toctree::
-    :caption: Getting started
-    :maxdepth: 2
     :hidden:
+    :maxdepth: 3
 
     quickstart
-
-.. toctree::
-    :caption: Data structures
-    :maxdepth: 2
-    :hidden:
-
-    data/image
-    data/subject
-    data/dataset
-    data/patch_based
-
-.. toctree::
-    :caption: Transforms
-    :maxdepth: 2
-    :hidden:
-
-    transforms/transforms
-
-.. toctree::
-    :caption: Medical image datasets
-    :maxdepth: 2
-    :hidden:
-
+    data/index
+    patches/index
+    transforms/index
     datasets
-
-.. toctree::
-    :caption: Interfaces
-    :maxdepth: 2
-    :hidden:
-
     interfaces/index
-
-.. toctree::
-    :caption: Examples
-    :maxdepth: 2
-    :hidden:
-
     auto_examples/index
+    GitHub repository <https://github.com/fepegar/torchio>
+    Paper <https://www.sciencedirect.com/science/article/pii/S0169260721003102>
 
 
 See also
