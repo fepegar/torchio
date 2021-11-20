@@ -12,6 +12,5 @@ sphinx
 sphinx-autobuild
 sphinx-copybutton
 sphinx-gallery
-sphinx-notfound-page
 tox
 types-Deprecated

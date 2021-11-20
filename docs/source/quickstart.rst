@@ -1,13 +1,19 @@
-.. _Getting started:
+Getting started
+===============
 
 Installation
-============
+------------
 
 The Python package is hosted on the
 `Python Package Index (PyPI) <https://pypi.org/project/torchio/>`_.
 
-The latest published version can be installed
-using Pip Installs Packages (``pip``)::
+To install the latest PyTorch version before installing TorchIO, it is
+recommended to use `light-the-torch <https://github.com/pmeier/light-the-torch>`_::
+
+    $ pip install light-the-torch && ltt install torch
+
+The latest published version of TorchIO can be installed using Pip Installs
+Packages (``pip``)::
 
     $ pip install torchio
 
@@ -27,7 +33,7 @@ try `installing PyTorch <https://pytorch.org/get-started/locally/>`_ with
 TorchIO.
 
 Hello, World!
-=============
+-------------
 
 This example shows the basic usage of TorchIO, where an instance of
 :class:`~torchio.SubjectsDataset` is passed to
@@ -97,7 +103,7 @@ in parallel::
 
 
 Tutorials
-=========
+---------
 
 |Google-Colab-notebook|
 

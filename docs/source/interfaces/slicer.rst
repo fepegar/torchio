@@ -1,5 +1,7 @@
+.. _gui:
+
 3D Slicer GUI
-=============
+-------------
 
 `3D Slicer <https://www.slicer.org/>`_ is an open-source software platform for
 medical image informatics, image processing,
@@ -22,7 +24,7 @@ The code and installation instructions are available on
 
 
 TorchIO Transforms
-------------------
+^^^^^^^^^^^^^^^^^^
 
 This module can be used to quickly visualize the effect of each transform
 parameter.
@@ -34,7 +36,7 @@ of a transform looks like without any coding at all.
 
 
 Usage example
-^^^^^^^^^^^^^
+"""""""""""""
 
 Go to the ``Sample Data`` module to get an image we can use:
 
