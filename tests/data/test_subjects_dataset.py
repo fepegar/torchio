@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 import torch
+from torch.utils.data import DataLoader
 
-from torchio import DATA, SubjectsDataset
+import torchio as tio
 from ..utils import TorchioTestCase
 
 
 class TestSubjectsDataset(TorchioTestCase):
 
     def test_indexing_nonint(self):
-        dset = SubjectsDataset(self.subjects_list)
+        dset = tio.SubjectsDataset(self.subjects_list)
         dset[torch.tensor(0)]
 
     def test_images(self):
@@ -40,7 +41,7 @@ class TestSubjectsDataset(TorchioTestCase):
 
     def test_wrong_transform_init(self):
         with self.assertRaises(ValueError):
-            SubjectsDataset(
+            tio.SubjectsDataset(
                 self.subjects_list,
                 transform={},
             )
@@ -51,15 +52,16 @@ class TestSubjectsDataset(TorchioTestCase):
 
     @staticmethod
     def iterate_dataset(subjects_list):
-        dataset = SubjectsDataset(subjects_list)
+        dataset = tio.SubjectsDataset(subjects_list)
         for _ in dataset:
             pass
 
-    def test_data_loader(self):
-        from torch.utils.data import DataLoader
-        subj_list = [self.sample_subject]
-        dataset = SubjectsDataset(subj_list)
-        loader = DataLoader(dataset, batch_size=1, shuffle=True)
-        for batch in loader:
-            batch['t1'][DATA]
-            batch['label'][DATA]
+    def test_from_batch(self):
+        dataset = tio.SubjectsDataset([self.sample_subject])
+        loader = DataLoader(dataset)
+        batch = tio.utils.get_first_item(loader)
+        new_dataset = tio.SubjectsDataset.from_batch(batch)
+        self.assertTensorEqual(
+            dataset[0].t1.data,
+            new_dataset[0].t1.data,
+        )
