@@ -8,7 +8,7 @@
     quickstart
     data/index
     patches/index
-    transforms/index
+    transforms/transforms
     datasets
     interfaces/index
     auto_examples/index
