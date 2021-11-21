@@ -356,7 +356,7 @@ class Image(dict):
             index = -3 + index
             return index
 
-    # flake8: noqa: E701
+    # noqa: E701
     @staticmethod
     def flip_axis(axis: str) -> str:
         if axis == 'R': flipped_axis = 'L'
