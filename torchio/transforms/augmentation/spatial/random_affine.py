@@ -101,11 +101,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         transformed = transform(image)
         transformed.plot()
 
-    From the command line::
-
-        $ tiotr t1.nii.gz RandomAffine --kwargs "scales=(0.9, 1.2) degrees=15" t1_affine.nii.gz
-
-    """
+    """  # noqa: E501
     def __init__(
             self,
             scales: TypeOneToSixFloat = 0.1,
@@ -132,7 +128,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
             raise ValueError(message)
         self.center = center
         self.default_pad_value = _parse_default_value(default_pad_value)
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(
+            image_interpolation)
         self.check_shape = check_shape
 
     def get_params(
@@ -156,15 +153,15 @@ class RandomAffine(RandomTransform, SpatialTransform):
             self.translation,
             self.isotropic,
         )
-        arguments = dict(
-            scales=scaling_params.tolist(),
-            degrees=rotation_params.tolist(),
-            translation=translation_params.tolist(),
-            center=self.center,
-            default_pad_value=self.default_pad_value,
-            image_interpolation=self.image_interpolation,
-            check_shape=self.check_shape,
-        )
+        arguments = {
+            'scales': scaling_params.tolist(),
+            'degrees': rotation_params.tolist(),
+            'translation': translation_params.tolist(),
+            'center': self.center,
+            'default_pad_value': self.default_pad_value,
+            'image_interpolation': self.image_interpolation,
+            'check_shape': self.check_shape,
+        }
         transform = Affine(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
@@ -238,7 +235,8 @@ class Affine(SpatialTransform):
         self.center = center
         self.use_image_center = center == 'image'
         self.default_pad_value = _parse_default_value(default_pad_value)
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(
+            image_interpolation)
         self.invert_transform = False
         self.check_shape = check_shape
         self.args_names = (
@@ -392,17 +390,15 @@ class Affine(SpatialTransform):
         return tensor
 
 
-# flake8: noqa: E201, E203, E243
 def get_borders_mean(image, filter_otsu=True):
-    # pylint: disable=bad-whitespace
     array = sitk.GetArrayViewFromImage(image)
     borders_tuple = (
-        array[ 0,  :,  :],
-        array[-1,  :,  :],
-        array[ :,  0,  :],
-        array[ :, -1,  :],
-        array[ :,  :,  0],
-        array[ :,  :, -1],
+        array[0, :, :],
+        array[-1, :, :],
+        array[:, 0, :],
+        array[:, -1, :],
+        array[:, :, 0],
+        array[:, :, -1],
     )
     borders_flat = np.hstack([border.ravel() for border in borders_tuple])
     if not filter_otsu:
@@ -419,6 +415,7 @@ def get_borders_mean(image, filter_otsu=True):
         default_value = borders_flat.mean()
     return default_value
 
+
 def _parse_scales_isotropic(scales, isotropic):
     scales = to_tuple(scales)
     if isotropic and len(scales) in (3, 6):
@@ -427,6 +424,7 @@ def _parse_scales_isotropic(scales, isotropic):
             f' length 1 or 2, but "{scales}" was passed'
         )
         raise ValueError(message)
+
 
 def _parse_default_value(value: Union[str, float]) -> Union[str, float]:
     if isinstance(value, Number) or value in ('minimum', 'otsu', 'mean'):
