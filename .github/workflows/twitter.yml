@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  tweet:
+  Tweet:
     name: Twitter notification
     runs-on: ubuntu-latest
     steps:
