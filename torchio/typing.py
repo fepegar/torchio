@@ -10,6 +10,7 @@ TypePath = Union[str, os.PathLike]  # https://www.python.org/dev/peps/pep-0519/#
 TypeNumber = Union[int, float]
 TypeKeys = Optional[Sequence[str]]
 TypeData = Union[torch.Tensor, np.ndarray]
+TypeDataAffine = Tuple[torch.Tensor, np.ndarray]
 TypeTripletInt = Tuple[int, int, int]
 TypeSextetInt = Tuple[int, int, int, int, int, int]
 TypeTripletFloat = Tuple[float, float, float]

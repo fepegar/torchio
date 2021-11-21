@@ -8,7 +8,13 @@ import nibabel as nib
 import SimpleITK as sitk
 
 from ..constants import REPO_URL
-from ..typing import TypePath, TypeData, TypeTripletFloat, TypeDirection
+from ..typing import (
+    TypePath,
+    TypeData,
+    TypeDataAffine,
+    TypeDirection,
+    TypeTripletFloat,
+)
 
 
 # Matrices used to switch between LPS and RAS
@@ -20,7 +26,7 @@ formats = ['.jpg', '.jpeg', '.bmp', '.png', '.tif', '.tiff']
 IMAGE_2D_FORMATS = formats + [s.upper() for s in formats]
 
 
-def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+def read_image(path: TypePath) -> TypeDataAffine:
     try:
         result = _read_sitk(path)
     except RuntimeError as e:  # try with NiBabel
@@ -41,7 +47,7 @@ def read_image(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     return result
 
 
-def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+def _read_nibabel(path: TypePath) -> TypeDataAffine:
     img = nib.load(str(path), mmap=False)
     data = img.get_fdata(dtype=np.float32)
     if data.ndim == 5:
@@ -53,7 +59,7 @@ def _read_nibabel(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
     return tensor, affine
 
 
-def _read_sitk(path: TypePath) -> Tuple[torch.Tensor, np.ndarray]:
+def _read_sitk(path: TypePath) -> TypeDataAffine:
     if Path(path).is_dir():  # assume DICOM
         image = _read_dicom(path)
     else:

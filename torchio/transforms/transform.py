@@ -16,6 +16,7 @@ from ..data.image import LabelMap
 from ..typing import (
     TypeKeys,
     TypeData,
+    TypeDataAffine,
     TypeNumber,
     TypeCallable,
     TypeTripletInt,
@@ -361,7 +362,7 @@ class Transform(ABC):
         return nib_to_sitk(data, affine)
 
     @staticmethod
-    def sitk_to_nib(image: sitk.Image) -> Tuple[torch.Tensor, np.ndarray]:
+    def sitk_to_nib(image: sitk.Image) -> TypeDataAffine:
         return sitk_to_nib(image)
 
     def _get_reproducing_arguments(self):
