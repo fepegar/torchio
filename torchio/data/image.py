@@ -1,5 +1,6 @@
 import warnings
 from pathlib import Path
+from collections import Counter
 from collections.abc import Iterable
 from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
 
@@ -676,7 +677,6 @@ class ScalarImage(Image):
         kwargs.update({'type': INTENSITY})
         super().__init__(*args, **kwargs)
 
-
     def hist(self, **kwargs) -> None:
         """Plot histogram."""
         from ..visualization import plot_histogram
@@ -713,9 +713,12 @@ class LabelMap(Image):
         super().__init__(*args, **kwargs)
 
     def count_nonzero(self) -> int:
-        return int(self.data.count_nonzero())
+        """Get the number of voxels that are not 0."""
+        return self.data.count_nonzero().item()
 
-    def count_labels(self) -> dict:
-        counts = self.data.unique(return_counts=True)
-        counts_dict = {int(l):int(c) for l,c in zip(counts[0], counts[1])}
-        return counts_dict
+    def count_labels(self) -> Dict[int, int]:
+        """Get the number of voxels in each label."""
+        values_list = self.data.flatten().tolist()
+        counter = Counter(values_list)
+        counts = {label: counter[label] for label in sorted(counter)}
+        return counts

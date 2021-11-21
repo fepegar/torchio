@@ -158,7 +158,17 @@ def plot_subject(
     plt.close(fig)
 
 
-def num_bins(x: np.ndarray) -> int:
+def get_num_bins(x: np.ndarray) -> int:
+    """Get the optimal number of bins for a histogram.
+
+    This method uses the Freedman–Diaconis rule to compute the histogram that
+    minimizes "the integral of the squared difference between the histogram
+    (i.e., relative frequency density) and the density of the theoretical
+    probability distribution" (`Wikipedia <https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule>`_).
+
+    Args:
+        x: Input values.
+    """  # noqa: E501
     # Freedman–Diaconis number of bins
     q25, q75 = np.percentile(x, [25, 75])
     bin_width = 2 * (q75 - q25) * len(x) ** (-1 / 3)
@@ -166,16 +176,15 @@ def num_bins(x: np.ndarray) -> int:
     return bins
 
 
-def plot_histogram(x: np.ndarray, **kwargs) -> None:
+def plot_histogram(x: np.ndarray, show=True, **kwargs) -> None:
     _, plt = import_mpl_plt()
-    plt.hist(x, bins=num_bins(x), **kwargs)
+    plt.hist(x, bins=get_num_bins(x), **kwargs)
     plt.xlabel('Intensity')
     density = kwargs.pop('density', False)
-    if density:
-        plt.ylabel('Density')
-    else:
-        plt.ylabel('Frequency')
-    plt.show()
+    ylabel = 'Density' if density else 'Frequency'
+    plt.ylabel(ylabel)
+    if show:
+        plt.show()
 
 
 def color_labels(arrays, cmap_dict):
