@@ -2,6 +2,7 @@ from .transform import Transform
 from .fourier import FourierTransform
 from .spatial_transform import SpatialTransform
 from .intensity_transform import IntensityTransform
+from .preprocessing.label.label_transform import LabelTransform
 
 # Generic
 from .lambda_transform import Lambda
@@ -53,6 +54,7 @@ __all__ = [
     'FourierTransform',
     'SpatialTransform',
     'IntensityTransform',
+    'LabelTransform',
     'Lambda',
     'OneOf',
     'Compose',
