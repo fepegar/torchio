@@ -1,5 +1,6 @@
 import warnings
 from pathlib import Path
+from collections import Counter
 from collections.abc import Iterable
 from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
 
@@ -719,6 +720,12 @@ class ScalarImage(Image):
         kwargs.update({'type': INTENSITY})
         super().__init__(*args, **kwargs)
 
+    def hist(self, **kwargs) -> None:
+        """Plot histogram."""
+        from ..visualization import plot_histogram
+        x = self.data.flatten().numpy()
+        plot_histogram(x, **kwargs)
+
 
 class LabelMap(Image):
     """Image whose pixel values represent categorical labels.
@@ -747,3 +754,14 @@ class LabelMap(Image):
             raise ValueError('Type of LabelMap is always torchio.LABEL')
         kwargs.update({'type': LABEL})
         super().__init__(*args, **kwargs)
+
+    def count_nonzero(self) -> int:
+        """Get the number of voxels that are not 0."""
+        return self.data.count_nonzero().item()
+
+    def count_labels(self) -> Dict[int, int]:
+        """Get the number of voxels in each label."""
+        values_list = self.data.flatten().tolist()
+        counter = Counter(values_list)
+        counts = {label: counter[label] for label in sorted(counter)}
+        return counts

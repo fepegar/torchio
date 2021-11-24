@@ -213,3 +213,17 @@ class TestImage(TorchioTestCase):
     def test_gif_rgb(self):
         with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
             tio.ScalarImage(tensor=torch.rand(3, 4, 5, 6)).to_gif(0, 1, f.name)
+
+    def test_hist(self):
+        self.sample_subject.t1.hist(density=False, show=False)
+        self.sample_subject.t1.hist(density=True, show=False)
+
+    def test_count(self):
+        image = self.sample_subject.label
+        max_n = image.data.numel()
+        nonzero = image.count_nonzero()
+        assert 0 <= nonzero <= max_n
+        counts = image.count_labels()
+        assert tuple(counts) == (0, 1)
+        assert 0 <= counts[0] <= max_n
+        assert 0 <= counts[1] <= max_n
