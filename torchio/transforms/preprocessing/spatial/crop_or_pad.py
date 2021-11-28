@@ -5,12 +5,13 @@ import numpy as np
 
 from .pad import Pad
 from .crop import Crop
-from .bounds_transform import BoundsTransform
+from ... import SpatialTransform
 from ...transform import TypeTripletInt, TypeSixBounds
+from ....utils import parse_spatial_shape
 from ....data.subject import Subject
 
 
-class CropOrPad(BoundsTransform):
+class CropOrPad(SpatialTransform):
     """Modify the field of view by cropping or padding to match a target shape.
 
     This transform modifies the affine matrix associated to the volume so that
@@ -76,7 +77,11 @@ class CropOrPad(BoundsTransform):
         if target_shape is None and mask_name is None:
             message = 'If mask_name is None, a target shape must be passed'
             raise ValueError(message)
-        super().__init__(target_shape, **kwargs)
+        super().__init__(**kwargs)
+        if target_shape is None:
+            self.target_shape = None
+        else:
+            self.target_shape = parse_spatial_shape(target_shape)
         self.padding_mode = padding_mode
         if mask_name is not None and not isinstance(mask_name, str):
             message = (
@@ -149,16 +154,11 @@ class CropOrPad(BoundsTransform):
             result.extend([ini, fin])
         return tuple(result)
 
-    @property
-    def target_shape(self):
-        return self.bounds_parameters[::2]
-
     def _compute_cropping_padding_from_shapes(
             self,
             source_shape: TypeTripletInt,
-            target_shape: TypeTripletInt,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
-        diff_shape = target_shape - source_shape
+        diff_shape = np.array(self.target_shape) - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
         if cropping.any():
@@ -179,11 +179,7 @@ class CropOrPad(BoundsTransform):
             subject: Subject,
             ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = subject.spatial_shape
-        # The parent class turns the 3-element shape tuple (w, h, d)
-        # into a 6-element bounds tuple (w, w, h, h, d, d)
-        target_shape = np.array(self.bounds_parameters[::2])
-        parameters = self._compute_cropping_padding_from_shapes(
-            source_shape, target_shape)
+        parameters = self._compute_cropping_padding_from_shapes(source_shape)
         padding_params, cropping_params = parameters
         return padding_params, cropping_params
 
@@ -223,14 +219,10 @@ class CropOrPad(BoundsTransform):
         padding = []
         cropping = []
 
-        # If no target shape was passed at initialization, then
-        # bounds_parameters is None. Let's set it now using the bounding box
-        # computed from the mask
-        if self.bounds_parameters is None:
+        if self.target_shape is None:
             target_shape = bb_max - bb_min
-            self.bounds_parameters = tuple(np.repeat(target_shape, 2))
-
-        target_shape = np.array(self.target_shape)
+        else:
+            target_shape = self.target_shape
 
         for dim in range(3):
             target_dim = target_shape[dim]
@@ -279,6 +271,4 @@ class CropOrPad(BoundsTransform):
             subject = Pad(padding_params, **padding_kwargs)(subject)
         if cropping_params is not None:
             subject = Crop(cropping_params)(subject)
-        actual, target = subject.spatial_shape, self.target_shape
-        assert actual == target, (actual, target)
         return subject
