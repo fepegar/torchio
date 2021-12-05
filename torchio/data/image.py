@@ -98,7 +98,10 @@ class Image(dict):
         >>> image
         ScalarImage(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
         >>> image.save('doubled_image.nii.gz')
-        >>> numpy_reader = lambda path: np.load(path), np.eye(4)
+        >>> def numpy_reader(path):
+        ...     data = np.load(path).as_type(np.float32)
+        ...     affine = np.eye(4)
+        ...     return data, affine
         >>> image = tio.ScalarImage('t1.npy', reader=numpy_reader)
 
     .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading
@@ -531,6 +534,9 @@ class Image(dict):
 
     def read_and_check(self, path: TypePath) -> TypeDataAffine:
         tensor, affine = self.reader(path)
+        # Make sure the data type is compatible with PyTorch
+        if self.reader is not read_image and isinstance(tensor, np.ndarray):
+            tensor = check_uint_to_int(tensor)
         tensor = self._parse_tensor_shape(tensor)
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
