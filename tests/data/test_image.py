@@ -139,6 +139,7 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.height, image.shape[height_idx])
         self.assertEqual(image.width, image.shape[width_idx])
 
+    @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot(self):
         image = self.sample_subject.t1
         image.plot(show=False, output_path=self.dir / 'image.png')
