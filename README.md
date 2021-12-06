@@ -360,6 +360,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/Bigsealion"><img src="https://avatars.githubusercontent.com/u/23148550?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bigsealion</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ABigsealion" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://www.kitware.com/dzenan-zukic/"><img src="https://avatars.githubusercontent.com/u/1792121?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dženan Zukić</b></sub></a><br /><a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3Adzenanz" title="Reviewed Pull Requests">👀</a></td>
   </tr>
 </table>
 
