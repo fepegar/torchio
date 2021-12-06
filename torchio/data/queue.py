@@ -1,8 +1,8 @@
-import random
 import warnings
 from itertools import islice
 from typing import List, Iterator, Optional
 
+import torch
 import humanize
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
@@ -30,8 +30,8 @@ class Queue(Dataset):
     The sampled patches are then stored in a buffer or *queue* until
     the next training iteration, at which point they are loaded onto the GPU
     for inference.
-    For this, TorchIO provides the :class:`~torchio.data.Queue` class, which also
-    inherits from the PyTorch :class:`~torch.utils.data.Dataset`.
+    For this, TorchIO provides the :class:`~torchio.data.Queue` class, which
+    also inherits from the PyTorch :class:`~torch.utils.data.Dataset`.
     In this queueing system,
     samplers behave as generators that yield patches from random locations
     in volumes contained in the :class:`~torchio.data.SubjectsDataset`.
@@ -235,7 +235,11 @@ class Queue(Dataset):
             patches = list(islice(iterable, self.samples_per_volume))
             self.patches_list.extend(patches)
         if self.shuffle_patches:
-            random.shuffle(self.patches_list)
+            self._shuffle_patches_list()
+
+    def _shuffle_patches_list(self):
+        indices = torch.randperm(self.num_patches)
+        self.patches_list = [self.patches_list[i] for i in indices]
 
     def _get_next_subject(self) -> Subject:
         # A StopIteration exception is expected when the queue is empty
