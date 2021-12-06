@@ -470,6 +470,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "dzenanz",
+      "name": "Dženan Zukić",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1792121?v=4",
+      "profile": "https://www.kitware.com/dzenan-zukic/",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
