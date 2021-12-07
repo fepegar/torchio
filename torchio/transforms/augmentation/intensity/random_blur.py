@@ -5,7 +5,6 @@ import torch
 import numpy as np
 import scipy.ndimage as ndi
 
-from ....utils import to_tuple
 from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
@@ -40,9 +39,9 @@ class RandomBlur(RandomTransform, IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
-        for name, image in self.get_images_dict(subject).items():
-            stds = [self.get_params(self.std_ranges) for _ in image.data]
-            arguments['std'][name] = stds
+        for name in self.get_images_dict(subject):
+            std = self.get_params(self.std_ranges)
+            arguments['std'][name] = std
         transform = Blur(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
@@ -72,15 +71,15 @@ class Blur(IntensityTransform):
         self.args_names = ('std',)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        std = self.std
+        stds = self.std
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                std = self.std[name]
-            stds = to_tuple(std, length=len(image.data))
+                stds = self.std[name]
+            stds_channels = np.tile(stds, (image.num_channels, 1))
             transformed_tensors = []
-            for std, tensor in zip(stds, image.data):
+            for std, channel in zip(stds_channels, image.data):
                 transformed_tensor = blur(
-                    tensor,
+                    channel,
                     image.spacing,
                     std,
                 )
