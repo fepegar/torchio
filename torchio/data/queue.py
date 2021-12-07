@@ -92,7 +92,7 @@ class Queue(Dataset):
     .. raw:: html
 
         <embed>
-            <iframe style="width: 640px; height: 360px; overflow: hidden;" scrolling="no" frameborder="0" src="https://editor.p5js.org/embed/DZwjZzkkV"></iframe>
+            <iframe style="width: 640px; height: 360px; overflow: hidden;" scrolling="no" frameborder="0" src="https://editor.p5js.org/fepegar/full/DZwjZzkkV"></iframe>
         </embed>
 
     .. note:: :attr:`num_workers` refers to the number of workers used to

@@ -215,13 +215,16 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
-<a href="https://torchio.readthedocs.io/data/patch_based.html">
-    <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/queue.gif" alt="Queue">
-</a>
-<!-- markdownlint-restore -->
+<p align="center">
+  <a href="https://torchio.readthedocs.io/patches/patch_training.html#queue">
+    <img style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/queue.gif" alt="Queue">
+  </a>
+</p>
 
-([Queue](https://torchio.readthedocs.io/data/patch_training.html#queue)
-for [patch-based training](https://torchio.readthedocs.io/data/patch_based.html))
+([Queue](https://torchio.readthedocs.io/patches/patch_training.html#queue)
+for [patch-based training](https://torchio.readthedocs.io/patches/index.html))
+
+<!-- markdownlint-restore -->
 
 ---
 
