@@ -479,6 +479,16 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "vasl12",
+      "name": "vasl12",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15161465?v=4",
+      "profile": "https://github.com/vasl12",
+      "contributions": [
+        "tutorial",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
