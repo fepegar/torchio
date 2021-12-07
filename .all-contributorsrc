@@ -489,6 +489,15 @@
         "tutorial",
         "bug"
       ]
+    },
+    {
+      "login": "rousseau",
+      "name": "François Rousseau",
+      "avatar_url": "https://avatars.githubusercontent.com/u/398895?v=4",
+      "profile": "http://perso.telecom-bretagne.eu/francoisrousseau",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
