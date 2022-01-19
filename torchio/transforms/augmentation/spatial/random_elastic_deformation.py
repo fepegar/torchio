@@ -146,7 +146,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             image_interpolation)
         self.label_interpolation = self.parse_interpolation(
             label_interpolation)
-            
+
     @staticmethod
     def get_params(
             num_control_points: TypeTripletInt,
@@ -198,7 +198,7 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
-        label_interpolation: See :ref:`Interpolation`.
+        label_interpolation: See :ref: Interpolation`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
