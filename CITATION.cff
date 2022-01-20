@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: If you use this software, please cite the paper using these metadata.
+authors:
+  - family-names: Pérez-García
+    given-names: Fernando
+    orcid: https://orcid.org/0000-0001-9090-3024
+title: "TorchIO"
+repository-code: "https://github.com/fepegar/torchio"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Pérez-García"
+    given-names: "Fernando"
+    orcid: https://orcid.org/0000-0001-9090-3024
+  - family-names: "Sparks"
+    given-names: "Rachel"
+    orcid: https://orcid.org/0000-0003-1553-7903
+  - family-names: "Ourselin"
+    given-names: "Sébastien"
+    orcid: https://orcid.org/0000-0002-5694-5340
+  doi: "10.1016/j.cmpb.2021.106236"
+  issn: "0169-2607"
+  journal: "Computer Methods and Programs in Biomedicine"
+  pages: "106236"
+  title: "TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning"
+  url: "https://www.sciencedirect.com/science/article/pii/S0169260721003102"
+  year: 2021

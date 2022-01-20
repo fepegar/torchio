@@ -498,6 +498,115 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "snavalm",
+      "name": "snavalm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35732360?v=4",
+      "profile": "https://github.com/snavalm",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jcreinhold",
+      "name": "Jacob Reinhold",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5241441?v=4",
+      "profile": "http://jcreinhold.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Hsuxu",
+      "name": "Hsu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15630477?v=4",
+      "profile": "https://github.com/Hsuxu",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "snipdome",
+      "name": "snipdome",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72035308?v=4",
+      "profile": "https://github.com/snipdome",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "iamSmallY",
+      "name": "SmallY",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45689960?v=4",
+      "profile": "https://github.com/iamSmallY",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "guigautier",
+      "name": "guigautier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45590481?v=4",
+      "profile": "https://github.com/guigautier",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "AyedSamy",
+      "name": "AyedSamy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55320208?v=4",
+      "profile": "https://github.com/AyedSamy",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "jmlipman",
+      "name": "J. Miguel Valverde",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3540650?v=4",
+      "profile": "http://delanover.com",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
+    },
+    {
+      "login": "josegcpa",
+      "name": "José Guilherme Almeida",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40271262?v=4",
+      "profile": "http://josegcpa.github.io",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "saikhu",
+      "name": "Asim Usman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24922057?v=4",
+      "profile": "https://github.com/saikhu",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "cbri92",
+      "name": "cbri92",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70302171?v=4",
+      "profile": "https://github.com/cbri92",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "iimog",
+      "name": "Markus J. Ankenbrand",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7403236?v=4",
+      "profile": "https://github.com/iimog",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

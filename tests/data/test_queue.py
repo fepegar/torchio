@@ -1,6 +1,8 @@
 from torch.utils.data import DataLoader
+
+import torch
+import torchio as tio
 from torchio.data import UniformSampler
-from torchio import SubjectsDataset, Queue, DATA
 from torchio.utils import create_dummy_dataset
 from ..utils import TorchioTestCase
 
@@ -17,22 +19,24 @@ class TestQueue(TorchioTestCase):
             force=False,
         )
 
-    def run_queue(self, num_workers, **kwargs):
-        subjects_dataset = SubjectsDataset(self.subjects_list)
+    def run_queue(self, num_workers=0, **kwargs):
+        subjects_dataset = tio.SubjectsDataset(self.subjects_list)
         patch_size = 10
         sampler = UniformSampler(patch_size)
-        queue_dataset = Queue(
+        queue_dataset = tio.Queue(
             subjects_dataset,
             max_length=6,
             samples_per_volume=2,
             sampler=sampler,
+            num_workers=num_workers,
             **kwargs,
         )
         _ = str(queue_dataset)
         batch_loader = DataLoader(queue_dataset, batch_size=4)
         for batch in batch_loader:
-            _ = batch['one_modality'][DATA]
-            _ = batch['segmentation'][DATA]
+            _ = batch['one_modality'][tio.DATA]
+            _ = batch['segmentation'][tio.DATA]
+        return queue_dataset
 
     def test_queue(self):
         self.run_queue(num_workers=0)
@@ -42,3 +46,28 @@ class TestQueue(TorchioTestCase):
 
     def test_queue_no_start_background(self):
         self.run_queue(num_workers=0, start_background=False)
+
+    def test_different_samples_per_volume(self):
+        image2 = tio.ScalarImage(tensor=2 * torch.ones(1, 1, 1, 1))
+        image10 = tio.ScalarImage(tensor=10 * torch.ones(1, 1, 1, 1))
+        subject2 = tio.Subject(im=image2, num_samples=2)
+        subject10 = tio.Subject(im=image10, num_samples=10)
+        dataset = tio.SubjectsDataset([subject2, subject10])
+        patch_size = 1
+        sampler = UniformSampler(patch_size)
+        queue_dataset = tio.Queue(
+            dataset,
+            max_length=12,
+            samples_per_volume=3,  # should be ignored
+            sampler=sampler,
+        )
+        batch_loader = DataLoader(queue_dataset, batch_size=6)
+        batches = [batch['im'][tio.DATA] for batch in batch_loader]
+        all_numbers = torch.stack(batches).flatten().tolist()
+        assert all_numbers.count(10) == 10
+        assert all_numbers.count(2) == 2
+
+    def test_get_memory_string(self):
+        queue = self.run_queue()
+        memory_string = queue.get_max_memory_pretty()
+        assert isinstance(memory_string, str)

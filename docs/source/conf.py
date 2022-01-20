@@ -15,7 +15,7 @@ import os
 import sys
 from typing import List
 from datetime import date
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../src'))
 import torchio  # noqa: E402
 
 # -- Project information -----------------------------------------------------
@@ -28,7 +28,6 @@ copyright = f'{date.today().year}, {author}'  # noqa: A001
 # version is the short X.Y version
 # release is the full version, including alpha/beta/rc tags
 version = release = torchio.__version__
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -49,6 +48,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_copybutton',
     'sphinx_gallery.gen_gallery',
+    'sphinxext.opengraph',
 ]
 
 # Add mappings
@@ -79,7 +79,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -110,10 +110,12 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 # further. For a list of options available for each theme, see the
 # documentation.
 #
-url = 'https://pytorch.org/blog/pytorch-developer-day-2021'
-text = 'PyTorch Developer Day 2021'
+url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: E501
+text = 'CMPB'
 html_href = f'<a href="{url}">{text}</a>'
-message = f'TorchIO will be featured at the {html_href} (December 1st & 2nd)'
+message = (
+    f'TorchIO becomes one of the most downloaded articles from {html_href}!'
+)
 html_theme_options = {
     'announcement': message,
 }
@@ -164,8 +166,10 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'TorchIO.tex', 'TorchIO Documentation',
-     'Fernando Pérez-García', 'manual'),
+    (
+        master_doc, 'TorchIO.tex', 'TorchIO Documentation',
+        'Fernando Pérez-García', 'manual',
+    ),
 ]
 
 
@@ -174,8 +178,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'torchio', 'TorchIO Documentation',
-     [author], 1)
+    (
+        master_doc, 'torchio', 'TorchIO Documentation',
+        [author], 1,
+    ),
 ]
 
 
@@ -185,9 +191,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'TorchIO', 'TorchIO Documentation',
-     author, 'TorchIO', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc, 'TorchIO', 'TorchIO Documentation',
+        author, 'TorchIO', 'One line description of project.',
+        'Miscellaneous',
+    ),
 ]
 
 
@@ -222,16 +230,8 @@ sphinx_gallery_conf = {
     'examples_dirs': '../examples',   # example scripts
     'gallery_dirs': 'auto_examples',  # where to save gallery generated output
     'matplotlib_animations': True,
-    'binder': {
-        # Required keys
-        'org': 'fepegar',
-        'repo': 'torchio',
-        'branch': 'main',
-        'binderhub_url': 'https://mybinder.org',
-        'dependencies': '../requirements.txt',
-        # Optional keys
-        'use_jupyter_lab': False,
-    }
 }
 
 # autosummary_generate = True  # Turn on sphinx.ext.autosummary
+
+plot_formats = [('png', 300)]

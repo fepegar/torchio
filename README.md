@@ -93,9 +93,6 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://www.youtube.com/watch?v=UEUVSw5-M9M">
                 <img src="https://img.shields.io/youtube/views/UEUVSw5-M9M?label=watch&style=social" alt="YouTube">
             </a>
-            <a href="https://github.com/fepegar/torchio#contributors">
-                <img src="https://img.shields.io/badge/Contributors-27-orange.svg" alt="Contributors">
-            </a>
         </td>
     </tr>
 </table>
@@ -366,6 +363,22 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://www.kitware.com/dzenan-zukic/"><img src="https://avatars.githubusercontent.com/u/1792121?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dženan Zukić</b></sub></a><br /><a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3Adzenanz" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/vasl12"><img src="https://avatars.githubusercontent.com/u/15161465?v=4?s=100" width="100px;" alt=""/><br /><sub><b>vasl12</b></sub></a><br /><a href="#tutorial-vasl12" title="Tutorials">✅</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Avasl12" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://perso.telecom-bretagne.eu/francoisrousseau"><img src="https://avatars.githubusercontent.com/u/398895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>François Rousseau</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arousseau" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/snavalm"><img src="https://avatars.githubusercontent.com/u/35732360?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snavalm</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=snavalm" title="Code">💻</a></td>
+    <td align="center"><a href="http://jcreinhold.com"><img src="https://avatars.githubusercontent.com/u/5241441?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jacob Reinhold</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jcreinhold" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Hsuxu"><img src="https://avatars.githubusercontent.com/u/15630477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hsu</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AHsuxu" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/snipdome"><img src="https://avatars.githubusercontent.com/u/72035308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snipdome</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asnipdome" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/iamSmallY"><img src="https://avatars.githubusercontent.com/u/45689960?v=4?s=100" width="100px;" alt=""/><br /><sub><b>SmallY</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AiamSmallY" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/guigautier"><img src="https://avatars.githubusercontent.com/u/45590481?v=4?s=100" width="100px;" alt=""/><br /><sub><b>guigautier</b></sub></a><br /><a href="#ideas-guigautier" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/AyedSamy"><img src="https://avatars.githubusercontent.com/u/55320208?v=4?s=100" width="100px;" alt=""/><br /><sub><b>AyedSamy</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AAyedSamy" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://delanover.com"><img src="https://avatars.githubusercontent.com/u/3540650?v=4?s=100" width="100px;" alt=""/><br /><sub><b>J. Miguel Valverde</b></sub></a><br /><a href="#ideas-jmlipman" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/fepegar/torchio/commits?author=jmlipman" title="Code">💻</a></td>
+    <td align="center"><a href="http://josegcpa.github.io"><img src="https://avatars.githubusercontent.com/u/40271262?v=4?s=100" width="100px;" alt=""/><br /><sub><b>José Guilherme Almeida</b></sub></a><br /><a href="#ideas-josegcpa" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/saikhu"><img src="https://avatars.githubusercontent.com/u/24922057?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Asim Usman</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asaikhu" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/cbri92"><img src="https://avatars.githubusercontent.com/u/70302171?v=4?s=100" width="100px;" alt=""/><br /><sub><b>cbri92</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Acbri92" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/iimog"><img src="https://avatars.githubusercontent.com/u/7403236?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Markus J. Ankenbrand</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aiimog" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

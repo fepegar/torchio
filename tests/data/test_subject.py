@@ -109,5 +109,23 @@ class TestSubject(TorchioTestCase):
             tio.Subject(0)
 
     def test_no_images(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             tio.Subject(a=0)
+
+    def test_copy_subject(self):
+        sub_copy = copy.copy(self.sample_subject)
+        assert isinstance(sub_copy, tio.data.Subject)
+        sub_deep_copy = copy.deepcopy(self.sample_subject)
+        assert isinstance(sub_deep_copy, tio.data.Subject)
+
+    def test_copy_subclass(self):
+        class DummySubjectSubClass(tio.data.Subject):
+            pass
+
+        dummy_sub = DummySubjectSubClass(self.sample_subject)
+        sub_copy = copy.copy(dummy_sub)
+        assert isinstance(sub_copy, tio.data.Subject)
+        assert isinstance(sub_copy, DummySubjectSubClass)
+        sub_deep_copy = copy.deepcopy(dummy_sub)
+        assert isinstance(sub_deep_copy, tio.data.Subject)
+        assert isinstance(sub_deep_copy, DummySubjectSubClass)

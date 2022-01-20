@@ -18,16 +18,16 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5, 2],
-            std=[0, 0]
+            std=[0, 0],
         )
         transformed = transform(self.sample_subject)
         self.assertTensorEqual(
             transformed['image_from_labels'].data == 0.5,
-            self.sample_subject['label'].data == 0
+            self.sample_subject['label'].data == 0,
         )
         self.assertTensorEqual(
             transformed['image_from_labels'].data == 2,
-            self.sample_subject['label'].data == 1
+            self.sample_subject['label'].data == 1,
         )
 
     def test_deterministic_simulation_with_discretized_label_map(self):
@@ -38,16 +38,16 @@ class TestRandomLabelsToImage(TorchioTestCase):
             label_key='label',
             mean=[0.5, 2],
             std=[0, 0],
-            discretize=True
+            discretize=True,
         )
         transformed = transform(self.sample_subject)
         self.assertTensorEqual(
             transformed['image_from_labels'].data == 0.5,
-            self.sample_subject['label'].data == 0
+            self.sample_subject['label'].data == 0,
         )
         self.assertTensorEqual(
             transformed['image_from_labels'].data == 2,
-            self.sample_subject['label'].data == 1
+            self.sample_subject['label'].data == 1,
         )
 
     def test_deterministic_simulation_with_pv_map(self):
@@ -57,16 +57,16 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5, 1],
-            std=[0, 0]
+            std=[0, 0],
         )
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['image_from_labels'].data[0],
-            subject['label'].data[0] * 0.5 + subject['label'].data[1] * 1
+            subject['label'].data[0] * 0.5 + subject['label'].data[1] * 1,
         )
         self.assertEqual(
             transformed['image_from_labels'].data.shape,
-            (1, 10, 20, 30)
+            (1, 10, 20, 30),
         )
 
     def test_deterministic_simulation_with_discretized_pv_map(self):
@@ -78,12 +78,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
             label_key='label',
             mean=[0.5],
             std=[0],
-            discretize=True
+            discretize=True,
         )
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['image_from_labels'].data,
-            (subject['label'].data > 0) * 0.5
+            (subject['label'].data > 0) * 0.5,
         )
 
     def test_filling(self):
@@ -93,13 +93,13 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
-            used_labels=[1]
+            used_labels=[1],
         )
         t1_indices = self.sample_subject['label'].data == 0
         transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
             transformed['t1'].data[t1_indices],
-            self.sample_subject['t1'].data[t1_indices]
+            self.sample_subject['t1'].data[t1_indices],
         )
 
     def test_filling_with_discretized_label_map(self):
@@ -110,13 +110,13 @@ class TestRandomLabelsToImage(TorchioTestCase):
             label_key='label',
             image_key='t1',
             discretize=True,
-            used_labels=[1]
+            used_labels=[1],
         )
         t1_indices = self.sample_subject['label'].data < 0.5
         transformed = transform(self.sample_subject)
         self.assertTensorAlmostEqual(
             transformed['t1'].data[t1_indices],
-            self.sample_subject['t1'].data[t1_indices]
+            self.sample_subject['t1'].data[t1_indices],
         )
 
     def test_filling_with_discretized_pv_label_map(self):
@@ -128,13 +128,13 @@ class TestRandomLabelsToImage(TorchioTestCase):
             label_key='label',
             image_key='t1',
             discretize=True,
-            used_labels=[1]
+            used_labels=[1],
         )
         t1_indices = subject['label'].data.argmax(dim=0) == 0
         transformed = transform(subject)
         self.assertTensorAlmostEqual(
             transformed['t1'].data[0][t1_indices],
-            subject['t1'].data[0][t1_indices]
+            subject['t1'].data[0][t1_indices],
         )
 
     def test_filling_without_any_hole(self):
