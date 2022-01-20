@@ -30,3 +30,6 @@ DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/main/data/'
 
 # Floating point error
 MIN_FLOAT_32 = torch.finfo(torch.float32).eps
+
+# For the queue
+NUM_SAMPLES = 'num_samples'
