@@ -22,7 +22,7 @@ classes = (
 )
 
 
-@pytest.skipif('CI' in os.environ)
+@pytest.mark.skipif('CI' in os.environ)
 @pytest.mark.parametrize('class_', classes)
 @pytest.mark.parametrize('split', ('train', 'val', 'test'))
 def test_load_all(class_, split):
