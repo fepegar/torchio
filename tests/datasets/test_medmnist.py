@@ -1,3 +1,4 @@
+import os
 import torch
 import pytest
 
@@ -21,6 +22,7 @@ classes = (
 )
 
 
+@pytest.mark.skipif('CI' in os.environ, reason='Unstable on GitHub Actions')
 @pytest.mark.parametrize('class_', classes)
 @pytest.mark.parametrize('split', ('train', 'val', 'test'))
 def test_load_all(class_, split):
