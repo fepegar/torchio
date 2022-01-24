@@ -174,10 +174,9 @@ fast, but produces relatively poor results.
 ``'linear'``, default in TorchIO, is usually a good compromise between image
 quality and speed to be used for data augmentation during training.
 
-Instances of :class:`~torchio.data.image.LabelMap` are always resampled using
-nearest neighbor interpolation, independently of the interpolation type
-specified at transform instantiation, which will be used for instances of
-:class:`~torchio.data.image.ScalarImage`.
+When instantiating transforms it is possible to specify independently the interpolation for labels and images.
+``'label_interpolation'`` will be used for instances of :class:`~torchio.data.image.LabelMap` and
+``'image_interpolation'`` will be used for instances of :class:`~torchio.data.image.ScalarImage`.
 
 Methods such as ``'bspline'`` or ``'lanczos'`` generate
 high-quality results, but are generally slower. They can be used to obtain
