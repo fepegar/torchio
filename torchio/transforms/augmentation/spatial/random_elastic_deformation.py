@@ -198,7 +198,7 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
-        label_interpolation: See :ref: Interpolation`.
+        label_interpolation: See :ref:`Interpolation`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
