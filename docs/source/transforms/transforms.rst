@@ -168,20 +168,22 @@ need to interpolate intensity values during resampling.
 The available interpolation strategies can be inferred from the elements of
 :class:`~torchio.transforms.interpolation.Interpolation`.
 
-``'nearest'`` can be used for quick experimentation as it is very
-fast, but produces relatively poor results.
-
-``'linear'``, default in TorchIO, is usually a good compromise between image
-quality and speed to be used for data augmentation during training.
-
-Instances of :class:`~torchio.data.image.LabelMap` are always resampled using
-nearest neighbor interpolation, independently of the interpolation type
-specified at transform instantiation, which will be used for instances of
-:class:`~torchio.data.image.ScalarImage`.
+``'linear'`` interpolation, the default in TorchIO for scalar images,
+is usually a good compromise between image quality and speed.
+It is therefore a good choice for data augmentation during training.
 
 Methods such as ``'bspline'`` or ``'lanczos'`` generate
 high-quality results, but are generally slower. They can be used to obtain
 optimal resampling results during offline data preprocessing.
+
+``'nearest'`` can be used for quick experimentation as it is very
+fast, but produces relatively poor results for scalar images.
+It is the default interpolation type for label maps, as categorical values for
+the different labels need to preserved after interpolation.
+
+When instantiating transforms, it is possible to specify independently the
+interpolation type for label maps and scalar images, as shown in the
+documentation for, e.g., :class:`~torchio.transforms.Resample`.
 
 Visit the
 `SimpleITK docs <https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5>`_
@@ -195,8 +197,6 @@ for some further general explanations of digital image interpolation.
     :show-inheritance:
     :members:
     :undoc-members:
-
-
 
 
 Transforms API

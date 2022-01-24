@@ -60,6 +60,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             The value of the dense displacement at each voxel is always
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
+        label_interpolation: See :ref:`Interpolation`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
@@ -122,6 +123,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -142,6 +144,8 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             raise ValueError(message)
         self.image_interpolation = self.parse_interpolation(
             image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
 
     @staticmethod
     def get_params(
@@ -179,6 +183,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             'control_points': control_points,
             'max_displacement': self.max_displacement,
             'image_interpolation': self.image_interpolation,
+            'label_interpolation': self.label_interpolation,
         }
 
         transform = ElasticDeformation(**self.add_include_exclude(arguments))
@@ -193,6 +198,7 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
+        label_interpolation: See :ref:`Interpolation`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
@@ -202,6 +208,7 @@ class ElasticDeformation(SpatialTransform):
             control_points: np.ndarray,
             max_displacement: TypeTripletFloat,
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -209,10 +216,13 @@ class ElasticDeformation(SpatialTransform):
         self.max_displacement = max_displacement
         self.image_interpolation = self.parse_interpolation(
             image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
         self.invert_transform = False
         self.args_names = (
             'control_points',
             'image_interpolation',
+            'label_interpolation',
             'max_displacement',
         )
 
@@ -259,7 +269,7 @@ class ElasticDeformation(SpatialTransform):
         subject.check_consistent_spatial_shape()
         for image in self.get_images(subject):
             if not isinstance(image, ScalarImage):
-                interpolation = 'nearest'
+                interpolation = self.label_interpolation
             else:
                 interpolation = self.image_interpolation
             transformed = self.apply_bspline_transform(

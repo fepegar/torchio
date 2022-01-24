@@ -75,6 +75,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
+        label_interpolation: See :ref:`Interpolation`.
         check_shape: If ``True`` an error will be raised if the images are in
             different physical spaces. If ``False``, :attr:`center` should
             probably not be ``'image'`` but ``'center'``.
@@ -111,6 +112,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             center: str = 'image',
             default_pad_value: Union[str, float] = 'minimum',
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             check_shape: bool = True,
             **kwargs
             ):
@@ -130,6 +132,8 @@ class RandomAffine(RandomTransform, SpatialTransform):
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(
             image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
         self.check_shape = check_shape
 
     def get_params(
@@ -160,6 +164,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'center': self.center,
             'default_pad_value': self.default_pad_value,
             'image_interpolation': self.image_interpolation,
+            'label_interpolation': self.label_interpolation,
             'check_shape': self.check_shape,
         }
         transform = Affine(**self.add_include_exclude(arguments))
@@ -189,6 +194,7 @@ class Affine(SpatialTransform):
             `Otsu threshold <https://ieeexplore.ieee.org/document/4310076>`_.
             If it is a number, that value will be used.
         image_interpolation: See :ref:`Interpolation`.
+        label_interpolation: See :ref:`Interpolation`.
         check_shape: If ``True`` an error will be raised if the images are in
             different physical spaces. If ``False``, :attr:`center` should
             probably not be ``'image'`` but ``'center'``.
@@ -203,6 +209,7 @@ class Affine(SpatialTransform):
             center: str = 'image',
             default_pad_value: Union[str, float] = 'minimum',
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             check_shape: bool = True,
             **kwargs
             ):
@@ -237,6 +244,8 @@ class Affine(SpatialTransform):
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(
             image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
         self.invert_transform = False
         self.check_shape = check_shape
         self.args_names = (
@@ -246,6 +255,7 @@ class Affine(SpatialTransform):
             'center',
             'default_pad_value',
             'image_interpolation',
+            'label_interpolation',
             'check_shape',
         )
 
@@ -343,7 +353,7 @@ class Affine(SpatialTransform):
                     force_3d=True,
                 )
                 if image[TYPE] != INTENSITY:
-                    interpolation = 'nearest'
+                    interpolation = self.label_interpolation
                     default_value = 0
                 else:
                     interpolation = self.image_interpolation
