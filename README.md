@@ -366,6 +366,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="https://www.kitware.com/dzenan-zukic/"><img src="https://avatars.githubusercontent.com/u/1792121?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dženan Zukić</b></sub></a><br /><a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3Adzenanz" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/vasl12"><img src="https://avatars.githubusercontent.com/u/15161465?v=4?s=100" width="100px;" alt=""/><br /><sub><b>vasl12</b></sub></a><br /><a href="#tutorial-vasl12" title="Tutorials">✅</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Avasl12" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://perso.telecom-bretagne.eu/francoisrousseau"><img src="https://avatars.githubusercontent.com/u/398895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>François Rousseau</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arousseau" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/snavalm"><img src="https://avatars.githubusercontent.com/u/35732360?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snavalm</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=snavalm" title="Code">💻</a></td>
   </tr>
 </table>
 
