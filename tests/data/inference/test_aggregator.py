@@ -71,3 +71,35 @@ class TestAggregator(TorchioTestCase):
         aggregator = self.run_sampler_aggregator()
         with self.assertWarns(RuntimeWarning):
             aggregator.get_output_tensor()
+
+    def run_patch_crop_issue(self, *, padding_mode):
+        # https://github.com/fepegar/torchio/issues/813
+        pao, pas, ims, bb1, bb2 = 4, 102, 320, 100, 120
+
+        patch_overlap = pao, 0, 0
+        patch_size = pas, 1, 1
+        img = torch.zeros((1, ims, 1, 1))
+        bbox = [bb1, bb2]
+
+        img[:, bbox[0]:bbox[1]] = 1
+        image = tio.LabelMap(tensor=img)
+        subject = tio.Subject(image=image)
+        grid_sampler = tio.inference.GridSampler(
+            subject,
+            patch_size,
+            patch_overlap,
+        )
+        patch_loader = torch.utils.data.DataLoader(grid_sampler)
+        aggregator = tio.inference.GridAggregator(grid_sampler)
+        for patches_batch in patch_loader:
+            input_tensor = patches_batch['image'][tio.DATA]
+            locations = patches_batch[tio.LOCATION]
+            aggregator.add_batch(input_tensor, locations)
+        output_tensor = aggregator.get_output_tensor()
+        self.assertTensorEqual(image.tensor, output_tensor)
+
+    def test_patch_crop_issue_no_padding(self):
+        self.run_patch_crop_issue(padding_mode=None)
+
+    def test_patch_crop_issue_padding(self):
+        self.run_patch_crop_issue(padding_mode='constant')
