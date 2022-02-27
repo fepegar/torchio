@@ -110,10 +110,12 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 # further. For a list of options available for each theme, see the
 # documentation.
 #
-url = 'https://pytorch.org/blog/pytorch-developer-day-2021'
-text = 'PyTorch Developer Day 2021'
+url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: E501
+text = 'CMPB'
 html_href = f'<a href="{url}">{text}</a>'
-message = f'TorchIO will be featured at the {html_href} (December 1st & 2nd)'
+message = (
+    f'TorchIO becomes one of the most downloaded articles from {html_href}!'
+)
 html_theme_options = {
     'announcement': message,
 }
