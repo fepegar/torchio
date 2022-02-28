@@ -516,6 +516,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Hsuxu",
+      "name": "Hsu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15630477?v=4",
+      "profile": "https://github.com/Hsuxu",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
