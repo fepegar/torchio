@@ -114,6 +114,18 @@ class GridAggregator:
         """
         batch = batch_tensor.cpu()
         locations = locations.cpu().numpy()
+        patch_sizes = locations[:, 3:] - locations[:, :3]
+        # There should be only one patch size
+        assert len(np.unique(patch_sizes, axis=0)) == 1
+        input_spatial_shape = tuple(batch.shape[-3:])
+        target_spatial_shape = tuple(patch_sizes[0])
+        if input_spatial_shape != target_spatial_shape:
+            message = (
+                f'The shape of the input batch, {input_spatial_shape},'
+                ' does not match the shape of the target location,'
+                f' which is {target_spatial_shape}'
+            )
+            raise RuntimeError(message)
         self._initialize_output_tensor(batch)
         if self.overlap_mode == 'crop':
             for patch, location in zip(batch, locations):
