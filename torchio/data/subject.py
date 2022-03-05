@@ -82,7 +82,7 @@ class Subject(dict):
     def _parse_images(images: List[Tuple[str, Image]]) -> None:
         # Check that it's not empty
         if not images:
-            raise ValueError('A subject without images cannot be created')
+            raise TypeError('A subject without images cannot be created')
 
     @property
     def shape(self):

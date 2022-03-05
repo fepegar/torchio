@@ -424,6 +424,8 @@ class Image(dict):
             ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
+        elif type(path) is dict:
+            raise TypeError('The variable path cannot be a dictionary')
         elif self._is_paths_sequence(path):
             return [self._parse_single_path(p) for p in path]
         else:
