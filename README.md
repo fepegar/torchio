@@ -370,6 +370,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="http://jcreinhold.com"><img src="https://avatars.githubusercontent.com/u/5241441?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jacob Reinhold</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jcreinhold" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Hsuxu"><img src="https://avatars.githubusercontent.com/u/15630477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hsu</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AHsuxu" title="Bug reports">🐛</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/snipdome"><img src="https://avatars.githubusercontent.com/u/72035308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snipdome</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asnipdome" title="Bug reports">🐛</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
