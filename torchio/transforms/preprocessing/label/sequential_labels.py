@@ -8,9 +8,9 @@ from .label_transform import LabelTransform
 class SequentialLabels(LabelTransform):
     r"""Remap the integer IDs of labels in a LabelMap to be sequential.
 
-    For example, if a label map has 6 labels with IDs (3, 5, 9, 15, 16, 23),
+    For example, if a label map has 7 labels with IDs (0, 3, 5, 9, 15, 16, 23),
     then this will apply a :class:`~torchio.RemapLabels` transform with
-    ``remapping={3: 1, 5: 2, 9: 3, 15: 4, 16: 5, 23: 6}``.
+    ``remapping={0: 0, 3: 1, 5: 2, 9: 3, 15: 4, 16: 5, 23: 6}``.
     This transformation is always `fully invertible <invertibility>`_.
 
     Args:
@@ -31,7 +31,7 @@ class SequentialLabels(LabelTransform):
             unique_labels = torch.unique(image.data)
             remapping = {
                 unique_labels[i].item(): i
-                for i in range(1, len(unique_labels))
+                for i in range(0, len(unique_labels))
             }
             transform = RemapLabels(
                 remapping=remapping,
