@@ -12,10 +12,11 @@ class TestInvertibility(TorchioTestCase):
     def test_all_random_transforms(self):
         transform = self.get_large_composed_transform()
         # Remove RandomLabelsToImage as it will add a new image to the subject
+        # Remove RandomCropOrPad as it will change the dimension
         for t in transform.transforms:
-            if t.name == 'RandomLabelsToImage':
+            if t.name == 'RandomLabelsToImage' or t.name == 'RandomCropOrPad':
                 transform.transforms.remove(t)
-                break
+
         # Ignore elastic deformation and gamma warnings during execution
         # Ignore some transforms not invertible
         with warnings.catch_warnings():
