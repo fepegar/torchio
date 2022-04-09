@@ -12,5 +12,6 @@ sphinx
 sphinx-autobuild
 sphinx-copybutton
 sphinx-gallery
+sphinxext-opengraph
 tox
 types-Deprecated

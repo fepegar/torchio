@@ -49,6 +49,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_copybutton',
     'sphinx_gallery.gen_gallery',
+    'sphinxext.opengraph',
 ]
 
 # Add mappings
