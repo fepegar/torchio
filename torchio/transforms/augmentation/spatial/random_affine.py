@@ -94,13 +94,12 @@ class RandomAffine(RandomTransform, SpatialTransform):
     .. plot::
 
         import torchio as tio
-        image = tio.datasets.Colin27().t1
-        transform = tio.RandomAffine(
-            scales=(0.9, 1.2),
-            degrees=15,
-        )
-        transformed = transform(image)
-        transformed.plot()
+        subject = tio.datasets.Slicer('CTChest')
+        ct = subject.CT_chest
+        transform = tio.RandomAffine()
+        ct_transformed = transform(ct)
+        subject.add_image(ct_transformed, 'Transformed')
+        subject.plot()
 
     """  # noqa: E501
     def __init__(

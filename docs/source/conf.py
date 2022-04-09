@@ -238,3 +238,5 @@ sphinx_gallery_conf = {
 }
 
 # autosummary_generate = True  # Turn on sphinx.ext.autosummary
+
+plot_formats = [('png', 300)]
