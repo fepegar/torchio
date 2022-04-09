@@ -44,7 +44,7 @@ class IXI(SubjectsDataset):
         If you set :attr:`download` to ``True``, it will take some time
         to be downloaded if it is not already present.
 
-    Example::
+    Example:
 
         >>> import torchio as tio
         >>> transforms = [
