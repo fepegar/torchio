@@ -1,5 +1,5 @@
 Deprecated
-SimpleITK!=2.0.*
+SimpleITK!=2.0.*,!=2.1.1.1
 click
 einops
 furo
