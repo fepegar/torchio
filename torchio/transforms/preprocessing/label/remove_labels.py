@@ -12,7 +12,7 @@ class RemoveLabels(RemapLabels):
     Args:
         labels: A sequence of label integers that will be removed.
         background_label: integer that specifies which label is considered to
-            be background (generally 0).
+            be background (typically, ``0``).
         masking_method: See :class:`~torchio.transforms.RemapLabels`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
@@ -20,13 +20,23 @@ class RemoveLabels(RemapLabels):
     .. plot::
 
         import torchio as tio
-        subject = tio.datasets.Colin27(2008)
-        label_map = subject.cls
-        subject.remove_image('t2')
-        subject.remove_image('pd')
-        remove_labels = tio.RemoveLabels([4, 5, 6, 7, 9, 10, 11, 12])
-        only_brain = remove_labels(label_map)
-        subject.add_image(only_brain, 'brain')
+        colin = tio.datasets.Colin27(2008)
+        label_map = colin.cls
+        colin.remove_image('t2')
+        colin.remove_image('pd')
+        names_to_remove = (
+            'Fat',
+            'Muscles',
+            'Skin and Muscles',
+            'Skull',
+            'Fat 2',
+            'Dura',
+            'Marrow'
+        )
+        labels = [colin.NAME_TO_LABEL[name] for name in names_to_remove]
+        skull_stripping = tio.RemoveLabels(labels)
+        only_brain = skull_stripping(label_map)
+        colin.add_image(only_brain, 'brain')
         colors = {
             0: (0, 0, 0),
             1: (127, 255, 212),
@@ -41,7 +51,7 @@ class RemoveLabels(RemapLabels):
             11: (119, 159, 176),
             12: (220, 216, 20),
         }
-        subject.plot(cmap_dict={'cls': colors, 'brain': colors})
+        colin.plot(cmap_dict={'cls': colors, 'brain': colors})
     """
     def __init__(
             self,
@@ -55,7 +65,7 @@ class RemoveLabels(RemapLabels):
         self.labels = labels
         self.background_label = background_label
         self.masking_method = masking_method
-        self.args_names = ('labels', 'background_label', 'masking_method',)
+        self.args_names = 'labels', 'background_label', 'masking_method'
 
     def is_invertible(self):
         return False

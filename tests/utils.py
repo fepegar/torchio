@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from random import shuffle
+from typing import Set, Sequence
 
 import torch
 import numpy as np
@@ -133,10 +134,15 @@ class TorchioTestCase(unittest.TestCase):
             )
         )
 
-    def get_unique_labels(self, label_map):
-        labels = torch.unique(label_map.data)
-        labels = {i.item() for i in labels if i != 0}
-        return labels
+    @staticmethod
+    def get_unique_labels(data: torch.Tensor) -> Set[int]:
+        labels = data.unique().tolist()
+        return set(labels)
+
+    @staticmethod
+    def get_tensor_with_labels(labels: Sequence) -> torch.Tensor:
+        tensor = torch.as_tensor(list(labels))
+        return tensor.repeat_interleave(2).reshape(1, 1, 1, -1)
 
     def tearDown(self):
         """Tear down test fixtures, if any."""
@@ -211,6 +217,10 @@ class TorchioTestCase(unittest.TestCase):
     @staticmethod
     def assertTensorAlmostEqual(*args, **kwargs):  # noqa: N802
         assert_array_almost_equal(*args, **kwargs)
+
+    @staticmethod
+    def assertTensorAllZeros(tensor):  # noqa: N802
+        assert torch.all(tensor == 0)
 
     def get_large_composed_transform(self):
         all_classes = get_all_random_transforms()
