@@ -22,6 +22,7 @@ from ...utils import TorchioTestCase
         {0: 1},
         {0: 1, 1: 0},
         {0: 1, 1: 2, 2: 0},
+        {2: 1, 5: 1},
         {3: 4},
         {3: 1},
         {1: 2, 2: 1, 5: 10, 6: 11},  # values from original @efirdc test
@@ -44,10 +45,10 @@ def test_remap(original_label_set, remapping):
 
     if len(target_label_set) < len(remapping.keys()):
         with pytest.raises(RuntimeError):
-            inverse = transformed.apply_inverse_transform()
+            _ = transformed.apply_inverse_transform()
     else:
-        inverse = transformed.apply_inverse_transform()
-    inverted_label_set = TorchioTestCase.get_unique_labels(inverse.label.data)
-    # Users are warned about this in the docs for the transform
-    if target_label_set.isdisjoint(original_label_set):
-        assert inverted_label_set == original_label_set
+        inverse_data = transformed.apply_inverse_transform().label.data
+        inverted_label_set = TorchioTestCase.get_unique_labels(inverse_data)
+        # Users are warned about this in the docs for the transform
+        if target_label_set.isdisjoint(original_label_set):
+            assert inverted_label_set == original_label_set

@@ -115,6 +115,7 @@ class RemapLabels(LabelTransform):
         return subject
 
     def is_invertible(self):
+        # Not always, as explained in the docstring
         return True
 
     def inverse(self):
