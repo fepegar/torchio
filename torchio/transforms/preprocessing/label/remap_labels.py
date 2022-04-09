@@ -5,16 +5,14 @@ from .label_transform import LabelTransform
 
 
 class RemapLabels(LabelTransform):
-    r"""Remap the integer ids of labels in a LabelMap.
+    r"""Modify labels in a label map.
 
-    This transformation may not be invertible if two labels are combined by the
-    remapping.
-    A masking method can be used to correctly split the label into two during
-    the `inverse transformation <invertibility>`_ (see example).
+    Masking can be used to split the label into two during
+    the `inverse transformation <invertibility>`_.
 
     Args:
         remapping: Dictionary that specifies how labels should be remapped.
-            The keys are the old label ids, and the corresponding values replace
+            The keys are the old labels, and the corresponding values replace
             them.
         masking_method: Defines a mask for where the label remapping is applied. It can be one of:
 
@@ -22,19 +20,56 @@ class RemapLabels(LabelTransform):
 
             - A string: key to a :class:`torchio.LabelMap` in the subject which is used as a mask,
               OR an anatomical label: ``'Left'``, ``'Right'``, ``'Anterior'``, ``'Posterior'``,
-              ``'Inferior'``, ``'Superior'`` which specifies a side of the mask volume to be ones.
+              ``'Inferior'``, ``'Superior'`` which specifies a half of the mask volume to be ones.
 
             - A function: the mask image is computed as a function of the intensity image.
-              The function must receive and return a :class:`torch.Tensor`.
+              The function must receive and return a 4D :class:`torch.Tensor`.
 
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
     Example:
+
+        >>> import torch
+        >>> import torchio as tio
+        >>> def get_image(*labels):
+        ...     tensor = torch.as_tensor(labels).reshape(1, 1, 1, -1)
+        ...     image = tio.LabelMap(tensor=tensor)
+        ...     return image
+        ...
+        >>> image = get_image(0, 1, 2, 3, 4)
+        >>> remapping = {1: 2, 2: 1, 3: 1, 4: 7}
+        >>> transform = tio.RemapLabels(remapping)
+        >>> transform(image).data
+        tensor([[[[0, 2, 1, 1, 7]]]])
+
+    .. warning::
+        The transform will not be correctly inverted if one of the values in
+        ``remapping`` is also in the input image::
+
+            >>> tensor = torch.as_tensor([0, 1]).reshape(1, 1, 1, -1)
+            >>> subject = tio.Subject(label=tio.LabelMap(tensor=tensor))
+            >>> mapping = {3: 1}  # the value 1 is in the input image
+            >>> transform = tio.RemapLabels(mapping)
+            >>> transformed = transform(subject)
+            >>> back = transformed.apply_inverse_transform()
+            >>> original_label_set = set(subject.label.data.unique().tolist())
+            >>> back_label_set = set(back.label.data.unique().tolist())
+            >>> original_label_set
+            {0, 1}
+            >>> back_label_set
+            {0, 3}
+
+    Example:
+
         >>> import torchio as tio
         >>> # Target label map has the following labels:
-        >>> # {'left_ventricle': 1, 'right_ventricle': 2, 'left_caudate': 3, 'right_caudate': 4,
-        >>> #  'left_putamen': 5, 'right_putamen': 6, 'left_thalamus': 7, 'right_thalamus': 8}
+        >>> # {
+        >>> #     'left_ventricle': 1, 'right_ventricle': 2,
+        >>> #     'left_caudate': 3,   'right_caudate': 4,
+        >>> #     'left_putamen': 5,   'right_putamen': 6,
+        >>> #     'left_thalamus': 7,  'right_thalamus': 8,
+        >>> # }
         >>> transform = tio.RemapLabels({2:1, 4:3, 6:5, 8:7})
         >>> # Merge right side labels with left side labels
         >>> transformed = transform(subject)
@@ -58,10 +93,15 @@ class RemapLabels(LabelTransform):
         self.kwargs = kwargs
         self.remapping = remapping
         self.masking_method = masking_method
-        self.args_names = ('remapping', 'masking_method',)
+        self.args_names = 'remapping', 'masking_method'
 
     def apply_transform(self, subject):
         for image in self.get_images(subject):
+            original_label_set = set(image.data.unique().tolist())
+            source_label_set = set(self.remapping.keys())
+            # Do nothing if no keys in the mapping are found in the image
+            if not source_label_set.intersection(original_label_set):
+                continue
             new_data = image.data.clone()
             mask = self.get_mask_from_masking_method(
                 self.masking_method,
@@ -78,6 +118,14 @@ class RemapLabels(LabelTransform):
         return True
 
     def inverse(self):
+        targets = self.remapping.values()
+        unique_targets = set(targets)
+        if len(unique_targets) < len(targets):
+            message = (
+                'Labels mapping cannot be inverted because original values'
+                f' are not unique: {self.remapping}'
+            )
+            raise RuntimeError(message)
         inverse_remapping = {v: k for k, v in self.remapping.items()}
         inverse_transform = RemapLabels(
             inverse_remapping,
