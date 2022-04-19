@@ -91,10 +91,13 @@ class Blur(IntensityTransform):
 def blur(
         data: TypeData,
         spacing: TypeTripletFloat,
-        std_voxel: TypeTripletFloat,
+        std_physical: TypeTripletFloat,
         ) -> torch.Tensor:
     assert data.ndim == 3
-    std_physical = np.array(std_voxel) / np.array(spacing)
-    blurred = ndi.gaussian_filter(data, std_physical)
+    # For example, if the standard deviation of the kernel is 2 mm and the
+    # image spacing is 0.5 mm/voxel, the kernel should be
+    # (2 mm / 0.5 mm/voxel) = 4 voxels wide
+    std_voxel = np.array(std_physical) / np.array(spacing)
+    blurred = ndi.gaussian_filter(data, std_voxel)
     tensor = torch.as_tensor(blurred)
     return tensor
