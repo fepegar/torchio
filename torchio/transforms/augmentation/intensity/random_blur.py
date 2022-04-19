@@ -56,8 +56,8 @@ class Blur(IntensityTransform):
 
     Args:
         std: Tuple :math:`(\sigma_1, \sigma_2, \sigma_3)` representing the
-            the standard deviations (in mm) of the standard deviations
-            of the Gaussian kernels used to blur the image along each axis.
+            the standard deviations (in mm) of the Gaussian kernels used to
+            blur the image along each axis.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
