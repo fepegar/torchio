@@ -453,7 +453,7 @@ class Image(dict):
             raise TypeError(message)
         ndim = tensor.ndim
         if ndim != 4 and ndim != 5:
-            raise ValueError(f'Input tensor must be 4D, but it is {ndim}D')
+            raise ValueError(f'Input tensor must be 4D or 5D, but it is {ndim}D')
         if tensor.dtype == torch.bool:
             tensor = tensor.to(torch.uint8)
         if self.check_nans and torch.isnan(tensor).any():
