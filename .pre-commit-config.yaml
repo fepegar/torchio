@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.2.0
     hooks:
       - id: check-ast                  # Simply check whether the files parse as valid python
       - id: check-case-conflict        # Check for files that would conflict in case-insensitive filesystems
@@ -19,25 +19,20 @@ repos:
       - id: file-contents-sorter       # Sort the lines in specified files
         files: .*requirements.*\.txt$
   - repo: https://github.com/pycqa/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
       - id: flake8
         additional_dependencies: [
           flake8-blind-except,      # check for blind, catch-all "except:" statements
-          flake8-breakpoint,        # check forgotten breakpoints
           flake8-broken-line,       # forbid backslashes for line breaks
           flake8-bugbear,           # find likely bugs and design problems
           flake8-builtins,          # check for python builtins being used as variables or parameters
           flake8-class-newline,     # lint for newline after class definitions
-          flake8-comprehensions,    # write better list/set/dict comprehensions
-          flake8-debugger,          # check for pdb;idbp imports and set traces
           flake8-fixme,             # check for FIXME, TODO and other temporary developer notes
           flake8-logging-format,    # validate (lack of) logging format strings
           flake8-markdown,          # lint Python code blocks in Markdown files using flake8
           flake8-pep3101,           # check for old string formatting
-          flake8-polyfill,          # help support Flake8 2.x and 3.x simultaneously
-          flake8-print,             # check for Print statements
-          flake8-type-annotations,  # enforce consistent type annotation styles
+          flake8-print,             # check for print statements
           flake8-use-fstring,       # enforce use of f-string
           flake8-2020,              # check for misuse of `sys.version` or `sys.version_info`
           pep8-naming,              # check PEP-8 naming conventions
@@ -54,7 +49,7 @@ repos:
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
       # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.0
+    rev: v2.32.0
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']

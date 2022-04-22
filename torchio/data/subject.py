@@ -370,13 +370,31 @@ class Subject(dict):
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)
 
+    @staticmethod
+    def _check_image_name(image_name):
+        if not isinstance(image_name, str):
+            message = (
+                'The image name must be a string,'
+                f' but it has type "{type(image_name)}"'
+            )
+            raise ValueError(message)
+        return image_name
+
     def add_image(self, image: Image, image_name: str) -> None:
-        """Add an image."""
+        """Add an image to the subject instance."""
+        if not isinstance(image, Image):
+            message = (
+                'Image must be an instance of torchio.Image,'
+                f' but its type is "{type(image)}"'
+            )
+            raise ValueError(message)
+        self._check_image_name(image_name)
         self[image_name] = image
         self.update_attributes()
 
     def remove_image(self, image_name: str) -> None:
-        """Remove an image."""
+        """Remove an image from the subject instance."""
+        self._check_image_name(image_name)
         del self[image_name]
         delattr(self, image_name)
 
