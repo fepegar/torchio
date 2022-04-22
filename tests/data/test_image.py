@@ -188,7 +188,7 @@ class TestImage(TorchioTestCase):
         a = tio.ScalarImage(tensor=torch.rand(1, 2, 3, 3, 1))
         subj_ = tio.Subject(a=a)
         transforms_ = tio.Compose([tio.RescaleIntensity(out_min_max=(0, 1)), tio.RandomAffine(),])
-        sd = tio.SubjectsDataset([subj_], transform=transforms_)
+        tio.SubjectsDataset([subj_], transform=transforms_)
 
     def test_tensor_bad_dim(self):
         with self.assertRaises(ValueError):
