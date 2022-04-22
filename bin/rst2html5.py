@@ -1,5 +1,4 @@
 #!/home/zhack/Documents/INSA/ITI5/Stage/CHB/torchio/bin/python3
-# -*- coding: utf8 -*-
 # :Copyright: © 2015 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:
 #
@@ -27,8 +26,8 @@ except locale.Error:
 
 from docutils.core import publish_cmdline, default_description
 
-description = (u'Generates HTML5 documents from standalone '
-               u'reStructuredText sources.\n'
+description = ('Generates HTML5 documents from standalone '
+               'reStructuredText sources.\n'
                + default_description)
 
 publish_cmdline(writer_name='html5', description=description)

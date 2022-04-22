@@ -1,5 +1,4 @@
 #!/home/zhack/Documents/INSA/ITI5/Stage/CHB/torchio/bin/python3
-# -*- coding: utf-8 -*-
 r"""
 Sphinx Gallery Notebook converter
 =================================
@@ -11,7 +10,6 @@ scripts into Jupyter Notebooks.
 # Author: Óscar Nájera
 # License: 3-clause BSD
 
-from __future__ import division, absolute_import, print_function
 
 from sphinx_gallery.notebook import python_to_jupyter_cli
 
