@@ -105,6 +105,7 @@ def plot_volume(
         fig.savefig(output_path)
     if show:
         plt.show()
+    return fig
 
 
 def plot_subject(
