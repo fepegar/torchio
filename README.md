@@ -373,6 +373,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   <tr>
     <td align="center"><a href="https://github.com/snipdome"><img src="https://avatars.githubusercontent.com/u/72035308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snipdome</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asnipdome" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/iamSmallY"><img src="https://avatars.githubusercontent.com/u/45689960?v=4?s=100" width="100px;" alt=""/><br /><sub><b>SmallY</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AiamSmallY" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/guigautier"><img src="https://avatars.githubusercontent.com/u/45590481?v=4?s=100" width="100px;" alt=""/><br /><sub><b>guigautier</b></sub></a><br /><a href="#ideas-guigautier" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 

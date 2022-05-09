@@ -145,7 +145,7 @@ def download_url(
     # check if file is already present locally
     if not check_integrity(fpath, md5):
         try:
-            print('Downloading ' + url + ' to ' + fpath)  # noqa: T001
+            print('Downloading ' + url + ' to ' + fpath)  # noqa: T201
             urllib.request.urlretrieve(
                 url, fpath,
                 reporthook=gen_bar_updater()
@@ -157,7 +157,7 @@ def download_url(
                     'Failed download. Trying https -> http instead.'
                     ' Downloading ' + url + ' to ' + fpath
                 )
-                print(message)  # noqa: T001
+                print(message)  # noqa: T201
                 urllib.request.urlretrieve(
                     url, fpath,
                     reporthook=gen_bar_updater()

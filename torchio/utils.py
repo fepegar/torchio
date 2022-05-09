@@ -84,7 +84,7 @@ def create_dummy_dataset(
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
         if verbose:
-            print('Creating dummy dataset...')  # noqa: T001
+            print('Creating dummy dataset...')  # noqa: T201
             iterable = trange(num_images)
         else:
             iterable = range(num_images)
@@ -126,7 +126,7 @@ def apply_transform_to_file(
     transformed = transform(subject)
     transformed.image.save(output_path)
     if verbose and transformed.history:
-        print('Applied transform:', transformed.history[0])  # noqa: T001
+        print('Applied transform:', transformed.history[0])  # noqa: T201
 
 
 def guess_type(string: str) -> Any:
