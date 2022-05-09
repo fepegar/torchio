@@ -185,7 +185,7 @@ class Queue(Dataset):
 
     def _print(self, *args):
         if self.verbose:
-            print(*args)  # noqa: T001
+            print(*args)  # noqa: T201
 
     def _initialize_subjects_iterable(self):
         self._subjects_iterable = self._get_subjects_iterable()
