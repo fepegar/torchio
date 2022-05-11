@@ -49,7 +49,7 @@ repos:
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
       # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         args: ['--py36-plus']
