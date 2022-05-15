@@ -324,6 +324,8 @@ class TestTransform(TorchioTestCase):
         assert mask.sum() == 1
 
     def test_label_keys(self):
+        # Adapted from the issue in which the feature was requested:
+        # https://github.com/fepegar/torchio/issues/866#issue-1222255576
         size = 1, 10, 10, 10
         image = torch.rand(size)
         num_classes = 2  # excluding background
