@@ -1,5 +1,6 @@
 import copy
 import torch
+import pytest
 import numpy as np
 import torchio as tio
 import nibabel as nib
@@ -359,3 +360,8 @@ class TestTransform(TorchioTestCase):
         transformed = tio.RandomAffine()(image_nib)
         transformed.get_fdata()
         transformed.affine
+
+    def test_bad_shape(self):
+        tensor = torch.rand(1, 2, 3)
+        with pytest.raises(ValueError, match='must be a 4D tensor'):
+            tio.RandomAffine()(tensor)

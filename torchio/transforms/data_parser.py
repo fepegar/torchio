@@ -81,7 +81,7 @@ class DataParser:
             self.is_dict = True
         else:
             raise ValueError(f'Input type not recognized: {type(self.data)}')
-        self._parse_subject(subject)
+        assert isinstance(subject, Subject)
         return subject
 
     def get_output(self, transformed):
@@ -110,15 +110,6 @@ class DataParser:
                 raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image.affine)
         return transformed
-
-    @staticmethod
-    def _parse_subject(subject: Subject) -> None:
-        if not isinstance(subject, Subject):
-            message = (
-                'Input to a transform must be a tensor or an instance'
-                f' of torchio.Subject, not "{type(subject)}"'
-            )
-            raise RuntimeError(message)
 
     def _parse_tensor(self, data: TypeData) -> Subject:
         if data.ndim != 4:
