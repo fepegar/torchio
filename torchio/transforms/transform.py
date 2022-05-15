@@ -3,7 +3,7 @@ import numbers
 import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Union, Tuple, Optional, Dict
+from typing import Union, Tuple, Optional, Dict, Sequence
 
 import torch
 import numpy as np
@@ -69,12 +69,16 @@ class Transform(ABC):
             transform such as :class:`~torchio.transforms.RandomBlur`,
             the transform will be only applied to the MRI, as the label map is
             excluded by default by spatial transforms.
-        keep: Dictionary with the names of the images that will be kept in the
-            subject and their new names.
+        keep: Dictionary with the names of the input images that will be kept
+            in the output and their new names. For example:
+            ``{'t1': 't1_original'}``. This might be useful for autoencoders
+            or registration tasks.
         parse_input: If ``True``, the input will be converted to an instance of
             :class:`~torchio.Subject`. This is used internally by some special
             transforms like
             :class:`~torchio.transforms.augmentation.composition.Compose`.
+        label_keys: If the input is a dictionary, names of images that
+            correspond to label maps.
     """
     def __init__(
             self,
@@ -85,6 +89,7 @@ class Transform(ABC):
             keys: TypeKeys = None,
             keep: Optional[Dict[str, str]] = None,
             parse_input: bool = True,
+            label_keys: Optional[Sequence[str]] = None,
             ):
         self.probability = self.parse_probability(p)
         self.copy = copy
@@ -99,6 +104,7 @@ class Transform(ABC):
             include, exclude)
         self.keep = keep
         self.parse_input = parse_input
+        self.label_keys = label_keys
         # args_names is the sequence of parameters from self that need to be
         # passed to a non-random version of a random transform. They are also
         # used to invert invertible transforms
@@ -125,7 +131,11 @@ class Transform(ABC):
 
         # Some transforms such as Compose should not modify the input data
         if self.parse_input:
-            data_parser = DataParser(data, keys=self.include)
+            data_parser = DataParser(
+                data,
+                keys=self.include,
+                label_keys=self.label_keys,
+            )
             subject = data_parser.get_subject()
         else:
             subject = data
