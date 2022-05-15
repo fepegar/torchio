@@ -32,13 +32,12 @@ requirements = [
 setup(
     author='Fernando Perez-Garcia',
     author_email='fepegar@gmail.com',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',

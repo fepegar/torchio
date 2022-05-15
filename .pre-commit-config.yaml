@@ -45,11 +45,11 @@ repos:
     hooks:
       - id: python-check-blanket-noqa  # enforce that noqa annotations always occur with specific codes
       - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
-      - id: python-use-type-annotations  # enforce that python3.6+ type annotations are used instead of type comments
+      - id: python-use-type-annotations  # enforce that type annotations are used instead of type comments
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
       # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.32.1
     hooks:
       - id: pyupgrade
-        args: ['--py36-plus']
+        args: ['--py37-plus']
