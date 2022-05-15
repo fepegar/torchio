@@ -571,6 +571,15 @@
         "ideas",
         "code"
       ]
+    },
+    {
+      "login": "josegcpa",
+      "name": "José Guilherme Almeida",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40271262?v=4",
+      "profile": "http://josegcpa.github.io",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
