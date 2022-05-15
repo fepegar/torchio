@@ -102,12 +102,6 @@ class DataParser:
         elif self.is_nib:
             image = transformed[self.default_image_name]
             data = image.data
-            if len(data) > 1:
-                message = (
-                    'Multichannel images not supported for input of type'
-                    ' nibabel.nifti.Nifti1Image'
-                )
-                raise RuntimeError(message)
             transformed = nib.Nifti1Image(data[0].numpy(), image.affine)
         return transformed
 

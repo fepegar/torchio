@@ -49,7 +49,7 @@ class TorchioTestCase(unittest.TestCase):
             label=tio.LabelMap(self.get_image_path('label_d', binary=True)),
         )
         subject_a4 = tio.Subject(
-            t1=tio.ScalarImage(self.get_image_path('t1_a'), components=2),
+            t1=tio.ScalarImage(self.get_image_path('t1_a'), components=4),
         )
         self.subjects_list = [
             subject_a,
@@ -60,6 +60,7 @@ class TorchioTestCase(unittest.TestCase):
         ]
         self.dataset = tio.SubjectsDataset(self.subjects_list)
         self.sample_subject = self.dataset[-1]  # subject_d
+        self.subject_4d = self.dataset[1]
 
     def make_2d(self, subject):
         subject = copy.deepcopy(subject)

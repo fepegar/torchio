@@ -349,12 +349,12 @@ class TestTransform(TorchioTestCase):
 
     def test_nibabel_input(self):
         image = self.sample_subject.t1
-
         image_nib = nib.Nifti1Image(image.data[0].numpy(), image.affine)
         transformed = tio.RandomAffine()(image_nib)
         transformed.get_fdata()
         transformed.affine
 
+        image = self.subject_4d.t1
         tensor_5d = image.data[np.newaxis].permute(2, 3, 4, 0, 1)
         image_nib = nib.Nifti1Image(tensor_5d.numpy(), image.affine)
         transformed = tio.RandomAffine()(image_nib)
