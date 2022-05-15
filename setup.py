@@ -32,7 +32,7 @@ requirements = [
 setup(
     author='Fernando Perez-Garcia',
     author_email='fepegar@gmail.com',
-    python_requires='>=7',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
