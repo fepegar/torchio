@@ -1,4 +1,4 @@
-from .grid_sampler import GridSampler
+from ..sampler import GridSampler  # for backward compatibility
 from .aggregator import GridAggregator
 
 __all__ = [

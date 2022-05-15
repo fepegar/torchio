@@ -3,7 +3,8 @@ from typing import Optional, Tuple, Generator
 import torch
 import numpy as np
 
-from ...typing import TypePatchSize
+from ...constants import MIN_FLOAT_32
+from ...typing import TypeSpatialShape
 from ..image import Image
 from ..subject import Subject
 from .sampler import RandomSampler
@@ -36,7 +37,7 @@ class WeightedSampler(RandomSampler):
         >>> patch_size = 64
         >>> sampler = tio.data.WeightedSampler(patch_size, 'sampling_map')
         >>> for patch in sampler(subject):
-        ...     print(patch['index_ini'])
+        ...     print(patch[tio.LOCATION])
 
     .. note:: The index of the center of a patch with even size :math:`s` is
         arbitrarily set to :math:`s/2`. This is an implementation detail that
@@ -46,30 +47,24 @@ class WeightedSampler(RandomSampler):
         the center of the patch cannot be at the border (unless the patch has
         size 1 or 2 along that axis).
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             probability_map: str,
             ):
         super().__init__(patch_size)
         self.probability_map_name = probability_map
         self.cdf = None
 
-    def __call__(
+    def _generate_patches(
             self,
             subject: Subject,
             num_patches: Optional[int] = None,
             ) -> Generator[Subject, None, None]:
-        subject.check_consistent_space()
-        if np.any(self.patch_size > subject.spatial_shape):
-            message = (
-                f'Patch size {tuple(self.patch_size)} cannot be'
-                f' larger than image size {tuple(subject.spatial_shape)}'
-            )
-            raise RuntimeError(message)
         probability_map = self.get_probability_map(subject)
-        probability_map = self.process_probability_map(probability_map, subject)
+        probability_map = self.process_probability_map(
+            probability_map, subject)
         cdf = self.get_cumulative_distribution_function(probability_map)
 
         patches_left = num_patches if num_patches is not None else True
@@ -109,9 +104,14 @@ class WeightedSampler(RandomSampler):
         self.clear_probability_borders(data, self.patch_size)
         total = data.sum()
         if total == 0:
+            half_patch_size = tuple(n // 2 for n in self.patch_size)
             message = (
                 'Empty probability map found:'
                 f' {self.get_probability_map_image(subject).path}'
+                '\nVoxels with positive probability might be near the image'
+                ' border.\nIf you suspect that this is the case, try adding a'
+                ' padding transform\nwith half the patch size:'
+                f' torchio.Pad({half_patch_size})'
             )
             raise RuntimeError(message)
         data /= total  # normalize probabilities
@@ -120,10 +120,10 @@ class WeightedSampler(RandomSampler):
     @staticmethod
     def clear_probability_borders(
             probability_map: np.ndarray,
-            patch_size: TypePatchSize,
+            patch_size: TypeSpatialShape,
             ) -> None:
-        # Set probability to 0 on voxels that wouldn't possibly be sampled given
-        # the current patch size
+        # Set probability to 0 on voxels that wouldn't possibly be sampled
+        # given the current patch size
         # We will arbitrarily define the center of an array with even length
         # using the // Python operator
         # For example, the center of an array (3, 4) will be on (1, 2)
@@ -151,8 +151,8 @@ class WeightedSampler(RandomSampler):
         probability_map[:, :crop_j, :] = 0
         probability_map[:, :, :crop_k] = 0
 
-        # The call tolist() is very important. Using np.uint16 as negative index
-        # will not work because e.g. -np.uint16(2) == 65534
+        # The call tolist() is very important. Using np.uint16 as negative
+        # index will not work because e.g. -np.uint16(2) == 65534
         crop_i, crop_j, crop_k = crop_fin.tolist()
         if crop_i:
             probability_map[-crop_i:, :, :] = 0
@@ -179,7 +179,6 @@ class WeightedSampler(RandomSampler):
             ) -> Subject:
         index_ini = self.get_random_index_ini(probability_map, cdf)
         cropped_subject = self.crop(subject, index_ini, self.patch_size)
-        cropped_subject['index_ini'] = index_ini.astype(int)
         return cropped_subject
 
     def get_random_index_ini(
@@ -217,24 +216,25 @@ class WeightedSampler(RandomSampler):
             array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
 
-        """
-        # Get first value larger than random number
-        random_number = torch.rand(1).item()
-        # If probability map is float32, cdf.max() can be far from 1, e.g. 0.92
-        if random_number > cdf.max():
-            cdf_index = -1
-        else:  # proceed as usual
-            cdf_index = np.searchsorted(cdf, random_number)
+        """  # noqa: E501
+        # Get first value larger than random number ensuring the random number
+        # is not exactly 0 (see https://github.com/fepegar/torchio/issues/510)
+        random_number = max(MIN_FLOAT_32, torch.rand(1).item()) * cdf[-1]
 
-        random_location_index = cdf_index
+        random_location_index = np.searchsorted(cdf, random_number)
+
         center = np.unravel_index(
             random_location_index,
             probability_map.shape
         )
 
-        i, j, k = center
-        probability = probability_map[i, j, k]
-        assert probability > 0
+        probability = probability_map[center]
+        if probability <= 0:
+            message = (
+                'Error retrieving probability in weighted sampler.'
+                ' Please report this issue at'
+                ' https://github.com/fepegar/torchio/issues/new?labels=bug&template=bug_report.md'  # noqa: E501
+            )
+            raise RuntimeError(message)
 
-        center = np.array(center).astype(int)
-        return center
+        return np.array(center)

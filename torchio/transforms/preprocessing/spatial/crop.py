@@ -23,7 +23,11 @@ class Crop(BoundsTransform):
             If only one value :math:`n` is provided, then
             :math:`w_{ini} = w_{fin} = h_{ini} = h_{fin}
             = d_{ini} = d_{fin} = n`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
+
+    .. seealso:: If you want to pass the output shape instead, please use
+        :class:`~torchio.transforms.CropOrPad` instead.
     """
     def __init__(
             self,
@@ -45,7 +49,7 @@ class Crop(BoundsTransform):
             new_affine[:3, 3] = new_origin
             i0, j0, k0 = index_ini
             i1, j1, k1 = index_fin
-            image.data = image.data[:, i0:i1, j0:j1, k0:k1].clone()
+            image.set_data(image.data[:, i0:i1, j0:j1, k0:k1].clone())
             image.affine = new_affine
         return sample
 

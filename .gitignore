@@ -109,3 +109,5 @@ ENV/
 test_scripts/
 
 *DS_Store
+.pylintrc
+auto_examples

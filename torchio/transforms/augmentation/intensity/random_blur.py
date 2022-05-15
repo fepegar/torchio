@@ -5,7 +5,6 @@ import torch
 import numpy as np
 import scipy.ndimage as ndi
 
-from ....utils import to_tuple
 from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
 from ....data.subject import Subject
 from ... import IntensityTransform
@@ -27,7 +26,8 @@ class RandomBlur(RandomTransform, IntensityTransform):
             then :math:`\sigma_i \sim \mathcal{U}(0, x)`.
             If three values :math:`(x_1, x_2, x_3)` are provided,
             then :math:`\sigma_i \sim \mathcal{U}(0, x_i)`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -39,9 +39,9 @@ class RandomBlur(RandomTransform, IntensityTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
-        for name, image in self.get_images_dict(subject).items():
-            stds = [self.get_params(self.std_ranges) for _ in image.data]
-            arguments['std'][name] = stds
+        for name in self.get_images_dict(subject):
+            std = self.get_params(self.std_ranges)
+            arguments['std'][name] = std
         transform = Blur(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
@@ -58,7 +58,8 @@ class Blur(IntensityTransform):
         std: Tuple :math:`(\sigma_1, \sigma_2, \sigma_3)` representing the
             the standard deviations (in mm) of the standard deviations
             of the Gaussian kernels used to blur the image along each axis.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -70,20 +71,20 @@ class Blur(IntensityTransform):
         self.args_names = ('std',)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        std = self.std
+        stds = self.std
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                std = self.std[name]
-            stds = to_tuple(std, length=len(image.data))
+                stds = self.std[name]
+            stds_channels = np.tile(stds, (image.num_channels, 1))
             transformed_tensors = []
-            for std, tensor in zip(stds, image.data):
+            for std, channel in zip(stds_channels, image.data):
                 transformed_tensor = blur(
-                    tensor,
+                    channel,
                     image.spacing,
                     std,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
 
@@ -95,5 +96,5 @@ def blur(
     assert data.ndim == 3
     std_physical = np.array(std_voxel) / np.array(spacing)
     blurred = ndi.gaussian_filter(data, std_physical)
-    tensor = torch.from_numpy(blurred)
+    tensor = torch.as_tensor(blurred)
     return tensor

@@ -15,7 +15,8 @@ class Lambda(Transform):
         types_to_apply: List of strings corresponding to the image types to
             which this transform should be applied. If ``None``, the transform
             will be applied to all images in the subject.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -24,7 +25,8 @@ class Lambda(Transform):
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = tio.Lambda(double)
-    """
+    """  # noqa: E501
+
     def __init__(
             self,
             function: TypeCallable,
@@ -37,8 +39,12 @@ class Lambda(Transform):
         self.args_names = 'function', 'types_to_apply'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        for image in subject.get_images(intensity_only=False, include=self.include, exclude=self.exclude):
-
+        images = subject.get_images(
+            intensity_only=False,
+            include=self.include,
+            exclude=self.exclude,
+        )
+        for image in images:
             image_type = image[TYPE]
             if self.types_to_apply is not None:
                 if image_type not in self.types_to_apply:
@@ -58,5 +64,5 @@ class Lambda(Transform):
                     f' be {function_arg.ndim}, not {result.ndim}'
                 )
                 raise ValueError(message)
-            image.data = result
+            image.set_data(result)
         return subject

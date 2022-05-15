@@ -5,9 +5,9 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from ....utils import nib_to_sitk
-from ....typing import TypeTripletFloat
+from ....data.io import nib_to_sitk
 from ....data.subject import Subject
+from ....typing import TypeTripletFloat
 from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
 
@@ -38,7 +38,8 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         num_transforms: Number of simulated movements.
             Larger values generate more distorted images.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
@@ -54,14 +55,15 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         super().__init__(**kwargs)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
-        if not 0 < num_transforms or not isinstance(num_transforms, int):
+        if num_transforms < 1 or not isinstance(num_transforms, int):
             message = (
                 'Number of transforms must be a strictly positive natural'
                 f'number, not {num_transforms}'
             )
             raise ValueError(message)
         self.num_transforms = num_transforms
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(
+            image_interpolation)
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
@@ -124,14 +126,15 @@ class Motion(IntensityTransform, FourierTransform):
         translation: Sequence of translations :math:`(t_1, t_2, t_3)` in mm.
         times: Sequence of times from 0 to 1 at which the motions happen.
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
             degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
             translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
             times: Union[Sequence[float], Dict[str, Sequence[float]]],
-            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],
+            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],  # noqa: E501
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -177,7 +180,7 @@ class Motion(IntensityTransform, FourierTransform):
                 )
                 result_arrays.append(transformed_channel)
             result = np.stack(result_arrays)
-            image.data = torch.from_numpy(result)
+            image.set_data(torch.as_tensor(result))
         return subject
 
     def get_rigid_transforms(
@@ -228,8 +231,9 @@ class Motion(IntensityTransform, FourierTransform):
         transforms = transforms[1:]  # first is identity
         images = [image]  # first is identity
         for transform in transforms:
+            interpolator = self.get_sitk_interpolator(interpolation)
             resampler = sitk.ResampleImageFilter()
-            resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
+            resampler.SetInterpolator(interpolator)
             resampler.SetReferenceImage(reference)
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampler.SetDefaultPixelValue(default_value)

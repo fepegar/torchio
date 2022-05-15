@@ -1,6 +1,8 @@
 import urllib.parse
-from ...utils import get_torchio_cache_dir, download_and_extract_archive
-from ... import ScalarImage, LabelMap
+
+from ...utils import compress
+from ...data import ScalarImage, LabelMap
+from ...download import download_and_extract_archive
 from .mni import SubjectMNI
 
 
@@ -20,10 +22,11 @@ TISSUES_2008 = {
 
 
 class Colin27(SubjectMNI):
+    NAME_TO_LABEL = {name: label for label, name in TISSUES_2008.items()}
     r"""Colin27 MNI template.
 
     More information can be found in the website of the
-    `1998 <http://nist.mni.mcgill.ca/?p=935>`_ and
+    `1998 <http://nist.mni.mcgill.ca/colin-27-average-brain/>`_ and
     `2008 <http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres>`_
     versions.
 
@@ -54,46 +57,82 @@ class Colin27(SubjectMNI):
         >>> colin_2008.t1
         ScalarImage(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
 
-    """
+    """  # noqa: E501
     def __init__(self, version=1998):
         if version not in (1998, 2008):
             raise ValueError(f'Version must be 1998 or 2008, not "{version}"')
+        self.version = version
         self.name = f'mni_colin27_{version}_nifti'
         self.url_dir = urllib.parse.urljoin(self.url_base, 'colin27/')
         self.filename = f'{self.name}.zip'
         self.url = urllib.parse.urljoin(self.url_dir, self.filename)
-        download_root = get_torchio_cache_dir() / self.name
-        if not download_root.is_dir():
+        if not self.download_root.is_dir():
             download_and_extract_archive(
                 self.url,
-                download_root=download_root,
+                download_root=self.download_root,
                 filename=self.filename,
             )
+
             # Fix label map (https://github.com/fepegar/torchio/issues/220)
             if version == 2008:
-                path = download_root / 'colin27_cls_tal_hires.nii'
+                path = self.download_root / 'colin27_cls_tal_hires.nii'
                 cls_image = LabelMap(path)
-                cls_image.data = cls_image.data.round().byte()
+                cls_image.set_data(cls_image.data.round().byte())
                 cls_image.save(path)
 
-        if version == 1998:
-            t1, head, mask = [
-                download_root / f'colin27_t1_tal_lin{suffix}.nii'
-                for suffix in ('', '_headmask', '_mask')
-            ]
-            super().__init__(
-                t1=ScalarImage(t1),
-                head=LabelMap(head),
-                brain=LabelMap(mask),
+            (self.download_root / self.filename).unlink()
+            for path in self.download_root.glob('*.nii'):
+                compress(path)
+                path.unlink()
+
+        try:
+            subject_dict = self.get_subject_dict(
+                self.download_root,
+                extension='.nii.gz',
             )
-        elif version == 2008:
-            t1, t2, pd, label = [
-                download_root / f'colin27_{name}_tal_hires.nii'
-                for name in ('t1', 't2', 'pd', 'cls')
-            ]
-            super().__init__(
-                t1=ScalarImage(t1),
-                t2=ScalarImage(t2),
-                pd=ScalarImage(pd),
-                cls=LabelMap(label, labels=TISSUES_2008),
+        except FileNotFoundError:  # for backward compatibility
+            subject_dict = self.get_subject_dict(
+                self.download_root,
+                extension='.nii',
             )
+        super().__init__(subject_dict)
+
+    def get_subject_dict(self, download_root, extension):
+        if self.version == 1998:
+            subject_dict = Colin1998.get_subject_dict(download_root, extension)
+        elif self.version == 2008:
+            subject_dict = Colin2008.get_subject_dict(download_root, extension)
+        return subject_dict
+
+
+class Colin1998:
+
+    @staticmethod
+    def get_subject_dict(download_root, extension):
+        t1, head, mask = (
+            download_root / f'colin27_t1_tal_lin{suffix}{extension}'
+            for suffix in ('', '_headmask', '_mask')
+        )
+        subject_dict = {
+            't1': ScalarImage(t1),
+            'head': LabelMap(head),
+            'brain': LabelMap(mask),
+        }
+        return subject_dict
+
+
+class Colin2008:
+
+    @staticmethod
+    def get_subject_dict(download_root, extension):
+        t1, t2, pd, label = (
+            download_root / f'colin27_{name}_tal_hires{extension}'
+            for name in ('t1', 't2', 'pd', 'cls')
+        )
+        subject_dict = {
+            't1': ScalarImage(t1),
+            't2': ScalarImage(t2),
+            'pd': ScalarImage(pd),
+            'cls': LabelMap(label, labels=TISSUES_2008),
+        }
+        return subject_dict

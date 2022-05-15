@@ -2,6 +2,7 @@ from .transform import Transform
 from .fourier import FourierTransform
 from .spatial_transform import SpatialTransform
 from .intensity_transform import IntensityTransform
+from .preprocessing.label.label_transform import LabelTransform
 
 # Generic
 from .lambda_transform import Lambda
@@ -28,13 +29,24 @@ from .augmentation.intensity import RandomLabelsToImage, LabelsToImage
 # Preprocessing
 from .preprocessing import Pad
 from .preprocessing import Crop
+from .preprocessing import Resize
 from .preprocessing import Resample
 from .preprocessing import CropOrPad
+from .preprocessing import CopyAffine
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
 from .preprocessing import RescaleIntensity
+from .preprocessing import Clamp
+from .preprocessing import Mask
+from .preprocessing import EnsureShapeMultiple
 from .preprocessing import HistogramStandardization
-from .preprocessing.intensity.histogram_standardization import train as train_histogram
+from .preprocessing.intensity.histogram_standardization import train_histogram
+from .preprocessing import OneHot
+from .preprocessing import Contour
+from .preprocessing import RemapLabels
+from .preprocessing import RemoveLabels
+from .preprocessing import SequentialLabels
+from .preprocessing import KeepLargestComponent
 
 
 __all__ = [
@@ -42,6 +54,7 @@ __all__ = [
     'FourierTransform',
     'SpatialTransform',
     'IntensityTransform',
+    'LabelTransform',
     'Lambda',
     'OneOf',
     'Compose',
@@ -72,11 +85,22 @@ __all__ = [
     'LabelsToImage',
     'Pad',
     'Crop',
+    'Resize',
     'Resample',
     'ToCanonical',
     'ZNormalization',
     'HistogramStandardization',
     'RescaleIntensity',
+    'Clamp',
+    'Mask',
     'CropOrPad',
+    'CopyAffine',
+    'EnsureShapeMultiple',
     'train_histogram',
+    'OneHot',
+    'Contour',
+    'RemapLabels',
+    'RemoveLabels',
+    'SequentialLabels',
+    'KeepLargestComponent',
 ]

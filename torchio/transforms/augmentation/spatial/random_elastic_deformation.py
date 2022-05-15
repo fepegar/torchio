@@ -6,9 +6,10 @@ import torch
 import numpy as np
 import SimpleITK as sitk
 
-from ....data.image import ScalarImage
+from ....utils import to_tuple
+from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....utils import to_tuple, nib_to_sitk
+from ....data.image import ScalarImage
 from ....typing import TypeTripletInt, TypeTripletFloat
 from ... import SpatialTransform
 from .. import RandomTransform
@@ -27,6 +28,10 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
     The `'Deformable Registration' <https://www.sciencedirect.com/topics/computer-science/deformable-registration>`_
     topic on ScienceDirect contains useful articles explaining interpolation of
     displacement fields using cubic B-splines.
+
+    .. warning:: This transform is slow as it requires expensive computations.
+        If your images are large you might want to use
+        :class:`~torchio.transforms.RandomAffine` instead.
 
     Args:
         num_control_points: Number of control points along each dimension of
@@ -55,7 +60,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             The value of the dense displacement at each voxel is always
             interpolated with cubic B-splines from the values at the control
             points of the coarse grid.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        label_interpolation: See :ref:`Interpolation`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     `This gist <https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d>`_
     can also be used to better understand the meaning of the parameters.
@@ -108,7 +115,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         .. [#] Technically, :math:`2 \epsilon` should be added to the
             image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
             source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
-    """
+    """  # noqa: E501
 
     def __init__(
             self,
@@ -116,6 +123,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
             locked_borders: int = 2,
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -134,7 +142,10 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
                 ' or use more control points.'
             )
             raise ValueError(message)
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(
+            image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
 
     @staticmethod
     def get_params(
@@ -172,6 +183,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             'control_points': control_points,
             'max_displacement': self.max_displacement,
             'image_interpolation': self.image_interpolation,
+            'label_interpolation': self.label_interpolation,
         }
 
         transform = ElasticDeformation(**self.add_include_exclude(arguments))
@@ -186,7 +198,9 @@ class ElasticDeformation(SpatialTransform):
         control_points:
         max_displacement:
         image_interpolation: See :ref:`Interpolation`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        label_interpolation: See :ref:`Interpolation`.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
 
     def __init__(
@@ -194,24 +208,34 @@ class ElasticDeformation(SpatialTransform):
             control_points: np.ndarray,
             max_displacement: TypeTripletFloat,
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             **kwargs
             ):
         super().__init__(**kwargs)
         self.control_points = control_points
         self.max_displacement = max_displacement
-        self.image_interpolation = self.parse_interpolation(image_interpolation)
+        self.image_interpolation = self.parse_interpolation(
+            image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
         self.invert_transform = False
         self.args_names = (
             'control_points',
             'image_interpolation',
+            'label_interpolation',
             'max_displacement',
         )
 
-    @staticmethod
     def get_bspline_transform(
+            self,
             image: sitk.Image,
-            control_points: np.ndarray,
             ) -> sitk.BSplineTransformInitializer:
+        control_points = self.control_points.copy()
+        if self.invert_transform:
+            control_points *= -1
+        is_2d = image.GetSize()[2] == 1
+        if is_2d:
+            control_points[..., -1] = 0  # no displacement in IS axis
         num_control_points = control_points.shape[:-1]
         mesh_shape = [n - SPLINE_ORDER for n in num_control_points]
         bspline_transform = sitk.BSplineTransformInitializer(image, mesh_shape)
@@ -243,29 +267,23 @@ class ElasticDeformation(SpatialTransform):
         if no_displacement:
             return subject
         subject.check_consistent_spatial_shape()
-        control_points = self.control_points.copy()
-        if self.invert_transform:
-            control_points *= -1
         for image in self.get_images(subject):
             if not isinstance(image, ScalarImage):
-                interpolation = 'nearest'
+                interpolation = self.label_interpolation
             else:
                 interpolation = self.image_interpolation
-            if image.is_2d():
-                control_points[..., -1] = 0  # no displacement in IS axis
-            image.data = self.apply_bspline_transform(
+            transformed = self.apply_bspline_transform(
                 image.data,
                 image.affine,
-                control_points,
                 interpolation,
             )
+            image.set_data(transformed)
         return subject
 
     def apply_bspline_transform(
             self,
             tensor: torch.Tensor,
             affine: np.ndarray,
-            control_points: np.ndarray,
             interpolation: str,
             ) -> torch.Tensor:
         assert tensor.dim() == 4
@@ -273,23 +291,21 @@ class ElasticDeformation(SpatialTransform):
         for component in tensor:
             image = nib_to_sitk(component[np.newaxis], affine, force_3d=True)
             floating = reference = image
-            bspline_transform = self.get_bspline_transform(
-                image,
-                control_points,
-            )
+            bspline_transform = self.get_bspline_transform(image)
             self.parse_free_form_transform(
                 bspline_transform,
                 self.max_displacement,
             )
+            interpolator = self.get_sitk_interpolator(interpolation)
             resampler = sitk.ResampleImageFilter()
             resampler.SetReferenceImage(reference)
             resampler.SetTransform(bspline_transform)
-            resampler.SetInterpolator(self.get_sitk_interpolator(interpolation))
+            resampler.SetInterpolator(interpolator)
             resampler.SetDefaultPixelValue(component.min().item())
             resampler.SetOutputPixelType(sitk.sitkFloat32)
             resampled = resampler.Execute(floating)
             result, _ = self.sitk_to_nib(resampled)
-            results.append(torch.from_numpy(result))
+            results.append(torch.as_tensor(result))
         tensor = torch.cat(results)
         return tensor
 

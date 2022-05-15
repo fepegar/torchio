@@ -1,5 +1,9 @@
 Transforms
-----------
+==========
+
+.. image:: ../../images/fpg_progressive.gif
+    :alt: Augmented image
+
 
 TorchIO transforms take as input instances of
 :class:`~torchio.Subject` or
@@ -62,7 +66,7 @@ We can type::
     ... }
     >>> transform = tio.Compose([
     ...     tio.OneOf(spatial_transforms, p=0.5),
-    ...     tio.RescaleIntensity((0, 1)),
+    ...     tio.RescaleIntensity(out_min_max=(0, 1)),
     ... ])
 
 
@@ -72,12 +76,12 @@ Reproducibility
 ---------------
 
 When transforms are instantiated, we typically need to pass values that will be
-used to sample the transform parameters when the :meth:`__call__` method of the
+used to sample the transform parameters when the :meth:`~torchio.transforms.Transform.__call__` method of the
 transform is called, i.e., when the transform instance is called.
 
 All random transforms have a corresponding deterministic class, that can be
-applied again to obtain exactly the same result. The :class:`Subject` class
-contains some convenience methods to reproduce transforms::
+applied again to obtain exactly the same result. The :class:`~torchio.Subject` class
+contains some convenient methods to reproduce transforms::
 
     >>> import torchio as tio
     >>> subject = tio.datasets.FPG()
@@ -125,10 +129,10 @@ or `aleatoric uncertainty estimation <https://www.sciencedirect.com/science/arti
     >>> segmentations = []
     >>> num_segmentations = 10
     >>> for _ in range(num_segmentations):
-    ...     transform = tio.RandomAffine()
+    ...     transform = tio.RandomAffine(image_interpolation='bspline')
     ...     transformed = transform(subject)
     ...     segmentation = model(transformed)
-    ...     transformed_native_space = segmentation.apply_inverse_transform()
+    ...     transformed_native_space = segmentation.apply_inverse_transform(image_interpolation='linear')
     ...     segmentations.append(transformed_native_space)
     ...
 
@@ -147,7 +151,7 @@ invertibility:
 - Impossible: transforms that cannot be inverted, such as
   :class:`~torchio.transforms.RandomBlur`.
 
-Non-invertible transforms will be ignored by the :meth:`apply_inverse_transform`
+Non-invertible transforms will be ignored by the :meth:`~torchio.Subject.apply_inverse_transform`
 method of :class:`~torchio.Subject`.
 
 
@@ -164,21 +168,28 @@ need to interpolate intensity values during resampling.
 The available interpolation strategies can be inferred from the elements of
 :class:`~torchio.transforms.interpolation.Interpolation`.
 
-``'nearest'`` can be used for quick experimentation as it is very
-fast, but produces relatively poor results.
-
-``'linear'``, default in TorchIO, is usually a good compromise
-between image quality and speed to be used for data augmentation during training.
+``'linear'`` interpolation, the default in TorchIO for scalar images,
+is usually a good compromise between image quality and speed.
+It is therefore a good choice for data augmentation during training.
 
 Methods such as ``'bspline'`` or ``'lanczos'`` generate
 high-quality results, but are generally slower. They can be used to obtain
 optimal resampling results during offline data preprocessing.
 
+``'nearest'`` can be used for quick experimentation as it is very
+fast, but produces relatively poor results for scalar images.
+It is the default interpolation type for label maps, as categorical values for
+the different labels need to preserved after interpolation.
+
+When instantiating transforms, it is possible to specify independently the
+interpolation type for label maps and scalar images, as shown in the
+documentation for, e.g., :class:`~torchio.transforms.Resample`.
+
 Visit the
-`ITK docs <https://itk.org/Doxygen/html/group__ImageInterpolators.html>`_
-for more information and see
-`this SimpleITK example <https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html>`_
-for some interpolation results on test images.
+`SimpleITK docs <https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5>`_
+for technical documentation and
+`Cambridge in Colour <https://www.cambridgeincolour.com/tutorials/image-interpolation.htm>`_
+for some further general explanations of digital image interpolation.
 
 .. currentmodule:: torchio.transforms.interpolation
 
@@ -186,8 +197,6 @@ for some interpolation results on test images.
     :show-inheritance:
     :members:
     :undoc-members:
-
-
 
 
 Transforms API

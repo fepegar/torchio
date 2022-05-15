@@ -1,0 +1,67 @@
+name: "\U0001F41B Bug Report"
+description: If you are pretty sure you are getting a bug, please create a report to help us improve TorchIO
+labels: ["bug"]
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+      - label: I have searched the existing issues
+        required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug summary
+      description: Please provide 1-2 short sentences that succinctly describe the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Code for reproduction
+      description: If possible, please provide a [minimum self-contained example](https://stackoverflow.com/help/minimal-reproducible-example). It will be automatically formatted.
+      placeholder: Your code here
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual outcome
+      description: Please describe the outcome of running the above code. Paste any error messages in the section below, not here.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages
+      description: Please copy and paste any relevant log output. Paste the full error traceback, not just the last error. It will be automatically formatted.
+      placeholder: Your errors here
+      render: python-traceback
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected outcome
+      description: Please provide a description (or visual example) of the expected outcome from the code snippet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: system
+    attributes:
+      label: System info
+      description: |
+        Please run this command in your console and paste the output below
+
+        ```shell
+        python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/main/print_system.py)
+        ```
+      placeholder: Your system info
+      render: shell

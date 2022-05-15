@@ -30,7 +30,8 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             If a tuple :math:`(a, b)` is specified, then
             :math:`n \sim \mathcal{U}(a, b)`.
         order: Order of the basis polynomial functions.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -78,7 +79,8 @@ class BiasField(IntensityTransform):
     Args:
         coefficients: Magnitudes of the polinomial coefficients.
         order: Order of the basis polynomial functions.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -109,7 +111,7 @@ class BiasField(IntensityTransform):
                 image.data, order, coefficients)
             if self.invert_transform:
                 np.divide(1, bias_field, out=bias_field)
-            image.data = image.data * torch.from_numpy(bias_field)
+            image.set_data(image.data * torch.as_tensor(bias_field))
         return subject
 
     @staticmethod
@@ -123,14 +125,16 @@ class BiasField(IntensityTransform):
         shape = np.array(data.shape[1:])  # first axis is channels
         half_shape = shape / 2
 
-        ranges = [np.arange(-n, n) for n in half_shape]
+        ranges = [np.arange(-n, n) + 0.5 for n in half_shape]
 
         bias_field = np.zeros(shape)
-        x_mesh, y_mesh, z_mesh = np.asarray(np.meshgrid(*ranges))
+        meshes = np.asarray(np.meshgrid(*ranges))
 
-        x_mesh /= x_mesh.max()
-        y_mesh /= y_mesh.max()
-        z_mesh /= z_mesh.max()
+        for mesh in meshes:
+            mesh_max = mesh.max()
+            if mesh_max > 0:
+                mesh /= mesh_max
+        x_mesh, y_mesh, z_mesh = meshes
 
         i = 0
         for x_order in range(order + 1):

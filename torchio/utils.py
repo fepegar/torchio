@@ -1,26 +1,25 @@
-import os
 import ast
+import os
+import sys
 import gzip
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Union, Iterable, Tuple, Any, Optional, List, Sequence
+from typing import Union, Tuple, Any, Optional, List, Sequence, Dict
 
+import torch
 from torch.utils.data._utils.collate import default_collate
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
 from tqdm import trange
 
-from .constants import INTENSITY, REPO_URL
-from .typing import TypeData, TypeNumber, TypePath
-
-
-FLIP_XY = np.diag((-1, -1, 1))  # used to switch between LPS and RAS
+from . import constants
+from .typing import TypeNumber, TypePath
 
 
 def to_tuple(
-        value: Union[TypeNumber, Iterable[TypeNumber]],
+        value: Any,
         length: int = 1,
         ) -> Tuple[TypeNumber, ...]:
     """
@@ -41,7 +40,7 @@ def to_tuple(
 
 
 def get_stem(
-        path: Union[TypePath, List[TypePath]]
+        path: Union[TypePath, Sequence[TypePath]]
         ) -> Union[str, List[str]]:
     """
     '/home/user/image.nii.gz' -> 'image'
@@ -85,7 +84,7 @@ def create_dummy_dataset(
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
         if verbose:
-            print('Creating dummy dataset...')  # noqa: T001
+            print('Creating dummy dataset...')  # noqa: T201
             iterable = trange(num_images)
         else:
             iterable = range(num_images)
@@ -118,21 +117,23 @@ def apply_transform_to_file(
         input_path: TypePath,
         transform,  # : Transform seems to create a circular import
         output_path: TypePath,
-        type: str = INTENSITY,  # noqa: A002
+        class_: str = 'ScalarImage',
         verbose: bool = False,
         ):
-    from . import Image, Subject
-    subject = Subject(image=Image(input_path, type=type))
+    from . import data
+    image = getattr(data, class_)(input_path)
+    subject = data.Subject(image=image)
     transformed = transform(subject)
     transformed.image.save(output_path)
     if verbose and transformed.history:
-        print('Applied transform:', transformed.history[0])  # noqa: T001
+        print('Applied transform:', transformed.history[0])  # noqa: T201
 
 
 def guess_type(string: str) -> Any:
     # Adapted from
     # https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s
     string = string.replace(' ', '')
+    result_type: Any
     try:
         value = ast.literal_eval(string)
     except ValueError:
@@ -152,164 +153,23 @@ def guess_type(string: str) -> Any:
     return value
 
 
-def get_rotation_and_spacing_from_affine(
-        affine: np.ndarray,
-        ) -> Tuple[np.ndarray, np.ndarray]:
-    # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
-    rotation_zoom = affine[:3, :3]
-    spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
-    rotation = rotation_zoom / spacing
-    return rotation, spacing
-
-
-def nib_to_sitk(
-        data: TypeData,
-        affine: TypeData,
-        squeeze: bool = False,
-        force_3d: bool = False,
-        force_4d: bool = False,
-        ) -> sitk.Image:
-    """Create a SimpleITK image from a tensor and a 4x4 affine matrix."""
-    if data.ndim != 4:
-        raise ValueError(f'Input must be 4D, but has shape {tuple(data.shape)}')
-    # Possibilities
-    # (1, w, h, 1)
-    # (c, w, h, 1)
-    # (1, w, h, 1)
-    # (c, w, h, d)
-    array = np.asarray(data)
-    affine = np.asarray(affine).astype(np.float64)
-
-    is_multichannel = array.shape[0] > 1 and not force_4d
-    is_2d = array.shape[3] == 1 and not force_3d
-    if is_2d:
-        array = array[..., 0]
-    if not is_multichannel and not force_4d:
-        array = array[0]
-    array = array.transpose()  # (W, H, D, C) or (W, H, D)
-    image = sitk.GetImageFromArray(array, isVector=is_multichannel)
-
-    rotation, spacing = get_rotation_and_spacing_from_affine(affine)
-    origin = np.dot(FLIP_XY, affine[:3, 3])
-    direction = np.dot(FLIP_XY, rotation)
-    if is_2d:  # ignore first dimension if 2D (1, W, H, 1)
-        direction = direction[:2, :2]
-    image.SetOrigin(origin)  # should I add a 4th value if force_4d?
-    image.SetSpacing(spacing)
-    image.SetDirection(direction.flatten())
-    if data.ndim == 4:
-        assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
-    num_spatial_dims = 2 if is_2d else 3
-    assert image.GetSize() == data.shape[1: 1 + num_spatial_dims]
-    return image
-
-
-def sitk_to_nib(
-        image: sitk.Image,
-        keepdim: bool = False,
-        ) -> Tuple[np.ndarray, np.ndarray]:
-    data = sitk.GetArrayFromImage(image).transpose()
-    num_components = image.GetNumberOfComponentsPerPixel()
-    if num_components == 1:
-        data = data[np.newaxis]  # add channels dimension
-    input_spatial_dims = image.GetDimension()
-    if input_spatial_dims == 2:
-        data = data[..., np.newaxis]
-    if not keepdim:
-        data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
-    assert data.shape[0] == num_components
-    assert data.shape[1: 1 + input_spatial_dims] == image.GetSize()
-    spacing = np.array(image.GetSpacing())
-    direction = np.array(image.GetDirection())
-    origin = image.GetOrigin()
-    if len(direction) == 9:
-        rotation = direction.reshape(3, 3)
-    elif len(direction) == 4:  # ignore first dimension if 2D (1, W, H, 1)
-        rotation_2d = direction.reshape(2, 2)
-        rotation = np.eye(3)
-        rotation[:2, :2] = rotation_2d
-        spacing = *spacing, 1
-        origin = *origin, 0
-    else:
-        raise RuntimeError(f'Direction not understood: {direction}')
-    rotation = np.dot(FLIP_XY, rotation)
-    rotation_zoom = rotation * spacing
-    translation = np.dot(FLIP_XY, origin)
-    affine = np.eye(4)
-    affine[:3, :3] = rotation_zoom
-    affine[:3, 3] = translation
-    return data, affine
-
-
-def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
-    # I wish named tensors were properly supported in PyTorch
-    num_dimensions = tensor.ndim
-    if num_dimensions == 4:
-        pass
-    elif num_dimensions == 5:  # hope (W, H, D, 1, C)
-        if tensor.shape[-2] == 1:
-            tensor = tensor[..., 0, :]
-            tensor = tensor.permute(3, 0, 1, 2)
-        else:
-            raise ValueError('5D is not supported for shape[-2] > 1')
-    elif num_dimensions == 2:  # assume 2D monochannel (W, H)
-        tensor = tensor[np.newaxis, ..., np.newaxis]  # (1, W, H, 1)
-    elif num_dimensions == 3:  # 2D multichannel or 3D monochannel?
-        if num_spatial_dims == 2:
-            tensor = tensor[..., np.newaxis]  # (C, W, H, 1)
-        elif num_spatial_dims == 3:  # (W, H, D)
-            tensor = tensor[np.newaxis]  # (1, W, H, D)
-        else:  # try to guess
-            shape = tensor.shape
-            maybe_rgb = 3 in (shape[0], shape[-1])
-            if maybe_rgb:
-                if shape[-1] == 3:  # (W, H, 3)
-                    tensor = tensor.permute(2, 0, 1)  # (3, W, H)
-                tensor = tensor[..., np.newaxis]  # (3, W, H, 1)
-            else:  # (W, H, D)
-                tensor = tensor[np.newaxis]  # (1, W, H, D)
-    else:
-        message = (
-            f'{num_dimensions}D images not supported yet. Please create an'
-            f' issue in {REPO_URL} if you would like support for them'
-        )
-        raise ValueError(message)
-    assert tensor.ndim == 4
-    return tensor
-
-
-def get_torchio_cache_dir():
+def get_torchio_cache_dir() -> Path:
     return Path('~/.cache/torchio').expanduser()
 
 
-def round_up(value: float) -> int:
-    """Round half towards infinity.
-
-    Args:
-        value: The value to round.
-
-    Example:
-
-        >>> round(2.5)
-        2
-        >>> round(3.5)
-        4
-        >>> round_up(2.5)
-        3
-        >>> round_up(3.5)
-        4
-
-    """
-    return int(np.floor(value + 0.5))
-
-
-def compress(input_path, output_path):
+def compress(
+        input_path: TypePath,
+        output_path: Optional[TypePath] = None,
+        ) -> Path:
+    if output_path is None:
+        output_path = Path(input_path).with_suffix('.nii.gz')
     with open(input_path, 'rb') as f_in:
         with gzip.open(output_path, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+    return Path(output_path)
 
 
-def check_sequence(sequence: Sequence, name: str):
+def check_sequence(sequence: Sequence, name: str) -> None:
     try:
         iter(sequence)
     except TypeError:
@@ -325,8 +185,8 @@ def get_major_sitk_version() -> int:
     return major_version
 
 
-def history_collate(batch: Sequence, collate_transforms=True):
-    attr = 'history' if collate_transforms else 'applied_transforms'
+def history_collate(batch: Sequence, collate_transforms=True) -> Dict:
+    attr = constants.HISTORY if collate_transforms else 'applied_transforms'
     # Adapted from
     # https://github.com/romainVala/torchQC/blob/master/segmentation/collate_functions.py
     from .data import Subject
@@ -338,84 +198,160 @@ def history_collate(batch: Sequence, collate_transforms=True):
         }
         if hasattr(first_element, attr):
             dictionary.update({attr: [getattr(d, attr) for d in batch]})
-        return dictionary
+    else:
+        dictionary = {}
+    return dictionary
 
 
-# Adapted from torchvision, removing print statements
-def download_and_extract_archive(
-        url: str,
-        download_root: TypePath,
-        extract_root: Optional[TypePath] = None,
-        filename: Optional[TypePath] = None,
-        md5: str = None,
-        remove_finished: bool = False,
-        ) -> None:
-    download_root = os.path.expanduser(download_root)
-    if extract_root is None:
-        extract_root = download_root
-    if not filename:
-        filename = os.path.basename(url)
-    download_url(url, download_root, filename, md5)
-    archive = os.path.join(download_root, filename)
-    from torchvision.datasets.utils import extract_archive
-    extract_archive(archive, extract_root, remove_finished)
+def get_subclasses(target_class: type) -> List[type]:
+    subclasses = target_class.__subclasses__()
+    subclasses += sum((get_subclasses(cls) for cls in subclasses), [])
+    return subclasses
 
 
-# Adapted from torchvision, removing print statements
-def download_url(
-        url: str,
-        root: TypePath,
-        filename: Optional[TypePath] = None,
-        md5: str = None,
-        ) -> None:
-    """Download a file from a url and place it in root.
+def get_first_item(data_loader: torch.utils.data.DataLoader):
+    return next(iter(data_loader))
+
+
+def get_batch_images_and_size(batch: Dict) -> Tuple[List[str], int]:
+    """Get number of images and images names in a batch.
 
     Args:
-        url: URL to download file from
-        root: Directory to place downloaded file in
-        filename: Name to save the file under.
-            If ``None``, use the basename of the URL
-        md5: MD5 checksum of the download. If None, do not check
+        batch: Dictionary generated by a :class:`torch.utils.data.DataLoader`
+        extracting data from a :class:`torchio.SubjectsDataset`.
+
+    Raises:
+        RuntimeError: If the batch does not seem to contain any dictionaries
+        that seem to represent a :class:`torchio.Image`.
     """
-    import urllib
-    from torchvision.datasets.utils import check_integrity, gen_bar_updater
+    names = []
+    for image_name, image_dict in batch.items():
+        if constants.DATA in image_dict:  # assume it is a TorchIO Image
+            size = len(image_dict[constants.DATA])
+            names.append(image_name)
+    if not names:
+        raise RuntimeError('The batch does not seem to contain any images')
+    return names, size
 
-    root = os.path.expanduser(root)
-    if not filename:
-        filename = os.path.basename(url)
-    fpath = os.path.join(root, filename)
-    os.makedirs(root, exist_ok=True)
-    # check if file is already present locally
-    if not check_integrity(fpath, md5):
-        try:
-            print('Downloading ' + url + ' to ' + fpath)  # noqa: T001
-            urllib.request.urlretrieve(
-                url, fpath,
-                reporthook=gen_bar_updater()
+
+def get_subjects_from_batch(batch: Dict) -> List:
+    """Get list of subjects from collated batch.
+
+    Args:
+        batch: Dictionary generated by a :class:`torch.utils.data.DataLoader`
+        extracting data from a :class:`torchio.SubjectsDataset`.
+    """
+    from .data import ScalarImage, LabelMap, Subject
+    subjects = []
+    image_names, batch_size = get_batch_images_and_size(batch)
+    for i in range(batch_size):
+        subject_dict = {}
+        for image_name in image_names:
+            image_dict = batch[image_name]
+            data = image_dict[constants.DATA][i]
+            affine = image_dict[constants.AFFINE][i]
+            path = Path(image_dict[constants.PATH][i])
+            is_label = image_dict[constants.TYPE][i] == constants.LABEL
+            klass = LabelMap if is_label else ScalarImage
+            image = klass(tensor=data, affine=affine, filename=path.name)
+            subject_dict[image_name] = image
+        subject = Subject(subject_dict)
+        if constants.HISTORY in batch:
+            applied_transforms = batch[constants.HISTORY][i]
+            for transform in applied_transforms:
+                transform.add_transform_to_subject_history(subject)
+        subjects.append(subject)
+    return subjects
+
+
+def add_images_from_batch(
+        subjects: List,
+        tensor: torch.Tensor,
+        class_=None,
+        name='prediction',
+        ) -> None:
+    """Add images to subjects in a list, typically from a network prediction.
+
+    The spatial metadata (affine matrices) will be extracted from one of the
+    images of each subject.
+
+    Args:
+        subjects: List of instances of :class:`torchio.Subject` to which images
+            will be added.
+        tensor: PyTorch tensor of shape :math:`(B, C, W, H, D)`, where
+            :math:`B` is the batch size.
+        class_: Class used to instantiate the images,
+            e.g., :class:`torchio.LabelMap`.
+            If ``None``, :class:`torchio.ScalarImage` will be used.
+        name: Name of the images added to the subjects.
+    """
+    if class_ is None:
+        from . import ScalarImage
+        class_ = ScalarImage
+    for subject, data in zip(subjects, tensor):
+        one_image = subject.get_first_image()
+        kwargs = {'tensor': data, 'affine': one_image.affine}
+        if 'filename' in one_image:
+            kwargs['filename'] = one_image['filename']
+        image = class_(**kwargs)
+        subject.add_image(image, name)
+
+
+def guess_external_viewer() -> Optional[Path]:
+    """Guess the path to an executable that could be used to visualize images.
+
+    Currently, it looks for 1) ITK-SNAP and 2) 3D Slicer. Implemented for macOS
+    and Windows.
+    """
+    if 'SITK_SHOW_COMMAND' in os.environ:
+        return os.environ['SITK_SHOW_COMMAND']
+    platform = sys.platform
+    itk = 'ITK-SNAP'
+    slicer = 'Slicer'
+    if platform == 'darwin':
+        app_path = '/Applications/{}.app/Contents/MacOS/{}'  # noqa: FS003
+        itk_snap_path = Path(app_path.format(2 * (itk,)))
+        if itk_snap_path.is_file():
+            return itk_snap_path
+        slicer_path = Path(app_path.format(2 * (slicer,)))
+        if slicer_path.is_file():
+            return slicer_path
+    elif platform == 'win32':
+        program_files_dir = Path(os.environ['ProgramW6432'])
+        itk_snap_dirs = list(program_files_dir.glob('ITK-SNAP*'))
+        if itk_snap_dirs:
+            itk_snap_dir = itk_snap_dirs[-1]
+            itk_snap_path = itk_snap_dir / 'bin/itk-snap.exe'
+            if itk_snap_path.is_file():
+                return itk_snap_path
+        slicer_dirs = list(program_files_dir.glob('Slicer*'))
+        if slicer_dirs:
+            slicer_dir = slicer_dirs[-1]
+            slicer_path = slicer_dir / 'slicer.exe'
+            if slicer_path.is_file():
+                return slicer_path
+    elif 'linux' in platform:
+        itk_snap_path = shutil.which('itksnap')
+        if itk_snap_path is not None:
+            return Path(itk_snap_path)
+        slicer_path = shutil.which('Slicer')
+        if slicer_path is not None:
+            return Path(slicer_path)
+
+
+def parse_spatial_shape(shape):
+    result = to_tuple(shape, length=3)
+    for n in result:
+        if n < 1 or n % 1:
+            message = (
+                'All elements in a spatial shape must be positive integers,'
+                f' but the following shape was passed: {shape}'
             )
-        except (urllib.error.URLError, OSError) as e:
-            if url[:5] == 'https':
-                url = url.replace('https:', 'http:')
-                message = (
-                    'Failed download. Trying https -> http instead.'
-                    ' Downloading ' + url + ' to ' + fpath
-                )
-                print(message)  # noqa: T001
-                urllib.request.urlretrieve(
-                    url, fpath,
-                    reporthook=gen_bar_updater()
-                )
-            else:
-                raise e
-        # check integrity of downloaded file
-        if not check_integrity(fpath, md5):
-            raise RuntimeError('File not found or corrupted.')
-
-
-def check_uint_to_int(array):
-    # This is because PyTorch won't take uint16 nor uint32
-    if array.dtype == np.uint16:
-        return array.astype(np.int32)
-    if array.dtype == np.uint32:
-        return array.astype(np.int64)
-    return array
+            raise ValueError(message)
+    if len(result) != 3:
+        message = (
+            'Spatial shapes must have 3 elements, but the following shape'
+            f' was passed: {shape}'
+        )
+        raise ValueError(message)
+    return result

@@ -15,6 +15,12 @@ import click
     help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
 )
 @click.option(
+    '--imclass', '-c',
+    type=str,
+    default='ScalarImage',
+    help='Subclass of torchio.Image used to instantiate the image.'
+)
+@click.option(
     '--seed', '-s',
     type=int,
     help='Seed for PyTorch random number generator.',
@@ -30,6 +36,7 @@ def main(
         transform_name,
         output_path,
         kwargs,
+        imclass,
         seed,
         verbose,
         ):
@@ -38,7 +45,7 @@ def main(
     \b
     Example:
     $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
-    """
+    """  # noqa: E501
     # Imports are placed here so that the tool loads faster if not being run
     import torch
     import torchio.transforms as transforms
@@ -59,6 +66,7 @@ def main(
         transform,
         output_path,
         verbose=verbose,
+        class_=imclass,
     )
     return 0
 

@@ -1,8 +1,9 @@
-import random
 import warnings
 from itertools import islice
-from typing import List, Iterator
+from typing import List, Iterator, Optional
 
+import torch
+import humanize
 from tqdm import trange
 from torch.utils.data import Dataset, DataLoader
 
@@ -29,8 +30,8 @@ class Queue(Dataset):
     The sampled patches are then stored in a buffer or *queue* until
     the next training iteration, at which point they are loaded onto the GPU
     for inference.
-    For this, TorchIO provides the :class:`~torchio.data.Queue` class, which also
-    inherits from the PyTorch :class:`~torch.utils.data.Dataset`.
+    For this, TorchIO provides the :class:`~torchio.data.Queue` class, which
+    also inherits from the PyTorch :class:`~torch.utils.data.Dataset`.
     In this queueing system,
     samplers behave as generators that yield patches from random locations
     in volumes contained in the :class:`~torchio.data.SubjectsDataset`.
@@ -54,15 +55,15 @@ class Queue(Dataset):
     which are passed to the neural network.
 
     Args:
-        subjects_dataset: Instance of
-            :class:`~torchio.data.SubjectsDataset`.
+        subjects_dataset: Instance of :class:`~torchio.data.SubjectsDataset`.
         max_length: Maximum number of patches that can be stored in the queue.
             Using a large number means that the queue needs to be filled less
             often, but more CPU memory is needed to store the patches.
         samples_per_volume: Number of patches to extract from each volume.
             A small number of patches ensures a large variability in the queue,
             but training will be slower.
-        sampler: A sampler used to extract patches from the volumes.
+        sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
+            to extract patches from the volumes.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
@@ -71,7 +72,9 @@ class Queue(Dataset):
             have been processed.
         shuffle_patches: If ``True``, patches are shuffled after filling the
             queue.
-        verbose: If ``True``, some debugging messages are printed.
+        start_background: If ``True``, the loader will start working in the
+            background as soon as the queue is instantiated.
+        verbose: If ``True``, some debugging messages will be printed.
 
     This diagram represents the connection between
     a :class:`~torchio.data.SubjectsDataset`,
@@ -79,7 +82,7 @@ class Queue(Dataset):
     and the :class:`~torch.utils.data.DataLoader` used to pop batches from the
     queue.
 
-    .. image:: https://raw.githubusercontent.com/fepegar/torchio/master/docs/images/diagram_patches.svg
+    .. image:: https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/diagram_patches.svg
         :alt: Training with patches
 
     This sketch can be used to experiment and understand how the queue works.
@@ -89,12 +92,14 @@ class Queue(Dataset):
     .. raw:: html
 
         <embed>
-            <iframe style="width: 640px; height: 360px; overflow: hidden;" scrolling="no" frameborder="0" src="https://editor.p5js.org/embed/DZwjZzkkV"></iframe>
+            <iframe style="width: 640px; height: 360px; overflow: hidden;" scrolling="no" frameborder="0" src="https://editor.p5js.org/fepegar/full/DZwjZzkkV"></iframe>
         </embed>
 
     .. note:: :attr:`num_workers` refers to the number of workers used to
         load and transform the volumes. Multiprocessing is not needed to pop
-        patches from the queue.
+        patches from the queue, so you should always use ``num_workers=0`` for
+        the :class:`~torch.utils.data.DataLoader` you instantiate to generate
+        training batches.
 
     Example:
 
@@ -114,7 +119,11 @@ class Queue(Dataset):
     ...     sampler,
     ...     num_workers=4,
     ... )
-    >>> patches_loader = DataLoader(patches_queue, batch_size=16)
+    >>> patches_loader = DataLoader(
+    ...     patches_queue,
+    ...     batch_size=16,
+    ...     num_workers=0,  # this must be 0
+    ... )
     >>> num_epochs = 2
     >>> model = torch.nn.Identity()
     >>> for epoch_index in range(num_epochs):
@@ -123,7 +132,7 @@ class Queue(Dataset):
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
 
-    """
+    """  # noqa: E501
     def __init__(
             self,
             subjects_dataset: SubjectsDataset,
@@ -133,6 +142,7 @@ class Queue(Dataset):
             num_workers: int = 0,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
+            start_background: bool = True,
             verbose: bool = False,
             ):
         self.subjects_dataset = subjects_dataset
@@ -143,8 +153,10 @@ class Queue(Dataset):
         self.sampler = sampler
         self.num_workers = num_workers
         self.verbose = verbose
-        self.subjects_iterable = self.get_subjects_iterable()
-        self.patches_list: List[dict] = []
+        self._subjects_iterable = None
+        if start_background:
+            self._initialize_subjects_iterable()
+        self.patches_list: List[Subject] = []
         self.num_sampled_patches = 0
 
     def __len__(self):
@@ -154,7 +166,7 @@ class Queue(Dataset):
         # There are probably more elegant ways of doing this
         if not self.patches_list:
             self._print('Patches list is empty.')
-            self.fill()
+            self._fill()
         sample_patch = self.patches_list.pop()
         self.num_sampled_patches += 1
         return sample_patch
@@ -173,7 +185,16 @@ class Queue(Dataset):
 
     def _print(self, *args):
         if self.verbose:
-            print(*args)  # noqa: T001
+            print(*args)  # noqa: T201
+
+    def _initialize_subjects_iterable(self):
+        self._subjects_iterable = self._get_subjects_iterable()
+
+    @property
+    def subjects_iterable(self):
+        if self._subjects_iterable is None:
+            self._initialize_subjects_iterable()
+        return self._subjects_iterable
 
     @property
     def num_subjects(self) -> int:
@@ -187,7 +208,7 @@ class Queue(Dataset):
     def iterations_per_epoch(self) -> int:
         return self.num_subjects * self.samples_per_volume
 
-    def fill(self) -> None:
+    def _fill(self) -> None:
         assert self.sampler is not None
         if self.max_length % self.samples_per_volume != 0:
             message = (
@@ -209,32 +230,72 @@ class Queue(Dataset):
         else:
             iterable = range(num_subjects_for_queue)
         for _ in iterable:
-            subject = self.get_next_subject()
+            subject = self._get_next_subject()
             iterable = self.sampler(subject)
             patches = list(islice(iterable, self.samples_per_volume))
             self.patches_list.extend(patches)
         if self.shuffle_patches:
-            random.shuffle(self.patches_list)
+            self._shuffle_patches_list()
 
-    def get_next_subject(self) -> Subject:
+    def _shuffle_patches_list(self):
+        indices = torch.randperm(self.num_patches)
+        self.patches_list = [self.patches_list[i] for i in indices]
+
+    def _get_next_subject(self) -> Subject:
         # A StopIteration exception is expected when the queue is empty
         try:
             subject = next(self.subjects_iterable)
         except StopIteration as exception:
             self._print('Queue is empty:', exception)
-            self.subjects_iterable = self.get_subjects_iterable()
+            self._initialize_subjects_iterable()
             subject = next(self.subjects_iterable)
+        except AssertionError as exception:
+            if 'can only test a child process' in str(exception):
+                message = (
+                    'The number of workers for the data loader used to pop'
+                    ' patches from the queue should be 0. Is it?'
+                )
+                raise RuntimeError(message) from exception
         return subject
 
-    def get_subjects_iterable(self) -> Iterator:
+    @staticmethod
+    def _get_first_item(batch):
+        return batch[0]
+
+    def _get_subjects_iterable(self) -> Iterator:
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
         self._print(
-            '\nCreating subjects loader with', self.num_workers, 'workers')
+            f'\nCreating subjects loader with {self.num_workers} workers')
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,
-            collate_fn=lambda x: x[0],
+            batch_size=1,
+            collate_fn=self._get_first_item,
             shuffle=self.shuffle_subjects,
         )
         return iter(subjects_loader)
+
+    def get_max_memory(self, subject: Optional[Subject] = None) -> int:
+        """Get the maximum RAM occupied by the patches queue in bytes.
+
+        Args:
+            subject: Sample subject to compute the size of a patch.
+        """
+        images_channels = 0
+        if subject is None:
+            subject = self.subjects_dataset[0]
+        for image in subject.get_images(intensity_only=False):
+            images_channels += len(image.data)
+        voxels_in_patch = int(self.sampler.patch_size.prod() * images_channels)
+        bytes_per_patch = 4 * voxels_in_patch  # assume float32
+        return int(bytes_per_patch * self.max_length)
+
+    def get_max_memory_pretty(self, subject: Optional[Subject] = None) -> str:
+        """Get human-readable maximum RAM occupied by the patches queue.
+
+        Args:
+            subject: Sample subject to compute the size of a patch.
+        """
+        memory = self.get_max_memory(subject=subject)
+        return humanize.naturalsize(memory, binary=True)

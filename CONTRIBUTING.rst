@@ -91,7 +91,7 @@ If you use ``conda``, this is how you can set up your fork for local development
 5) Create a branch for local development using the issue number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For example, if the issue nu ber is 55::
+For example, if the issue number is 55::
 
     git checkout -b 55-name-of-your-bugfix-or-feature
 
@@ -117,7 +117,21 @@ more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f9889
     git commit -m "Fix nasty bug"
     git push origin 55-name-of-your-bugfix-or-feature
 
-8) Submit a pull request on GitHub
+8) Check documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you have modified the documentation or some docstrings, build the docs and
+verify that everything looks good::
+
+    cd docs
+    make html
+
+You can also use ``livehtml`` instead, to automatically build the docs every
+time you modify them and reload them in the browser::
+
+    make livehtml
+
+9) Submit a pull request on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tips

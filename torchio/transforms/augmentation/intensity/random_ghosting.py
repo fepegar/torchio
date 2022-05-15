@@ -17,7 +17,9 @@ class RandomGhosting(RandomTransform, IntensityTransform):
     field-of-view vary or move in a regular (periodic) fashion. Pulsatile flow
     of blood or CSF, cardiac motion, and respiratory motion are the most
     important patient-related causes of ghost artifacts in clinical MR imaging
-    (from `mriquestions.com <http://mriquestions.com/why-discrete-ghosts.html>`_).
+    (from `mriquestions.com`_).
+
+    .. _mriquestions.com: https://mriquestions.com/why-discrete-ghosts.html
 
     Args:
         num_ghosts: Number of 'ghosts' :math:`n` in the image.
@@ -38,7 +40,8 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -109,7 +112,9 @@ class Ghosting(IntensityTransform, FourierTransform):
     field-of-view vary or move in a regular (periodic) fashion. Pulsatile flow
     of blood or CSF, cardiac motion, and respiratory motion are the most
     important patient-related causes of ghost artifacts in clinical MR imaging
-    (from `mriquestions.com <http://mriquestions.com/why-discrete-ghosts.html>`_).
+    (from `mriquestions.com`_).
+
+    .. _mriquestions.com: http://mriquestions.com/why-discrete-ghosts.html
 
     Args:
         num_ghosts: Number of 'ghosts' :math:`n` in the image.
@@ -120,7 +125,8 @@ class Ghosting(IntensityTransform, FourierTransform):
         restore: Number between ``0`` and ``1`` indicating how much of the
             :math:`k`-space center should be restored after removing the planes
             that generate the artifact.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of ghosts.
@@ -161,7 +167,7 @@ class Ghosting(IntensityTransform, FourierTransform):
                     restore,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
     def add_artifact(
@@ -208,8 +214,10 @@ class Ghosting(IntensityTransform, FourierTransform):
 
 
 def _parse_restore(restore):
-    if not isinstance(restore, float):
-        raise TypeError(f'Restore must be a float, not {restore}')
+    try:
+        restore = float(restore)
+    except ValueError as e:
+        raise TypeError(f'Restore must be a float, not "{restore}"') from e
     if not 0 <= restore <= 1:
         message = (
             f'Restore must be a number between 0 and 1, not {restore}')

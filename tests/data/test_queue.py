@@ -17,7 +17,7 @@ class TestQueue(TorchioTestCase):
             force=False,
         )
 
-    def test_queue(self):
+    def run_queue(self, num_workers, **kwargs):
         subjects_dataset = SubjectsDataset(self.subjects_list)
         patch_size = 10
         sampler = UniformSampler(patch_size)
@@ -26,11 +26,19 @@ class TestQueue(TorchioTestCase):
             max_length=6,
             samples_per_volume=2,
             sampler=sampler,
-            num_workers=0,
-            verbose=True,
+            **kwargs,
         )
         _ = str(queue_dataset)
         batch_loader = DataLoader(queue_dataset, batch_size=4)
         for batch in batch_loader:
             _ = batch['one_modality'][DATA]
             _ = batch['segmentation'][DATA]
+
+    def test_queue(self):
+        self.run_queue(num_workers=0)
+
+    def test_queue_multiprocessing(self):
+        self.run_queue(num_workers=2)
+
+    def test_queue_no_start_background(self):
+        self.run_queue(num_workers=0, start_background=False)

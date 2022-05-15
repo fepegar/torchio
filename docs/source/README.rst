@@ -2,13 +2,14 @@
 TorchIO
 #######
 
-|PyPI-downloads| |PyPI-version| |Google-Colab-notebook| |Docs-status|
-|Build-status| |Coverage-codecov| |Coverage-coveralls| |Code-Quality|
-|Code-Maintainability| |pre-commit| |Slack|
+|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
+|Tests-status| |Lint-status|
+|Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
+|Slack| |Twitter| |Twitter-commits| |YouTube|
 
 
-TorchIO is a Python library for efficient loading, preprocessing, augmentation
-and patch-based sampling of 3D medical images in deep learning,
+TorchIO is an open-source Python library for efficient loading, preprocessing,
+augmentation and patch-based sampling of 3D medical images in deep learning,
 following the design of PyTorch.
 
 It includes multiple intensity and spatial transforms for data augmentation and
@@ -16,66 +17,52 @@ preprocessing.
 These transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
-`MRI magnetic field inhomogeneity (bias) <http://mriquestions.com/why-homogeneity.html>`_
+`MRI magnetic field inhomogeneity (bias) <https://mriquestions.com/why-homogeneity.html>`_
 or `k-space motion artifacts <http://proceedings.mlr.press/v102/shaw19a.html>`_.
 
+TorchIO is part of the official `PyTorch Ecosystem <https://pytorch.org/ecosystem/>`_,
+and was featured at
+the `PyTorch Ecosystem Day 2021 <https://pytorch.org/ecosystem/pted/2021>`_ and
+the `PyTorch Developer Day 2021 <https://pytorch.org/blog/pytorch-developer-day-2021>`_.
+
+Many groups have used TorchIO for their research.
+The complete list of citations is available on `Google Scholar <https://scholar.google.co.uk/scholar?cites=8711392719159421861&sciodt=0,5&hl=en>`_, and the
+`dependents list <https://github.com/fepegar/torchio/network/dependents>`_ is
+available on GitHub.
+
 The code is available on `GitHub <https://github.com/fepegar/torchio>`_.
+If you like TorchIO, please go to the repository and star it!
+
+.. raw:: html
+
+   <a class="github-button" href="https://github.com/fepegar/torchio" data-icon="octicon-star" data-show-count="true" aria-label="Star fepegar/torchio on GitHub">Star</a>
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 See :doc:`Getting started <quickstart>` for installation instructions and a
 usage overview.
 
+Contributions are more than welcome.
+Please check our `contributing guide <https://github.com/fepegar/torchio/blob/main/CONTRIBUTING.rst>`_
+if you would like to contribute.
 
-Credits
-*******
+If you have questions, feel free to ask in the discussions tab:
 
-..
-  From https://stackoverflow.com/a/10766650/3956024
+.. raw:: html
 
-If you use this library for your research,
-please cite our preprint:
+   <a class="github-button" href="https://github.com/fepegar/torchio/discussions" data-icon="octicon-comment-discussion" aria-label="Discuss fepegar/torchio on GitHub">Discuss</a>
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
-|paper-url|_
+If you found a bug or have a feature request, please open an issue:
 
-.. _paper-url: https://arxiv.org/abs/2003.04696
+.. raw:: html
 
-.. |paper-url| replace:: Pérez-García, F., Sparks, R., Ourselin, S.: TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning. arXiv:2003.04696 [cs, eess, stat] (Mar 2020), http://arxiv.org/abs/2003.04696, arXiv: 2003.04696
-
-
-BibTeX:
-
-.. code-block:: latex
-
-   @article{perez-garcia_torchio_2020,
-      title = {{TorchIO}: a {Python} library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
-      shorttitle = {{TorchIO}},
-      url = {http://arxiv.org/abs/2003.04696},
-      urldate = {2020-03-11},
-      journal = {arXiv:2003.04696 [cs, eess, stat]},
-      author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, Sebastien},
-      month = mar,
-      year = {2020},
-      note = {arXiv: 2003.04696},
-      keywords = {Computer Science - Computer Vision and Pattern Recognition, Electrical Engineering and Systems Science - Image and Video Processing, Computer Science - Machine Learning, Computer Science - Artificial Intelligence, Statistics - Machine Learning},
-   }
-
-This project is supported by the
-`Wellcome / EPSRC Centre for Interventional and Surgical Sciences
-(WEISS) <https://www.ucl.ac.uk/interventional-surgical-sciences/>`_
-(University College London) and the
-`School of Biomedical Engineering & Imaging Sciences
-(BMEIS) <https://www.kcl.ac.uk/bmeis>`_
-(King's College London).
-
-.. image:: ../images/weiss.jpg
-    :width: 300
-    :alt: Wellcome / EPSRC Centre for Interventional and Surgical Sciences
+   <!-- Place this tag where you want the button to render. -->
+   <a class="github-button" href="https://github.com/fepegar/torchio/issues" data-icon="octicon-issue-opened" data-show-count="true" aria-label="Issue fepegar/torchio on GitHub">Issue</a>
+   <!-- Place this tag in your head or just before your close body tag. -->
+   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 
-.. image:: ../images/cme.svg
-    :width: 250
-    :alt: School of Biomedical Engineering & Imaging Sciences
-
-This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
+.. include:: credits.rst
 
 
 .. |PyPI-downloads| image:: https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&logo=python&logoColor=white
@@ -86,33 +73,49 @@ This package has been greatly inspired by `NiftyNet <https://niftynet.io/>`_.
    :target: https://pypi.org/project/torchio/
    :alt: PyPI version
 
+.. |Conda-version| image:: https://img.shields.io/conda/v/conda-forge/torchio.svg?label=conda-forge&logo=conda-forge
+   :target: https://anaconda.org/conda-forge/torchio
+   :alt: Conda version
+
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
+   :target: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
    :alt: Google Colab notebooks
 
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
-   :target: http://torchio.rtfd.io/?badge=latest
+   :target: https://torchio.rtfd.io/?badge=latest
    :alt: Documentation status
 
-.. |Build-status| image:: https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&logo=travis
-   :target: https://travis-ci.org/fepegar/torchio
-   :alt: Build status
+.. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg
+   :target: https://github.com/fepegar/torchio/actions/workflows/lint.yml
+   :alt: Lint status
 
-.. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg
+.. |Tests-status| image:: https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/fepegar/torchio/actions/workflows/tests.yml
+   :alt: Tests status
+
+.. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio
    :alt: Coverage status
 
-.. |Coverage-coveralls| image:: https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master
-   :target: https://coveralls.io/github/fepegar/torchio?branch=master
-   :alt: Coverage status
-
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer
-   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master
+   :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main
    :alt: Code quality
 
 .. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack
    :target: https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg
    :alt: Slack
+
+.. |YouTube| image:: https://img.shields.io/youtube/views/UEUVSw5-M9M?label=watch&style=social
+   :target: https://www.youtube.com/watch?v=UEUVSw5-M9M
+   :alt: YouTube
+
+.. |Twitter| image:: https://img.shields.io/twitter/url/https/twitter.com/TorchIOLib.svg?style=social&label=Follow%20%40TorchIOLib
+   :target: https://twitter.com/TorchIOLib
+   :alt: Twitter
+
+.. |Twitter-commits| image:: https://img.shields.io/twitter/url/https/twitter.com/TorchIO_commits.svg?style=social&label=Follow%20%40TorchIO_commits
+   :target: https://twitter.com/TorchIO_commits
+   :alt: Twitter commits
 
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
    :target: https://codeclimate.com/github/fepegar/torchio/maintainability

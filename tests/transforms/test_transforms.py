@@ -1,7 +1,6 @@
 import copy
 import torch
 import numpy as np
-import nibabel as nib
 import torchio as tio
 import SimpleITK as sitk
 from ..utils import TorchioTestCase
@@ -17,14 +16,19 @@ class TestTransforms(TorchioTestCase):
         disp = 1 if is_3d else (1, 1, 0.01)
         elastic = tio.RandomElasticDeformation(max_displacement=disp)
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
+        resize_args = (10, 20, 30) if is_3d else (10, 20, 1)
         flip_axes = axes_downsample = (0, 1, 2) if is_3d else (0, 1)
         swap_patch = (2, 3, 4) if is_3d else (3, 4, 1)
         pad_args = (1, 2, 3, 0, 5, 6) if is_3d else (0, 0, 3, 0, 5, 6)
         crop_args = (3, 2, 8, 0, 1, 4) if is_3d else (0, 0, 8, 0, 1, 4)
+        remapping = {1: 2, 2: 1, 3: 20, 4: 25}
         transforms = [
             tio.CropOrPad(cp_args),
+            tio.EnsureShapeMultiple(2, method='crop'),
+            tio.Resize(resize_args),
             tio.ToCanonical(),
             tio.RandomAnisotropy(downsampling=(1.75, 2), axes=axes_downsample),
+            tio.CopyAffine(channels[0]),
             tio.Resample((1, 1.1, 1.25)),
             tio.RandomFlip(axes=flip_axes, flip_probability=1),
             tio.RandomMotion(),
@@ -35,7 +39,7 @@ class TestTransforms(TorchioTestCase):
             tio.RandomSwap(patch_size=swap_patch, num_iterations=5),
             tio.Lambda(lambda x: 2 * x, types_to_apply=tio.INTENSITY),
             tio.RandomBiasField(),
-            tio.RescaleIntensity((0, 1)),
+            tio.RescaleIntensity(out_min_max=(0, 1)),
             tio.ZNormalization(),
             tio.HistogramStandardization(landmarks_dict),
             elastic,
@@ -44,6 +48,9 @@ class TestTransforms(TorchioTestCase):
                 tio.RandomAffine(): 3,
                 elastic: 1,
             }),
+            tio.RemapLabels(remapping=remapping, masking_method='Left'),
+            tio.RemoveLabels([1, 3]),
+            tio.SequentialLabels(),
             tio.Pad(pad_args, padding_mode=3),
             tio.Crop(crop_args),
         ]
@@ -86,20 +93,11 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_sitk(self):
         tensor = torch.rand(2, 4, 5, 8)
         affine = np.diag((-1, 2, -3, 1))
-        image = tio.utils.nib_to_sitk(tensor, affine)
+        image = tio.data.io.nib_to_sitk(tensor, affine)
         transform = self.get_transform(
             channels=('default_image_name',), labels=False)
         transformed = transform(image)
         self.assertIsInstance(transformed, sitk.Image)
-
-    def test_transforms_nib(self):
-        data = torch.rand(1, 4, 5, 8).numpy()
-        affine = np.diag((1, -2, 3, 1))
-        image = nib.Nifti1Image(data, affine)
-        transform = self.get_transform(
-            channels=('default_image_name',), labels=False)
-        transformed = transform(image)
-        self.assertIsInstance(transformed, nib.Nifti1Image)
 
     def test_transforms_subject_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
@@ -116,11 +114,20 @@ class TestTransforms(TorchioTestCase):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
         subject = self.make_multichannel(self.sample_subject)
         subject = self.flip_affine_x(subject)
-        for transform in composed.transform.transforms:
+        transformed = None
+        for transform in composed.transforms:
+            repr(transform)  # cover __repr__
             transformed = transform(subject)
             trsf_channels = len(transformed.t1.data)
             assert trsf_channels > 1, f'Lost channels in {transform.name}'
-            if transform.name != 'RandomLabelsToImage':
+            exclude = (
+                'RandomLabelsToImage',
+                'RemapLabels',
+                'RemoveLabels',
+                'SequentialLabels',
+                'CopyAffine',
+            )
+            if transform.name not in exclude:
                 self.assertEqual(
                     subject.shape[0],
                     transformed.shape[0],
@@ -146,7 +153,7 @@ class TestTransforms(TorchioTestCase):
         subject = copy.deepcopy(self.sample_subject)
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
         subject = self.flip_affine_x(subject)
-        for transform in composed.transform.transforms:
+        for transform in composed.transforms:
             original_data = copy.deepcopy(subject.t1.data)
             transform(subject)
             self.assertTensorEqual(
@@ -194,8 +201,23 @@ class TestTransforms(TorchioTestCase):
             tio.RandomNoise(include=['t2'], exclude=['t1'])
 
     def test_keys_deprecated(self):
-        with self.assertWarns(DeprecationWarning):
+        with self.assertWarns(UserWarning):
             tio.RandomNoise(keys=['t2'])
+
+    def test_keep_original(self):
+        subject = copy.deepcopy(self.sample_subject)
+        old, new = 't1', 't1_original'
+        transformed = tio.RandomAffine(keep={old: new})(subject)
+        assert old in transformed
+        assert new in transformed
+        self.assertTensorEqual(
+            transformed[new].data,
+            subject[old].data,
+        )
+        self.assertTensorNotEqual(
+            transformed[new].data,
+            transformed[old].data,
+        )
 
 
 class TestTransform(TorchioTestCase):
@@ -216,3 +238,87 @@ class TestTransform(TorchioTestCase):
         transform = tio.Noise(0, {'im': 1}, {'im': 0})
         with self.assertRaises(ValueError):
             transform.arguments_are_dict()
+
+    def test_bad_over_max(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range(2, 'name', max_constraint=1)
+
+    def test_bad_over_max_range(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range((0, 2), 'name', max_constraint=1)
+
+    def test_bad_type(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range(2.5, 'name', type_constraint=int)
+
+    def test_no_numbers(self):
+        transform = tio.RandomNoise()
+        with self.assertRaises(ValueError):
+            transform._parse_range('j', 'name')
+
+    def test_apply_transform_missing(self):
+        class T(tio.Transform):
+            pass
+        with self.assertRaises(TypeError):
+            T().apply_transform(0)
+
+    def test_non_invertible(self):
+        transform = tio.RandomBlur()
+        with self.assertRaises(RuntimeError):
+            transform.inverse()
+
+    def test_batch_history(self):
+        # https://github.com/fepegar/torchio/discussions/743
+        subject = self.sample_subject
+        transform = tio.Compose([
+            tio.RandomAffine(),
+            tio.CropOrPad(5),
+            tio.OneHot(),
+        ])
+        dataset = tio.SubjectsDataset([subject], transform=transform)
+        loader = torch.utils.data.DataLoader(
+            dataset,
+            collate_fn=tio.utils.history_collate
+        )
+        batch = tio.utils.get_first_item(loader)
+        transformed: tio.Subject = tio.utils.get_subjects_from_batch(batch)[0]
+        inverse = transformed.apply_inverse_transform()
+        images1 = subject.get_images(intensity_only=False)
+        images2 = inverse.get_images(intensity_only=False)
+        for image1, image2 in zip(images1, images2):
+            assert image1.shape == image2.shape
+
+    def test_bad_bounds_mask(self):
+        transform = tio.ZNormalization(masking_method='test')
+        with self.assertRaises(ValueError):
+            transform(self.sample_subject)
+
+    def test_bounds_mask(self):
+        transform = tio.ZNormalization()
+        with self.assertRaises(ValueError):
+            transform.get_mask_from_anatomical_label('test', 0)
+        tensor = torch.rand((1, 2, 2, 2))
+
+        def get_mask(label):
+            mask = transform.get_mask_from_anatomical_label(label, tensor)
+            return mask
+
+        left = get_mask('Left')
+        assert left[:, 0].sum() == 4 and left[:, 1].sum() == 0
+        right = get_mask('Right')
+        assert right[:, 1].sum() == 4 and right[:, 0].sum() == 0
+        posterior = get_mask('Posterior')
+        assert posterior[:, :, 0].sum() == 4 and posterior[:, :, 1].sum() == 0
+        anterior = get_mask('Anterior')
+        assert anterior[:, :, 1].sum() == 4 and anterior[:, :, 0].sum() == 0
+        inferior = get_mask('Inferior')
+        assert inferior[..., 0].sum() == 4 and inferior[..., 1].sum() == 0
+        superior = get_mask('Superior')
+        assert superior[..., 1].sum() == 4 and superior[..., 0].sum() == 0
+
+        mask = transform.get_mask_from_bounds(3 * (0, 1), tensor)
+        assert mask[0, 0, 0, 0] == 1
+        assert mask.sum() == 1

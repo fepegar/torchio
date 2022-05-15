@@ -2,42 +2,18 @@
 .. include:: README.rst
 
 .. toctree::
-    :caption: Getting started
-    :maxdepth: 2
     :hidden:
+    :maxdepth: 3
 
     quickstart
-
-.. toctree::
-    :caption: Data structures
-    :maxdepth: 2
-    :hidden:
-
-    data/image
-    data/subject
-    data/dataset
-    data/patch_based
-
-.. toctree::
-    :caption: Transforms
-    :maxdepth: 2
-    :hidden:
-
+    data/index
+    patches/index
     transforms/transforms
-
-.. toctree::
-    :caption: Medical image datasets
-    :maxdepth: 2
-    :hidden:
-
     datasets
-
-.. toctree::
-    :caption: Interfaces
-    :maxdepth: 2
-    :hidden:
-
     interfaces/index
+    auto_examples/index
+    GitHub repository <https://github.com/fepegar/torchio>
+    Paper <https://www.sciencedirect.com/science/article/pii/S0169260721003102>
 
 
 See also
@@ -45,5 +21,5 @@ See also
 
 PyTorch implementations of 2D and 3D network architectures:
 
-* `HighResNet <https://www.github.com/fepegar/highresnet>`_
-* `U-Net <https://www.github.com/fepegar/unet>`_
+* `HighResNet <https://github.com/fepegar/highresnet>`_
+* `U-Net <https://github.com/fepegar/unet>`_

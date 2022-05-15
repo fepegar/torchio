@@ -1,35 +1,59 @@
 import copy
 import numbers
 import warnings
-from typing import Union, Tuple
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from typing import Union, Tuple, Optional, Dict
 
 import torch
 import numpy as np
 import SimpleITK as sitk
 
+from ..utils import to_tuple
 from ..data.subject import Subject
-from ..typing import TypeData, TypeNumber, TypeKeys
-from ..utils import nib_to_sitk, sitk_to_nib, to_tuple
+from ..data.io import nib_to_sitk, sitk_to_nib
+from ..data.image import LabelMap
+from ..typing import (
+    TypeKeys,
+    TypeData,
+    TypeDataAffine,
+    TypeNumber,
+    TypeCallable,
+    TypeTripletInt,
+)
 from .interpolation import Interpolation, get_sitk_interpolator
 from .data_parser import DataParser, TypeTransformInput
+
+TypeSixBounds = Tuple[int, int, int, int, int, int]
+TypeBounds = Union[
+    int,
+    TypeTripletInt,
+    TypeSixBounds,
+    None,
+]
+TypeMaskingMethod = Union[str, TypeCallable, TypeBounds, None]
+ANATOMICAL_AXES = (
+    'Left', 'Right',
+    'Posterior', 'Anterior',
+    'Inferior', 'Superior',
+)
 
 
 class Transform(ABC):
     """Abstract class for all TorchIO transforms.
 
-    All subclasses must overwrite
-    :meth:`Transform.apply_transform`,
-    which takes data, applies some transformation and returns the result.
-
-    The input can be an instance of
+    When called, the input can be an instance of
     :class:`torchio.Subject`,
     :class:`torchio.Image`,
     :class:`numpy.ndarray`,
     :class:`torch.Tensor`,
     :class:`SimpleITK.Image`,
-    or :class:`dict`.
+    or :class:`dict` containing 4D tensors as values.
+
+    All subclasses must overwrite
+    :meth:`~torchio.transforms.Transform.apply_transform`,
+    which takes an instance of :class:`~torchio.Subject`,
+    modifies it and returns the result.
 
     Args:
         p: Probability that this transform will be applied.
@@ -40,11 +64,17 @@ class Transform(ABC):
         exclude: Sequence of strings with the names of the images to which the
             the transform will not be applied, apart from the ones that are
             excluded because of the transform type.
-            For example, if a subject includes an MRI, a CT and a label map, and
-            the CT is added to the list of exclusions of an intensity transform
-            such as :class:`~torchio.transforms.RandomBlur`,
+            For example, if a subject includes an MRI, a CT and a label map,
+            and the CT is added to the list of exclusions of an intensity
+            transform such as :class:`~torchio.transforms.RandomBlur`,
             the transform will be only applied to the MRI, as the label map is
             excluded by default by spatial transforms.
+        keep: Dictionary with the names of the images that will be kept in the
+            subject and their new names.
+        parse_input: If ``True``, the input will be converted to an instance of
+            :class:`~torchio.Subject`. This is used internally by some special
+            transforms like
+            :class:`~torchio.transforms.augmentation.composition.Compose`.
     """
     def __init__(
             self,
@@ -53,6 +83,8 @@ class Transform(ABC):
             include: TypeKeys = None,
             exclude: TypeKeys = None,
             keys: TypeKeys = None,
+            keep: Optional[Dict[str, str]] = None,
+            parse_input: bool = True,
             ):
         self.probability = self.parse_probability(p)
         self.copy = copy
@@ -61,10 +93,16 @@ class Transform(ABC):
                 'The "keys" argument is deprecated and will be removed in the'
                 ' future. Use "include" instead.'
             )
-            warnings.warn(message, DeprecationWarning)
+            warnings.warn(message)
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
             include, exclude)
+        self.keep = keep
+        self.parse_input = parse_input
+        # args_names is the sequence of parameters from self that need to be
+        # passed to a non-random version of a random transform. They are also
+        # used to invert invertible transforms
+        self.args_names = ()
 
     def __call__(
             self,
@@ -73,7 +111,7 @@ class Transform(ABC):
         """Transform data and return a result of the same type.
 
         Args:
-            data: Instance of 1) :class:`~torchio.Subject`, 4D
+            data: Instance of :class:`torchio.Subject`, 4D
                 :class:`torch.Tensor` or :class:`numpy.ndarray` with dimensions
                 :math:`(C, W, H, D)`, where :math:`C` is the number of channels
                 and :math:`W, H, D` are the spatial dimensions. If the input is
@@ -84,18 +122,35 @@ class Transform(ABC):
         """
         if torch.rand(1).item() > self.probability:
             return data
-        data_parser = DataParser(data, keys=self.include)
-        subject = data_parser.get_subject()
+
+        # Some transforms such as Compose should not modify the input data
+        if self.parse_input:
+            data_parser = DataParser(data, keys=self.include)
+            subject = data_parser.get_subject()
+        else:
+            subject = data
+
+        if self.keep is not None:
+            images_to_keep = {}
+            for name, new_name in self.keep.items():
+                images_to_keep[new_name] = copy.copy(subject[name])
         if self.copy:
             subject = copy.copy(subject)
-        with np.errstate(all='raise'):
+        with np.errstate(all='raise', under='ignore'):
             transformed = self.apply_transform(subject)
-        self.add_transform_to_subject_history(transformed)
-        for image in transformed.get_images(intensity_only=False):
-            ndim = image.data.ndim
-            assert ndim == 4, f'Output of {self.name} is {ndim}D'
+        if self.keep is not None:
+            for name, image in images_to_keep.items():
+                transformed.add_image(image, name)
 
-        output = data_parser.get_output(transformed)
+        if self.parse_input:
+            self.add_transform_to_subject_history(transformed)
+            for image in transformed.get_images(intensity_only=False):
+                ndim = image.data.ndim
+                assert ndim == 4, f'Output of {self.name} is {ndim}D'
+            output = data_parser.get_output(transformed)
+        else:
+            output = transformed
+
         return output
 
     def __repr__(self):
@@ -114,17 +169,21 @@ class Transform(ABC):
         return self.__class__.__name__
 
     @abstractmethod
-    def apply_transform(self, subject: Subject):
+    def apply_transform(self, subject: Subject) -> Subject:
         raise NotImplementedError
 
     def add_transform_to_subject_history(self, subject):
         from .augmentation import RandomTransform
-        from . import Compose, OneOf, CropOrPad
+        from . import Compose, OneOf, CropOrPad, EnsureShapeMultiple
+        from .preprocessing import SequentialLabels, Resize
         call_others = (
             RandomTransform,
             Compose,
             OneOf,
             CropOrPad,
+            EnsureShapeMultiple,
+            SequentialLabels,
+            Resize,
         )
         if not isinstance(self, call_others):
             subject.add_transform(self, self._get_reproducing_arguments())
@@ -138,7 +197,8 @@ class Transform(ABC):
 
     def parse_params(self, params, around, name, make_ranges=True, **kwargs):
         params = to_tuple(params)
-        if len(params) == 1 or (len(params) == 2 and make_ranges):  # d or (a, b)
+        # d or (a, b)
+        if len(params) == 1 or (len(params) == 2 and make_ranges):
             params *= 3  # (d, d, d) or (a, b, a, b, a, b)
         if len(params) == 3 and make_ranges:  # (a, b, c)
             items = [self.to_range(n, around) for n in params]
@@ -147,8 +207,8 @@ class Transform(ABC):
         if make_ranges:
             if len(params) != 6:
                 message = (
-                    f'If "{name}" is a sequence, it must have length 2, 3 or 6,'
-                    f' not {len(params)}'
+                    f'If "{name}" is a sequence, it must have length 2, 3 or'
+                    f' 6, not {len(params)}'
                 )
                 raise ValueError(message)
             for param_range in zip(params[::2], params[1::2]):
@@ -163,7 +223,7 @@ class Transform(ABC):
             max_constraint: TypeNumber = None,
             type_constraint: type = None,
             ) -> Tuple[TypeNumber, TypeNumber]:
-        r"""Adapted from ``torchvision.transforms.RandomRotation``.
+        r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
         Args:
             nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,
@@ -302,7 +362,7 @@ class Transform(ABC):
         return nib_to_sitk(data, affine)
 
     @staticmethod
-    def sitk_to_nib(image: sitk.Image) -> Tuple[torch.Tensor, np.ndarray]:
+    def sitk_to_nib(image: sitk.Image) -> TypeDataAffine:
         return sitk_to_nib(image)
 
     def _get_reproducing_arguments(self):
@@ -310,7 +370,14 @@ class Transform(ABC):
         Return a dictionary with the arguments that would be necessary to
         reproduce the transform exactly.
         """
-        return {name: getattr(self, name) for name in self.args_names}
+        reproducing_arguments = {
+            'include': self.include,
+            'exclude': self.exclude,
+            'copy': self.copy,
+        }
+        args_names = {name: getattr(self, name) for name in self.args_names}
+        reproducing_arguments.update(args_names)
+        return reproducing_arguments
 
     def is_invertible(self):
         return hasattr(self, 'invert_transform')
@@ -334,3 +401,126 @@ class Transform(ABC):
     @staticmethod
     def get_sitk_interpolator(interpolation: str) -> int:
         return get_sitk_interpolator(interpolation)
+
+    @staticmethod
+    def parse_bounds(bounds_parameters: TypeBounds) -> TypeSixBounds:
+        if bounds_parameters is None:
+            return None
+        try:
+            bounds_parameters = tuple(bounds_parameters)
+        except TypeError:
+            bounds_parameters = (bounds_parameters,)
+
+        # Check that numbers are integers
+        for number in bounds_parameters:
+            if not isinstance(number, (int, np.integer)) or number < 0:
+                message = (
+                    'Bounds values must be integers greater or equal to zero,'
+                    f' not "{bounds_parameters}" of type {type(number)}'
+                )
+                raise ValueError(message)
+        bounds_parameters = tuple(int(n) for n in bounds_parameters)
+        bounds_parameters_length = len(bounds_parameters)
+        if bounds_parameters_length == 6:
+            return bounds_parameters
+        if bounds_parameters_length == 1:
+            return 6 * bounds_parameters
+        if bounds_parameters_length == 3:
+            return tuple(np.repeat(bounds_parameters, 2).tolist())
+        message = (
+            'Bounds parameter must be an integer or a tuple of'
+            f' 3 or 6 integers, not {bounds_parameters}'
+        )
+        raise ValueError(message)
+
+    @staticmethod
+    def ones(tensor: torch.Tensor) -> torch.Tensor:
+        return torch.ones_like(tensor, dtype=torch.bool)
+
+    @staticmethod
+    def mean(tensor: torch.Tensor) -> torch.Tensor:
+        mask = tensor > tensor.float().mean()
+        return mask
+
+    def get_mask_from_masking_method(
+            self,
+            masking_method: TypeMaskingMethod,
+            subject: Subject,
+            tensor: torch.Tensor,
+            labels: list = None,
+            ) -> torch.Tensor:
+        if masking_method is None:
+            return self.ones(tensor)
+        elif callable(masking_method):
+            return masking_method(tensor)
+        elif type(masking_method) is str:
+            in_subject = masking_method in subject
+            if in_subject and isinstance(subject[masking_method], LabelMap):
+                if labels is None:
+                    return subject[masking_method].data.bool()
+                else:
+                    mask_data = subject[masking_method].data
+                    volumes = [mask_data == label for label in labels]
+                    return torch.stack(volumes).sum(0).bool()
+            possible_axis = masking_method.capitalize()
+            if possible_axis in ANATOMICAL_AXES:
+                return self.get_mask_from_anatomical_label(
+                    possible_axis, tensor)
+        elif type(masking_method) in (tuple, list, int):
+            return self.get_mask_from_bounds(masking_method, tensor)
+        first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
+        message = (
+            'Masking method must be one of:\n'
+            ' 1) A callable object, such as a function\n'
+            ' 2) The name of a label map in the subject'
+            f' ({subject.get_images_names()})\n'
+            f' 3) An anatomical label {ANATOMICAL_AXES + first_anat_axes}\n'
+            ' 4) A bounds parameter'
+            ' (int, tuple of 3 ints, or tuple of 6 ints)\n'
+            f' The passed value, "{masking_method}",'
+            f' of type "{type(masking_method)}", is not valid'
+        )
+        raise ValueError(message)
+
+    @staticmethod
+    def get_mask_from_anatomical_label(
+            anatomical_label: str,
+            tensor: torch.Tensor,
+            ) -> torch.Tensor:
+        # Assume the image is in RAS orientation
+        anatomical_label = anatomical_label.capitalize()
+        if anatomical_label not in ANATOMICAL_AXES:
+            message = (
+                f'Anatomical label must be one of {ANATOMICAL_AXES}'
+                f' not {anatomical_label}'
+            )
+            raise ValueError(message)
+        mask = torch.zeros_like(tensor, dtype=torch.bool)
+        _, width, height, depth = tensor.shape
+        if anatomical_label == 'Right':
+            mask[:, width // 2:] = True
+        elif anatomical_label == 'Left':
+            mask[:, :width // 2] = True
+        elif anatomical_label == 'Anterior':
+            mask[:, :, height // 2:] = True
+        elif anatomical_label == 'Posterior':
+            mask[:, :, :height // 2] = True
+        elif anatomical_label == 'Superior':
+            mask[:, :, :, depth // 2:] = True
+        elif anatomical_label == 'Inferior':
+            mask[:, :, :, :depth // 2] = True
+        return mask
+
+    def get_mask_from_bounds(
+            self,
+            bounds_parameters: TypeBounds,
+            tensor: torch.Tensor,
+            ) -> torch.Tensor:
+        bounds_parameters = self.parse_bounds(bounds_parameters)
+        low = bounds_parameters[::2]
+        high = bounds_parameters[1::2]
+        i0, j0, k0 = low
+        i1, j1, k1 = np.array(tensor.shape[1:]) - high
+        mask = torch.zeros_like(tensor, dtype=torch.bool)
+        mask[:, i0:i1, j0:j1, k0:k1] = True
+        return mask

@@ -8,7 +8,7 @@ import SimpleITK as sitk
 from ..typing import TypeData
 from ..data.subject import Subject
 from ..data.image import Image, ScalarImage
-from ..utils import nib_to_sitk, sitk_to_nib
+from ..data.io import nib_to_sitk, sitk_to_nib
 
 
 TypeTransformInput = Union[
@@ -59,8 +59,10 @@ class DataParser:
         elif isinstance(self.data, dict):  # e.g. Eisen or MONAI dicts
             if self.keys is None:
                 message = (
-                    'If input is a dictionary, a value for "include" must be'
-                    ' specified when instantiating the transform'
+                    'If the input is a dictionary, a value for "include" must'
+                    ' be specified when instantiating the transform. See the'
+                    ' docs for Transform:'
+                    ' https://torchio.readthedocs.io/transforms/transforms.html#torchio.transforms.Transform'  # noqa: E501
                 )
                 raise RuntimeError(message)
             subject = self._get_subject_from_dict(self.data, self.keys)
@@ -110,7 +112,9 @@ class DataParser:
         if data.ndim != 4:
             message = (
                 'The input must be a 4D tensor with dimensions'
-                f' (channels, x, y, z) but it has shape {tuple(data.shape)}'
+                f' (channels, x, y, z) but it has shape {tuple(data.shape)}.'
+                ' Tips: if it is a volume, please add the channels dimension;'
+                ' if it is 2D, also add a dimension of size 1 for the z axis'
             )
             raise ValueError(message)
         return self._get_subject_from_tensor(data)

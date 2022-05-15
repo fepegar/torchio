@@ -7,9 +7,6 @@ Augmentation transforms generate different results every time they are called.
     :alt: Augmented image
     :target: https://gist.github.com/fepegar/53f81de209eed8e90aa8b73675295b51
 
-.. contents::
-    :local:
-
 
 Base class
 ----------

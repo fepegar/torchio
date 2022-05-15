@@ -3,7 +3,6 @@ from typing import Union, Sequence, Dict
 
 import torch
 import numpy as np
-from torchvision.transforms import Compose as PyTorchCompose
 
 from ...data.subject import Subject
 from .. import Transform
@@ -19,24 +18,20 @@ class Compose(Transform):
     Args:
         transforms: Sequence of instances of
             :class:`~torchio.transforms.Transform`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
-    .. note::
-        This is a thin wrapper of :class:`torchvision.transforms.Compose`.
     """
     def __init__(self, transforms: Sequence[Transform], **kwargs):
-        super().__init__(**kwargs)
-        if not transforms:
-            raise ValueError('The list of transforms is empty')
+        super().__init__(parse_input=False, **kwargs)
         for transform in transforms:
             if not callable(transform):
                 message = (
-                    'One or more of the objects passed to the Compose transform'
-                    f' are not callable: "{transform}"'
+                    'One or more of the objects passed to the Compose'
+                    f' transform are not callable: "{transform}"'
                 )
                 raise TypeError(message)
-        self.transform = PyTorchCompose(transforms)
-        self.transforms = self.transform.transforms
+        self.transforms = list(transforms)
 
     def __len__(self):
         return len(self.transforms)
@@ -45,24 +40,34 @@ class Compose(Transform):
         return self.transforms[index]
 
     def __repr__(self) -> str:
-        return self.transform.__repr__()
+        return f'{self.name}({self.transforms})'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        return self.transform(subject)
+        for transform in self.transforms:
+            subject = transform(subject)
+        return subject
 
     def is_invertible(self) -> bool:
         return all(t.is_invertible() for t in self.transforms)
 
-    def inverse(self) -> Transform:
+    def inverse(self, warn: bool = True) -> Transform:
+        """Return a composed transform with inverted order and transforms.
+
+        Args:
+            warn: Issue a warning if some transforms are not invertible.
+        """
         transforms = []
         for transform in self.transforms:
             if transform.is_invertible():
                 transforms.append(transform.inverse())
-            else:
+            elif warn:
                 message = f'Skipping {transform.name} as it is not invertible'
                 warnings.warn(message, RuntimeWarning)
         transforms.reverse()
-        return Compose(transforms)
+        result = Compose(transforms)
+        if not transforms and warn:
+            warnings.warn('No invertible transforms found', RuntimeWarning)
+        return result
 
 
 class OneOf(RandomTransform):
@@ -74,7 +79,8 @@ class OneOf(RandomTransform):
             probabilities as values. Probabilities are normalized so they sum
             to one. If a sequence is given, the same probability will be
             assigned to each transform.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
@@ -92,7 +98,7 @@ class OneOf(RandomTransform):
             transforms: TypeTransformsDict,
             **kwargs
             ):
-        super().__init__(**kwargs)
+        super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
     def apply_transform(self, subject: Subject) -> Subject:

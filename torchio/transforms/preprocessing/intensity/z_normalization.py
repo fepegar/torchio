@@ -9,7 +9,8 @@ class ZNormalization(NormalizationTransform):
     Args:
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -36,7 +37,7 @@ class ZNormalization(NormalizationTransform):
                 f' in image "{image_name}" ({image.path})'
             )
             raise RuntimeError(message)
-        image.data = standardized
+        image.set_data(standardized)
 
     @staticmethod
     def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:

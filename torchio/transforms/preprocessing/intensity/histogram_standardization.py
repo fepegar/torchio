@@ -31,7 +31,8 @@ class HistogramStandardization(NormalizationTransform):
             :meth:`torchio.transforms.HistogramStandardization.train`.
         masking_method: See
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torch
@@ -43,7 +44,7 @@ class HistogramStandardization(NormalizationTransform):
         >>> transform = tio.HistogramStandardization(landmarks)
         >>> torch.save(landmarks, 'path_to_landmarks.pth')
         >>> transform = tio.HistogramStandardization('path_to_landmarks.pth')
-    """
+    """  # noqa: E501
     def __init__(
             self,
             landmarks: TypeLandmarks,
@@ -88,18 +89,15 @@ class HistogramStandardization(NormalizationTransform):
             raise KeyError(message)
         image = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
-        image.data = normalize(
-            image.data,
-            landmarks,
-            mask=mask,
-        )
+        normalized = normalize(image.data, landmarks, mask=mask)
+        image.set_data(normalized)
 
     @classmethod
     def train(
             cls,
             images_paths: Sequence[TypePath],
             cutoff: Optional[Tuple[float, float]] = None,
-            mask_path: Optional[TypePath] = None,
+            mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
             masking_function: Optional[Callable] = None,
             output_path: Optional[TypePath] = None,
             ) -> np.ndarray:
@@ -111,10 +109,12 @@ class HistogramStandardization(NormalizationTransform):
                 respectively, that are used to select a range of intensity of
                 interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
                 `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
-            mask_path: Optional path to a mask image to extract voxels used for
-                training.
-            masking_function: Optional function used to extract voxels used for
-                training.
+            mask_path: Path (or list of paths) to a binary image that will be
+                used to select the voxels use to compute the stats during
+                histogram training. If ``None``, all voxels in the image will
+                be used.
+            masking_function: Function used to extract voxels used for
+                histogram training.
             output_path: Optional file path with extension ``.txt`` or
                 ``.npy``, where the landmarks will be saved.
 
@@ -151,23 +151,34 @@ class HistogramStandardization(NormalizationTransform):
             ... }
             >>>
             >>> transform = HistogramStandardization(landmarks_dict)
-        """
+        """  # noqa: E501
+        is_masks_list = isinstance(mask_path, Sequence)
+        if is_masks_list and len(mask_path) != len(images_paths):
+            message = (
+                f'Different number of images ({len(images_paths)})'
+                f' and mask ({len(mask_path)}) paths found'
+            )
+            raise ValueError(message)
         quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
         percentiles = _get_percentiles(percentiles_cutoff)
-        for image_file_path in tqdm(images_paths):
+        for i, image_file_path in enumerate(tqdm(images_paths)):
             tensor, _ = read_image(image_file_path)
-            data = tensor.numpy()
             if masking_function is not None:
-                mask = masking_function(data)
+                mask = masking_function(tensor)
             else:
-                if mask_path is not None:
-                    mask, _ = read_image(mask_path)
-                    mask = mask.numpy() > 0
+                if mask_path is None:
+                    mask = np.ones_like(tensor, dtype=bool)
                 else:
-                    mask = np.ones_like(data, dtype=np.bool)
-            percentile_values = np.percentile(data[mask], percentiles)
+                    if is_masks_list:
+                        path = mask_path[i]
+                    else:
+                        path = mask_path
+                    mask, _ = read_image(path)
+                    mask = mask.numpy() > 0
+            array = tensor.numpy()
+            percentile_values = np.percentile(array[mask], percentiles)
             percentiles_database.append(percentile_values)
         percentiles_database = np.vstack(percentiles_database)
         mapping = _get_average_mapping(percentiles_database)
@@ -191,8 +202,8 @@ def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
 
     """
     cutoff = np.asarray(cutoff)
-    cutoff[0] = max(0., cutoff[0])
-    cutoff[1] = min(1., cutoff[1])
+    cutoff[0] = max(0, cutoff[0])
+    cutoff[1] = min(1, cutoff[1])
     cutoff[0] = np.min([cutoff[0], 0.09])
     cutoff[1] = np.max([cutoff[1], 0.91])
     return cutoff
@@ -241,7 +252,7 @@ def normalize(
     data = data.reshape(-1).astype(np.float32)
 
     if mask is None:
-        mask = np.ones_like(data, np.bool)
+        mask = np.ones_like(data, bool)
     mask = mask.reshape(-1)
 
     range_to_use = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11, 12]
@@ -276,8 +287,9 @@ def normalize(
     new_img = lin_img * data + aff_img
     new_img = new_img.reshape(shape)
     new_img = new_img.astype(np.float32)
-    new_img = torch.from_numpy(new_img)
+    new_img = torch.as_tensor(new_img)
     return new_img
 
 
+# train_histogram kept for backward compatibility
 train = train_histogram = HistogramStandardization.train

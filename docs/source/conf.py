@@ -14,18 +14,20 @@
 import os
 import sys
 from typing import List
+from datetime import date
 sys.path.insert(0, os.path.abspath('../..'))
-sys.path.append(os.path.abspath('sphinxext'))
+import torchio  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
 project = 'TorchIO'
-copyright = '2020, Fernando Pérez-García'  # noqa: A001
 author = 'Fernando Pérez-García'
+# A001 is "variable "copyright" is shadowing a python builtin"
+copyright = f'{date.today().year}, {author}'  # noqa: A001
 
 # version is the short X.Y version
 # release is the full version, including alpha/beta/rc tags
-version = release = '0.18.8'
+version = release = torchio.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -38,20 +40,24 @@ version = release = '0.18.8'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'sphinx_rtd_theme',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
     'matplotlib.sphinxext.plot_directive',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.duration',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
+    'sphinx_copybutton',
+    'sphinx_gallery.gen_gallery',
+    'sphinxext.opengraph',
 ]
 
 # Add mappings
 # https://kevin.burke.dev/kevin/sphinx-interlinks/
+# https://github.com/pytorch/fairseq/blob/adb5b9c71f7ef4fe2f258e0da102d819ab9920ef/docs/conf.py#L131
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'torch': ('https://pytorch.org/docs/master/', None),  # https://github.com/pytorch/fairseq/blob/adb5b9c71f7ef4fe2f258e0da102d819ab9920ef/docs/conf.py#L131
+    'torch': ('https://pytorch.org/docs/master/', None),
     'torchvision': ('https://pytorch.org/docs/master/', None),
     'nibabel': ('https://nipy.org/nibabel/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
@@ -82,28 +88,43 @@ language = None
 exclude_patterns: List[str] = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'friendly'
 
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky
+# This generates a lot of warnings because of the broken internal links, which
+# makes the docs build fail because of the "fail_on_warning: true" option in
+# the .readthedocs.yml config file
+# nitpicky = True
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
+html_title = 'TorchIO'
+
+html_favicon = 'favicon_io/favicon.ico'
+html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
+# further. For a list of options available for each theme, see the
 # documentation.
 #
+url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: E501
+text = 'CMPB'
+html_href = f'<a href="{url}">{text}</a>'
+message = (
+    f'TorchIO becomes one of the most downloaded articles from {html_href}!'
+)
 html_theme_options = {
-    'navigation_depth': 3,
+    'announcement': message,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -190,9 +211,32 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
+# CopyButton configuration
+copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '  # noqa: E501,FS003
+copybutton_prompt_is_regexp = True
 
-def setup(app):
-    app.add_js_file('copybutton.js')
+# def setup(app):
+#     app.add_js_file('copybutton.js')
 
 
 # -- Extension configuration -------------------------------------------------
+
+sphinx_gallery_conf = {
+    'examples_dirs': '../examples',   # example scripts
+    'gallery_dirs': 'auto_examples',  # where to save gallery generated output
+    'matplotlib_animations': True,
+    'binder': {
+        # Required keys
+        'org': 'fepegar',
+        'repo': 'torchio',
+        'branch': 'main',
+        'binderhub_url': 'https://mybinder.org',
+        'dependencies': '../requirements.txt',
+        # Optional keys
+        'use_jupyter_lab': False,
+    }
+}
+
+# autosummary_generate = True  # Turn on sphinx.ext.autosummary
+
+plot_formats = [('png', 300)]

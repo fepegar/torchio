@@ -1,3 +1,4 @@
+import os
 import copy
 import shutil
 import random
@@ -5,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from random import shuffle
+from typing import Set, Sequence
 
 import torch
 import numpy as np
@@ -16,7 +18,7 @@ class TorchioTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        self.dir = Path(tempfile.gettempdir()) / '.torchio_tests'
+        self.dir = Path(tempfile.gettempdir()) / os.urandom(24).hex()
         self.dir.mkdir(exist_ok=True)
         random.seed(42)
         np.random.seed(42)
@@ -62,13 +64,13 @@ class TorchioTestCase(unittest.TestCase):
     def make_2d(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image.data = image.data[..., :1]
+            image.set_data(image.data[..., :1])
         return subject
 
     def make_multichannel(self, subject):
         subject = copy.deepcopy(subject)
         for image in subject.get_images(intensity_only=False):
-            image.data = torch.cat(4 * (image.data,))
+            image.set_data(torch.cat(4 * (image.data,)))
         return subject
 
     def flip_affine_x(self, subject):
@@ -102,7 +104,11 @@ class TorchioTestCase(unittest.TestCase):
 
     def get_reference_image_and_path(self):
         """Return a reference image and its path"""
-        path = self.get_image_path('ref', shape=(10, 20, 31), spacing=(1, 1, 2))
+        path = self.get_image_path(
+            'ref',
+            shape=(10, 20, 31),
+            spacing=(1, 1, 2),
+        )
         image = tio.ScalarImage(path)
         return image, path
 
@@ -119,6 +125,25 @@ class TorchioTestCase(unittest.TestCase):
             ),
         )
 
+    def get_subject_with_labels(self, labels):
+        return tio.Subject(
+            label=tio.LabelMap(
+                self.get_image_path(
+                    'label_multi', labels=labels
+                )
+            )
+        )
+
+    @staticmethod
+    def get_unique_labels(data: torch.Tensor) -> Set[int]:
+        labels = data.unique().tolist()
+        return set(labels)
+
+    @staticmethod
+    def get_tensor_with_labels(labels: Sequence) -> torch.Tensor:
+        tensor = torch.as_tensor(list(labels))
+        return tensor.repeat_interleave(2).reshape(1, 1, 1, -1)
+
     def tearDown(self):
         """Tear down test fixtures, if any."""
         shutil.rmtree(self.dir)
@@ -131,6 +156,7 @@ class TorchioTestCase(unittest.TestCase):
             self,
             stem,
             binary=False,
+            labels=None,
             shape=(10, 20, 30),
             spacing=(1, 1, 1),
             components=1,
@@ -144,6 +170,14 @@ class TorchioTestCase(unittest.TestCase):
             data = (data > 0.5).astype(np.uint8)
             if not data.sum() and force_binary_foreground:
                 data[..., 0] = 1
+        elif labels is not None:
+            data = (data * (len(labels) + 1)).astype(np.uint8)
+            new_data = np.zeros_like(data)
+            for i, label in enumerate(labels):
+                new_data[data == (i + 1)] = label
+                if not (new_data == label).sum():
+                    new_data[..., i] = label
+            data = new_data
         elif self.flip_coin():  # cast some images
             data *= 100
             dtype = np.uint8 if self.flip_coin() else np.uint16
@@ -152,7 +186,8 @@ class TorchioTestCase(unittest.TestCase):
             data[:] = np.nan
         affine = np.diag((*spacing, 1))
         if suffix is None:
-            suffix = random.choice(('.nii.gz', '.nii', '.nrrd', '.img', '.mnc'))
+            extensions = '.nii.gz', '.nii', '.nrrd', '.img', '.mnc'
+            suffix = random.choice(extensions)
         path = self.dir / f'{stem}{suffix}'
         if self.flip_coin():
             path = str(path)
@@ -171,7 +206,7 @@ class TorchioTestCase(unittest.TestCase):
         return Path(__file__).parent / 'image_data'
 
     def assertTensorNotEqual(self, *args, **kwargs):  # noqa: N802
-        message_kwarg = dict(msg=args[2]) if len(args) == 3 else {}
+        message_kwarg = {'msg': args[2]} if len(args) == 3 else {}
         with self.assertRaises(AssertionError, **message_kwarg):
             self.assertTensorEqual(*args, **kwargs)
 
@@ -182,6 +217,10 @@ class TorchioTestCase(unittest.TestCase):
     @staticmethod
     def assertTensorAlmostEqual(*args, **kwargs):  # noqa: N802
         assert_array_almost_equal(*args, **kwargs)
+
+    @staticmethod
+    def assertTensorAllZeros(tensor):  # noqa: N802
+        assert torch.all(tensor == 0)
 
     def get_large_composed_transform(self):
         all_classes = get_all_random_transforms()

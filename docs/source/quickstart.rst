@@ -1,13 +1,19 @@
-.. _Getting started:
+Getting started
+===============
 
 Installation
-============
+------------
 
 The Python package is hosted on the
 `Python Package Index (PyPI) <https://pypi.org/project/torchio/>`_.
 
-The latest published version can be installed
-using Pip Installs Packages (``pip``)::
+To install the latest PyTorch version before installing TorchIO, it is
+recommended to use `light-the-torch <https://github.com/pmeier/light-the-torch>`_::
+
+    $ pip install light-the-torch && ltt install torch
+
+The latest published version of TorchIO can be installed using Pip Installs
+Packages (``pip``)::
 
     $ pip install torchio
 
@@ -27,7 +33,7 @@ try `installing PyTorch <https://pytorch.org/get-started/locally/>`_ with
 TorchIO.
 
 Hello, World!
-=============
+-------------
 
 This example shows the basic usage of TorchIO, where an instance of
 :class:`~torchio.SubjectsDataset` is passed to
@@ -66,12 +72,12 @@ in parallel::
 
     # Let's use one preprocessing transform and one augmentation transform
     # This transform will be applied only to scalar images:
-    rescale = tio.RescaleIntensity((0, 1))
+    rescale = tio.RescaleIntensity(out_min_max=(0, 1))
 
     # As RandomAffine is faster then RandomElasticDeformation, we choose to
     # apply RandomAffine 80% of the times and RandomElasticDeformation the rest
     # Also, there is a 25% chance that none of them will be applied
-    spatial = OneOf({
+    spatial = tio.OneOf({
             tio.RandomAffine(): 0.8,
             tio.RandomElasticDeformation(): 0.2,
         },
@@ -97,19 +103,19 @@ in parallel::
 
 
 Tutorials
-=========
+---------
 
 |Google-Colab-notebook|
 
 The best way to quickly understand and try the library is the
-`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/master/examples/README.md>`_
+`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/main/tutorials/README.md>`_
 hosted on Google Colab.
 
 They include multiple examples and visualization of most of the classes,
-including training of a `3D U-Net <https://www.github.com/fepegar/unet>`_ for
+including training of a `3D U-Net <https://github.com/fepegar/unet>`_ for
 brain segmentation on :math:`T_1`-weighted MRI with full volumes and
 with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/master/examples/README.md
+   :target: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
    :alt: Google Colab notebook

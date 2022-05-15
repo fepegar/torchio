@@ -12,7 +12,7 @@ MRA images and Diffusion-weighted images (15 directions)".
     `the IXI website <https://brain-development.org/ixi-dataset/>`_.
 
 .. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/
-"""
+"""  # noqa: E501
 
 # Adapted from
 # https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
@@ -25,13 +25,12 @@ from tempfile import NamedTemporaryFile
 
 from ..typing import TypePath
 from ..transforms import Transform
-from ..utils import download_and_extract_archive
+from ..download import download_and_extract_archive
 from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
 
 
 class IXI(SubjectsDataset):
-    """
-    Full IXI dataset.
+    """Full IXI dataset.
 
     Args:
         root: Root directory to which the dataset will be downloaded.
@@ -45,7 +44,7 @@ class IXI(SubjectsDataset):
         If you set :attr:`download` to ``True``, it will take some time
         to be downloaded if it is not already present.
 
-    Example::
+    Example:
 
         >>> import torchio as tio
         >>> transforms = [
@@ -63,9 +62,9 @@ class IXI(SubjectsDataset):
         >>> print('Keys in subject:', tuple(sample_subject.keys()))  # ('T1', 'T2')
         >>> print('Shape of T1 data:', sample_subject['T1'].shape)  # [1, 180, 268, 268]
         >>> print('Shape of T2 data:', sample_subject['T2'].shape)  # [1, 241, 257, 188]
-    """
+    """  # noqa: E501
 
-    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003
+    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003,E501
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
         'T2': 'e3140d78730ecdd32ba92da48c0a9aaa',
@@ -123,7 +122,7 @@ class IXI(SubjectsDataset):
         subjects = []
         for filepath in paths:
             subject_id = get_subject_id(filepath)
-            images_dict = dict(subject_id=subject_id)
+            images_dict = {'subject_id': subject_id}
             images_dict[one_modality] = ScalarImage(filepath)
             for modality in modalities[1:]:
                 globbed = sglob(
@@ -154,7 +153,7 @@ class IXI(SubjectsDataset):
             url = self.base_url.format(modality=modality)
             md5 = self.md5_dict[modality]
 
-            with NamedTemporaryFile(suffix='.tar') as f:
+            with NamedTemporaryFile(suffix='.tar', delete=False) as f:
                 download_and_extract_archive(
                     url,
                     download_root=modality_dir,
@@ -178,8 +177,8 @@ class IXITiny(SubjectsDataset):
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
 
-    .. _notebook: https://github.com/fepegar/torchio/blob/master/examples/README.md
-    """
+    .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
+    """  # noqa: E501
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
@@ -226,11 +225,11 @@ class IXITiny(SubjectsDataset):
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
         if root.is_dir():  # assume it's been downloaded
-            print('Root directory for IXITiny found:', root)  # noqa: T001
+            print('Root directory for IXITiny found:', root)  # noqa: T201
             return
-        print('Root directory for IXITiny not found:', root)  # noqa: T001
-        print('Downloading...')  # noqa: T001
-        with NamedTemporaryFile(suffix='.zip') as f:
+        print('Root directory for IXITiny not found:', root)  # noqa: T201
+        print('Downloading...')  # noqa: T201
+        with NamedTemporaryFile(suffix='.zip', delete=False) as f:
             download_and_extract_archive(
                 self.url,
                 download_root=root,

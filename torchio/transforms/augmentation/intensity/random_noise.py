@@ -25,7 +25,8 @@ class RandomNoise(RandomTransform, IntensityTransform):
             then :math:`\sigma \sim \mathcal{U}(a, b)`.
             If only one value :math:`d` is provided,
             :math:`\sigma \sim \mathcal{U}(0, d)`.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -70,7 +71,8 @@ class Noise(IntensityTransform):
         std: Standard deviation :math:`\sigma` of the Gaussian distribution
             from which the noise is sampled.
         seed: Seed for the random number generator.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
     """
     def __init__(
             self,
@@ -87,15 +89,15 @@ class Noise(IntensityTransform):
         self.args_names = 'mean', 'std', 'seed'
 
     def apply_transform(self, subject: Subject) -> Subject:
-        args = self.mean, self.std, self.seed
+        mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                mean, std, seed = [arg[name] for arg in args]
+                mean, std, seed = (arg[name] for arg in args)
             with self._use_seed(seed):
                 noise = get_noise(image.data, mean, std)
             if self.invert_transform:
                 noise *= -1
-            image.data = image.data + noise
+            image.set_data(image.data + noise)
         return subject
 
 

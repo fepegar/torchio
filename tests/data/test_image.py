@@ -2,9 +2,11 @@
 
 """Tests for Image."""
 
+import sys
 import copy
 import tempfile
 
+import pytest
 import torch
 import numpy as np
 import nibabel as nib
@@ -20,6 +22,7 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             tio.ScalarImage('nopath')
 
+    @pytest.mark.skipif(sys.platform == 'win32', reason='Path not valid')
     def test_wrong_path_value(self):
         with self.assertRaises(RuntimeError):
             tio.ScalarImage('~&./@#"!?X7=+')
@@ -62,9 +65,9 @@ class TestImage(TorchioTestCase):
         subject = tio.Subject(
             t1=tio.ScalarImage(self.get_image_path('repr_test')),
         )
-        assert 'shape' not in repr(subject['t1'])
+        assert 'memory' not in repr(subject['t1'])
         subject.load()
-        assert 'shape' in repr(subject['t1'])
+        assert 'memory' in repr(subject['t1'])
 
     def test_data_tensor(self):
         subject = copy.deepcopy(self.sample_subject)
@@ -94,13 +97,16 @@ class TestImage(TorchioTestCase):
         with self.assertRaises(FileNotFoundError):
             tio.ScalarImage(path=['nopath', 'error'])
 
-    def test_with_a_list_of_paths(self):
+    def test_with_sequences_of_paths(self):
         shape = (5, 5, 5)
         path1 = self.get_image_path('path1', shape=shape)
         path2 = self.get_image_path('path2', shape=shape)
-        image = tio.ScalarImage(path=[path1, path2])
-        self.assertEqual(image.shape, (2, 5, 5, 5))
-        self.assertEqual(image[tio.STEM], ['path1', 'path2'])
+        paths_tuple = path1, path2
+        paths_list = list(paths_tuple)
+        for sequence in (paths_tuple, paths_list):
+            image = tio.ScalarImage(path=sequence)
+            self.assertEqual(image.shape, (2, 5, 5, 5))
+            self.assertEqual(image[tio.STEM], ['path1', 'path2'])
 
     def test_with_a_list_of_images_with_different_shapes(self):
         path1 = self.get_image_path('path1', shape=(5, 5, 5))
@@ -133,6 +139,7 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.height, image.shape[height_idx])
         self.assertEqual(image.width, image.shape[width_idx])
 
+    @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot(self):
         image = self.sample_subject.t1
         image.plot(show=False, output_path=self.dir / 'image.png')
@@ -148,7 +155,7 @@ class TestImage(TorchioTestCase):
         self.assertEqual(image.data.dtype, torch.int64)
 
     def test_save_image_with_data_type_boolean(self):
-        tensor = np.random.rand(1, 3, 3, 3).astype(np.bool)
+        tensor = np.random.rand(1, 3, 3, 3).astype(bool)
         image = tio.ScalarImage(tensor=tensor)
         image.save(self.dir / 'image.nii')
 
@@ -157,7 +164,7 @@ class TestImage(TorchioTestCase):
         for dtype in np.uint16, np.uint32:
             data = np.ones((3, 3, 3), dtype=dtype)
             img = nib.Nifti1Image(data, affine)
-            with tempfile.NamedTemporaryFile(suffix='.nii') as f:
+            with tempfile.NamedTemporaryFile(suffix='.nii', delete=False) as f:
                 nib.save(img, f.name)
                 tio.ScalarImage(f.name).load()
 
@@ -174,3 +181,71 @@ class TestImage(TorchioTestCase):
 
     def test_pil_3(self):
         tio.ScalarImage(tensor=torch.rand(3, 2, 3, 1)).as_pil()
+
+    def test_set_data(self):
+        with self.assertWarns(DeprecationWarning):
+            im = self.sample_subject.t1
+            im.data = im.data
+
+    def test_no_type(self):
+        with self.assertWarns(UserWarning):
+            tio.Image(tensor=torch.rand(1, 2, 3, 4))
+
+    def test_custom_reader(self):
+        path = self.dir / 'im.npy'
+
+        def numpy_reader(path):
+            return np.load(path), np.eye(4)
+
+        def assert_shape(shape_in, shape_out):
+            np.save(path, np.random.rand(*shape_in))
+            image = tio.ScalarImage(path, reader=numpy_reader)
+            assert image.shape == shape_out
+
+        assert_shape((5, 5), (1, 5, 5, 1))
+        assert_shape((5, 5, 3), (3, 5, 5, 1))
+        assert_shape((3, 5, 5), (3, 5, 5, 1))
+        assert_shape((5, 5, 5), (1, 5, 5, 5))
+        assert_shape((1, 5, 5, 5), (1, 5, 5, 5))
+        assert_shape((4, 5, 5, 5), (4, 5, 5, 5))
+
+    def test_fast_gif(self):
+        with self.assertWarns(UserWarning):
+            with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
+                self.sample_subject.t1.to_gif(0, 0.0001, f.name)
+
+    def test_gif_rgb(self):
+        with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
+            tio.ScalarImage(tensor=torch.rand(3, 4, 5, 6)).to_gif(0, 1, f.name)
+
+    def test_hist(self):
+        self.sample_subject.t1.hist(density=False, show=False)
+        self.sample_subject.t1.hist(density=True, show=False)
+
+    def test_count(self):
+        image = self.sample_subject.label
+        max_n = image.data.numel()
+        nonzero = image.count_nonzero()
+        assert 0 <= nonzero <= max_n
+        counts = image.count_labels()
+        assert tuple(counts) == (0, 1)
+        assert 0 <= counts[0] <= max_n
+        assert 0 <= counts[1] <= max_n
+
+    def test_affine_multipath(self):
+        # https://github.com/fepegar/torchio/issues/762
+        path1 = self.get_image_path('multi1')
+        path2 = self.get_image_path('multi2')
+        paths = path1, path2
+        image = tio.ScalarImage(paths)
+        self.assertTensorEqual(image.affine, np.eye(4))
+
+    def test_bad_numpy_type_reader(self):
+        # https://github.com/fepegar/torchio/issues/764
+        def numpy_reader(path):
+            return np.load(path), np.eye(4)
+        tensor = np.random.rand(1, 2, 3, 4).astype(np.uint16)
+        test_path = self.dir / 'test_image.npy'
+        np.save(test_path, tensor)
+        image = tio.ScalarImage(test_path, reader=numpy_reader)
+        image.load()

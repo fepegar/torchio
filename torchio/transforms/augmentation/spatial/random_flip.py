@@ -22,15 +22,16 @@ class RandomFlip(RandomTransform, SpatialTransform):
             used.
         flip_probability: Probability that the image will be flipped. This is
             computed on a per-axis basis.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     Example:
         >>> import torchio as tio
         >>> fpg = tio.datasets.FPG()
         >>> flip = tio.RandomFlip(axes=('LR',))  # flip along lateral axis only
 
-    .. tip:: It is handy to specify the axes as anatomical labels when the image
-        orientation is not known.
+    .. tip:: It is handy to specify the axes as anatomical labels when the
+        image orientation is not known.
     """
 
     def __init__(
@@ -50,10 +51,11 @@ class RandomFlip(RandomTransform, SpatialTransform):
             if i not in potential_axes:
                 axes_to_flip_hot[i] = False
         axes, = np.where(axes_to_flip_hot)
+        axes = axes.tolist()
+        if not axes:
+            return subject
 
-        arguments = {
-            'axes': axes.tolist(),
-        }
+        arguments = {'axes': axes}
         transform = Flip(**self.add_include_exclude(arguments))
         transformed = transform(subject)
         return transformed
@@ -71,10 +73,11 @@ class Flip(SpatialTransform):
             the image will be flipped. See
             :class:`~torchio.transforms.augmentation.spatial.random_flip.RandomFlip`
             for more information.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
-    .. tip:: It is handy to specify the axes as anatomical labels when the image
-        orientation is not known.
+    .. tip:: It is handy to specify the axes as anatomical labels when the
+        image orientation is not known.
     """
 
     def __init__(self, axes, **kwargs):
@@ -120,9 +123,9 @@ def _ensure_axes_indices(subject, axes):
 
 
 def _flip_image(image, axes):
-    spatial_axes = np.array(axes) + 1
+    spatial_axes = np.array(axes, int) + 1
     data = image.numpy()
     data = np.flip(data, axis=spatial_axes)
     data = data.copy()  # remove negative strides
-    data = torch.from_numpy(data)
-    image.data = data
+    data = torch.as_tensor(data)
+    image.set_data(data)

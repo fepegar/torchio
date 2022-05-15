@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project: false
+
+ignore:
+  - "setup.py"
+  - "torchio/external/due.py"
+  - "torchio/datasets"
+  - "torchio/download.py"

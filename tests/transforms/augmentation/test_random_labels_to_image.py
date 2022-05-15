@@ -142,8 +142,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
-            default_std=0.,
-            default_mean=-1.
+            default_std=0,
+            default_mean=-1,
         )
         original_t1 = self.sample_subject.t1.data.clone()
         transformed = transform(self.sample_subject)
@@ -220,7 +220,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         """The transform raises an error if mean and used_labels
          length don't match."""
         with self.assertRaises(AssertionError):
-            RandomLabelsToImage(label_key='label', mean=[0], used_labels=[0, 1])
+            RandomLabelsToImage(
+                label_key='label',
+                mean=[0],
+                used_labels=[0, 1],
+            )
 
     def test_std_and_used_labels_len_not_matching(self):
         """The transform raises an error if std and used_labels
@@ -241,3 +245,12 @@ class TestRandomLabelsToImage(TorchioTestCase):
         transform = RandomLabelsToImage(label_key='label', std=[1, 2, 3])
         with self.assertRaises(RuntimeError):
             transform(self.sample_subject)
+
+    def test_bad_range(self):
+        with self.assertRaises(ValueError):
+            RandomLabelsToImage(default_mean=(2, 1))
+
+    def test_no_labels(self):
+        transform = RandomLabelsToImage()
+        with self.assertRaises(RuntimeError):
+            transform(self.sample_subject.t1)

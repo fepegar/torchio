@@ -1,8 +1,8 @@
 """Top-level package for torchio."""
 
 __author__ = """Fernando Perez-Garcia"""
-__email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
-__version__ = '0.18.8'
+__email__ = 'fepegar@gmail.com'
+__version__ = '0.18.76'
 
 
 from . import utils

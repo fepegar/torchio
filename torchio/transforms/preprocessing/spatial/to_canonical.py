@@ -11,23 +11,21 @@ class ToCanonical(SpatialTransform):
     This transform reorders the voxels and modifies the affine matrix so that
     the voxel orientations are nearest to:
 
-        1. First voxel axis goes from left to Right
-        2. Second voxel axis goes from posterior to Anterior
-        3. Third voxel axis goes from inferior to Superior
+    1. First voxel axis goes from left to Right
+    2. Second voxel axis goes from posterior to Anterior
+    3. Third voxel axis goes from inferior to Superior
 
     See `NiBabel docs about image orientation`_ for more information.
 
     Args:
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The reorientation is performed using
         :meth:`nibabel.as_closest_canonical`.
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
-    """
-
-    args_names = ()
-
+    """  # noqa: E501
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):
             affine = image.affine
@@ -38,10 +36,11 @@ class ToCanonical(SpatialTransform):
             array = array.transpose(2, 3, 4, 0, 1)  # (W, H, D, 1, C)
             nii = nib.Nifti1Image(array, affine)
             reoriented = nib.as_closest_canonical(nii)
-            array = reoriented.get_fdata(dtype=np.float32)
+            # https://nipy.org/nibabel/reference/nibabel.dataobj_images.html#nibabel.dataobj_images.DataobjImage.get_data
+            array = np.asanyarray(reoriented.dataobj)
             # https://github.com/facebookresearch/InferSent/issues/99#issuecomment-446175325
             array = array.copy()
             array = array.transpose(3, 4, 0, 1, 2)  # (1, C, W, H, D)
-            image.data = torch.from_numpy(array[0])
+            image.set_data(torch.as_tensor(array[0]))
             image.affine = reoriented.affine
         return subject

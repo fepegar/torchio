@@ -31,7 +31,8 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             If only one value :math:`d` is provided,
             :math:`r \sim \mathcal{U}(-d, d)`.
             Larger values generate more distorted images.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -85,7 +86,8 @@ class Spike(IntensityTransform, FourierTransform):
         spikes_positions:
         intensity: Ratio :math:`r` between the spike intensity and the maximum
             of the spectrum.
-        **kwargs: See :class:`~torchio.transforms.Transform` for additional keyword arguments.
+        **kwargs: See :class:`~torchio.transforms.Transform` for additional
+            keyword arguments.
 
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
@@ -117,7 +119,7 @@ class Spike(IntensityTransform, FourierTransform):
                     intensity,
                 )
                 transformed_tensors.append(transformed_tensor)
-            image.data = torch.stack(transformed_tensors)
+            image.set_data(torch.stack(transformed_tensors))
         return subject
 
     def add_artifact(
