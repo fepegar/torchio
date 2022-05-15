@@ -322,3 +322,25 @@ class TestTransform(TorchioTestCase):
         mask = transform.get_mask_from_bounds(3 * (0, 1), tensor)
         assert mask[0, 0, 0, 0] == 1
         assert mask.sum() == 1
+
+    def test_label_keys(self):
+        # Adapted from the issue in which the feature was requested:
+        # https://github.com/fepegar/torchio/issues/866#issue-1222255576
+        size = 1, 10, 10, 10
+        image = torch.rand(size)
+        num_classes = 2  # excluding background
+        label = torch.randint(num_classes + 1, size)
+
+        data_dict = {'image': image, 'label': label}
+
+        transform = tio.RandomAffine(
+            include=['image', 'label'],
+            label_keys=['label'],
+        )
+        transformed_label = transform(data_dict)['label']
+
+        # If the image is indeed transformed as a label map, nearest neighbor
+        # interpolation is used by default and therefore no intermediate values
+        # can exist in the output
+        num_unique_values = len(torch.unique(transformed_label))
+        assert num_unique_values <= num_classes + 1

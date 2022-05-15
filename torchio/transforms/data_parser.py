@@ -1,4 +1,4 @@
-from typing import Optional, List, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 import numpy as np
@@ -7,7 +7,7 @@ import SimpleITK as sitk
 
 from ..typing import TypeData
 from ..data.subject import Subject
-from ..data.image import Image, ScalarImage
+from ..data.image import Image, LabelMap, ScalarImage
 from ..data.io import nib_to_sitk, sitk_to_nib
 
 
@@ -27,9 +27,11 @@ class DataParser:
             self,
             data: TypeTransformInput,
             keys: Optional[Sequence[str]] = None,
+            label_keys: Optional[Sequence[str]] = None,
             ):
         self.data = data
         self.keys = keys
+        self.label_keys = label_keys
         self.default_image_name = 'default_image_name'
         self.is_tensor = False
         self.is_array = False
@@ -65,7 +67,11 @@ class DataParser:
                     ' https://torchio.readthedocs.io/transforms/transforms.html#torchio.transforms.Transform'  # noqa: E501
                 )
                 raise RuntimeError(message)
-            subject = self._get_subject_from_dict(self.data, self.keys)
+            subject = self._get_subject_from_dict(
+                self.data,
+                self.keys,
+                self.label_keys,
+            )
             self.is_dict = True
         else:
             raise ValueError(f'Input type not recognized: {type(self.data)}')
@@ -130,12 +136,15 @@ class DataParser:
     @staticmethod
     def _get_subject_from_dict(
             data: dict,
-            image_keys: List[str],
+            image_keys: Sequence[str],
+            label_keys: Optional[Sequence[str]] = None,
             ) -> Subject:
         subject_dict = {}
+        label_keys = {} if label_keys is None else label_keys
         for key, value in data.items():
             if key in image_keys:
-                value = ScalarImage(tensor=value)
+                class_ = LabelMap if key in label_keys else ScalarImage
+                value = class_(tensor=value)
             subject_dict[key] = value
         return Subject(subject_dict)
 
