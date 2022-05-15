@@ -43,6 +43,12 @@ class DataParser:
     def get_subject(self):
         if isinstance(self.data, nib.Nifti1Image):
             tensor = self.data.get_fdata(dtype=np.float32)
+            if tensor.ndim == 3:
+                tensor = tensor[np.newaxis]
+            elif tensor.ndim == 5:
+                tensor = tensor.transpose(3, 4, 0, 1, 2)
+                # Assume a unique timepoint
+                tensor = tensor[0]
             data = ScalarImage(tensor=tensor, affine=self.data.affine)
             subject = self._get_subject_from_image(data)
             self.is_nib = True
