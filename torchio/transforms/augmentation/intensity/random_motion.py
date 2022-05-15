@@ -260,11 +260,13 @@ class Motion(IntensityTransform, FourierTransform):
             interpolation: str,
             ):
         images = self.resample_images(image, transforms, interpolation)
-        arrays = [sitk.GetArrayViewFromImage(im) for im in images]
-        arrays = [array.transpose() for array in arrays]  # ITK to NumPy
-        spectra = [self.fourier_transform(array) for array in arrays]
+        spectra = []
+        for image in images:
+            array = sitk.GetArrayFromImage(image).transpose()  # sitk to np
+            spectrum = self.fourier_transform(torch.from_numpy(array))
+            spectra.append(spectrum)
         self.sort_spectra(spectra, times)
-        result_spectrum = np.empty_like(spectra[0])
+        result_spectrum = torch.empty_like(spectra[0])
         last_index = result_spectrum.shape[2]
         indices = (last_index * times).astype(int).tolist()
         indices.append(last_index)
@@ -272,5 +274,5 @@ class Motion(IntensityTransform, FourierTransform):
         for spectrum, fin in zip(spectra, indices):
             result_spectrum[..., ini:fin] = spectrum[..., ini:fin]
             ini = fin
-        result_image = np.real(self.inv_fourier_transform(result_spectrum))
-        return result_image.astype(np.float32)
+        result_image = self.inv_fourier_transform(result_spectrum).real.float()
+        return result_image
