@@ -44,7 +44,7 @@ class IXI(SubjectsDataset):
         If you set :attr:`download` to ``True``, it will take some time
         to be downloaded if it is not already present.
 
-    Example::
+    Example:
 
         >>> import torchio as tio
         >>> transforms = [
@@ -225,10 +225,10 @@ class IXITiny(SubjectsDataset):
     def _download(self, root):
         """Download the tiny IXI data if it doesn't exist already."""
         if root.is_dir():  # assume it's been downloaded
-            print('Root directory for IXITiny found:', root)  # noqa: T001
+            print('Root directory for IXITiny found:', root)  # noqa: T201
             return
-        print('Root directory for IXITiny not found:', root)  # noqa: T001
-        print('Downloading...')  # noqa: T001
+        print('Root directory for IXITiny not found:', root)  # noqa: T201
+        print('Downloading...')  # noqa: T201
         with NamedTemporaryFile(suffix='.zip', delete=False) as f:
             download_and_extract_archive(
                 self.url,

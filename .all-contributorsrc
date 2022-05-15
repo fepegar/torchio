@@ -348,7 +348,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/14314888?v=4",
       "profile": "https://github.com/ramonemiliani93",
       "contributions": [
-        "doc"
+        "doc",
+        "bug"
       ]
     },
     {
@@ -466,6 +467,97 @@
       "name": "Bigsealion",
       "avatar_url": "https://avatars.githubusercontent.com/u/23148550?v=4",
       "profile": "https://github.com/Bigsealion",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "dzenanz",
+      "name": "Dženan Zukić",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1792121?v=4",
+      "profile": "https://www.kitware.com/dzenan-zukic/",
+      "contributions": [
+        "review"
+      ]
+    },
+    {
+      "login": "vasl12",
+      "name": "vasl12",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15161465?v=4",
+      "profile": "https://github.com/vasl12",
+      "contributions": [
+        "tutorial",
+        "bug"
+      ]
+    },
+    {
+      "login": "rousseau",
+      "name": "François Rousseau",
+      "avatar_url": "https://avatars.githubusercontent.com/u/398895?v=4",
+      "profile": "http://perso.telecom-bretagne.eu/francoisrousseau",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "snavalm",
+      "name": "snavalm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35732360?v=4",
+      "profile": "https://github.com/snavalm",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jcreinhold",
+      "name": "Jacob Reinhold",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5241441?v=4",
+      "profile": "http://jcreinhold.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Hsuxu",
+      "name": "Hsu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15630477?v=4",
+      "profile": "https://github.com/Hsuxu",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "snipdome",
+      "name": "snipdome",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72035308?v=4",
+      "profile": "https://github.com/snipdome",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "iamSmallY",
+      "name": "SmallY",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45689960?v=4",
+      "profile": "https://github.com/iamSmallY",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "guigautier",
+      "name": "guigautier",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45590481?v=4",
+      "profile": "https://github.com/guigautier",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "AyedSamy",
+      "name": "AyedSamy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55320208?v=4",
+      "profile": "https://github.com/AyedSamy",
       "contributions": [
         "bug"
       ]

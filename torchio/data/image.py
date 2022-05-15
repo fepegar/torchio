@@ -1,7 +1,6 @@
 import warnings
 from pathlib import Path
 from collections import Counter
-from collections.abc import Iterable
 from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
 
 import torch
@@ -99,7 +98,10 @@ class Image(dict):
         >>> image
         ScalarImage(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)
         >>> image.save('doubled_image.nii.gz')
-        >>> numpy_reader = lambda path: np.load(path), np.eye(4)
+        >>> def numpy_reader(path):
+        ...     data = np.load(path).as_type(np.float32)
+        ...     affine = np.eye(4)
+        ...     return data, affine
         >>> image = tio.ScalarImage('t1.npy', reader=numpy_reader)
 
     .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading
@@ -230,8 +232,7 @@ class Image(dict):
         """Affine matrix to transform voxel indices into world coordinates."""
         # If path is a dir (probably DICOM), just load the data
         # Same if it's a list of paths (used to create a 4D image)
-        is_dir = isinstance(self.path, Path) and self.path.is_dir()
-        if self._loaded or is_dir:
+        if self._loaded or self._is_dir() or self._is_multipath():
             affine = self[AFFINE]
         else:
             affine = read_affine(self.path)
@@ -423,7 +424,10 @@ class Image(dict):
             ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
-        if isinstance(path, Iterable) and not isinstance(path, str):
+        elif isinstance(path, dict):
+            # https://github.com/fepegar/torchio/pull/838
+            raise TypeError('The path argument cannot be a dictionary')
+        elif self._is_paths_sequence(path):
             return [self._parse_single_path(p) for p in path]
         else:
             return self._parse_single_path(path)
@@ -474,6 +478,27 @@ class Image(dict):
             raise ValueError(f'Affine shape must be (4, 4), not {bad_shape}')
         return affine.astype(np.float64)
 
+    @staticmethod
+    def _is_paths_sequence(path):
+        is_string = isinstance(path, str)
+        try:
+            is_iterable = iter(path)
+        except TypeError:
+            is_iterable = False
+        return is_iterable and not is_string
+
+    def _is_multipath(self):
+        return self._is_paths_sequence(self.path)
+
+    def _is_dir(self):
+        is_sequence = self._is_multipath()
+        if is_sequence:
+            return False
+        elif self.path is None:
+            return False
+        else:
+            return self.path.is_dir()
+
     def load(self) -> None:
         r"""Load the image from disk.
 
@@ -484,7 +509,7 @@ class Image(dict):
         """
         if self._loaded:
             return
-        paths = self.path if isinstance(self.path, list) else [self.path]
+        paths = self.path if self._is_multipath() else [self.path]
         tensor, affine = self.read_and_check(paths[0])
         tensors = [tensor]
         for path in paths[1:]:
@@ -512,6 +537,9 @@ class Image(dict):
 
     def read_and_check(self, path: TypePath) -> TypeDataAffine:
         tensor, affine = self.reader(path)
+        # Make sure the data type is compatible with PyTorch
+        if self.reader is not read_image and isinstance(tensor, np.ndarray):
+            tensor = check_uint_to_int(tensor)
         tensor = self._parse_tensor_shape(tensor)
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)

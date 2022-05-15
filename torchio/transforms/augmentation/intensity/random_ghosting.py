@@ -181,21 +181,22 @@ class Ghosting(IntensityTransform, FourierTransform):
         if not num_ghosts or not intensity:
             return tensor
 
-        array = tensor.numpy()
-        spectrum = self.fourier_transform(array)
+        spectrum = self.fourier_transform(tensor)
 
-        mi, mj, mk = np.array(array.shape) // 2
+        shape = np.array(tensor.shape)
+        ri, rj, rk = np.round(restore_center * shape).astype(np.uint16)
+        mi, mj, mk = np.array(tensor.shape) // 2
 
         # Variable "planes" is the part of the spectrum that will be modified
         if axis == 0:
             planes = spectrum[::num_ghosts, :, :]
-            restore = spectrum[mi, :, :].copy()
+            restore = spectrum[mi, :, :].clone()
         elif axis == 1:
             planes = spectrum[:, ::num_ghosts, :]
-            restore = spectrum[:, mj, :].copy()
+            restore = spectrum[:, mj, :].clone()
         elif axis == 2:
             planes = spectrum[:, :, ::num_ghosts]
-            restore = spectrum[:, :, mk].copy()
+            restore = spectrum[:, :, mk].clone()
 
         # Multiply by 0 if intensity is 1
         planes *= 1 - intensity
@@ -208,9 +209,8 @@ class Ghosting(IntensityTransform, FourierTransform):
         elif axis == 2:
             spectrum[:, :, mk] = restore
 
-        array_ghosts = self.inv_fourier_transform(spectrum)
-        array_ghosts = np.real(array_ghosts).astype(np.float32)
-        return torch.as_tensor(array_ghosts)
+        tensor_ghosts = self.inv_fourier_transform(spectrum)
+        return tensor_ghosts.real.float()
 
 
 def _parse_restore(restore):

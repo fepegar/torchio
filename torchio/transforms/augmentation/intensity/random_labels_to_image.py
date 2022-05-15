@@ -13,10 +13,36 @@ from .. import RandomTransform
 class RandomLabelsToImage(RandomTransform, IntensityTransform):
     r"""Randomly generate an image from a segmentation.
 
-    Based on the works by Billot et al.: `A Learning Strategy for Contrast-agnostic MRI Segmentation`_
-    and `Partial Volume Segmentation of Brain MRI Scans of any Resolution and Contrast <https://link.springer.com/chapter/10.1007/978-3-030-59728-3_18>`__.
+    Based on the work by Billot et al.: `A Learning Strategy for Contrast-agnostic MRI Segmentation`_
+    and `Partial Volume Segmentation of Brain MRI Scans of any Resolution and Contrast`_.
 
     .. _A Learning Strategy for Contrast-agnostic MRI Segmentation: http://proceedings.mlr.press/v121/billot20a.html
+
+    .. _Partial Volume Segmentation of Brain MRI Scans of any Resolution and Contrast: https://link.springer.com/chapter/10.1007/978-3-030-59728-3_18
+
+    .. plot::
+
+        import torch
+        import torchio as tio
+        torch.manual_seed(42)
+        colin = tio.datasets.Colin27(2008)
+        label_map = colin.cls
+        colin.remove_image('t1')
+        colin.remove_image('t2')
+        colin.remove_image('pd')
+        downsample = tio.Resample(1)
+        blurring_transform = tio.RandomBlur(std=0.6)
+        create_synthetic_image = tio.RandomLabelsToImage(
+            image_key='synthetic',
+            ignore_background=True,
+        )
+        transform = tio.Compose((
+            downsample,
+            create_synthetic_image,
+            blurring_transform,
+        ))
+        colin_synth = transform(colin)
+        colin_synth.plot()
 
     Args:
         label_key: String designating the label map in the subject
@@ -57,12 +83,14 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             Discretization is done taking the class of the highest value per
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
+        ignore_background: If ``True``, input voxels labeled as ``0`` will not
+            be modified.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
-    .. tip:: It is recommended to blur the new images to make the result more
-        realistic. See
-        :class:`~torchio.transforms.augmentation.RandomBlur`.
+    .. tip:: It is recommended to blur the new images in order to simulate
+        partial volume effects at the borders of the synthetic structures. See
+        :class:`~torchio.transforms.augmentation.intensity.random_blur.RandomBlur`.
 
     Example:
         >>> import torchio as tio
@@ -90,6 +118,9 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         ... )
         >>> transform = tio.Compose([rescale_transform, simulation_transform])
         >>> transformed = transform(subject)  # subject's key 't1' has been replaced with the simulated image
+
+    .. seealso:: :class:`~torchio.transforms.preprocessing.label.remap_labels.RemapLabels`.
+
     """  # noqa: E501
     def __init__(
             self,
@@ -101,6 +132,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             default_mean: TypeRangeFloat = (0.1, 0.9),
             default_std: TypeRangeFloat = (0.01, 0.1),
             discretize: bool = False,
+            ignore_background: bool = False,
             **kwargs
             ):
         super().__init__(**kwargs)
@@ -115,12 +147,13 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         )
         self.image_key = image_key
         self.discretize = discretize
+        self.ignore_background = ignore_background
 
     def parse_mean_and_std(
             self,
             mean: Sequence[TypeRangeFloat],
             std: Sequence[TypeRangeFloat]
-            ) -> (List[TypeRangeFloat], List[TypeRangeFloat]):
+            ) -> Tuple[List[TypeRangeFloat], List[TypeRangeFloat]]:
         if mean is not None:
             mean = self.parse_gaussian_parameters(mean, 'mean')
         if std is not None:
@@ -188,6 +221,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             'image_key': self.image_key,
             'used_labels': self.used_labels,
             'discretize': self.discretize,
+            'ignore_background': self.ignore_background,
         }
 
         label_map = subject[self.label_key].data
@@ -270,7 +304,8 @@ class LabelsToImage(IntensityTransform):
             Discretization is done taking the class of the highest value per
             voxel in the different partial-volume label maps using
             :func:`torch.argmax()` on the channel dimension (i.e. 0).
-        seed: Seed for the random number generator.
+        ignore_background: If ``True``, input voxels labeled as ``0`` will not
+            be modified.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
 
@@ -285,6 +320,7 @@ class LabelsToImage(IntensityTransform):
             std: Optional[Sequence[float]],
             image_key: str = 'image_from_labels',
             used_labels: Optional[Sequence[int]] = None,
+            ignore_background: bool = False,
             discretize: bool = False,
             **kwargs
             ):
@@ -293,6 +329,7 @@ class LabelsToImage(IntensityTransform):
         self.used_labels = _parse_used_labels(used_labels)
         self.mean, self.std = mean, std
         self.image_key = image_key
+        self.ignore_background = ignore_background
         self.discretize = discretize
         self.args_names = (
             'label_key',
@@ -300,6 +337,7 @@ class LabelsToImage(IntensityTransform):
             'std',
             'image_key',
             'used_labels',
+            'ignore_background',
             'discretize',
         )
 
@@ -325,16 +363,18 @@ class LabelsToImage(IntensityTransform):
 
         tissues = torch.zeros(1, *label_map_image.spatial_shape).float()
         if is_discretized:
-            labels = label_map.unique().long().tolist()
-            if -1 in labels:
-                labels.remove(-1)
+            labels_in_image = label_map.unique().long().tolist()
+            if -1 in labels_in_image:
+                labels_in_image.remove(-1)
         else:
-            labels = range(label_map.shape[0])
+            labels_in_image = range(label_map.shape[0])
 
         # Raise error if mean and std are not defined for every label
-        _check_mean_and_std_length(labels, self.mean, self.std)
+        _check_mean_and_std_length(labels_in_image, self.mean, self.std)
 
-        for i, label in enumerate(labels):
+        for i, label in enumerate(labels_in_image):
+            if label == 0 and self.ignore_background:
+                continue
             if self.used_labels is None or label in self.used_labels:
                 mean = self.mean[i]
                 std = self.std[i]

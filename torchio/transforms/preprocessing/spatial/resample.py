@@ -42,6 +42,7 @@ class Resample(SpatialTransform):
             resampling. If ``None``, the image is resampled with an identity
             transform. See usage in the example below.
         image_interpolation: See :ref:`Interpolation`.
+        label_interpolation: See :ref:`Interpolation`.
         scalars_only: Apply only to instances of :class:`~torchio.ScalarImage`.
             Used internally by :class:`~torchio.transforms.RandomAnisotropy`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
@@ -75,6 +76,7 @@ class Resample(SpatialTransform):
             self,
             target: Union[TypeSpacing, str, Path, Image, None] = 1,
             image_interpolation: str = 'linear',
+            label_interpolation: str = 'nearest',
             pre_affine_name: Optional[str] = None,
             scalars_only: bool = False,
             **kwargs
@@ -83,11 +85,14 @@ class Resample(SpatialTransform):
         self.target = target
         self.image_interpolation = self.parse_interpolation(
             image_interpolation)
+        self.label_interpolation = self.parse_interpolation(
+            label_interpolation)
         self.pre_affine_name = pre_affine_name
         self.scalars_only = scalars_only
         self.args_names = (
             'target',
             'image_interpolation',
+            'label_interpolation',
             'pre_affine_name',
             'scalars_only',
         )
@@ -163,7 +168,7 @@ class Resample(SpatialTransform):
             if not isinstance(image, ScalarImage):
                 if self.scalars_only:
                     continue
-                interpolation = 'nearest'
+                interpolation = self.label_interpolation
             else:
                 interpolation = self.image_interpolation
             interpolator = self.get_sitk_interpolator(interpolation)

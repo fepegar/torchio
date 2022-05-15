@@ -128,15 +128,17 @@ class Spike(IntensityTransform, FourierTransform):
             spikes_positions: np.ndarray,
             intensity_factor: float,
             ):
-        array = np.asarray(tensor)
-        spectrum = self.fourier_transform(array)
+        if intensity_factor == 0 or len(spikes_positions) == 0:
+            return tensor
+        spectrum = self.fourier_transform(tensor)
         shape = np.array(spectrum.shape)
         mid_shape = shape // 2
         indices = np.floor(spikes_positions * shape).astype(int)
         for index in indices:
             diff = index - mid_shape
             i, j, k = mid_shape + diff
-            artifact = spectrum.max() * intensity_factor
+            # As of torch 1.7, "max is not yet implemented for complex tensors"
+            artifact = spectrum.cpu().numpy().max() * intensity_factor
             if self.invert_transform:
                 spectrum[i, j, k] -= artifact
             else:
@@ -147,5 +149,5 @@ class Spike(IntensityTransform, FourierTransform):
             # scans. Therefore the next two lines have been removed.
             # #i, j, k = mid_shape - diff
             # #spectrum[i, j, k] = spectrum.max() * intensity_factor
-        result = np.real(self.inv_fourier_transform(spectrum))
-        return torch.as_tensor(result.astype(np.float32))
+        result = self.inv_fourier_transform(spectrum).real.float()
+        return result

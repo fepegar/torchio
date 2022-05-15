@@ -33,7 +33,6 @@ class BITE(SubjectsDataset, abc.ABC):
 
 
 class BITE3(BITE):
-    dirname = 'group3'
     """Pre- and post-resection MR images in BITE.
 
     *The goal of BITE is to share in vivo medical images of patients wtith
@@ -51,6 +50,8 @@ class BITE3(BITE):
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
     """  # noqa: E501
+    dirname = 'group3'
+
     def _download(self, root: Path):
         if (root / self.dirname).is_dir():
             return

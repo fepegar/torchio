@@ -33,7 +33,7 @@ body:
     id: actual
     attributes:
       label: Actual outcome
-      description: Please describe the outcome of running the above code.
+      description: Please describe the outcome of running the above code. Paste any error messages in the section below, not here.
     validations:
       required: true
 

@@ -6,12 +6,35 @@ from .label_transform import LabelTransform
 
 
 class SequentialLabels(LabelTransform):
-    r"""Remap the integer IDs of labels in a LabelMap to be sequential.
+    r"""Remap labels in a label map so they become consecutive.
 
-    For example, if a label map has 6 labels with IDs (3, 5, 9, 15, 16, 23),
-    then this will apply a :class:`~torchio.RemapLabels` transform with
-    ``remapping={3: 1, 5: 2, 9: 3, 15: 4, 16: 5, 23: 6}``.
-    This transformation is always `fully invertible <invertibility>`_.
+    For example, if a label map has labels ``(0, 3, 5)``, then this will apply
+    a :class:`~torchio.RemapLabels` transform with ``remapping={3: 1, 5: 2}``,
+    and therefore the output image will have labels ``(0, 1, 2)``.
+
+    Example:
+
+        >>> import torch
+        >>> import torchio as tio
+        >>> def get_image(*labels):
+        ...     tensor = torch.as_tensor(labels).reshape(1, 1, 1, -1)
+        ...     image = tio.LabelMap(tensor=tensor)
+        ...     return image
+        ...
+        >>> img_with_bg = get_image(0, 5, 10)
+        >>> transform = tio.SequentialLabels()
+        >>> transform(img_with_bg).data
+        tensor([[[[0, 1, 2]]]])
+        >>> img_without_bg = get_image(7, 11, 99)
+        >>> transform(img_without_bg).data
+        tensor([[[[0, 1, 2]]]])
+
+    .. note::
+        This transformation is always `fully invertible <invertibility>`_.
+
+    .. warning::
+        The background is typically represented with the label ``0``. There
+        will be zeros in the output image even if they are none in the input.
 
     Args:
         masking_method: See :class:`~torchio.transforms.RemapLabels`.
@@ -31,7 +54,7 @@ class SequentialLabels(LabelTransform):
             unique_labels = torch.unique(image.data)
             remapping = {
                 unique_labels[i].item(): i
-                for i in range(1, len(unique_labels))
+                for i in range(0, len(unique_labels))
             }
             transform = RemapLabels(
                 remapping=remapping,
@@ -39,5 +62,4 @@ class SequentialLabels(LabelTransform):
                 include=name,
             )
             subject = transform(subject)
-
         return subject

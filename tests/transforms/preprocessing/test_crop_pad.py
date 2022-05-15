@@ -185,3 +185,23 @@ class TestCropOrPad(TorchioTestCase):
     def test_no_target(self):
         crop_with_mask = tio.CropOrPad(mask_name='label')
         crop_with_mask(self.sample_subject)
+
+    def test_persistent_bounds_params(self):
+        # https://github.com/fepegar/torchio/issues/757
+        shape = (1, 5, 5, 5)
+        mask_a = np.zeros(shape)
+        mask_a[0, 2, 2, 2] = 1
+        mask_b = mask_a.copy()
+        mask_b[0, 1:4, 1:4, 1:4] = 1
+        tensor = np.ones(shape)
+        image_a = tio.ScalarImage(tensor=tensor)
+        mask_a = tio.LabelMap(tensor=mask_a)
+        subject_a = tio.Subject(image=image_a, mask=mask_a)
+        image_b = tio.ScalarImage(tensor=tensor)
+        mask_b = tio.LabelMap(tensor=mask_b)
+        subject_b = tio.Subject(image=image_b, mask=mask_b)
+        crop = tio.CropOrPad(mask_name='mask')
+        for _ in range(2):
+            shape_a = crop(subject_a).image.shape
+            shape_b = crop(subject_b).image.shape
+            assert shape_a != shape_b

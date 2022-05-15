@@ -84,7 +84,7 @@ def create_dummy_dataset(
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
         if verbose:
-            print('Creating dummy dataset...')  # noqa: T001
+            print('Creating dummy dataset...')  # noqa: T201
             iterable = trange(num_images)
         else:
             iterable = range(num_images)
@@ -126,7 +126,7 @@ def apply_transform_to_file(
     transformed = transform(subject)
     transformed.image.save(output_path)
     if verbose and transformed.history:
-        print('Applied transform:', transformed.history[0])  # noqa: T001
+        print('Applied transform:', transformed.history[0])  # noqa: T201
 
 
 def guess_type(string: str) -> Any:
@@ -337,3 +337,21 @@ def guess_external_viewer() -> Optional[Path]:
         slicer_path = shutil.which('Slicer')
         if slicer_path is not None:
             return Path(slicer_path)
+
+
+def parse_spatial_shape(shape):
+    result = to_tuple(shape, length=3)
+    for n in result:
+        if n < 1 or n % 1:
+            message = (
+                'All elements in a spatial shape must be positive integers,'
+                f' but the following shape was passed: {shape}'
+            )
+            raise ValueError(message)
+    if len(result) != 3:
+        message = (
+            'Spatial shapes must have 3 elements, but the following shape'
+            f' was passed: {shape}'
+        )
+        raise ValueError(message)
+    return result

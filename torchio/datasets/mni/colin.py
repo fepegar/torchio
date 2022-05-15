@@ -22,6 +22,7 @@ TISSUES_2008 = {
 
 
 class Colin27(SubjectMNI):
+    NAME_TO_LABEL = {name: label for label, name in TISSUES_2008.items()}
     r"""Colin27 MNI template.
 
     More information can be found in the website of the
@@ -85,31 +86,53 @@ class Colin27(SubjectMNI):
                 path.unlink()
 
         try:
-            subject_dict = self.get_subject_dict(extension='.nii.gz')
+            subject_dict = self.get_subject_dict(
+                self.download_root,
+                extension='.nii.gz',
+            )
         except FileNotFoundError:  # for backward compatibility
-            subject_dict = self.get_subject_dict(extension='.nii')
+            subject_dict = self.get_subject_dict(
+                self.download_root,
+                extension='.nii',
+            )
         super().__init__(subject_dict)
 
-    def get_subject_dict(self, extension):
+    def get_subject_dict(self, download_root, extension):
         if self.version == 1998:
-            t1, head, mask = (
-                self.download_root / f'colin27_t1_tal_lin{suffix}{extension}'
-                for suffix in ('', '_headmask', '_mask')
-            )
-            subject_dict = {
-                't1': ScalarImage(t1),
-                'head': LabelMap(head),
-                'brain': LabelMap(mask),
-            }
+            subject_dict = Colin1998.get_subject_dict(download_root, extension)
         elif self.version == 2008:
-            t1, t2, pd, label = (
-                self.download_root / f'colin27_{name}_tal_hires{extension}'
-                for name in ('t1', 't2', 'pd', 'cls')
-            )
-            subject_dict = {
-                't1': ScalarImage(t1),
-                't2': ScalarImage(t2),
-                'pd': ScalarImage(pd),
-                'cls': LabelMap(label, labels=TISSUES_2008),
-            }
+            subject_dict = Colin2008.get_subject_dict(download_root, extension)
+        return subject_dict
+
+
+class Colin1998:
+
+    @staticmethod
+    def get_subject_dict(download_root, extension):
+        t1, head, mask = (
+            download_root / f'colin27_t1_tal_lin{suffix}{extension}'
+            for suffix in ('', '_headmask', '_mask')
+        )
+        subject_dict = {
+            't1': ScalarImage(t1),
+            'head': LabelMap(head),
+            'brain': LabelMap(mask),
+        }
+        return subject_dict
+
+
+class Colin2008:
+
+    @staticmethod
+    def get_subject_dict(download_root, extension):
+        t1, t2, pd, label = (
+            download_root / f'colin27_{name}_tal_hires{extension}'
+            for name in ('t1', 't2', 'pd', 'cls')
+        )
+        subject_dict = {
+            't1': ScalarImage(t1),
+            't2': ScalarImage(t2),
+            'pd': ScalarImage(pd),
+            'cls': LabelMap(label, labels=TISSUES_2008),
+        }
         return subject_dict

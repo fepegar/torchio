@@ -1,4 +1,4 @@
-name: Tests
+name: Unit tests and coverage
 
 on:
   push:
@@ -11,29 +11,25 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ['3.6', '3.7', '3.8', '3.9']
+      fail-fast: false
 
     runs-on: ${{ matrix.os }}
     env:
       OS: ${{ matrix.os }}
-      PYTHON: ${{ matrix.python }}
 
     steps:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python }}
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+          python-version: "3.10"
 
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Install dev requirements
-        run: pip install -r requirements-dev.txt
+      - name: Install tox
+        run: pip install tox codecov
 
       - name: Run unit tests
         run: tox -e py
@@ -48,7 +44,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Checkout repository
         uses: actions/checkout@v2

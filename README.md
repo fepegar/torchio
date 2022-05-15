@@ -88,7 +88,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
                 <img src="https://img.shields.io/twitter/url/https/twitter.com/TorchIOLib.svg?style=social&label=Follow%20%40TorchIOLib" alt="Twitter">
             </a>
             <a href="https://twitter.com/TorchIO_commits">
-                <img src="https://img.shields.io/twitter/url/https/twitter.com/TorchIO_commits.svg?style=social&label=Follow%20%40TorchIOLib" alt="Twitter">
+                <img src="https://img.shields.io/twitter/url/https/twitter.com/TorchIO_commits.svg?style=social&label=Follow%20%40TorchIO_commits" alt="Twitter">
             </a>
             <a href="https://www.youtube.com/watch?v=UEUVSw5-M9M">
                 <img src="https://img.shields.io/youtube/views/UEUVSw5-M9M?label=watch&style=social" alt="YouTube">
@@ -215,13 +215,16 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
 
 ---
 
-<a href="https://torchio.readthedocs.io/data/patch_based.html">
-    <img align="center" style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/queue.gif" alt="Queue">
-</a>
-<!-- markdownlint-restore -->
+<p align="center">
+  <a href="https://torchio.readthedocs.io/patches/patch_training.html#queue">
+    <img style="width: 640px; height: 360px; overflow: hidden;" src="https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/queue.gif" alt="Queue">
+  </a>
+</p>
 
-([Queue](https://torchio.readthedocs.io/data/patch_training.html#queue)
-for [patch-based training](https://torchio.readthedocs.io/data/patch_based.html))
+([Queue](https://torchio.readthedocs.io/patches/patch_training.html#queue)
+for [patch-based training](https://torchio.readthedocs.io/patches/index.html))
+
+<!-- markdownlint-restore -->
 
 ---
 
@@ -342,7 +345,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/glupol"><img src="https://avatars.githubusercontent.com/u/57905234?v=4?s=100" width="100px;" alt=""/><br /><sub><b>glupol</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aglupol" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/ramonemiliani93"><img src="https://avatars.githubusercontent.com/u/14314888?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ramonemiliani93</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=ramonemiliani93" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/ramonemiliani93"><img src="https://avatars.githubusercontent.com/u/14314888?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ramonemiliani93</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=ramonemiliani93" title="Documentation">📖</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Aramonemiliani93" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/justusschock"><img src="https://avatars.githubusercontent.com/u/12886177?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Justus Schock</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=justusschock" title="Code">💻</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Ajustusschock" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/cepa995"><img src="https://avatars.githubusercontent.com/u/67524891?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Stefan Milorad Radonjić</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Acepa995" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/srg9000"><img src="https://avatars.githubusercontent.com/u/26834833?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sajan Gohil</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asrg9000" title="Bug reports">🐛</a></td>
@@ -360,6 +363,18 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/Bigsealion"><img src="https://avatars.githubusercontent.com/u/23148550?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bigsealion</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3ABigsealion" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://www.kitware.com/dzenan-zukic/"><img src="https://avatars.githubusercontent.com/u/1792121?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dženan Zukić</b></sub></a><br /><a href="https://github.com/fepegar/torchio/pulls?q=is%3Apr+reviewed-by%3Adzenanz" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/vasl12"><img src="https://avatars.githubusercontent.com/u/15161465?v=4?s=100" width="100px;" alt=""/><br /><sub><b>vasl12</b></sub></a><br /><a href="#tutorial-vasl12" title="Tutorials">✅</a> <a href="https://github.com/fepegar/torchio/issues?q=author%3Avasl12" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://perso.telecom-bretagne.eu/francoisrousseau"><img src="https://avatars.githubusercontent.com/u/398895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>François Rousseau</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arousseau" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/snavalm"><img src="https://avatars.githubusercontent.com/u/35732360?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snavalm</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=snavalm" title="Code">💻</a></td>
+    <td align="center"><a href="http://jcreinhold.com"><img src="https://avatars.githubusercontent.com/u/5241441?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jacob Reinhold</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=jcreinhold" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Hsuxu"><img src="https://avatars.githubusercontent.com/u/15630477?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hsu</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AHsuxu" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/snipdome"><img src="https://avatars.githubusercontent.com/u/72035308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>snipdome</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asnipdome" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/iamSmallY"><img src="https://avatars.githubusercontent.com/u/45689960?v=4?s=100" width="100px;" alt=""/><br /><sub><b>SmallY</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AiamSmallY" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/guigautier"><img src="https://avatars.githubusercontent.com/u/45590481?v=4?s=100" width="100px;" alt=""/><br /><sub><b>guigautier</b></sub></a><br /><a href="#ideas-guigautier" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/AyedSamy"><img src="https://avatars.githubusercontent.com/u/55320208?v=4?s=100" width="100px;" alt=""/><br /><sub><b>AyedSamy</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AAyedSamy" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

@@ -22,7 +22,7 @@ def main(input_path, plot, show, label):
     class_ = tio.LabelMap if label else tio.ScalarImage
     image = class_(input_path)
     image.load()
-    print(image)  # noqa: T001
+    print(image)  # noqa: T201
     if plot:
         image.plot()
     if show:

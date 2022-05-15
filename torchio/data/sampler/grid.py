@@ -40,7 +40,7 @@ class GridSampler(PatchSampler):
             :class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
 
-    Example::
+    Example:
 
         >>> import torchio as tio
         >>> sampler = tio.GridSampler(patch_size=88)

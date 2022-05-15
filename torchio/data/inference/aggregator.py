@@ -4,7 +4,6 @@ from typing import Tuple
 import torch
 import numpy as np
 
-from ...typing import TypeData
 from ...constants import CHANNELS_DIMENSION
 from ..sampler import GridSampler
 
@@ -35,12 +34,12 @@ class GridAggregator:
         self.spatial_shape = subject.spatial_shape
         self._output_tensor = None
         self.patch_overlap = sampler.patch_overlap
-        self.parse_overlap_mode(overlap_mode)
+        self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
         self._avgmask_tensor = None
 
     @staticmethod
-    def parse_overlap_mode(overlap_mode):
+    def _parse_overlap_mode(overlap_mode):
         if overlap_mode not in ('crop', 'average'):
             message = (
                 'Overlap mode must be "crop" or "average" but '
@@ -48,46 +47,38 @@ class GridAggregator:
             )
             raise ValueError(message)
 
-    def crop_batch(
+    def _crop_patch(
             self,
-            batch: torch.Tensor,
-            locations: np.ndarray,
+            patch: torch.Tensor,
+            location: np.ndarray,
             overlap: np.ndarray,
-            ) -> Tuple[TypeData, np.ndarray]:
-        border = np.array(overlap) // 2  # overlap is even in grid sampler
-        crop_locations = locations.astype(int).copy()
-        indices_ini, indices_fin = crop_locations[:, :3], crop_locations[:, 3:]
-        num_locations = len(crop_locations)
+            ) -> Tuple[torch.Tensor, np.ndarray]:
+        half_overlap = overlap // 2  # overlap is always even in grid sampler
+        index_ini, index_fin = location[:3], location[3:]
 
-        border_ini = np.tile(border, (num_locations, 1))
-        border_fin = border_ini.copy()
-        # Do not crop patches at the border of the volume
-        # Unless we're padding the volume in the grid sampler. In that case,
-        # it doesn't matter if we don't crop patches at the border, because the
-        # output volume will be cropped
-        if not self.volume_padded:
-            mask_border_ini = indices_ini == 0
-            border_ini[mask_border_ini] = 0
-            for axis, size in enumerate(self.spatial_shape):
-                mask_border_fin = indices_fin[:, axis] == size
-                border_fin[mask_border_fin, axis] = 0
+        # If the patch is not at the border, we crop half the overlap
+        crop_ini = half_overlap.copy()
+        crop_fin = half_overlap.copy()
 
-        indices_ini += border_ini
-        indices_fin -= border_fin
+        # If the volume has been padded, we don't need to worry about cropping
+        if self.volume_padded:
+            pass
+        else:
+            crop_ini *= index_ini > 0
+            crop_fin *= index_fin != self.spatial_shape
 
-        crop_shapes = indices_fin - indices_ini
-        patch_shape = batch.shape[2:]  # ignore batch and channels dim
-        cropped_patches = []
-        for patch, crop_shape in zip(batch, crop_shapes):
-            diff = patch_shape - crop_shape
-            left = (diff / 2).astype(int)
-            i_ini, j_ini, k_ini = left
-            i_fin, j_fin, k_fin = left + crop_shape
-            cropped_patch = patch[:, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
-            cropped_patches.append(cropped_patch)
-        return cropped_patches, crop_locations
+        # Update the location of the patch in the volume
+        new_index_ini = index_ini + crop_ini
+        new_index_fin = index_fin - crop_fin
+        new_location = np.hstack((new_index_ini, new_index_fin))
 
-    def initialize_output_tensor(self, batch: torch.Tensor) -> None:
+        patch_size = patch.shape[-3:]
+        i_ini, j_ini, k_ini = crop_ini
+        i_fin, j_fin, k_fin = patch_size - crop_fin
+        cropped_patch = patch[:, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
+        return cropped_patch, new_location
+
+    def _initialize_output_tensor(self, batch: torch.Tensor) -> None:
         if self._output_tensor is not None:
             return
         num_channels = batch.shape[CHANNELS_DIMENSION]
@@ -97,7 +88,7 @@ class GridAggregator:
             dtype=batch.dtype,
         )
 
-    def initialize_avgmask_tensor(self, batch: torch.Tensor) -> None:
+    def _initialize_avgmask_tensor(self, batch: torch.Tensor) -> None:
         if self._avgmask_tensor is not None:
             return
         num_channels = batch.shape[CHANNELS_DIMENSION]
@@ -123,22 +114,34 @@ class GridAggregator:
         """
         batch = batch_tensor.cpu()
         locations = locations.cpu().numpy()
-        self.initialize_output_tensor(batch)
-        if self.overlap_mode == 'crop':
-            cropped_patches, crop_locations = self.crop_batch(
-                batch,
-                locations,
-                self.patch_overlap,
+        patch_sizes = locations[:, 3:] - locations[:, :3]
+        # There should be only one patch size
+        assert len(np.unique(patch_sizes, axis=0)) == 1
+        input_spatial_shape = tuple(batch.shape[-3:])
+        target_spatial_shape = tuple(patch_sizes[0])
+        if input_spatial_shape != target_spatial_shape:
+            message = (
+                f'The shape of the input batch, {input_spatial_shape},'
+                ' does not match the shape of the target location,'
+                f' which is {target_spatial_shape}'
             )
-            for patch, crop_location in zip(cropped_patches, crop_locations):
-                i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = crop_location
+            raise RuntimeError(message)
+        self._initialize_output_tensor(batch)
+        if self.overlap_mode == 'crop':
+            for patch, location in zip(batch, locations):
+                cropped_patch, new_location = self._crop_patch(
+                    patch,
+                    location,
+                    self.patch_overlap,
+                )
+                i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = new_location
                 self._output_tensor[
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin] = patch
+                    k_ini:k_fin] = cropped_patch
         elif self.overlap_mode == 'average':
-            self.initialize_avgmask_tensor(batch)
+            self._initialize_avgmask_tensor(batch)
             for patch, location in zip(batch, locations):
                 i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
                 self._output_tensor[
