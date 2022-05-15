@@ -552,6 +552,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "AyedSamy",
+      "name": "AyedSamy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55320208?v=4",
+      "profile": "https://github.com/AyedSamy",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
