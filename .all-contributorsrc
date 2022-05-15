@@ -561,6 +561,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "jmlipman",
+      "name": "J. Miguel Valverde",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3540650?v=4",
+      "profile": "http://delanover.com",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
