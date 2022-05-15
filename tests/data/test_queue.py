@@ -19,7 +19,7 @@ class TestQueue(TorchioTestCase):
             force=False,
         )
 
-    def run_queue(self, num_workers, **kwargs):
+    def run_queue(self, num_workers=0, **kwargs):
         subjects_dataset = tio.SubjectsDataset(self.subjects_list)
         patch_size = 10
         sampler = UniformSampler(patch_size)
@@ -28,6 +28,7 @@ class TestQueue(TorchioTestCase):
             max_length=6,
             samples_per_volume=2,
             sampler=sampler,
+            num_workers=num_workers,
             **kwargs,
         )
         _ = str(queue_dataset)
@@ -35,6 +36,7 @@ class TestQueue(TorchioTestCase):
         for batch in batch_loader:
             _ = batch['one_modality'][tio.DATA]
             _ = batch['segmentation'][tio.DATA]
+        return queue_dataset
 
     def test_queue(self):
         self.run_queue(num_workers=0)
@@ -64,3 +66,8 @@ class TestQueue(TorchioTestCase):
         all_numbers = torch.stack(batches).flatten().tolist()
         assert all_numbers.count(10) == 10
         assert all_numbers.count(2) == 2
+
+    def test_get_memory_string(self):
+        queue = self.run_queue()
+        memory_string = queue.get_max_memory_pretty()
+        assert isinstance(memory_string, str)
