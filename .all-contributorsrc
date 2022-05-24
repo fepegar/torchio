@@ -580,6 +580,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "saikhu",
+      "name": "Asim Usman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24922057?v=4",
+      "profile": "https://github.com/saikhu",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
