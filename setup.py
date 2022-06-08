@@ -3,13 +3,24 @@ from setuptools import setup, find_packages
 
 readme = Path('README.md').read_text(encoding='utf8')
 history = Path('HISTORY.rst').read_text(encoding='utf8')
-requirements = Path('requirements-run.txt').read_text().splitlines()
 
 simple_itk_suffixes = (
     '!=2.0.*',  # https://github.com/SimpleITK/SimpleITK/issues/1239
     '!=2.1.1.1',  # https://github.com/fepegar/torchio/runs/5952172467
 )
 simple_itk_versions = ','.join(simple_itk_suffixes)
+
+requirements = [
+    'Deprecated',
+    f'SimpleITK{simple_itk_versions}',
+    'click',
+    'humanize',
+    'nibabel',
+    'numpy>=1.15',
+    'scipy',
+    'torch>=1.1',
+    'tqdm',
+]
 
 setup(
     author='Fernando Perez-Garcia',
