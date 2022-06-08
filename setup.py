@@ -2,7 +2,7 @@
 
 """The setup script."""
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open('README.md', encoding='utf8') as readme_file:
     readme = readme_file.read()
@@ -66,7 +66,7 @@ setup(
     keywords='torchio',
     name='torchio',
     package_data={'torchio': ['py.typed']},
-    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     setup_requires=[],
     test_suite='tests',
     tests_require=[],
