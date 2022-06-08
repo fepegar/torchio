@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-
-"""The setup script."""
-
+from pathlib import Path
 from setuptools import setup, find_packages
 
-with open('README.md', encoding='utf8') as readme_file:
-    readme = readme_file.read()
-
-with open('HISTORY.rst', encoding='utf8') as history_file:
-    history = history_file.read()
+readme = Path('README.md').read_text(encoding='utf8')
+history = Path('HISTORY.rst').read_text(encoding='utf8')
 
 simple_itk_suffixes = (
     '!=2.0.*',  # https://github.com/SimpleITK/SimpleITK/issues/1239
@@ -27,7 +21,6 @@ requirements = [
     'torch>=1.1',
     'tqdm',
 ]
-
 
 setup(
     author='Fernando Perez-Garcia',
@@ -66,7 +59,8 @@ setup(
     keywords='torchio',
     name='torchio',
     package_data={'torchio': ['py.typed']},
-    packages=find_packages(include=['torchio', 'torchio.*']),
+    package_dir={'': 'src'},
+    packages=find_packages(where='src'),
     setup_requires=[],
     test_suite='tests',
     tests_require=[],

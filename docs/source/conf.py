@@ -15,7 +15,7 @@ import os
 import sys
 from typing import List
 from datetime import date
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../src'))
 import torchio  # noqa: E402
 
 # -- Project information -----------------------------------------------------
@@ -29,6 +29,7 @@ copyright = f'{date.today().year}, {author}'  # noqa: A001
 # release is the full version, including alpha/beta/rc tags
 version = release = torchio.__version__
 
+language = 'en'
 
 # -- General configuration ---------------------------------------------------
 
