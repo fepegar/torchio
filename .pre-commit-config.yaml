@@ -16,6 +16,7 @@ repos:
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
+        exclude: setup.cfg
       - id: file-contents-sorter       # Sort the lines in specified files
         files: .*requirements.*\.txt$
   - repo: https://github.com/pycqa/flake8

@@ -84,8 +84,7 @@ If you use ``conda``, this is how you can set up your fork for local development
 
     conda create --name torchioenv python --yes
     conda activate torchioenv
-    pip install --editable .
-    pip install -r requirements-dev.txt
+    pip install --editable ".[all]"
     pre-commit install
 
 5) Create a branch for local development using the issue number
