@@ -29,6 +29,7 @@ copyright = f'{date.today().year}, {author}'  # noqa: A001
 # release is the full version, including alpha/beta/rc tags
 version = release = torchio.__version__
 
+language = 'en'
 
 # -- General configuration ---------------------------------------------------
 
