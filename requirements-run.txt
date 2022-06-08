@@ -1,0 +1,9 @@
+Deprecated
+SimpleITK!=2.0.*,!=2.1.1.1
+click
+humanize
+nibabel
+numpy>=1.15
+scipy
+torch>=1.1
+tqdm
