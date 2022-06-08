@@ -1,33 +1,15 @@
-#!/usr/bin/env python
+from pathlib import Path
+from setuptools import setup, find_packages
 
-"""The setup script."""
-
-from setuptools import setup
-
-with open('README.md', encoding='utf8') as readme_file:
-    readme = readme_file.read()
-
-with open('HISTORY.rst', encoding='utf8') as history_file:
-    history = history_file.read()
+readme = Path('README.md').read_text(encoding='utf8')
+history = Path('HISTORY.rst').read_text(encoding='utf8')
+requirements = Path('requirements-run.txt').read_text().splitlines()
 
 simple_itk_suffixes = (
     '!=2.0.*',  # https://github.com/SimpleITK/SimpleITK/issues/1239
     '!=2.1.1.1',  # https://github.com/fepegar/torchio/runs/5952172467
 )
 simple_itk_versions = ','.join(simple_itk_suffixes)
-
-requirements = [
-    'Deprecated',
-    f'SimpleITK{simple_itk_versions}',
-    'click',
-    'humanize',
-    'nibabel',
-    'numpy>=1.15',
-    'scipy',
-    'torch>=1.1',
-    'tqdm',
-]
-
 
 setup(
     author='Fernando Perez-Garcia',
@@ -67,6 +49,7 @@ setup(
     name='torchio',
     package_data={'torchio': ['py.typed']},
     package_dir={'': 'src'},
+    packages=find_packages(where='src'),
     setup_requires=[],
     test_suite='tests',
     tests_require=[],
