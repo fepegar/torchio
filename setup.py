@@ -66,7 +66,7 @@ setup(
     keywords='torchio',
     name='torchio',
     package_data={'torchio': ['py.typed']},
-    packages=find_packages(include=['torchio', 'torchio.*']),
+    packages=find_packages(where='src'),
     setup_requires=[],
     test_suite='tests',
     tests_require=[],
