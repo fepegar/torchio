@@ -49,6 +49,15 @@ class TestAggregator(TorchioTestCase):
         )).reshape(1, 1, 4, 4)
         self.aggregate('average', fixture)
 
+    def test_overlap_hann(self):
+        fixture = torch.Tensor((
+            (0, 2 / 3, 4 / 3, 2),
+            (4 / 3, 2, 8 / 3, 10 / 3),
+            (8 / 3, 10 / 3, 4, 14 / 3),
+            (4, 14 / 3, 16 / 3, 6),
+        )).reshape(1, 1, 4, 4)
+        self.aggregate('hann', fixture)
+
     def run_sampler_aggregator(self, overlap_mode='crop'):
         patch_size = 10
         patch_overlap = 2
