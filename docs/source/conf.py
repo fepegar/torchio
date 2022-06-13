@@ -224,16 +224,6 @@ sphinx_gallery_conf = {
     'examples_dirs': '../examples',   # example scripts
     'gallery_dirs': 'auto_examples',  # where to save gallery generated output
     'matplotlib_animations': True,
-    'binder': {
-        # Required keys
-        'org': 'fepegar',
-        'repo': 'torchio',
-        'branch': 'main',
-        'binderhub_url': 'https://mybinder.org',
-        'dependencies': '../requirements.txt',
-        # Optional keys
-        'use_jupyter_lab': False,
-    }
 }
 
 # autosummary_generate = True  # Turn on sphinx.ext.autosummary
