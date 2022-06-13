@@ -34,13 +34,15 @@ class Resize(SpatialTransform):
             image_interpolation: str = 'linear',
             label_interpolation: str = 'nearest',
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.target_shape = np.asarray(to_tuple(target_shape, length=3))
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
         self.args_names = (
             'target_shape',
             'image_interpolation',

@@ -46,7 +46,7 @@ class EPISURG(SubjectsDataset):
             transform: Optional[Transform] = None,
             download: bool = False,
             **kwargs,
-            ):
+    ):
         root = Path(root).expanduser().absolute()
         if download:
             self._download(root)

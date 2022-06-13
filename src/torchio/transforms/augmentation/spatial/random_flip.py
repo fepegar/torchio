@@ -39,7 +39,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
             axes: Union[int, Tuple[int, ...]] = 0,
             flip_probability: float = 0.5,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.axes = _parse_axes(axes)
         self.flip_probability = self.parse_probability(flip_probability)

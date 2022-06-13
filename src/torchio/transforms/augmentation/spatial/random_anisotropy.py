@@ -52,11 +52,12 @@ class RandomAnisotropy(RandomTransform):
             image_interpolation: str = 'linear',
             scalars_only: bool = True,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self._parse_range(
-            downsampling, 'downsampling', min_constraint=1)
+            downsampling, 'downsampling', min_constraint=1,
+        )
         parsed_interpolation = self.parse_interpolation(image_interpolation)
         self.image_interpolation = parsed_interpolation
         self.scalars_only = scalars_only
@@ -65,7 +66,7 @@ class RandomAnisotropy(RandomTransform):
             self,
             axes: Tuple[int, ...],
             downsampling_range: Tuple[float, float],
-            ) -> List[bool]:
+    ) -> List[bool]:
         axis = axes[torch.randint(0, len(axes), (1,))]
         downsampling = self.sample_uniform(*downsampling_range).item()
         return axis, downsampling

@@ -48,14 +48,16 @@ class RescaleIntensity(NormalizationTransform):
             masking_method: TypeMaskingMethod = None,
             in_min_max: Optional[Tuple[float, float]] = None,
             **kwargs
-            ):
+    ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.out_min_max = out_min_max
         self.in_min_max = in_min_max
         self.out_min, self.out_max = self._parse_range(
-            out_min_max, 'out_min_max')
+            out_min_max, 'out_min_max',
+        )
         self.percentiles = self._parse_range(
-            percentiles, 'percentiles', min_constraint=0, max_constraint=100)
+            percentiles, 'percentiles', min_constraint=0, max_constraint=100,
+        )
         self.args_names = 'out_min_max', 'percentiles', 'masking_method'
 
     def apply_normalization(
@@ -63,7 +65,7 @@ class RescaleIntensity(NormalizationTransform):
             subject: Subject,
             image_name: str,
             mask: torch.Tensor,
-            ) -> None:
+    ) -> None:
         image = subject[image_name]
         image.set_data(self.rescale(image.data, mask, image_name))
 
@@ -72,7 +74,7 @@ class RescaleIntensity(NormalizationTransform):
             tensor: torch.Tensor,
             mask: torch.Tensor,
             image_name: str,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         # The tensor is cloned as in-place operations will be used
         array = tensor.clone().float().numpy()
         mask = mask.numpy()

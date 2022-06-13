@@ -97,7 +97,7 @@ class OneOf(RandomTransform):
             self,
             transforms: TypeTransformsDict,
             **kwargs
-            ):
+    ):
         super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
@@ -112,7 +112,7 @@ class OneOf(RandomTransform):
     def _get_transforms_dict(
             self,
             transforms: TypeTransformsDict,
-            ) -> Dict[Transform, float]:
+    ) -> Dict[Transform, float]:
         if isinstance(transforms, dict):
             transforms_dict = dict(transforms)
             self._normalize_probabilities(transforms_dict)
@@ -138,7 +138,7 @@ class OneOf(RandomTransform):
     @staticmethod
     def _normalize_probabilities(
             transforms_dict: Dict[Transform, float],
-            ) -> None:
+    ) -> None:
         probabilities = np.array(list(transforms_dict.values()), dtype=float)
         if np.any(probabilities < 0):
             message = (

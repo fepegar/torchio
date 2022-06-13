@@ -114,7 +114,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             label_interpolation: str = 'nearest',
             check_shape: bool = True,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.isotropic = isotropic
         _parse_scales_isotropic(scales, isotropic)
@@ -130,9 +130,11 @@ class RandomAffine(RandomTransform, SpatialTransform):
         self.center = center
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
         self.check_shape = check_shape
 
     def get_params(
@@ -141,7 +143,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             degrees: TypeSextetFloat,
             translation: TypeSextetFloat,
             isotropic: bool,
-            ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         scaling_params = self.sample_uniform_sextet(scales)
         if isotropic:
             scaling_params.fill_(scaling_params[0])
@@ -211,7 +213,7 @@ class Affine(SpatialTransform):
             label_interpolation: str = 'nearest',
             check_shape: bool = True,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.scales = self.parse_params(
             scales,
@@ -242,9 +244,11 @@ class Affine(SpatialTransform):
         self.use_image_center = center == 'image'
         self.default_pad_value = _parse_default_value(default_pad_value)
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
         self.invert_transform = False
         self.check_shape = check_shape
         self.args_names = (
@@ -262,7 +266,7 @@ class Affine(SpatialTransform):
     def _get_scaling_transform(
             scaling_params: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
-            ) -> sitk.ScaleTransform:
+    ) -> sitk.ScaleTransform:
         # 1.5 means the objects look 1.5 times larger
         transform = sitk.ScaleTransform(3)
         scaling_params = np.array(scaling_params).astype(float)
@@ -276,7 +280,7 @@ class Affine(SpatialTransform):
             degrees: Sequence[float],
             translation: Sequence[float],
             center_lps: Optional[TypeTripletFloat] = None,
-            ) -> sitk.Euler3DTransform:
+    ) -> sitk.Euler3DTransform:
 
         def ras_to_lps(triplet: np.ndarray):
             return np.array((-1, -1, 1), dtype=float) * np.asarray(triplet)
@@ -360,10 +364,12 @@ class Affine(SpatialTransform):
                         default_value = tensor.min().item()
                     elif self.default_pad_value == 'mean':
                         default_value = get_borders_mean(
-                            sitk_image, filter_otsu=False)
+                            sitk_image, filter_otsu=False,
+                        )
                     elif self.default_pad_value == 'otsu':
                         default_value = get_borders_mean(
-                            sitk_image, filter_otsu=True)
+                            sitk_image, filter_otsu=True,
+                        )
                     else:
                         default_value = self.default_pad_value
                 transformed_tensor = self.apply_affine_transform(
@@ -382,7 +388,7 @@ class Affine(SpatialTransform):
             transform: sitk.Transform,
             interpolation: str,
             default_value: float,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         floating = reference = sitk_image
 
         resampler = sitk.ResampleImageFilter()

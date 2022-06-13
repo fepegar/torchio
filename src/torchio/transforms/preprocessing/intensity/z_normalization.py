@@ -16,7 +16,7 @@ class ZNormalization(NormalizationTransform):
             self,
             masking_method: TypeMaskingMethod = None,
             **kwargs
-            ):
+    ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.args_names = ('masking_method',)
 
@@ -25,7 +25,7 @@ class ZNormalization(NormalizationTransform):
             subject: Subject,
             image_name: str,
             mask: torch.Tensor,
-            ) -> None:
+    ) -> None:
         image = subject[image_name]
         standardized = self.znorm(
             image.data,

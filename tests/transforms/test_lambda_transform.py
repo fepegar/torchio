@@ -25,19 +25,37 @@ class TestLambda(TorchioTestCase):
     def test_lambda(self):
         transform = Lambda(lambda x: x + 1)
         transformed = transform(self.sample_subject)
-        assert torch.all(torch.eq(
-            transformed.t1.data, self.sample_subject.t1.data + 1))
-        assert torch.all(torch.eq(
-            transformed.t2.data, self.sample_subject.t2.data + 1))
-        assert torch.all(torch.eq(
-            transformed.label.data, self.sample_subject.label.data + 1))
+        assert torch.all(
+            torch.eq(
+            transformed.t1.data, self.sample_subject.t1.data + 1,
+            ),
+        )
+        assert torch.all(
+            torch.eq(
+            transformed.t2.data, self.sample_subject.t2.data + 1,
+            ),
+        )
+        assert torch.all(
+            torch.eq(
+            transformed.label.data, self.sample_subject.label.data + 1,
+            ),
+        )
 
     def test_image_types(self):
         transform = Lambda(lambda x: x + 1, types_to_apply=[LABEL])
         transformed = transform(self.sample_subject)
-        assert torch.all(torch.eq(
-            transformed.t1.data, self.sample_subject.t1.data))
-        assert torch.all(torch.eq(
-            transformed.t2.data, self.sample_subject.t2.data))
-        assert torch.all(torch.eq(
-            transformed.label.data, self.sample_subject.label.data + 1))
+        assert torch.all(
+            torch.eq(
+            transformed.t1.data, self.sample_subject.t1.data,
+            ),
+        )
+        assert torch.all(
+            torch.eq(
+            transformed.t2.data, self.sample_subject.t2.data,
+            ),
+        )
+        assert torch.all(
+            torch.eq(
+            transformed.label.data, self.sample_subject.label.data + 1,
+            ),
+        )
