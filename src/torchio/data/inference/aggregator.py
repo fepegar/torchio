@@ -139,7 +139,7 @@ class GridAggregator:
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin
+                    k_ini:k_fin,
                 ] = cropped_patch
         elif self.overlap_mode == 'average':
             self._initialize_avgmask_tensor(batch)
@@ -149,13 +149,13 @@ class GridAggregator:
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin
+                    k_ini:k_fin,
                 ] += patch
                 self._avgmask_tensor[
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin
+                    k_ini:k_fin,
                 ] += 1
 
     def get_output_tensor(self) -> torch.Tensor:

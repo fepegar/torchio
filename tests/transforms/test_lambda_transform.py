@@ -27,17 +27,17 @@ class TestLambda(TorchioTestCase):
         transformed = transform(self.sample_subject)
         assert torch.all(
             torch.eq(
-            transformed.t1.data, self.sample_subject.t1.data + 1,
+                transformed.t1.data, self.sample_subject.t1.data + 1,
             ),
         )
         assert torch.all(
             torch.eq(
-            transformed.t2.data, self.sample_subject.t2.data + 1,
+                transformed.t2.data, self.sample_subject.t2.data + 1,
             ),
         )
         assert torch.all(
             torch.eq(
-            transformed.label.data, self.sample_subject.label.data + 1,
+                transformed.label.data, self.sample_subject.label.data + 1,
             ),
         )
 
@@ -46,16 +46,16 @@ class TestLambda(TorchioTestCase):
         transformed = transform(self.sample_subject)
         assert torch.all(
             torch.eq(
-            transformed.t1.data, self.sample_subject.t1.data,
+                transformed.t1.data, self.sample_subject.t1.data,
             ),
         )
         assert torch.all(
             torch.eq(
-            transformed.t2.data, self.sample_subject.t2.data,
+                transformed.t2.data, self.sample_subject.t2.data,
             ),
         )
         assert torch.all(
             torch.eq(
-            transformed.label.data, self.sample_subject.label.data + 1,
+                transformed.label.data, self.sample_subject.label.data + 1,
             ),
         )
