@@ -50,11 +50,14 @@ class FPG(Subject):
         }
         if load_all:
             subject_dict['t2'] = ScalarImage(
-                download_root / self.filenames['t2'])
+                download_root / self.filenames['t2'],
+            )
             subject_dict['fmri'] = ScalarImage(
-                download_root / self.filenames['fmri'])
+                download_root / self.filenames['fmri'],
+            )
             subject_dict['dmri'] = ScalarImage(
-                download_root / self.filenames['dmri'])
+                download_root / self.filenames['dmri'],
+            )
         super().__init__(subject_dict)
         self.gif_colors = self.GIF_COLORS
 

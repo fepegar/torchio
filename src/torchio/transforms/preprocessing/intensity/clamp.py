@@ -40,7 +40,7 @@ class Clamp(IntensityTransform):
             out_min: Optional[float] = None,
             out_max: Optional[float] = None,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.out_min, self.out_max = out_min, out_max
         self.args_names = 'out_min', 'out_max'

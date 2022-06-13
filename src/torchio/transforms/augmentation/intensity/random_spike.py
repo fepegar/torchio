@@ -42,12 +42,14 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             num_spikes: Union[int, Tuple[int, int]] = 1,
             intensity: Union[float, Tuple[float, float]] = (1, 3),
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.intensity_range = self._parse_range(
-            intensity, 'intensity_range')
+            intensity, 'intensity_range',
+        )
         self.num_spikes_range = self._parse_range(
-            num_spikes, 'num_spikes', min_constraint=0, type_constraint=int)
+            num_spikes, 'num_spikes', min_constraint=0, type_constraint=int,
+        )
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
@@ -66,7 +68,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             self,
             num_spikes_range: Tuple[int, int],
             intensity_range: Tuple[float, float],
-            ) -> Tuple[np.ndarray, float]:
+    ) -> Tuple[np.ndarray, float]:
         ns_min, ns_max = num_spikes_range
         num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
         intensity_param = self.sample_uniform(*intensity_range)
@@ -97,7 +99,7 @@ class Spike(IntensityTransform, FourierTransform):
             spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
             intensity: Union[float, Dict[str, float]],
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.spikes_positions = spikes_positions
         self.intensity = intensity
@@ -127,7 +129,7 @@ class Spike(IntensityTransform, FourierTransform):
             tensor: torch.Tensor,
             spikes_positions: np.ndarray,
             intensity_factor: float,
-            ):
+    ):
         if intensity_factor == 0 or len(spikes_positions) == 0:
             return tensor
         spectrum = self.fourier_transform(tensor)

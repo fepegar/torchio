@@ -38,10 +38,11 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             coefficients: Union[float, Tuple[float, float]] = 0.5,
             order: int = 3,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.coefficients_range = self._parse_range(
-            coefficients, 'coefficients_range')
+            coefficients, 'coefficients_range',
+        )
         self.order = _parse_order(order)
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -61,7 +62,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             self,
             order: int,
             coefficients_range: Tuple[float, float],
-            ) -> List[float]:
+    ) -> List[float]:
         # Sampling of the appropriate number of coefficients for the creation
         # of the bias field map
         random_coefficients = []
@@ -87,7 +88,7 @@ class BiasField(IntensityTransform):
             coefficients: Union[List[float], Dict[str, List[float]]],
             order: Union[int, Dict[str, int]],
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.coefficients = coefficients
         self.order = order
@@ -108,7 +109,8 @@ class BiasField(IntensityTransform):
             if self.arguments_are_dict():
                 coefficients, order = self.coefficients[name], self.order[name]
             bias_field = self.generate_bias_field(
-                image.data, order, coefficients)
+                image.data, order, coefficients,
+            )
             if self.invert_transform:
                 np.divide(1, bias_field, out=bias_field)
             image.set_data(image.data * torch.as_tensor(bias_field))
@@ -119,7 +121,7 @@ class BiasField(IntensityTransform):
             data: TypeData,
             order: int,
             coefficients: TypeData,
-            ) -> np.ndarray:
+    ) -> np.ndarray:
         # Create the bias field map using a linear combination of polynomial
         # functions and the coefficients previously sampled
         shape = np.array(data.shape[1:])  # first axis is channels

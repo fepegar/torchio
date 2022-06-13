@@ -41,16 +41,16 @@ class TestLabelSampler(TorchioTestCase):
                 tensor=torch.tensor(
                     [
                         [[[1, 1]]],
-                        [[[0, 1]]]
-                    ]
-                )
-            )
+                        [[[0, 1]]],
+                    ],
+                ),
+            ),
         )
         patch_size = 1
         sampler = tio.LabelSampler(
             patch_size,
             'label',
-            label_probabilities={0: 1, 1: 1}
+            label_probabilities={0: 1, 1: 1},
         )
         # There are 2 voxels in the image, channels have same probabilities,
         # 1st voxel has probability 0.5 * 0.5 + 0 * 0.5 of being chosen while

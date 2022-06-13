@@ -51,7 +51,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
             num_transforms: int = 2,
             image_interpolation: str = 'linear',
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
@@ -63,7 +63,8 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
             raise ValueError(message)
         self.num_transforms = num_transforms
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments = defaultdict(dict)
@@ -90,12 +91,14 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
             num_transforms: int,
             perturbation: float = 0.3,
             is_2d: bool = False,
-            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # If perturbation is 0, time intervals between movements are constant
         degrees_params = self.get_params_array(
-            degrees_range, num_transforms)
+            degrees_range, num_transforms,
+        )
         translation_params = self.get_params_array(
-            translation_range, num_transforms)
+            translation_range, num_transforms,
+        )
         if is_2d:  # imagine sagittal (1, A, S)
             degrees_params[:, :-1] = 0  # rotate around Z axis only
             translation_params[:, 2] = 0  # translate in XY plane only
@@ -136,7 +139,7 @@ class Motion(IntensityTransform, FourierTransform):
             times: Union[Sequence[float], Dict[str, Sequence[float]]],
             image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],  # noqa: E501
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.degrees = degrees
         self.translation = translation
@@ -188,7 +191,7 @@ class Motion(IntensityTransform, FourierTransform):
             degrees_params: np.ndarray,
             translation_params: np.ndarray,
             image: sitk.Image,
-            ) -> List[sitk.Euler3DTransform]:
+    ) -> List[sitk.Euler3DTransform]:
         center_ijk = np.array(image.GetSize()) / 2
         center_lps = image.TransformContinuousIndexToPhysicalPoint(center_ijk)
         identity = np.eye(4)
@@ -225,7 +228,7 @@ class Motion(IntensityTransform, FourierTransform):
             image: sitk.Image,
             transforms: Sequence[sitk.Euler3DTransform],
             interpolation: str,
-            ) -> List[sitk.Image]:
+    ) -> List[sitk.Image]:
         floating = reference = image
         default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
         transforms = transforms[1:]  # first is identity
@@ -258,7 +261,7 @@ class Motion(IntensityTransform, FourierTransform):
             transforms: Sequence[sitk.Euler3DTransform],
             times: np.ndarray,
             interpolation: str,
-            ):
+    ):
         images = self.resample_images(image, transforms, interpolation)
         spectra = []
         for image in images:

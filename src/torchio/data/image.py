@@ -123,7 +123,7 @@ class Image(dict):
             check_nans: bool = False,  # removed by ITK by default
             reader: Callable = read_image,
             **kwargs: Dict[str, Any],
-            ):
+    ):
         self.check_nans = check_nans
         self.reader = reader
 
@@ -131,7 +131,7 @@ class Image(dict):
             warnings.warn(
                 'Not specifying the image type is deprecated and will be'
                 ' mandatory in the future. You can probably use'
-                ' tio.ScalarImage or tio.LabelMap instead'
+                ' tio.ScalarImage or tio.LabelMap instead',
             )
             type = INTENSITY  # noqa: A001
 
@@ -287,7 +287,8 @@ class Image(dict):
     @property
     def direction(self) -> TypeDirection3D:
         _, _, direction = get_sitk_metadata_from_ras_affine(
-            self.affine, lps=False)
+            self.affine, lps=False,
+        )
         return direction
 
     @property
@@ -398,8 +399,8 @@ class Image(dict):
 
     @staticmethod
     def _parse_single_path(
-            path: TypePath
-            ) -> Path:
+            path: TypePath,
+    ) -> Path:
         try:
             path = Path(path).expanduser()
         except TypeError:
@@ -420,8 +421,8 @@ class Image(dict):
 
     def _parse_path(
             self,
-            path: Union[TypePath, Sequence[TypePath], None]
-            ) -> Optional[Union[Path, List[Path]]]:
+            path: Union[TypePath, Sequence[TypePath], None],
+    ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
         elif isinstance(path, dict):
@@ -436,7 +437,7 @@ class Image(dict):
             self,
             tensor: Optional[TypeData],
             none_ok: bool = True,
-            ) -> Optional[torch.Tensor]:
+    ) -> Optional[torch.Tensor]:
         if tensor is None:
             if none_ok:
                 return None
@@ -629,7 +630,7 @@ class Image(dict):
             rescale: bool = True,
             optimize: bool = True,
             reverse: bool = False,
-            ) -> None:
+    ) -> None:
         """Save an animated GIF of the image.
 
         Args:

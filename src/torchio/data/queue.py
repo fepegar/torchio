@@ -145,7 +145,7 @@ class Queue(Dataset):
             shuffle_patches: bool = True,
             start_background: bool = True,
             verbose: bool = False,
-            ):
+    ):
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
         self.shuffle_subjects = shuffle_subjects
@@ -271,7 +271,8 @@ class Queue(Dataset):
         # I need a DataLoader to handle parallelism
         # But this loader is always expected to yield single subject samples
         self._print(
-            f'\nCreating subjects loader with {self.num_workers} workers')
+            f'\nCreating subjects loader with {self.num_workers} workers',
+        )
         subjects_loader = DataLoader(
             self.subjects_dataset,
             num_workers=self.num_workers,

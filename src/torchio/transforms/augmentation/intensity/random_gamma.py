@@ -65,7 +65,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
             self,
             log_gamma: TypeRangeFloat = (-0.3, 0.3),
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
@@ -123,7 +123,7 @@ class Gamma(IntensityTransform):
             self,
             gamma: float,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.gamma = gamma
         self.args_names = ('gamma',)

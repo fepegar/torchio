@@ -11,7 +11,7 @@ from ...utils import TorchioTestCase
         {0, 1, 2},
         {0, 2},
         {1, 2, 5, 6},  # values from original @efirdc test
-    )
+    ),
 )
 @pytest.mark.parametrize(
     'remapping',
@@ -26,7 +26,7 @@ from ...utils import TorchioTestCase
         {3: 4},
         {3: 1},
         {1: 2, 2: 1, 5: 10, 6: 11},  # values from original @efirdc test
-    )
+    ),
 )
 def test_remap(original_label_set, remapping):
     source_label_set = set(remapping.keys())

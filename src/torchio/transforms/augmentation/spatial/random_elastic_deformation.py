@@ -125,7 +125,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             image_interpolation: str = 'linear',
             label_interpolation: str = 'nearest',
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
@@ -143,16 +143,18 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             )
             raise ValueError(message)
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
 
     @staticmethod
     def get_params(
             num_control_points: TypeTripletInt,
             max_displacement: Tuple[float, float, float],
             num_locked_borders: int,
-            ) -> np.ndarray:
+    ) -> np.ndarray:
         grid_shape = num_control_points
         num_dimensions = 3
         coarse_field = torch.rand(*grid_shape, num_dimensions)  # [0, 1)
@@ -210,14 +212,16 @@ class ElasticDeformation(SpatialTransform):
             image_interpolation: str = 'linear',
             label_interpolation: str = 'nearest',
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.control_points = control_points
         self.max_displacement = max_displacement
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
         self.invert_transform = False
         self.args_names = (
             'control_points',
@@ -229,7 +233,7 @@ class ElasticDeformation(SpatialTransform):
     def get_bspline_transform(
             self,
             image: sitk.Image,
-            ) -> sitk.BSplineTransformInitializer:
+    ) -> sitk.BSplineTransformInitializer:
         control_points = self.control_points.copy()
         if self.invert_transform:
             control_points *= -1
@@ -247,7 +251,7 @@ class ElasticDeformation(SpatialTransform):
     def parse_free_form_transform(
             transform: sitk.Transform,
             max_displacement: Sequence[TypeTripletInt],
-            ) -> None:
+    ) -> None:
         """Issue a warning is possible folding is detected."""
         coefficient_images = transform.GetCoefficientImages()
         grid_spacing = coefficient_images[0].GetSpacing()
@@ -285,7 +289,7 @@ class ElasticDeformation(SpatialTransform):
             tensor: torch.Tensor,
             affine: np.ndarray,
             interpolation: str,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         assert tensor.dim() == 4
         results = []
         for component in tensor:
@@ -312,7 +316,7 @@ class ElasticDeformation(SpatialTransform):
 
 def _parse_num_control_points(
         num_control_points: TypeTripletInt,
-        ) -> None:
+) -> None:
     for axis, number in enumerate(num_control_points):
         if not isinstance(number, int) or number < 4:
             message = (
@@ -324,7 +328,7 @@ def _parse_num_control_points(
 
 def _parse_max_displacement(
         max_displacement: Tuple[float, float, float],
-        ) -> None:
+) -> None:
     for axis, number in enumerate(max_displacement):
         if not isinstance(number, Number) or number < 0:
             message = (

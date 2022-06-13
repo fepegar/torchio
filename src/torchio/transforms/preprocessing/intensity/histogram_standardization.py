@@ -50,7 +50,7 @@ class HistogramStandardization(NormalizationTransform):
             landmarks: TypeLandmarks,
             masking_method: TypeMaskingMethod = None,
             **kwargs
-            ):
+    ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.landmarks = landmarks
         self.landmarks_dict = self._parse_landmarks(landmarks)
@@ -79,7 +79,7 @@ class HistogramStandardization(NormalizationTransform):
             subject: Subject,
             image_name: str,
             mask: torch.Tensor,
-            ) -> None:
+    ) -> None:
         if image_name not in self.landmarks_dict:
             keys = tuple(self.landmarks_dict.keys())
             message = (
@@ -100,7 +100,7 @@ class HistogramStandardization(NormalizationTransform):
             mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
             masking_function: Optional[Callable] = None,
             output_path: Optional[TypePath] = None,
-            ) -> np.ndarray:
+    ) -> np.ndarray:
         """Extract average histogram landmarks from images used for training.
 
         Args:
@@ -242,7 +242,7 @@ def normalize(
         mask: Optional[np.ndarray],
         cutoff: Optional[Tuple[float, float]] = None,
         epsilon: float = 1e-5,
-        ) -> torch.Tensor:
+) -> torch.Tensor:
     cutoff_ = DEFAULT_CUTOFF if cutoff is None else cutoff
     array = tensor.numpy()
     mapping = landmarks

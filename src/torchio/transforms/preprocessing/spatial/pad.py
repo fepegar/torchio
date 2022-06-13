@@ -57,7 +57,7 @@ class Pad(BoundsTransform):
             padding: TypeBounds,
             padding_mode: Union[str, float] = 0,
             **kwargs
-            ):
+    ):
         super().__init__(padding, **kwargs)
         self.padding = padding
         self.check_padding_mode(padding_mode)
@@ -81,8 +81,10 @@ class Pad(BoundsTransform):
             new_affine = image.affine.copy()
             new_affine[:3, 3] = new_origin
             if isinstance(self.padding_mode, Number):
-                kwargs = {'mode': 'constant',
-                          'constant_values': self.padding_mode}
+                kwargs = {
+                    'mode': 'constant',
+                    'constant_values': self.padding_mode,
+                }
             else:
                 kwargs = {'mode': self.padding_mode}
             pad_params = self.bounds_parameters

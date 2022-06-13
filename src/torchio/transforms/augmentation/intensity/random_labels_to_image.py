@@ -134,13 +134,14 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             discretize: bool = False,
             ignore_background: bool = False,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.label_key = _parse_label_key(label_key)
         self.used_labels = _parse_used_labels(used_labels)
         self.mean, self.std = self.parse_mean_and_std(mean, std)
         self.default_mean = self.parse_gaussian_parameter(
-            default_mean, 'default_mean')
+            default_mean, 'default_mean',
+        )
         self.default_std = self.parse_gaussian_parameter(
             default_std,
             'default_std',
@@ -152,8 +153,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     def parse_mean_and_std(
             self,
             mean: Sequence[TypeRangeFloat],
-            std: Sequence[TypeRangeFloat]
-            ) -> Tuple[List[TypeRangeFloat], List[TypeRangeFloat]]:
+            std: Sequence[TypeRangeFloat],
+    ) -> Tuple[List[TypeRangeFloat], List[TypeRangeFloat]]:
         if mean is not None:
             mean = self.parse_gaussian_parameters(mean, 'mean')
         if std is not None:
@@ -169,8 +170,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     def parse_gaussian_parameters(
             self,
             params: Sequence[TypeRangeFloat],
-            name: str
-            ) -> List[TypeRangeFloat]:
+            name: str,
+    ) -> List[TypeRangeFloat]:
         check_sequence(params, name)
         params = [
             self.parse_gaussian_parameter(p, f'{name}[{i}]')
@@ -188,19 +189,21 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     def parse_gaussian_parameter(
             nums_range: TypeRangeFloat,
             name: str,
-            ) -> Tuple[float, float]:
+    ) -> Tuple[float, float]:
         if isinstance(nums_range, (int, float)):
             return nums_range, nums_range
 
         if len(nums_range) != 2:
             raise ValueError(
                 f'If {name} is a sequence,'
-                f' it must be of len 2, not {nums_range}')
+                f' it must be of len 2, not {nums_range}',
+            )
         min_value, max_value = nums_range
         if min_value > max_value:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be'
-                f' equal or greater than the first, not {nums_range}')
+                f' equal or greater than the first, not {nums_range}',
+            )
         return min_value, max_value
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -323,7 +326,7 @@ class LabelsToImage(IntensityTransform):
             ignore_background: bool = False,
             discretize: bool = False,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.label_key = _parse_label_key(label_key)
         self.used_labels = _parse_used_labels(used_labels)
@@ -408,7 +411,7 @@ class LabelsToImage(IntensityTransform):
             data: TypeData,
             mean: float,
             std: float,
-            ) -> TypeData:
+    ) -> TypeData:
         # Create the simulated tissue using a gaussian random variable
         gaussian = torch.randn(data.shape) * std + mean
         return gaussian * data
@@ -417,7 +420,8 @@ class LabelsToImage(IntensityTransform):
 def _parse_label_key(label_key: Optional[str]) -> Optional[str]:
     if label_key is not None and not isinstance(label_key, str):
         message = (
-            f'"label_key" must be a string or None, not {type(label_key)}')
+            f'"label_key" must be a string or None, not {type(label_key)}'
+        )
         raise TypeError(message)
     return label_key
 
@@ -440,7 +444,7 @@ def _check_mean_and_std_length(
         labels: Sequence[int],
         means: Optional[Sequence[TypeRangeFloat]],
         stds: Optional[Sequence[TypeRangeFloat]],
-        ) -> None:
+) -> None:
     num_labels = len(labels)
     if means is not None:
         num_means = len(means)

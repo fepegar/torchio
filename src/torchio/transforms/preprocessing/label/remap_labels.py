@@ -138,7 +138,7 @@ class RemapLabels(LabelTransform):
             remapping: Dict[int, int],
             masking_method: TypeMaskingMethod = None,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.kwargs = kwargs
         self.remapping = remapping

@@ -80,13 +80,15 @@ class Resample(SpatialTransform):
             pre_affine_name: Optional[str] = None,
             scalars_only: bool = False,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.target = target
         self.image_interpolation = self.parse_interpolation(
-            image_interpolation)
+            image_interpolation,
+        )
         self.label_interpolation = self.parse_interpolation(
-            label_interpolation)
+            label_interpolation,
+        )
         self.pre_affine_name = pre_affine_name
         self.scalars_only = scalars_only
         self.args_names = (
@@ -204,7 +206,7 @@ class Resample(SpatialTransform):
             target: Union[TypeSpacing, TypePath, Image],
             floating_sitk,
             subject,
-            ):
+    ):
         # Target can be:
         # 1) An instance of torchio.Image
         # 2) An instance of pathlib.Path
@@ -281,7 +283,7 @@ class Resample(SpatialTransform):
     def get_reference_image(
             floating_sitk: sitk.Image,
             spacing: TypeTripletFloat,
-            ) -> sitk.Image:
+    ) -> sitk.Image:
         old_spacing = np.array(floating_sitk.GetSpacing())
         new_spacing = np.array(spacing)
         old_size = np.array(floating_sitk.GetSize())
@@ -290,7 +292,8 @@ class Resample(SpatialTransform):
         new_size[old_size == 1] = 1  # keep singleton dimensions
         new_origin_index = 0.5 * (new_spacing / old_spacing - 1)
         new_origin_lps = floating_sitk.TransformContinuousIndexToPhysicalPoint(
-            new_origin_index)
+            new_origin_index,
+        )
         reference = sitk.Image(
             new_size.tolist(),
             floating_sitk.GetPixelID(),

@@ -52,7 +52,7 @@ class GridAggregator:
             patch: torch.Tensor,
             location: np.ndarray,
             overlap: np.ndarray,
-            ) -> Tuple[torch.Tensor, np.ndarray]:
+    ) -> Tuple[torch.Tensor, np.ndarray]:
         half_overlap = overlap // 2  # overlap is always even in grid sampler
         index_ini, index_fin = location[:3], location[3:]
 
@@ -102,7 +102,7 @@ class GridAggregator:
             self,
             batch_tensor: torch.Tensor,
             locations: torch.Tensor,
-            ) -> None:
+    ) -> None:
         """Add batch processed by a CNN to the output prediction volume.
 
         Args:
@@ -139,7 +139,8 @@ class GridAggregator:
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin] = cropped_patch
+                    k_ini:k_fin,
+                ] = cropped_patch
         elif self.overlap_mode == 'average':
             self._initialize_avgmask_tensor(batch)
             for patch, location in zip(batch, locations):
@@ -148,12 +149,14 @@ class GridAggregator:
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin] += patch
+                    k_ini:k_fin,
+                ] += patch
                 self._avgmask_tensor[
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin] += 1
+                    k_ini:k_fin,
+                ] += 1
 
     def get_output_tensor(self) -> torch.Tensor:
         """Get the aggregated volume after dense inference."""
@@ -169,7 +172,8 @@ class GridAggregator:
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526
             output = torch.true_divide(
-                self._output_tensor, self._avgmask_tensor)
+                self._output_tensor, self._avgmask_tensor,
+            )
         else:
             output = self._output_tensor
         if self.volume_padded:
