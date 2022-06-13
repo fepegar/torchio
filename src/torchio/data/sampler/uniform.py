@@ -19,7 +19,7 @@ class UniformSampler(RandomSampler):
             self,
             subject: Subject,
             num_patches: int = None,
-            ) -> Generator[Subject, None, None]:
+    ) -> Generator[Subject, None, None]:
         valid_range = subject.spatial_shape - self.patch_size
         patches_left = num_patches if num_patches is not None else True
         while patches_left:

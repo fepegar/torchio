@@ -18,7 +18,7 @@ from ...utils import TorchioTestCase
         (0, 3, 5, 9, 15, 16, 23),
         (2, 8, 9, 10, 15, 20, 100),  # values from original @efirdc test
         (0, 2, 8, 9, 10, 15, 20, 100),
-    )
+    ),
 )
 def test_sequential(original_labels):
     remap_labels = tio.SequentialLabels()

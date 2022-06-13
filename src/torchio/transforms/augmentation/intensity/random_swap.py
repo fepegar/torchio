@@ -33,7 +33,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             patch_size: TypeTuple = 15,
             num_iterations: int = 100,
             **kwargs,
-            ):
+    ):
         super().__init__(**kwargs)
         self.patch_size = np.array(to_tuple(patch_size))
         self.num_iterations = self._parse_num_iterations(num_iterations)
@@ -41,11 +41,15 @@ class RandomSwap(RandomTransform, IntensityTransform):
     @staticmethod
     def _parse_num_iterations(num_iterations):
         if not isinstance(num_iterations, int):
-            raise TypeError('num_iterations must be an int,'
-                            f'not {num_iterations}')
+            raise TypeError(
+                'num_iterations must be an int,'
+                f'not {num_iterations}',
+            )
         if num_iterations < 0:
-            raise ValueError('num_iterations must be positive,'
-                             f'not {num_iterations}')
+            raise ValueError(
+                'num_iterations must be positive,'
+                f'not {num_iterations}',
+            )
         return num_iterations
 
     @staticmethod
@@ -53,7 +57,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             tensor: torch.Tensor,
             patch_size: np.ndarray,
             num_iterations: int,
-            ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
+    ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
         spatial_shape = tensor.shape[-3:]
         locations = []
         for _ in range(num_iterations):
@@ -110,7 +114,7 @@ class Swap(IntensityTransform):
             patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
             locations: Union[TypeLocations, Dict[str, TypeLocations]],
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.locations = locations
         self.patch_size = patch_size
@@ -133,7 +137,7 @@ def swap(
         tensor: torch.Tensor,
         patch_size: TypeTuple,
         locations: List[Tuple[np.ndarray, np.ndarray]],
-        ) -> None:
+) -> None:
     tensor = tensor.clone()
     patch_size = np.array(patch_size)
     for first_ini, second_ini in locations:
@@ -157,7 +161,7 @@ def crop(
         image: Union[np.ndarray, torch.Tensor],
         index_ini: np.ndarray,
         index_fin: np.ndarray,
-        ) -> Union[np.ndarray, torch.Tensor]:
+) -> Union[np.ndarray, torch.Tensor]:
     i_ini, j_ini, k_ini = index_ini
     i_fin, j_fin, k_fin = index_fin
     return image[:, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
@@ -166,7 +170,7 @@ def crop(
 def get_random_indices_from_shape(
         spatial_shape: TypeTripletInt,
         patch_size: TypeTripletInt,
-        ) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray]:
     shape_array = np.array(spatial_shape)
     patch_size_array = np.array(patch_size)
     max_index_ini = shape_array - patch_size_array

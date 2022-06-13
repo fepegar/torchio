@@ -17,6 +17,7 @@ repos:
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
         exclude: setup.cfg
+
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
     hooks:
@@ -39,6 +40,12 @@ repos:
         args: [
           '--ignore=N813,E123,W503,B902',  # import SimpleITK as sitk, brackets indentation, line break before binary operator
         ]
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.2.3
+    hooks:
+    - id: add-trailing-comma
+
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0  # Use the ref you want to point at
     hooks:
@@ -47,6 +54,7 @@ repos:
       - id: python-use-type-annotations  # enforce that type annotations are used instead of type comments
       - id: rst-backticks  # detect common mistake of using single backticks when writing rst
       # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
+
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
     hooks:

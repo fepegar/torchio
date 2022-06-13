@@ -36,7 +36,7 @@ class PatchSampler:
             self,
             subject: Subject,
             index_ini: TypeTripletInt,
-            ) -> Subject:
+    ) -> Subject:
         cropped_subject = self.crop(subject, index_ini, self.patch_size)
         return cropped_subject
 
@@ -45,7 +45,7 @@ class PatchSampler:
             subject: Subject,
             index_ini: TypeTripletInt,
             patch_size: TypeTripletInt,
-            ) -> Subject:
+    ) -> Subject:
         transform = self._get_crop_transform(subject, index_ini, patch_size)
         cropped_subject = transform(subject)
         index_ini = np.asarray(index_ini)
@@ -61,7 +61,7 @@ class PatchSampler:
             subject,
             index_ini: TypeTripletInt,
             patch_size: TypeSpatialShape,
-            ):
+    ):
         from ...transforms.preprocessing.spatial.crop import Crop
         shape = np.array(subject.spatial_shape, dtype=np.uint16)
         index_ini = np.array(index_ini, dtype=np.uint16)
@@ -79,7 +79,7 @@ class PatchSampler:
             self,
             subject: Subject,
             num_patches: Optional[int] = None,
-            ) -> Generator[Subject, None, None]:
+    ) -> Generator[Subject, None, None]:
         subject.check_consistent_space()
         if np.any(self.patch_size > subject.spatial_shape):
             message = (
@@ -94,7 +94,7 @@ class PatchSampler:
             self,
             subject: Subject,
             num_patches: Optional[int] = None,
-            ) -> Generator[Subject, None, None]:
+    ) -> Generator[Subject, None, None]:
         raise NotImplementedError
 
 

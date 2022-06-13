@@ -30,9 +30,11 @@ class TestRescaleIntensity(TorchioTestCase):
         low_quantile = np.percentile(self.sample_subject.t1.data, 5)
         high_quantile = np.percentile(self.sample_subject.t1.data, 95)
         low_indices = (self.sample_subject.t1.data < low_quantile).nonzero(
-            as_tuple=True)
+            as_tuple=True,
+        )
         high_indices = (self.sample_subject.t1.data > high_quantile).nonzero(
-            as_tuple=True)
+            as_tuple=True,
+        )
         rescale = tio.RescaleIntensity(out_min_max=(0, 1), percentiles=(5, 95))
         transformed = rescale(self.sample_subject)
         assert (transformed.t1.data[low_indices] == 0).all()
@@ -40,15 +42,18 @@ class TestRescaleIntensity(TorchioTestCase):
 
     def test_masking_using_label(self):
         transform = tio.RescaleIntensity(
-            out_min_max=(0, 1), percentiles=(5, 95), masking_method='label')
+            out_min_max=(0, 1), percentiles=(5, 95), masking_method='label',
+        )
         transformed = transform(self.sample_subject)
         mask = self.sample_subject.label.data > 0
         low_quantile = np.percentile(self.sample_subject.t1.data[mask], 5)
         high_quantile = np.percentile(self.sample_subject.t1.data[mask], 95)
         low_indices = (self.sample_subject.t1.data < low_quantile).nonzero(
-            as_tuple=True)
+            as_tuple=True,
+        )
         high_indices = (self.sample_subject.t1.data > high_quantile).nonzero(
-            as_tuple=True)
+            as_tuple=True,
+        )
         self.assertEqual(transformed.t1.data.min(), 0)
         self.assertEqual(transformed.t1.data.max(), 1)
         assert (transformed.t1.data[low_indices] == 0).all()

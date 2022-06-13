@@ -33,7 +33,7 @@ class Crop(BoundsTransform):
             self,
             cropping: TypeBounds,
             **kwargs
-            ):
+    ):
         super().__init__(cropping, **kwargs)
         self.cropping = cropping
         self.args_names = ('cropping',)

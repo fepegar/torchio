@@ -32,7 +32,7 @@ class Lambda(Transform):
             function: TypeCallable,
             types_to_apply: Optional[Sequence[str]] = None,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.function = function
         self.types_to_apply = types_to_apply

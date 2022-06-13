@@ -28,7 +28,7 @@ class DataParser:
             data: TypeTransformInput,
             keys: Optional[Sequence[str]] = None,
             label_keys: Optional[Sequence[str]] = None,
-            ):
+    ):
         self.data = data
         self.keys = keys
         self.label_keys = label_keys
@@ -129,7 +129,7 @@ class DataParser:
             data: dict,
             image_keys: Sequence[str],
             label_keys: Optional[Sequence[str]] = None,
-            ) -> Subject:
+    ) -> Subject:
         subject_dict = {}
         label_keys = {} if label_keys is None else label_keys
         for key, value in data.items():

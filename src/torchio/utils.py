@@ -21,7 +21,7 @@ from .typing import TypeNumber, TypePath
 def to_tuple(
         value: Any,
         length: int = 1,
-        ) -> Tuple[TypeNumber, ...]:
+) -> Tuple[TypeNumber, ...]:
     """
     to_tuple(1, length=1) -> (1,)
     to_tuple(1, length=3) -> (1, 1, 1)
@@ -40,8 +40,8 @@ def to_tuple(
 
 
 def get_stem(
-        path: Union[TypePath, Sequence[TypePath]]
-        ) -> Union[str, List[str]]:
+        path: Union[TypePath, Sequence[TypePath]],
+) -> Union[str, List[str]]:
     """
     '/home/user/image.nii.gz' -> 'image'
     """
@@ -59,7 +59,7 @@ def create_dummy_dataset(
         suffix: str = '.nii.gz',
         force: bool = False,
         verbose: bool = False,
-        ):
+):
     from .data import ScalarImage, LabelMap, Subject
     output_dir = tempfile.gettempdir() if directory is None else directory
     output_dir = Path(output_dir)
@@ -119,7 +119,7 @@ def apply_transform_to_file(
         output_path: TypePath,
         class_: str = 'ScalarImage',
         verbose: bool = False,
-        ):
+):
     from . import data
     image = getattr(data, class_)(input_path)
     subject = data.Subject(image=image)
@@ -160,7 +160,7 @@ def get_torchio_cache_dir() -> Path:
 def compress(
         input_path: TypePath,
         output_path: Optional[TypePath] = None,
-        ) -> Path:
+) -> Path:
     if output_path is None:
         output_path = Path(input_path).with_suffix('.nii.gz')
     with open(input_path, 'rb') as f_in:
@@ -269,7 +269,7 @@ def add_images_from_batch(
         tensor: torch.Tensor,
         class_=None,
         name='prediction',
-        ) -> None:
+) -> None:
     """Add images to subjects in a list, typically from a network prediction.
 
     The spatial metadata (affine matrices) will be extracted from one of the

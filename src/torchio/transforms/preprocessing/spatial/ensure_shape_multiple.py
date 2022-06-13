@@ -116,7 +116,7 @@ class EnsureShapeMultiple(SpatialTransform):
             *,
             method: str = 'pad',
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.target_multiple = np.array(to_tuple(target_multiple, 3))
         if method not in ('crop', 'pad'):

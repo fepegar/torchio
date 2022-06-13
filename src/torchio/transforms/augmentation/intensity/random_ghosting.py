@@ -53,7 +53,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             intensity: Union[float, Tuple[float, float]] = (0.5, 1),
             restore: float = 0.02,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         if not isinstance(axes, tuple):
             try:
@@ -65,9 +65,11 @@ class RandomGhosting(RandomTransform, IntensityTransform):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
         self.axes = axes
         self.num_ghosts_range = self._parse_range(
-            num_ghosts, 'num_ghosts', min_constraint=0, type_constraint=int)
+            num_ghosts, 'num_ghosts', min_constraint=0, type_constraint=int,
+        )
         self.intensity_range = self._parse_range(
-            intensity, 'intensity_range', min_constraint=0)
+            intensity, 'intensity_range', min_constraint=0,
+        )
         self.restore = _parse_restore(restore)
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -96,7 +98,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             num_ghosts_range: Tuple[int, int],
             axes: Tuple[int, ...],
             intensity_range: Tuple[float, float],
-            ) -> Tuple:
+    ) -> Tuple:
         ng_min, ng_max = num_ghosts_range
         num_ghosts = torch.randint(ng_min, ng_max + 1, (1,)).item()
         axis = axes[torch.randint(0, len(axes), (1,))]
@@ -138,7 +140,7 @@ class Ghosting(IntensityTransform, FourierTransform):
             intensity: Union[float, Dict[str, float]],
             restore: Union[float, Dict[str, float]],
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.axis = axis
         self.num_ghosts = num_ghosts
@@ -177,7 +179,7 @@ class Ghosting(IntensityTransform, FourierTransform):
             axis: int,
             intensity: float,
             restore_center: float,
-            ):
+    ):
         if not num_ghosts or not intensity:
             return tensor
 
@@ -220,6 +222,7 @@ def _parse_restore(restore):
         raise TypeError(f'Restore must be a float, not "{restore}"') from e
     if not 0 <= restore <= 1:
         message = (
-            f'Restore must be a number between 0 and 1, not {restore}')
+            f'Restore must be a number between 0 and 1, not {restore}'
+        )
         raise ValueError(message)
     return restore

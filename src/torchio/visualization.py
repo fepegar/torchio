@@ -40,7 +40,7 @@ def plot_volume(
         figsize=None,
         reorient=True,
         indices=None,
-        ):
+):
     _, plt = import_mpl_plt()
     fig = None
     if axes is None:
@@ -116,7 +116,7 @@ def plot_subject(
         figsize=None,
         clear_axes=True,
         **kwargs,
-        ):
+):
     _, plt = import_mpl_plt()
     num_images = len(subject)
     many_images = num_images > 2
@@ -211,7 +211,7 @@ def make_gif(
         optimize: bool = True,
         rescale: bool = True,
         reverse: bool = False,
-        ) -> None:
+) -> None:
     try:
         from PIL import Image as ImagePIL
     except ModuleNotFoundError as e:

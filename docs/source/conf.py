@@ -166,8 +166,10 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'TorchIO.tex', 'TorchIO Documentation',
-     'Fernando Pérez-García', 'manual'),
+    (
+        master_doc, 'TorchIO.tex', 'TorchIO Documentation',
+        'Fernando Pérez-García', 'manual',
+    ),
 ]
 
 
@@ -176,8 +178,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'torchio', 'TorchIO Documentation',
-     [author], 1)
+    (
+        master_doc, 'torchio', 'TorchIO Documentation',
+        [author], 1,
+    ),
 ]
 
 
@@ -187,9 +191,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'TorchIO', 'TorchIO Documentation',
-     author, 'TorchIO', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc, 'TorchIO', 'TorchIO Documentation',
+        author, 'TorchIO', 'One line description of project.',
+        'Miscellaneous',
+    ),
 ]
 
 

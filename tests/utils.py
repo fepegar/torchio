@@ -27,7 +27,7 @@ class TorchioTestCase(unittest.TestCase):
             [1, 0, 0, 10],
             [0, 1, 0, 0],
             [0, 0, 1.2, 0],
-            [0, 0, 0, 1]
+            [0, 0, 0, 1],
         ])
 
         subject_a = tio.Subject(
@@ -85,7 +85,8 @@ class TorchioTestCase(unittest.TestCase):
         subject = tio.Subject(
             t1=tio.ScalarImage(self.get_image_path('t1_inc')),
             t2=tio.ScalarImage(
-                self.get_image_path('t2_inc', shape=(10, 20, 31))),
+                self.get_image_path('t2_inc', shape=(10, 20, 31)),
+            ),
             label=tio.LabelMap(
                 self.get_image_path(
                     'label_inc',
@@ -121,8 +122,8 @@ class TorchioTestCase(unittest.TestCase):
             ),
             label=tio.LabelMap(
                 self.get_image_path(
-                    'label_d2', binary=False, components=components
-                )
+                    'label_d2', binary=False, components=components,
+                ),
             ),
         )
 
@@ -130,9 +131,9 @@ class TorchioTestCase(unittest.TestCase):
         return tio.Subject(
             label=tio.LabelMap(
                 self.get_image_path(
-                    'label_multi', labels=labels
-                )
-            )
+                    'label_multi', labels=labels,
+                ),
+            ),
         )
 
     @staticmethod
@@ -164,7 +165,7 @@ class TorchioTestCase(unittest.TestCase):
             add_nans=False,
             suffix=None,
             force_binary_foreground=True,
-            ):
+    ):
         shape = (*shape, 1) if len(shape) == 2 else shape
         data = np.random.rand(components, *shape)
         if binary:
