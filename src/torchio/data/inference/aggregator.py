@@ -111,7 +111,8 @@ class GridAggregator:
             v = [1 for d in self.patch_size]
             v[i] = d
             self._hann_window = self._hann_window * torch.hann_window(
-                d + 2, periodic=False)[1:-1].view(v)
+                d + 2, periodic=False,
+            )[1:-1].view(v)
 
     def add_batch(
             self,
