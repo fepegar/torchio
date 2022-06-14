@@ -57,7 +57,7 @@ def download_and_extract_archive(
         filename: Optional[TypePath] = None,
         md5: str = None,
         remove_finished: bool = False,
-        ) -> None:
+) -> None:
     download_root = os.path.expanduser(download_root)
     if extract_root is None:
         extract_root = download_root
@@ -126,7 +126,7 @@ def download_url(
         root: TypePath,
         filename: Optional[TypePath] = None,
         md5: str = None,
-        ) -> None:
+) -> None:
     """Download a file from a url and place it in root.
 
     Args:
@@ -148,7 +148,7 @@ def download_url(
             print('Downloading ' + url + ' to ' + fpath)  # noqa: T201
             urllib.request.urlretrieve(
                 url, fpath,
-                reporthook=gen_bar_updater()
+                reporthook=gen_bar_updater(),
             )
         except (urllib.error.URLError, OSError) as e:
             if url[:5] == 'https':
@@ -160,7 +160,7 @@ def download_url(
                 print(message)  # noqa: T201
                 urllib.request.urlretrieve(
                     url, fpath,
-                    reporthook=gen_bar_updater()
+                    reporthook=gen_bar_updater(),
                 )
             else:
                 raise e

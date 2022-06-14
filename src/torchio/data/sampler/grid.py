@@ -65,7 +65,7 @@ class GridSampler(PatchSampler):
             patch_size: TypeSpatialShape = None,
             patch_overlap: TypeSpatialShape = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
-            ):
+    ):
         if patch_size is None:
             raise ValueError('A value for patch_size must be given')
         super().__init__(patch_size)
@@ -105,7 +105,7 @@ class GridSampler(PatchSampler):
     def _generate_patches(
             self,
             subject: Subject,
-            ) -> Generator[Subject, None, None]:
+    ) -> Generator[Subject, None, None]:
         subject = self._pad(subject)
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
         self._parse_sizes(*sizes)
@@ -119,7 +119,7 @@ class GridSampler(PatchSampler):
             image_size: TypeTripletInt,
             patch_size: TypeTripletInt,
             patch_overlap: TypeTripletInt,
-            ) -> None:
+    ) -> None:
         image_size = np.array(image_size)
         patch_size = np.array(patch_size)
         patch_overlap = np.array(patch_overlap)
@@ -147,7 +147,7 @@ class GridSampler(PatchSampler):
             image_size: TypeTripletInt,
             patch_size: TypeTripletInt,
             patch_overlap: TypeTripletInt,
-            ) -> np.ndarray:
+    ) -> np.ndarray:
         # Example with image_size 10, patch_size 5, overlap 2:
         # [0 1 2 3 4 5 6 7 8 9]
         # [0 0 0 0 0]

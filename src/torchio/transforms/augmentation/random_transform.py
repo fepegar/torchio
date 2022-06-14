@@ -20,7 +20,7 @@ class RandomTransform(Transform):
     def __init__(
             self,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
 
     def add_include_exclude(self, kwargs):
@@ -31,13 +31,13 @@ class RandomTransform(Transform):
     def parse_degrees(
             self,
             degrees: TypeRangeFloat,
-            ) -> Tuple[float, float]:
+    ) -> Tuple[float, float]:
         return self._parse_range(degrees, 'degrees')
 
     def parse_translation(
             self,
             translation: TypeRangeFloat,
-            ) -> Tuple[float, float]:
+    ) -> Tuple[float, float]:
         return self._parse_range(translation, 'translation')
 
     @staticmethod

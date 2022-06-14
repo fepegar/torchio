@@ -45,7 +45,7 @@ class SequentialLabels(LabelTransform):
             self,
             masking_method: TypeMaskingMethod = None,
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.masking_method = masking_method
 

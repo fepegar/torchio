@@ -90,7 +90,7 @@ class Transform(ABC):
             keep: Optional[Dict[str, str]] = None,
             parse_input: bool = True,
             label_keys: Optional[Sequence[str]] = None,
-            ):
+    ):
         self.probability = self.parse_probability(p)
         self.copy = copy
         if keys is not None:
@@ -101,7 +101,8 @@ class Transform(ABC):
             warnings.warn(message)
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
-            include, exclude)
+            include, exclude,
+        )
         self.keep = keep
         self.parse_input = parse_input
         self.label_keys = label_keys
@@ -113,7 +114,7 @@ class Transform(ABC):
     def __call__(
             self,
             data: TypeTransformInput,
-            ) -> TypeTransformInput:
+    ) -> TypeTransformInput:
         """Transform data and return a result of the same type.
 
         Args:
@@ -232,7 +233,7 @@ class Transform(ABC):
             min_constraint: TypeNumber = None,
             max_constraint: TypeNumber = None,
             type_constraint: type = None,
-            ) -> Tuple[TypeNumber, TypeNumber]:
+    ) -> Tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
         Args:
@@ -268,22 +269,23 @@ class Transform(ABC):
             if nums_range < 0:
                 raise ValueError(
                     f'If {name} is a single number,'
-                    f' it must be positive, not {nums_range}')
+                    f' it must be positive, not {nums_range}',
+                )
             if min_constraint is not None and nums_range < min_constraint:
                 raise ValueError(
                     f'If {name} is a single number, it must be greater'
-                    f' than {min_constraint}, not {nums_range}'
+                    f' than {min_constraint}, not {nums_range}',
                 )
             if max_constraint is not None and nums_range > max_constraint:
                 raise ValueError(
                     f'If {name} is a single number, it must be smaller'
-                    f' than {max_constraint}, not {nums_range}'
+                    f' than {max_constraint}, not {nums_range}',
                 )
             if type_constraint is not None:
                 if not isinstance(nums_range, type_constraint):
                     raise ValueError(
                         f'If {name} is a single number, it must be of'
-                        f' type {type_constraint}, not {nums_range}'
+                        f' type {type_constraint}, not {nums_range}',
                     )
             min_range = -nums_range if min_constraint is None else nums_range
             return (min_range, nums_range)
@@ -293,31 +295,33 @@ class Transform(ABC):
         except (TypeError, ValueError):
             raise ValueError(
                 f'If {name} is not a single number, it must be'
-                f' a sequence of len 2, not {nums_range}'
+                f' a sequence of len 2, not {nums_range}',
             )
 
         min_is_number = isinstance(min_value, numbers.Number)
         max_is_number = isinstance(max_value, numbers.Number)
         if not min_is_number or not max_is_number:
             message = (
-                f'{name} values must be numbers, not {nums_range}')
+                f'{name} values must be numbers, not {nums_range}'
+            )
             raise ValueError(message)
 
         if min_value > max_value:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be'
-                f' equal or greater than the first, but it is {nums_range}')
+                f' equal or greater than the first, but it is {nums_range}',
+            )
 
         if min_constraint is not None and min_value < min_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the first value must be greater'
-                f' than {min_constraint}, but it is {min_value}'
+                f' than {min_constraint}, but it is {min_value}',
             )
 
         if max_constraint is not None and max_value > max_constraint:
             raise ValueError(
                 f'If {name} is a sequence, the second value must be smaller'
-                f' than {max_constraint}, but it is {max_value}'
+                f' than {max_constraint}, but it is {max_value}',
             )
 
         if type_constraint is not None:
@@ -326,7 +330,7 @@ class Transform(ABC):
             if not min_type_ok or not max_type_ok:
                 raise ValueError(
                     f'If "{name}" is a sequence, its values must be of'
-                    f' type "{type_constraint}", not "{type(nums_range)}"'
+                    f' type "{type_constraint}", not "{type(nums_range)}"',
                 )
         return nums_range
 
@@ -362,7 +366,7 @@ class Transform(ABC):
     def parse_include_and_exclude(
             include: TypeKeys = None,
             exclude: TypeKeys = None,
-            ) -> Tuple[TypeKeys, TypeKeys]:
+    ) -> Tuple[TypeKeys, TypeKeys]:
         if include is not None and exclude is not None:
             raise ValueError('Include and exclude cannot both be specified')
         return include, exclude
@@ -458,7 +462,7 @@ class Transform(ABC):
             subject: Subject,
             tensor: torch.Tensor,
             labels: list = None,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         if masking_method is None:
             return self.ones(tensor)
         elif callable(masking_method):
@@ -475,7 +479,8 @@ class Transform(ABC):
             possible_axis = masking_method.capitalize()
             if possible_axis in ANATOMICAL_AXES:
                 return self.get_mask_from_anatomical_label(
-                    possible_axis, tensor)
+                    possible_axis, tensor,
+                )
         elif type(masking_method) in (tuple, list, int):
             return self.get_mask_from_bounds(masking_method, tensor)
         first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
@@ -496,7 +501,7 @@ class Transform(ABC):
     def get_mask_from_anatomical_label(
             anatomical_label: str,
             tensor: torch.Tensor,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         # Assume the image is in RAS orientation
         anatomical_label = anatomical_label.capitalize()
         if anatomical_label not in ANATOMICAL_AXES:
@@ -525,7 +530,7 @@ class Transform(ABC):
             self,
             bounds_parameters: TypeBounds,
             tensor: torch.Tensor,
-            ) -> torch.Tensor:
+    ) -> torch.Tensor:
         bounds_parameters = self.parse_bounds(bounds_parameters)
         low = bounds_parameters[::2]
         high = bounds_parameters[1::2]

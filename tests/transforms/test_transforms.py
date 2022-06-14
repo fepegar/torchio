@@ -74,21 +74,24 @@ class TestTransforms(TorchioTestCase):
 
     def test_transforms_image(self):
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False)
+            channels=('default_image_name',), labels=False,
+        )
         transformed = transform(self.sample_subject.t1)
         self.assertIsInstance(transformed, tio.ScalarImage)
 
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False)
+            channels=('default_image_name',), labels=False,
+        )
         transformed = transform(tensor)
         self.assertIsInstance(transformed, torch.Tensor)
 
     def test_transforms_array(self):
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False)
+            channels=('default_image_name',), labels=False,
+        )
         transformed = transform(tensor)
         self.assertIsInstance(transformed, np.ndarray)
 
@@ -97,7 +100,8 @@ class TestTransforms(TorchioTestCase):
         affine = np.diag((-1, 2, -3, 1))
         image = tio.data.io.nib_to_sitk(tensor, affine)
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False)
+            channels=('default_image_name',), labels=False,
+        )
         transformed = transform(image)
         self.assertIsInstance(transformed, sitk.Image)
 
@@ -133,12 +137,12 @@ class TestTransforms(TorchioTestCase):
                 self.assertEqual(
                     subject.shape[0],
                     transformed.shape[0],
-                    f'Different number of channels after {transform.name}'
+                    f'Different number of channels after {transform.name}',
                 )
                 self.assertTensorNotEqual(
                     subject.t1.data[1],
                     transformed.t1.data[1],
-                    f'No changes after {transform.name}'
+                    f'No changes after {transform.name}',
                 )
             subject = transformed
         self.assertIsInstance(transformed, tio.Subject)
@@ -161,7 +165,7 @@ class TestTransforms(TorchioTestCase):
             self.assertTensorEqual(
                 subject.t1.data,
                 original_data,
-                f'Changes after {transform.name}'
+                f'Changes after {transform.name}',
             )
 
     def test_transforms_use_include(self):
@@ -172,13 +176,13 @@ class TestTransforms(TorchioTestCase):
         self.assertTensorNotEqual(
             original_subject.t1.data,
             transformed.t1.data,
-            f'Changes after {transform.name}'
+            f'Changes after {transform.name}',
         )
 
         self.assertTensorEqual(
             original_subject.t2.data,
             transformed.t2.data,
-            f'Changes after {transform.name}'
+            f'Changes after {transform.name}',
         )
 
     def test_transforms_use_exclude(self):
@@ -189,13 +193,13 @@ class TestTransforms(TorchioTestCase):
         self.assertTensorNotEqual(
             original_subject.t1.data,
             transformed.t1.data,
-            f'Changes after {transform.name}'
+            f'Changes after {transform.name}',
         )
 
         self.assertTensorEqual(
             original_subject.t2.data,
             transformed.t2.data,
-            f'Changes after {transform.name}'
+            f'Changes after {transform.name}',
         )
 
     def test_transforms_use_include_and_exclude(self):
@@ -283,7 +287,7 @@ class TestTransform(TorchioTestCase):
         dataset = tio.SubjectsDataset([subject], transform=transform)
         loader = torch.utils.data.DataLoader(
             dataset,
-            collate_fn=tio.utils.history_collate
+            collate_fn=tio.utils.history_collate,
         )
         batch = tio.utils.get_first_item(loader)
         transformed: tio.Subject = tio.utils.get_subjects_from_batch(batch)[0]

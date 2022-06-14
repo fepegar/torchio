@@ -45,7 +45,7 @@ class Mask(IntensityTransform):
             outside_value: float = 0,
             labels: Optional[Sequence[int]] = None,
             **kwargs,
-            ):
+    ):
         super().__init__(**kwargs)
         self.masking_method = masking_method
         self.masking_labels = labels
@@ -71,7 +71,7 @@ def mask(
         tensor: torch.Tensor,
         mask: torch.Tensor,
         outside_value: float,
-        ) -> torch.Tensor:
+) -> torch.Tensor:
     array = tensor.clone().numpy()
     mask = mask.numpy()
     array[~mask] = outside_value

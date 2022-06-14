@@ -48,7 +48,8 @@ class Subject(dict):
                 kwargs.update(args[0])
             else:
                 message = (
-                    'Only one dictionary as positional argument is allowed')
+                    'Only one dictionary as positional argument is allowed'
+                )
                 raise ValueError(message)
         super().__init__(**kwargs)
         self._parse_images(self.get_images(intensity_only=False))
@@ -146,7 +147,7 @@ class Subject(dict):
             self,
             ignore_intensity: bool = False,
             image_interpolation: Optional[str] = None,
-            ) -> List['Transform']:
+    ) -> List['Transform']:
         from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
         name_to_transform = {
@@ -169,7 +170,7 @@ class Subject(dict):
             self,
             ignore_intensity: bool = False,
             image_interpolation: Optional[str] = None,
-            ) -> 'Compose':
+    ) -> 'Compose':
         from ..transforms.augmentation.composition import Compose
         transforms = self.get_applied_transforms(
             ignore_intensity=ignore_intensity,
@@ -182,7 +183,7 @@ class Subject(dict):
             warn: bool = True,
             ignore_intensity: bool = True,
             image_interpolation: Optional[str] = None,
-            ) -> 'Compose':
+    ) -> 'Compose':
         """Get a reversed list of the inverses of the applied transforms.
 
         Args:
@@ -221,7 +222,7 @@ class Subject(dict):
             relative_tolerance: float = 1e-6,
             absolute_tolerance: float = 1e-6,
             message: Optional[str] = None,
-            ) -> None:
+    ) -> None:
         r"""Check for consistency of an attribute across all images.
 
         Args:
@@ -278,7 +279,7 @@ class Subject(dict):
                     message = message.format(
                         pprint.pformat({
                             first_image: first_attribute,
-                            image_name: current_attribute
+                            image_name: current_attribute,
                         }),
                     )
                     raise RuntimeError(message)
@@ -324,7 +325,7 @@ class Subject(dict):
             intensity_only=True,
             include: Optional[Sequence[str]] = None,
             exclude: Optional[Sequence[str]] = None,
-            ) -> Dict[str, Image]:
+    ) -> Dict[str, Image]:
         images = {}
         for image_name, image in self.items():
             if not isinstance(image, Image):
@@ -343,7 +344,7 @@ class Subject(dict):
             intensity_only=True,
             include: Optional[Sequence[str]] = None,
             exclude: Optional[Sequence[str]] = None,
-            ) -> List[Image]:
+    ) -> List[Image]:
         images_dict = self.get_images_dict(
             intensity_only=intensity_only,
             include=include,
@@ -358,7 +359,7 @@ class Subject(dict):
             self,
             transform: 'Transform',
             parameters_dict: dict,
-            ) -> None:
+    ) -> None:
         self.applied_transforms.append((transform.name, parameters_dict))
 
     def load(self) -> None:

@@ -80,7 +80,7 @@ class IXI(SubjectsDataset):
             download: bool = False,
             modalities: Sequence[str] = ('T1', 'T2'),
             **kwargs,
-            ):
+    ):
         root = Path(root)
         for modality in modalities:
             if modality not in self.md5_dict:
@@ -126,7 +126,8 @@ class IXI(SubjectsDataset):
             images_dict[one_modality] = ScalarImage(filepath)
             for modality in modalities[1:]:
                 globbed = sglob(
-                    root / modality, f'{subject_id}-{modality}.nii.gz')
+                    root / modality, f'{subject_id}-{modality}.nii.gz',
+                )
                 if globbed:
                     assert len(globbed) == 1
                     images_dict[modality] = ScalarImage(globbed[0])
@@ -188,7 +189,7 @@ class IXITiny(SubjectsDataset):
             transform: Optional[Transform] = None,
             download: bool = False,
             **kwargs,
-            ):
+    ):
         root = Path(root)
         if download:
             self._download(root)

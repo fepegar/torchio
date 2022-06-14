@@ -63,7 +63,7 @@ class SubjectsDataset(Dataset):
             subjects: Sequence[Subject],
             transform: Optional[Callable] = None,
             load_getitem: bool = True,
-            ):
+    ):
         self._parse_subjects_list(subjects)
         self._subjects = subjects
         self._transform: Optional[Callable]

@@ -33,7 +33,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
             mean: Union[float, Tuple[float, float]] = 0,
             std: Union[float, Tuple[float, float]] = (0, 0.25),
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.mean_range = self._parse_range(mean, 'mean')
         self.std_range = self._parse_range(std, 'std', min_constraint=0)
@@ -53,7 +53,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
             self,
             mean_range: Tuple[float, float],
             std_range: Tuple[float, float],
-            ) -> Tuple[float, float]:
+    ) -> Tuple[float, float]:
         mean = self.sample_uniform(*mean_range).item()
         std = self.sample_uniform(*std_range).item()
         seed = self._get_random_seed()
@@ -80,7 +80,7 @@ class Noise(IntensityTransform):
             std: Union[float, Dict[str, float]],
             seed: Union[int, Sequence[int]],
             **kwargs
-            ):
+    ):
         super().__init__(**kwargs)
         self.mean = mean
         self.std = std

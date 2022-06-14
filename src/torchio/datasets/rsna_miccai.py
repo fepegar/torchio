@@ -57,7 +57,7 @@ class RSNAMICCAI(SubjectsDataset):
             ignore_empty: bool = True,
             modalities: Sequence[str] = ('T1w', 'T1wCE', 'T2w', 'FLAIR'),
             **kwargs,
-            ):
+    ):
         self.root_dir = Path(root_dir).expanduser().resolve()
         if isinstance(modalities, str):
             modalities = [modalities]
@@ -71,7 +71,7 @@ class RSNAMICCAI(SubjectsDataset):
             root_dir: Path,
             train: bool,
             ignore_empty: bool,
-            ) -> List[Subject]:
+    ) -> List[Subject]:
         subjects = []
         if train:
             csv_path = root_dir / 'train_labels.csv'
