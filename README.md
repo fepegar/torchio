@@ -379,6 +379,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <td align="center"><a href="http://josegcpa.github.io"><img src="https://avatars.githubusercontent.com/u/40271262?v=4?s=100" width="100px;" alt=""/><br /><sub><b>José Guilherme Almeida</b></sub></a><br /><a href="#ideas-josegcpa" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://github.com/saikhu"><img src="https://avatars.githubusercontent.com/u/24922057?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Asim Usman</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Asaikhu" title="Bug reports">🐛</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/cbri92"><img src="https://avatars.githubusercontent.com/u/70302171?v=4?s=100" width="100px;" alt=""/><br /><sub><b>cbri92</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Acbri92" title="Bug reports">🐛</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
