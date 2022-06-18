@@ -9,10 +9,12 @@ repos:
       - id: check-builtin-literals     # Require literal syntax when initializing empty or zero Python builtin types
       - id: check-docstring-first      # Checks a common error of defining a docstring after code
       - id: check-merge-conflict       # Check for files that contain merge conflict strings
+      - id: check-toml                 # Attempts to load all TOML files to verify syntax
+      - id: check-yaml                 # Attempts to load all yaml files to verify syntax
       - id: check-vcs-permalinks       # Ensures that links to vcs websites are permalinks
       - id: debug-statements           # Check for debugger imports and py37+ `breakpoint()` calls in python source
       - id: detect-private-key         # Detects the presence of private keys
-      - id: double-quote-string-fixer  # Replaces double quoted strings with single quoted strings.
+      - id: double-quote-string-fixer  # Replaces double quoted strings with single quoted strings
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
