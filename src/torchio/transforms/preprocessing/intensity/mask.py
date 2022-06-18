@@ -17,9 +17,15 @@ class Mask(IntensityTransform):
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         outside_value: Value to set for all voxels outside of the mask.
         labels: If a label map is used to generate the mask,
-            sequence of labels to consider.
+            sequence of labels to consider. If ``None``, all values larger than
+            zero will be used for the mask.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
+
+    Raises:
+        RuntimeWarning: If a 4D image is masked with a 3D mask, the mask will
+            be expanded along the channels (first) dimension, and a warning
+            will be raised.
 
     Example:
         >>> import torchio as tio
