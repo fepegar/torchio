@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Sequence
 
 import torch
@@ -72,7 +73,16 @@ def mask(
         mask: torch.Tensor,
         outside_value: float,
 ) -> torch.Tensor:
-    array = tensor.clone().numpy()
-    mask = mask.numpy()
+    array = tensor.clone()
+    num_channels_array = array.shape[0]
+    num_channels_mask = mask.shape[0]
+    if num_channels_array != num_channels_mask:
+        assert num_channels_mask == 1
+        message = (
+            f'Expanding mask with shape {mask.shape}'
+            f' to match shape {array.shape} of input image'
+        )
+        warnings.warn(message, RuntimeWarning)
+        mask = mask.expand(*array.shape)
     array[~mask] = outside_value
-    return torch.as_tensor(array)
+    return array

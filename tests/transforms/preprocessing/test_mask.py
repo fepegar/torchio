@@ -69,5 +69,6 @@ class TestMask(TorchioTestCase):
         mask = tio.LabelMap(tensor=torch.ones(1, 4, 5, 6))
         subject = tio.Subject(image=image, mask_lm=mask)
         transform = tio.Mask(masking_method='mask_lm')
-        masked = transform(subject)
-        assert masked.shape == image.shape
+        with self.assertWarnsRegex(RuntimeWarning, '^Expanding.*'):
+            masked = transform(subject)
+        assert masked.image.shape == image.shape
