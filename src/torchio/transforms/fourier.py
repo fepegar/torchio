@@ -8,7 +8,9 @@ class FourierTransform:
     def fourier_transform(tensor: torch.Tensor) -> torch.Tensor:
         try:
             import torch.fft
-            return torch.fft.fftn(tensor)
+            transformed = torch.fft.fftn(tensor)
+            fshift = torch.fft.fftshift(transformed)
+            return fshift
         except ModuleNotFoundError:
             import torch
             transformed = np.fft.fftn(tensor)
@@ -19,7 +21,9 @@ class FourierTransform:
     def inv_fourier_transform(tensor: torch.Tensor) -> torch.Tensor:
         try:
             import torch.fft
-            return torch.fft.ifftn(tensor)
+            f_ishift = torch.fft.ifftshift(tensor)
+            img_back = torch.fft.ifftn(f_ishift)
+            return img_back
         except ModuleNotFoundError:
             import torch
             f_ishift = np.fft.ifftshift(tensor)
