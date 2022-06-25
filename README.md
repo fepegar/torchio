@@ -381,6 +381,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/cbri92"><img src="https://avatars.githubusercontent.com/u/70302171?v=4?s=100" width="100px;" alt=""/><br /><sub><b>cbri92</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Acbri92" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/iimog"><img src="https://avatars.githubusercontent.com/u/7403236?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Markus J. Ankenbrand</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aiimog" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
