@@ -11,12 +11,17 @@ TypeNumber = Union[int, float]
 TypeKeys = Optional[Sequence[str]]
 TypeData = Union[torch.Tensor, np.ndarray]
 TypeDataAffine = Tuple[torch.Tensor, np.ndarray]
+
+TypeDoubletInt = Tuple[int, int]
 TypeTripletInt = Tuple[int, int, int]
+TypeQuartetInt = Tuple[int, int, int, int]
 TypeSextetInt = Tuple[int, int, int, int, int, int]
+
 TypeTripletFloat = Tuple[float, float, float]
 TypeSextetFloat = Tuple[float, float, float, float, float, float]
+
 TypeTuple = Union[int, TypeTripletInt]
-TypeRangeInt = Union[int, Tuple[int, int]]
+TypeRangeInt = Union[int, TypeDoubletInt]
 TypeSpatialShape = Union[int, TypeTripletInt]
 TypeRangeFloat = Union[float, Tuple[float, float]]
 TypeCallable = Callable[[torch.Tensor], torch.Tensor]

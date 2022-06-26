@@ -48,7 +48,7 @@ def plot_volume(
     sag_axis, cor_axis, axi_axis = axes
 
     if reorient:
-        image = ToCanonical()(image)
+        image = ToCanonical()(image)  # type: ignore[assignment]
     data = image.data[channel]
     if indices is None:
         indices = np.array(data.shape) // 2
@@ -220,7 +220,8 @@ def make_gif(
             ' pip install Pillow'
         )
         raise RuntimeError(message) from e
-    tensor = RescaleIntensity((0, 255))(tensor) if rescale else tensor
+    transform = RescaleIntensity((0, 255))
+    tensor = transform(tensor) if rescale else tensor  # type: ignore[assignment]  # noqa: E501
     single_channel = len(tensor) == 1
 
     # Move channels dimension to the end and bring selected axis to 0

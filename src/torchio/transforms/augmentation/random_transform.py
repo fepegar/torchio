@@ -1,6 +1,4 @@
-"""
-This is the docstring of random transform module
-"""
+from __future__ import annotations
 
 from typing import Tuple
 
@@ -41,17 +39,17 @@ class RandomTransform(Transform):
         return self._parse_range(translation, 'translation')
 
     @staticmethod
-    def sample_uniform(a, b):
-        return torch.FloatTensor(1).uniform_(a, b)
+    def sample_uniform(a: float, b: float) -> float:
+        return torch.FloatTensor(1).uniform_(a, b).item()
 
     @staticmethod
-    def _get_random_seed():
+    def _get_random_seed() -> int:
         """Generate a random seed.
 
         Returns:
             A random seed as an int.
         """
-        return torch.randint(0, 2**31, (1,)).item()
+        return int(torch.randint(0, 2**31, (1,)).item())
 
     def sample_uniform_sextet(self, params):
         results = []

@@ -65,7 +65,7 @@ class RemoveLabels(RemapLabels):
         self.labels = labels
         self.background_label = background_label
         self.masking_method = masking_method
-        self.args_names = 'labels', 'background_label', 'masking_method'
+        self.args_names = ['labels', 'background_label', 'masking_method']
 
     def is_invertible(self):
         return False

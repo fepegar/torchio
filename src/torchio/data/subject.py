@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import pprint
 from typing import Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING
@@ -54,7 +56,7 @@ class Subject(dict):
         super().__init__(**kwargs)
         self._parse_images(self.get_images(intensity_only=False))
         self.update_attributes()  # this allows me to do e.g. subject.t1
-        self.applied_transforms = []
+        self.applied_transforms: List[Tuple[str, dict]] = []
 
     def __repr__(self):
         num_images = len(self.get_images(intensity_only=False))
@@ -80,7 +82,7 @@ class Subject(dict):
         return len(self.get_images(intensity_only=False))
 
     @staticmethod
-    def _parse_images(images: List[Tuple[str, Image]]) -> None:
+    def _parse_images(images: List[Image]) -> None:
         # Check that it's not empty
         if not images:
             raise TypeError('A subject without images cannot be created')
@@ -147,7 +149,7 @@ class Subject(dict):
             self,
             ignore_intensity: bool = False,
             image_interpolation: Optional[str] = None,
-    ) -> List['Transform']:
+    ) -> List[Transform]:
         from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
         name_to_transform = {
@@ -170,7 +172,7 @@ class Subject(dict):
             self,
             ignore_intensity: bool = False,
             image_interpolation: Optional[str] = None,
-    ) -> 'Compose':
+    ) -> Compose:
         from ..transforms.augmentation.composition import Compose
         transforms = self.get_applied_transforms(
             ignore_intensity=ignore_intensity,
@@ -183,7 +185,7 @@ class Subject(dict):
             warn: bool = True,
             ignore_intensity: bool = True,
             image_interpolation: Optional[str] = None,
-    ) -> 'Compose':
+    ) -> Compose:
         """Get a reversed list of the inverses of the applied transforms.
 
         Args:
@@ -201,7 +203,7 @@ class Subject(dict):
         inverse_transform = history_transform.inverse(warn=warn)
         return inverse_transform
 
-    def apply_inverse_transform(self, **kwargs) -> 'Subject':
+    def apply_inverse_transform(self, **kwargs) -> Subject:
         """Try to apply the inverse of all applied transforms, in reverse order.
 
         Args:
@@ -209,7 +211,8 @@ class Subject(dict):
                 :meth:`~torchio.data.subject.Subject.get_inverse_transform`.
         """
         inverse_transform = self.get_inverse_transform(**kwargs)
-        transformed = inverse_transform(self)
+        transformed: Subject
+        transformed = inverse_transform(self)  # type: ignore[assignment]
         transformed.clear_history()
         return transformed
 
@@ -357,7 +360,7 @@ class Subject(dict):
 
     def add_transform(
             self,
-            transform: 'Transform',
+            transform: Transform,
             parameters_dict: dict,
     ) -> None:
         self.applied_transforms.append((transform.name, parameters_dict))

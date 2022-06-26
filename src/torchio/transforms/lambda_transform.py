@@ -36,7 +36,7 @@ class Lambda(Transform):
         super().__init__(**kwargs)
         self.function = function
         self.types_to_apply = types_to_apply
-        self.args_names = 'function', 'types_to_apply'
+        self.args_names = ['function', 'types_to_apply']
 
     def apply_transform(self, subject: Subject) -> Subject:
         images = subject.get_images(

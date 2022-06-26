@@ -1,17 +1,20 @@
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Tuple, Union, List, Sequence, Dict
+from typing import Tuple, Union, List, Sequence, Dict, TypeVar
 
 import torch
 import numpy as np
 
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ....typing import TypeTuple, TypeData, TypeTripletInt
+from ....typing import TypeTuple, TypeTripletInt
 from ... import IntensityTransform
 from .. import RandomTransform
 
 
 TypeLocations = Sequence[Tuple[TypeTripletInt, TypeTripletInt]]
+TensorArray = TypeVar('TensorArray', np.ndarray, torch.Tensor)
 
 
 class RandomSwap(RandomTransform, IntensityTransform):
@@ -58,17 +61,18 @@ class RandomSwap(RandomTransform, IntensityTransform):
             patch_size: np.ndarray,
             num_iterations: int,
     ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
-        spatial_shape = tensor.shape[-3:]
+        si, sj, sk = tensor.shape[-3:]
+        spatial_shape = si, sj, sk  # for mypy
         locations = []
         for _ in range(num_iterations):
             first_ini, first_fin = get_random_indices_from_shape(
                 spatial_shape,
-                patch_size,
+                patch_size.tolist(),
             )
             while True:
                 second_ini, second_fin = get_random_indices_from_shape(
                     spatial_shape,
-                    patch_size,
+                    patch_size.tolist(),
                 )
                 larger_than_initial = np.all(second_ini >= first_ini)
                 less_than_final = np.all(second_fin <= first_fin)
@@ -78,10 +82,10 @@ class RandomSwap(RandomTransform, IntensityTransform):
                     break  # patches don't overlap
             location = tuple(first_ini), tuple(second_ini)
             locations.append(location)
-        return locations
+        return locations  # type: ignore[return-value]
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
             locations = self.get_params(
                 image.data,
@@ -92,6 +96,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             arguments['patch_size'][name] = self.patch_size
         transform = Swap(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
 
@@ -118,75 +123,86 @@ class Swap(IntensityTransform):
         super().__init__(**kwargs)
         self.locations = locations
         self.patch_size = patch_size
-        self.args_names = 'locations', 'patch_size'
+        self.args_names = ['locations', 'patch_size']
         self.invert_transform = False
 
     def apply_transform(self, subject: Subject) -> Subject:
         locations, patch_size = self.locations, self.patch_size
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.locations, dict)
+                assert isinstance(self.patch_size, dict)
                 locations = self.locations[name]
                 patch_size = self.patch_size[name]
             if self.invert_transform:
+                assert isinstance(locations, list)
                 locations.reverse()
-            image.set_data(swap(image.data, patch_size, locations))
+            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: E501
+            image.set_data(swapped)
         return subject
 
 
-def swap(
+def _swap(
         tensor: torch.Tensor,
         patch_size: TypeTuple,
         locations: List[Tuple[np.ndarray, np.ndarray]],
-) -> None:
+) -> torch.Tensor:
+    # Note this function modifies the input in-place
     tensor = tensor.clone()
-    patch_size = np.array(patch_size)
+    patch_size_array = np.array(patch_size)
     for first_ini, second_ini in locations:
-        first_fin = first_ini + patch_size
-        second_fin = second_ini + patch_size
-        first_patch = crop(tensor, first_ini, first_fin)
-        second_patch = crop(tensor, second_ini, second_fin).clone()
-        insert(tensor, first_patch, second_ini)
-        insert(tensor, second_patch, first_ini)
+        first_fin = first_ini + patch_size_array
+        second_fin = second_ini + patch_size_array
+        first_patch = _crop(tensor, first_ini, first_fin)
+        second_patch = _crop(tensor, second_ini, second_fin).clone()
+        _insert(tensor, first_patch, second_ini)
+        _insert(tensor, second_patch, first_ini)
     return tensor
 
 
-def insert(tensor: TypeData, patch: TypeData, index_ini: np.ndarray) -> None:
+def _insert(
+        tensor: TensorArray,
+        patch: TensorArray,
+        index_ini: np.ndarray,
+) -> None:
     index_fin = index_ini + np.array(patch.shape[-3:])
     i_ini, j_ini, k_ini = index_ini
     i_fin, j_fin, k_fin = index_fin
     tensor[:, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = patch
 
 
-def crop(
-        image: Union[np.ndarray, torch.Tensor],
+def _crop(
+        image: TensorArray,
         index_ini: np.ndarray,
         index_fin: np.ndarray,
-) -> Union[np.ndarray, torch.Tensor]:
+) -> TensorArray:
     i_ini, j_ini, k_ini = index_ini
     i_fin, j_fin, k_fin = index_fin
     return image[:, i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
 
 
 def get_random_indices_from_shape(
-        spatial_shape: TypeTripletInt,
-        patch_size: TypeTripletInt,
+        spatial_shape: Sequence[int],
+        patch_size: Sequence[int],
 ) -> Tuple[np.ndarray, np.ndarray]:
+    assert len(spatial_shape) == 3
+    assert len(patch_size) in (1, 3)
     shape_array = np.array(spatial_shape)
     patch_size_array = np.array(patch_size)
-    max_index_ini = shape_array - patch_size_array
-    if (max_index_ini < 0).any():
+    max_index_ini_unchecked = shape_array - patch_size_array
+    if (max_index_ini_unchecked < 0).any():
         message = (
             f'Patch size {patch_size} cannot be'
             f' larger than image spatial shape {spatial_shape}'
         )
         raise ValueError(message)
-    max_index_ini = max_index_ini.astype(np.uint16)
+    max_index_ini = max_index_ini_unchecked.astype(np.uint16)
     coordinates = []
     for max_coordinate in max_index_ini.tolist():
         if max_coordinate == 0:
             coordinate = 0
         else:
-            coordinate = torch.randint(max_coordinate, size=(1,)).item()
+            coordinate = int(torch.randint(max_coordinate, size=(1,)).item())
         coordinates.append(coordinate)
     index_ini = np.array(coordinates, np.uint16)
     index_fin = index_ini + patch_size_array

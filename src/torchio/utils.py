@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ast
 import os
 import sys
@@ -45,11 +47,12 @@ def get_stem(
     """
     '/home/user/image.nii.gz' -> 'image'
     """
-    def _get_stem(path_string):
+    def _get_stem(path_string: TypePath) -> str:
         return Path(path_string).name.split('.')[0]
-    if isinstance(path, (str, Path)):
+    if isinstance(path, (str, os.PathLike)):
         return _get_stem(path)
-    return [_get_stem(p) for p in path]
+    else:  # path is actually a sequence of paths
+        return [_get_stem(p) for p in path]
 
 
 def create_dummy_dataset(
@@ -304,7 +307,7 @@ def guess_external_viewer() -> Optional[Path]:
     and Windows.
     """
     if 'SITK_SHOW_COMMAND' in os.environ:
-        return os.environ['SITK_SHOW_COMMAND']
+        return Path(os.environ['SITK_SHOW_COMMAND'])
     platform = sys.platform
     itk = 'ITK-SNAP'
     slicer = 'Slicer'
@@ -331,12 +334,13 @@ def guess_external_viewer() -> Optional[Path]:
             if slicer_path.is_file():
                 return slicer_path
     elif 'linux' in platform:
-        itk_snap_path = shutil.which('itksnap')
-        if itk_snap_path is not None:
-            return Path(itk_snap_path)
-        slicer_path = shutil.which('Slicer')
-        if slicer_path is not None:
-            return Path(slicer_path)
+        itk_snap_which = shutil.which('itksnap')
+        if itk_snap_which is not None:
+            return Path(itk_snap_which)
+        slicer_which = shutil.which('Slicer')
+        if slicer_which is not None:
+            return Path(slicer_which)
+    return None  # for mypy
 
 
 def parse_spatial_shape(shape):

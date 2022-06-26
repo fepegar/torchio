@@ -16,6 +16,7 @@ from ..typing import (
     TypeData,
     TypeDataAffine,
     TypeTripletInt,
+    TypeQuartetInt,
     TypeTripletFloat,
     TypeDirection3D,
 )
@@ -235,6 +236,8 @@ class Image(dict):
         if self._loaded or self._is_dir() or self._is_multipath():
             affine = self[AFFINE]
         else:
+            assert self.path is not None
+            assert isinstance(self.path, (str, Path))
             affine = read_affine(self.path)
         return affine
 
@@ -247,13 +250,18 @@ class Image(dict):
         return self[TYPE]
 
     @property
-    def shape(self) -> Tuple[int, int, int, int]:
+    def shape(self) -> TypeQuartetInt:
         """Tensor shape as :math:`(C, W, H, D)`."""
         custom_reader = self.reader is not read_image
-        multipath = not isinstance(self.path, (str, Path))
-        if self._loaded or custom_reader or multipath or self.path.is_dir():
-            shape = tuple(self.data.shape)
+        multipath = self._is_multipath()
+        if isinstance(self.path, Path):
+            is_dir = self.path.is_dir()
+        shape: TypeQuartetInt
+        if self._loaded or custom_reader or multipath or is_dir:
+            channels, si, sj, sk = self.data.shape
+            shape = channels, si, sj, sk
         else:
+            assert isinstance(self.path, (str, Path))
             shape = read_shape(self.path)
         return shape
 
@@ -289,18 +297,20 @@ class Image(dict):
         _, _, direction = get_sitk_metadata_from_ras_affine(
             self.affine, lps=False,
         )
-        return direction
+        return direction  # type: ignore[return-value]
 
     @property
     def spacing(self) -> Tuple[float, float, float]:
         """Voxel spacing in mm."""
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
-        return tuple(spacing)
+        sx, sy, sz = spacing
+        return sx, sy, sz
 
     @property
     def origin(self) -> Tuple[float, float, float]:
         """Center of first voxel in array, in mm."""
-        return tuple(self.affine[:3, 3])
+        ox, oy, oz = self.affine[:3, 3]
+        return ox, oy, oz
 
     @property
     def itemsize(self):
@@ -421,7 +431,7 @@ class Image(dict):
 
     def _parse_path(
             self,
-            path: Union[TypePath, Sequence[TypePath], None],
+            path: Optional[Union[TypePath, Sequence[TypePath]]],
     ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
@@ -429,9 +439,9 @@ class Image(dict):
             # https://github.com/fepegar/torchio/pull/838
             raise TypeError('The path argument cannot be a dictionary')
         elif self._is_paths_sequence(path):
-            return [self._parse_single_path(p) for p in path]
+            return [self._parse_single_path(p) for p in path]  # type: ignore[union-attr]  # noqa: E501
         else:
-            return self._parse_single_path(path)
+            return self._parse_single_path(path)  # type: ignore[arg-type]
 
     def _parse_tensor(
             self,
@@ -510,7 +520,12 @@ class Image(dict):
         """
         if self._loaded:
             return
-        paths = self.path if self._is_multipath() else [self.path]
+
+        paths: List[Path]
+        if self._is_multipath():
+            paths = self.path  # type: ignore[assignment]
+        else:
+            paths = [self.path]  # type: ignore[list-item]
         tensor, affine = self.read_and_check(paths[0])
         tensors = [tensor]
         for path in paths[1:]:
@@ -786,7 +801,7 @@ class LabelMap(Image):
 
     def count_nonzero(self) -> int:
         """Get the number of voxels that are not 0."""
-        return self.data.count_nonzero().item()
+        return int(self.data.count_nonzero().item())
 
     def count_labels(self) -> Dict[int, int]:
         """Get the number of voxels in each label."""

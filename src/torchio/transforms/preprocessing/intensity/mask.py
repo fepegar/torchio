@@ -3,7 +3,7 @@ from typing import Optional, Sequence
 
 import torch
 
-from ....data.image import LabelMap
+from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
 from ... import IntensityTransform
@@ -66,10 +66,15 @@ class Mask(IntensityTransform):
                 image.data,
                 self.masking_labels,
             )
+            assert isinstance(image, ScalarImage)
             self.apply_masking(image, mask_data)
         return subject
 
-    def apply_masking(self, image: LabelMap, mask_data: torch.Tensor) -> None:
+    def apply_masking(
+            self,
+            image: ScalarImage,
+            mask_data: torch.Tensor,
+    ) -> None:
         masked = mask(image.data, mask_data, self.outside_value)
         image.set_data(masked)
 

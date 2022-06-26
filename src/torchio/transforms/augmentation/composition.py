@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from typing import Union, Sequence, Dict
 
@@ -44,13 +46,13 @@ class Compose(Transform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
-            subject = transform(subject)
+            subject = transform(subject)  # type: ignore[assignment]
         return subject
 
     def is_invertible(self) -> bool:
         return all(t.is_invertible() for t in self.transforms)
 
-    def inverse(self, warn: bool = True) -> Transform:
+    def inverse(self, warn: bool = True) -> Compose:
         """Return a composed transform with inverted order and transforms.
 
         Args:
@@ -107,7 +109,7 @@ class OneOf(RandomTransform):
         transforms = list(self.transforms_dict.keys())
         transform = transforms[index]
         transformed = transform(subject)
-        return transformed
+        return transformed  # type: ignore[return-value]
 
     def _get_transforms_dict(
             self,
