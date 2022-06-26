@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.7', '3.8', '3.9', '3.10']
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -18,10 +19,10 @@ jobs:
       OS: ${{ matrix.os }}
 
     steps:
-      - name: Set up python
+      - name: Set up python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install tox
-        run: pip install tox codecov
+        run: pip install tox tox-gh-actions codecov
 
       - name: Run unit tests
         run: tox
