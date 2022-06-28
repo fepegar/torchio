@@ -1,13 +1,16 @@
 import urllib.parse
 
+
 from .. import DATA_REPO, LabelMap, ScalarImage
 from ..data.io import read_matrix
 from ..data.subject import _RawSubjectCopySubject
+
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
 
 
 class FPG(_RawSubjectCopySubject):
+
     """3T :math:`T_1`-weighted brain MRI and corresponding parcellation.
 
     Args:
@@ -30,6 +33,7 @@ class FPG(_RawSubjectCopySubject):
             self.filenames["dmri"] = "dmri.nrrd"
 
         download_root = get_torchio_cache_dir() / "fpg"
+
         for filename in self.filenames.values():
             download_url(
                 urllib.parse.urljoin(repo_dir, filename),
@@ -47,6 +51,7 @@ class FPG(_RawSubjectCopySubject):
             ),
             "seg": LabelMap(
                 download_root / self.filenames["seg"],
+
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),

@@ -4,6 +4,7 @@ from typing import (
     Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING, Callable,
 )
 
+
 import numpy as np
 
 from ..constants import TYPE, INTENSITY
@@ -424,3 +425,4 @@ class _RawSubjectCopySubject(Subject):
 
     def __copy__(self):
         return _subject_copy_helper(self, Subject)
+
