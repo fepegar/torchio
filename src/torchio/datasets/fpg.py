@@ -19,20 +19,20 @@ class FPG(_RawSubjectCopySubject):
     """
 
     def __init__(self, load_all: bool = False):
-        repo_dir = urllib.parse.urljoin(DATA_REPO, "fernando/")
+        repo_dir = urllib.parse.urljoin(DATA_REPO, 'fernando/')
 
         self.filenames = {
-            "t1": "t1.nii.gz",
-            "seg": "t1_seg_gif.nii.gz",
-            "rigid": "t1_to_mni.tfm",
-            "affine": "t1_to_mni_affine.h5",
+            't1': 't1.nii.gz',
+            'seg': 't1_seg_gif.nii.gz',
+            'rigid': 't1_to_mni.tfm',
+            'affine': 't1_to_mni_affine.h5',
         }
         if load_all:
-            self.filenames["t2"] = "t2.nii.gz"
-            self.filenames["fmri"] = "fmri.nrrd"
-            self.filenames["dmri"] = "dmri.nrrd"
+            self.filenames['t2'] = 't2.nii.gz'
+            self.filenames['fmri'] = 'fmri.nrrd'
+            self.filenames['dmri'] = 'dmri.nrrd'
 
-        download_root = get_torchio_cache_dir() / "fpg"
+        download_root = get_torchio_cache_dir() / 'fpg'
 
         for filename in self.filenames.values():
             download_url(
@@ -41,36 +41,36 @@ class FPG(_RawSubjectCopySubject):
                 filename=filename,
             )
 
-        rigid = read_matrix(download_root / self.filenames["rigid"])
-        affine = read_matrix(download_root / self.filenames["affine"])
+        rigid = read_matrix(download_root / self.filenames['rigid'])
+        affine = read_matrix(download_root / self.filenames['affine'])
         subject_dict = {
-            "t1": ScalarImage(
-                download_root / self.filenames["t1"],
+            't1': ScalarImage(
+                download_root / self.filenames['t1'],
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),
-            "seg": LabelMap(
-                download_root / self.filenames["seg"],
+            'seg': LabelMap(
+                download_root / self.filenames['seg'],
 
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),
         }
         if load_all:
-            subject_dict["t2"] = ScalarImage(
-                download_root / self.filenames["t2"],
+            subject_dict['t2'] = ScalarImage(
+                download_root / self.filenames['t2'],
             )
-            subject_dict["fmri"] = ScalarImage(
-                download_root / self.filenames["fmri"],
+            subject_dict['fmri'] = ScalarImage(
+                download_root / self.filenames['fmri'],
             )
-            subject_dict["dmri"] = ScalarImage(
-                download_root / self.filenames["dmri"],
+            subject_dict['dmri'] = ScalarImage(
+                download_root / self.filenames['dmri'],
             )
         super().__init__(subject_dict)
         self.gif_colors = self.GIF_COLORS
 
     def plot(self, *args, **kwargs):
-        super().plot(*args, **kwargs, cmap_dict={"seg": self.gif_colors})
+        super().plot(*args, **kwargs, cmap_dict={'seg': self.gif_colors})
 
     GIF_COLORS = {
         0: (0, 0, 0),
