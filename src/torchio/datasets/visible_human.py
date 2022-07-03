@@ -1,12 +1,13 @@
 import abc
 import tempfile
 
-from .. import Subject, ScalarImage
+from ..data.subject import _RawSubjectCopySubject
+from .. import ScalarImage
 from ..utils import get_torchio_cache_dir
 from ..download import download_and_extract_archive
 
 
-class VisibleHuman(abc.ABC, Subject):
+class VisibleHuman(abc.ABC, _RawSubjectCopySubject):
 
     URL = 'https://mri.radiology.uiowa.edu/website_documents/visible_human_tar_files/{}{}.tar.gz'  # noqa: E501, FS003
 
