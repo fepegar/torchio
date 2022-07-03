@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import copy
 import pprint
-from typing import Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING
+from typing import (
+    Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING, Callable,
+)
+
 
 import numpy as np
 
@@ -67,16 +70,7 @@ class Subject(dict):
         return string
 
     def __copy__(self):
-        result_dict = {}
-        for key, value in self.items():
-            if isinstance(value, Image):
-                value = copy.copy(value)
-            else:
-                value = copy.deepcopy(value)
-            result_dict[key] = value
-        new = Subject(result_dict)
-        new.applied_transforms = self.applied_transforms[:]
-        return new
+        return _subject_copy_helper(self, type(self))
 
     def __len__(self):
         return len(self.get_images(intensity_only=False))
@@ -411,3 +405,26 @@ class Subject(dict):
         """
         from ..visualization import plot_subject  # avoid circular import
         plot_subject(self, **kwargs)
+
+
+def _subject_copy_helper(
+    old_obj: Subject,
+    new_subj_cls: Callable[[Dict[str, Any]], Subject],
+):
+    result_dict = {}
+    for key, value in old_obj.items():
+        if isinstance(value, Image):
+            value = copy.copy(value)
+        else:
+            value = copy.deepcopy(value)
+        result_dict[key] = value
+
+    new = new_subj_cls(result_dict)
+    new.applied_transforms = old_obj.applied_transforms[:]
+    return new
+
+
+class _RawSubjectCopySubject(Subject):
+
+    def __copy__(self):
+        return _subject_copy_helper(self, Subject)

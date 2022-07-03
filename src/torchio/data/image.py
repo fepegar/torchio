@@ -203,7 +203,7 @@ class Image(dict):
             if key in PROTECTED_KEYS:
                 continue
             kwargs[key] = value  # should I copy? deepcopy?
-        return self.__class__(**kwargs)
+        return type(self)(**kwargs)
 
     @property
     def data(self) -> torch.Tensor:
