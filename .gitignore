@@ -100,14 +100,13 @@ ENV/
 
 # mypy
 .mypy_cache/
+.dmypy.json
 
 # IDE settings
 .vscode/
 .idea/
 
 # Custom
-test_scripts/
-
 *DS_Store
 .pylintrc
 auto_examples
