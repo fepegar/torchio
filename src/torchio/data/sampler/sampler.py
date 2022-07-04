@@ -37,7 +37,7 @@ class PatchSampler:
             subject: Subject,
             index_ini: TypeTripletInt,
     ) -> Subject:
-        cropped_subject = self.crop(subject, index_ini, self.patch_size)
+        cropped_subject = self.crop(subject, index_ini, self.patch_size)  # type: ignore[arg-type]  # noqa: E501
         return cropped_subject
 
     def crop(
@@ -48,10 +48,10 @@ class PatchSampler:
     ) -> Subject:
         transform = self._get_crop_transform(subject, index_ini, patch_size)
         cropped_subject = transform(subject)
-        index_ini = np.asarray(index_ini)
-        patch_size = np.asarray(patch_size)
-        index_fin = index_ini + patch_size
-        location = index_ini.tolist() + index_fin.tolist()
+        index_ini_array = np.asarray(index_ini)
+        patch_size_array = np.asarray(patch_size)
+        index_fin = index_ini_array + patch_size_array
+        location = index_ini_array.tolist() + index_fin.tolist()
         cropped_subject[LOCATION] = torch.as_tensor(location)
         cropped_subject.update_attributes()
         return cropped_subject
@@ -64,16 +64,16 @@ class PatchSampler:
     ):
         from ...transforms.preprocessing.spatial.crop import Crop
         shape = np.array(subject.spatial_shape, dtype=np.uint16)
-        index_ini = np.array(index_ini, dtype=np.uint16)
-        patch_size = np.array(patch_size, dtype=np.uint16)
-        assert len(index_ini) == 3
-        assert len(patch_size) == 3
-        index_fin = index_ini + patch_size
-        crop_ini = index_ini.tolist()
+        index_ini_array = np.array(index_ini, dtype=np.uint16)
+        patch_size_array = np.array(patch_size, dtype=np.uint16)
+        assert len(index_ini_array) == 3
+        assert len(patch_size_array) == 3
+        index_fin = index_ini_array + patch_size_array
+        crop_ini = index_ini_array.tolist()
         crop_fin = (shape - index_fin).tolist()
         start = ()
         cropping = sum(zip(crop_ini, crop_fin), start)
-        return Crop(cropping)
+        return Crop(cropping)  # type: ignore[arg-type]
 
     def __call__(
             self,

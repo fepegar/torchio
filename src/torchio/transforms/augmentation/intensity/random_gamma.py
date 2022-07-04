@@ -1,7 +1,8 @@
+from typing import Tuple, Dict
 from collections import defaultdict
-from typing import Tuple
 
 import torch
+import numpy as np
 
 from ....utils import to_tuple
 from ....typing import TypeRangeFloat
@@ -11,8 +12,7 @@ from .. import RandomTransform
 
 
 class RandomGamma(RandomTransform, IntensityTransform):
-    r"""Randomly change contrast of an image by raising its values to the power
-    :math:`\gamma`.
+    r"""Randomly change contrast of an image by raising its values to the power :math:`\gamma`.
 
     Args:
         log_gamma: Tuple :math:`(a, b)` to compute the exponent
@@ -70,7 +70,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
             gammas = [
                 self.get_params(self.log_gamma_range)
@@ -79,10 +79,11 @@ class RandomGamma(RandomTransform, IntensityTransform):
             arguments['gamma'][name] = gammas
         transform = Gamma(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(self, log_gamma_range: Tuple[float, float]) -> float:
-        gamma = self.sample_uniform(*log_gamma_range).exp().item()
+        gamma = np.exp(self.sample_uniform(*log_gamma_range))
         return gamma
 
 
@@ -126,13 +127,14 @@ class Gamma(IntensityTransform):
     ):
         super().__init__(**kwargs)
         self.gamma = gamma
-        self.args_names = ('gamma',)
+        self.args_names = ['gamma']
         self.invert_transform = False
 
     def apply_transform(self, subject: Subject) -> Subject:
         gamma = self.gamma
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.gamma, dict)
                 gamma = self.gamma[name]
             gammas = to_tuple(gamma, length=len(image.data))
             transformed_tensors = []

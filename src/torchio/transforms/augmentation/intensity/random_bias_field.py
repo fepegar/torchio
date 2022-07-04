@@ -46,7 +46,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         self.order = _parse_order(order)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for image_name in self.get_images_dict(subject):
             coefficients = self.get_params(
                 self.order,
@@ -56,6 +56,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             arguments['order'][image_name] = self.order
         transform = BiasField(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(
@@ -69,8 +70,8 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         for x_order in range(0, order + 1):
             for y_order in range(0, order + 1 - x_order):
                 for _ in range(0, order + 1 - (x_order + y_order)):
-                    number = self.sample_uniform(*coefficients_range)
-                    random_coefficients.append(number.item())
+                    sample = self.sample_uniform(*coefficients_range)
+                    random_coefficients.append(sample)
         return random_coefficients
 
 
@@ -93,7 +94,7 @@ class BiasField(IntensityTransform):
         self.coefficients = coefficients
         self.order = order
         self.invert_transform = False
-        self.args_names = 'coefficients', 'order'
+        self.args_names = ['coefficients', 'order']
 
     def arguments_are_dict(self):
         coefficients_dict = isinstance(self.coefficients, dict)
@@ -107,9 +108,12 @@ class BiasField(IntensityTransform):
         coefficients, order = self.coefficients, self.order
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.coefficients, dict)
+                assert isinstance(self.order, dict)
                 coefficients, order = self.coefficients[name], self.order[name]
+            assert isinstance(order, int)
             bias_field = self.generate_bias_field(
-                image.data, order, coefficients,
+                image.data, order, coefficients,  # type: ignore[arg-type]
             )
             if self.invert_transform:
                 np.divide(1, bias_field, out=bias_field)

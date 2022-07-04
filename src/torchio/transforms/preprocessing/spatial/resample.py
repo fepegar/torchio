@@ -1,7 +1,7 @@
 from pathlib import Path
 from numbers import Number
-from typing import Union, Tuple, Optional
 from collections.abc import Iterable
+from typing import Union, Tuple, Optional, Sized
 
 import torch
 import numpy as np
@@ -91,16 +91,17 @@ class Resample(SpatialTransform):
         )
         self.pre_affine_name = pre_affine_name
         self.scalars_only = scalars_only
-        self.args_names = (
+        self.args_names = [
             'target',
             'image_interpolation',
             'label_interpolation',
             'pre_affine_name',
             'scalars_only',
-        )
+        ]
 
     @staticmethod
     def _parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
+        result: Iterable
         if isinstance(spacing, Iterable) and len(spacing) == 3:
             result = spacing
         elif isinstance(spacing, Number):
@@ -153,6 +154,7 @@ class Resample(SpatialTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         use_pre_affine = self.pre_affine_name is not None
         if use_pre_affine:
+            assert self.pre_affine_name is not None  # for mypy
             self.check_affine_key_presence(self.pre_affine_name, subject)
 
         for image in self.get_images(subject):
@@ -177,6 +179,7 @@ class Resample(SpatialTransform):
 
             # Apply given affine matrix if found in image
             if use_pre_affine and self.pre_affine_name in image:
+                assert self.pre_affine_name is not None  # for mypy
                 self.check_affine(self.pre_affine_name, image)
                 matrix = image[self.pre_affine_name]
                 if isinstance(matrix, torch.Tensor):
@@ -189,7 +192,7 @@ class Resample(SpatialTransform):
             resampler.SetInterpolator(interpolator)
             self._set_resampler_reference(
                 resampler,
-                self.target,
+                self.target,  # type: ignore[arg-type]
                 floating_sitk,
                 subject,
             )
@@ -241,8 +244,9 @@ class Resample(SpatialTransform):
         elif isinstance(target, Number):  # one number for target was passed
             self._set_resampler_from_spacing(resampler, target, floating_sitk)
         elif isinstance(target, Iterable) and len(target) == 2:
+            assert not isinstance(target, str)  # for mypy
             shape, affine = target
-            if not (isinstance(shape, Iterable) and len(shape) == 3):
+            if not (isinstance(shape, Sized) and len(shape) == 3):
                 message = (
                     f'Target shape must be a sequence of three integers, but'
                     f' "{shape}" was passed'

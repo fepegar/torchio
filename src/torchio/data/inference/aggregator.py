@@ -1,5 +1,5 @@
 import warnings
-from typing import Tuple
+from typing import Optional, Tuple
 
 import torch
 import numpy as np
@@ -32,11 +32,11 @@ class GridAggregator:
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
         self.spatial_shape = subject.spatial_shape
-        self._output_tensor = None
+        self._output_tensor: Optional[torch.Tensor] = None
         self.patch_overlap = sampler.patch_overlap
         self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
-        self._avgmask_tensor = None
+        self._avgmask_tensor: Optional[torch.Tensor] = None
 
     @staticmethod
     def _parse_overlap_mode(overlap_mode):
@@ -127,6 +127,7 @@ class GridAggregator:
             )
             raise RuntimeError(message)
         self._initialize_output_tensor(batch)
+        assert isinstance(self._output_tensor, torch.Tensor)
         if self.overlap_mode == 'crop':
             for patch, location in zip(batch, locations):
                 cropped_patch, new_location = self._crop_patch(
@@ -143,6 +144,7 @@ class GridAggregator:
                 ] = cropped_patch
         elif self.overlap_mode == 'average':
             self._initialize_avgmask_tensor(batch)
+            assert isinstance(self._avgmask_tensor, torch.Tensor)
             for patch, location in zip(batch, locations):
                 i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
                 self._output_tensor[
@@ -160,6 +162,7 @@ class GridAggregator:
 
     def get_output_tensor(self) -> torch.Tensor:
         """Get the aggregated volume after dense inference."""
+        assert isinstance(self._output_tensor, torch.Tensor)
         if self._output_tensor.dtype == torch.int64:
             message = (
                 'Medical image frameworks such as ITK do not support int64.'
@@ -168,6 +171,7 @@ class GridAggregator:
             warnings.warn(message, RuntimeWarning)
             self._output_tensor = self._output_tensor.type(torch.int32)
         if self.overlap_mode == 'average':
+            assert isinstance(self._avgmask_tensor, torch.Tensor)
             # true_divide is used instead of / in case the PyTorch version is
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526
@@ -180,7 +184,7 @@ class GridAggregator:
             from ...transforms import Crop
             border = self.patch_overlap // 2
             cropping = border.repeat(2)
-            crop = Crop(cropping)
-            return crop(output)
+            crop = Crop(cropping)  # type: ignore[arg-type]
+            return crop(output)  # type: ignore[return-value]
         else:
             return output

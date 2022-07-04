@@ -1,7 +1,7 @@
 import csv
 import warnings
 from pathlib import Path
-from typing import List, Sequence
+from typing import List, Sequence, Dict, Union
 
 from ..typing import TypePath
 from .. import SubjectsDataset, Subject, ScalarImage
@@ -97,6 +97,7 @@ class RSNAMICCAI(SubjectsDataset):
                 int(subject_id)
             except ValueError:
                 continue
+            images_dict: Dict[str, Union[str, int, ScalarImage]]
             images_dict = {self.id_key: subject_dir.name}
             if train and labels_dict:
                 images_dict[self.label_key] = labels_dict[subject_id]

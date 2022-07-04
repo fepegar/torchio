@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Tuple, Union, Dict
+from typing import Iterable, Tuple, Union, Dict
 
 import torch
 import numpy as np
@@ -57,9 +57,10 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         super().__init__(**kwargs)
         if not isinstance(axes, tuple):
             try:
-                axes = tuple(axes)
+                axes = tuple(axes)  # type: ignore[arg-type]
             except TypeError:
-                axes = (axes,)
+                axes = (axes,)  # type: ignore[assignment]
+        assert isinstance(axes, Iterable)
         for axis in axes:
             if not isinstance(axis, str) and axis not in (0, 1, 2):
                 raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
@@ -73,15 +74,16 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         self.restore = _parse_restore(restore)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         if any(isinstance(n, str) for n in self.axes):
             subject.check_consistent_orientation()
         for name, image in self.get_images_dict(subject).items():
             is_2d = image.is_2d()
             axes = [a for a in self.axes if a != 2] if is_2d else self.axes
+            min_ghosts, max_ghosts = self.num_ghosts_range
             params = self.get_params(
-                self.num_ghosts_range,
-                axes,
+                (int(min_ghosts), int(max_ghosts)),
+                axes,  # type: ignore[arg-type]
                 self.intensity_range,
             )
             num_ghosts_param, axis_param, intensity_param = params
@@ -91,6 +93,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             arguments['restore'][name] = self.restore
         transform = Ghosting(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(
@@ -102,7 +105,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         ng_min, ng_max = num_ghosts_range
         num_ghosts = torch.randint(ng_min, ng_max + 1, (1,)).item()
         axis = axes[torch.randint(0, len(axes), (1,))]
-        intensity = self.sample_uniform(*intensity_range).item()
+        intensity = self.sample_uniform(*intensity_range)
         return num_ghosts, axis, intensity
 
 
@@ -146,7 +149,7 @@ class Ghosting(IntensityTransform, FourierTransform):
         self.num_ghosts = num_ghosts
         self.intensity = intensity
         self.restore = restore
-        self.args_names = 'num_ghosts', 'axis', 'intensity', 'restore'
+        self.args_names = ['num_ghosts', 'axis', 'intensity', 'restore']
 
     def apply_transform(self, subject: Subject) -> Subject:
         axis = self.axis
@@ -155,12 +158,20 @@ class Ghosting(IntensityTransform, FourierTransform):
         restore = self.restore
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.axis, dict)
+                assert isinstance(self.num_ghosts, dict)
+                assert isinstance(self.intensity, dict)
+                assert isinstance(self.restore, dict)
                 axis = self.axis[name]
                 num_ghosts = self.num_ghosts[name]
                 intensity = self.intensity[name]
                 restore = self.restore[name]
             transformed_tensors = []
             for tensor in image.data:
+                assert isinstance(num_ghosts, int)
+                assert isinstance(axis, int)
+                assert isinstance(intensity, float)
+                assert isinstance(restore, float)
                 transformed_tensor = self.add_artifact(
                     tensor,
                     num_ghosts,

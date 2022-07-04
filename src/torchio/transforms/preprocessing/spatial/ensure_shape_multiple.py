@@ -1,4 +1,6 @@
-from typing import Union
+from __future__ import annotations
+
+from typing import Callable, Union
 
 import numpy as np
 
@@ -125,8 +127,10 @@ class EnsureShapeMultiple(SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         source_shape = np.array(subject.spatial_shape, np.uint16)
-        function = np.floor if self.method == 'crop' else np.ceil
+        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]  # noqa: E501
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
         target_shape = np.maximum(target_shape, 1)
-        return CropOrPad(target_shape.astype(int))(subject)
+        transform = CropOrPad(target_shape.astype(int))
+        subject = transform(subject)  # type: ignore[assignment]
+        return subject

@@ -143,7 +143,7 @@ class RemapLabels(LabelTransform):
         self.kwargs = kwargs
         self.remapping = remapping
         self.masking_method = masking_method
-        self.args_names = 'remapping', 'masking_method'
+        self.args_names = ['remapping', 'masking_method']
 
     def apply_transform(self, subject):
         for image in self.get_images(subject):

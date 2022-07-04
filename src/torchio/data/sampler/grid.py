@@ -73,6 +73,7 @@ class GridSampler(PatchSampler):
         self.padding_mode = padding_mode
         if subject is not None and not isinstance(subject, Subject):
             raise ValueError('The subject argument must be None or Subject')
+        assert subject is not None
         self.subject = self._pad(subject)
         self.locations = self._compute_locations(self.subject)
 
@@ -91,25 +92,25 @@ class GridSampler(PatchSampler):
             from ...transforms import Pad
             border = self.patch_overlap // 2
             padding = border.repeat(2)
-            pad = Pad(padding, padding_mode=self.padding_mode)
-            subject = pad(subject)
+            pad = Pad(padding, padding_mode=self.padding_mode)  # type: ignore[arg-type]  # noqa: E501
+            subject = pad(subject)  # type: ignore[assignment]
         return subject
 
     def _compute_locations(self, subject: Subject):
         if subject is None:
             return None
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
-        self._parse_sizes(*sizes)
-        return self._get_patches_locations(*sizes)
+        self._parse_sizes(*sizes)  # type: ignore[arg-type]
+        return self._get_patches_locations(*sizes)  # type: ignore[arg-type]
 
-    def _generate_patches(
+    def _generate_patches(  # type: ignore[override]
             self,
             subject: Subject,
     ) -> Generator[Subject, None, None]:
         subject = self._pad(subject)
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
-        self._parse_sizes(*sizes)
-        locations = self._get_patches_locations(*sizes)
+        self._parse_sizes(*sizes)  # type: ignore[arg-type]
+        locations = self._get_patches_locations(*sizes)  # type: ignore[arg-type]  # noqa: E501
         for location in locations:
             index_ini = location[:3]
             yield self.extract_patch(subject, index_ini)
@@ -120,25 +121,25 @@ class GridSampler(PatchSampler):
             patch_size: TypeTripletInt,
             patch_overlap: TypeTripletInt,
     ) -> None:
-        image_size = np.array(image_size)
-        patch_size = np.array(patch_size)
-        patch_overlap = np.array(patch_overlap)
-        if np.any(patch_size > image_size):
+        image_size_array = np.array(image_size)
+        patch_size_array = np.array(patch_size)
+        patch_overlap_array = np.array(patch_overlap)
+        if np.any(patch_size_array > image_size_array):
             message = (
-                f'Patch size {tuple(patch_size)} cannot be'
-                f' larger than image size {tuple(image_size)}'
+                f'Patch size {tuple(patch_size_array)} cannot be'
+                f' larger than image size {tuple(image_size_array)}'
             )
             raise ValueError(message)
-        if np.any(patch_overlap >= patch_size):
+        if np.any(patch_overlap_array >= patch_size_array):
             message = (
-                f'Patch overlap {tuple(patch_overlap)} must be smaller'
-                f' than patch size {tuple(patch_size)}'
+                f'Patch overlap {tuple(patch_overlap_array)} must be smaller'
+                f' than patch size {tuple(patch_size_array)}'
             )
             raise ValueError(message)
-        if np.any(patch_overlap % 2):
+        if np.any(patch_overlap_array % 2):
             message = (
                 'Patch overlap must be a tuple of even integers,'
-                f' not {tuple(patch_overlap)}'
+                f' not {tuple(patch_overlap_array)}'
             )
             raise ValueError(message)
 

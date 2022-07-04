@@ -58,7 +58,7 @@ class RescaleIntensity(NormalizationTransform):
         self.percentiles = self._parse_range(
             percentiles, 'percentiles', min_constraint=0, max_constraint=100,
         )
-        self.args_names = 'out_min_max', 'percentiles', 'masking_method'
+        self.args_names = ['out_min_max', 'percentiles', 'masking_method']
 
     def apply_normalization(
             self,
@@ -87,7 +87,7 @@ class RescaleIntensity(NormalizationTransform):
             return tensor
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
-        np.clip(array, *cutoff, out=array)
+        np.clip(array, *cutoff, out=array)  # type: ignore[call-overload]
         if self.in_min_max is None:
             in_min, in_max = array.min(), array.max()
         else:

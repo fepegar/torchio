@@ -1,5 +1,6 @@
 import abc
 import tempfile
+from typing import Tuple
 
 from ..data.subject import _RawSubjectCopySubject
 from .. import ScalarImage
@@ -10,6 +11,7 @@ from ..download import download_and_extract_archive
 class VisibleHuman(abc.ABC, _RawSubjectCopySubject):
 
     URL = 'https://mri.radiology.uiowa.edu/website_documents/visible_human_tar_files/{}{}.tar.gz'  # noqa: E501, FS003
+    PARTS: Tuple[str, ...]
 
     def __init__(self, part: str):
         self.part = self._parse_part(part)
@@ -37,9 +39,9 @@ class VisibleHuman(abc.ABC, _RawSubjectCopySubject):
     def url(self):
         return self.URL.format(self.PREFIX, self.part)
 
-    def _parse_part(self, part: str) -> None:
+    def _parse_part(self, part: str) -> str:
         part_capital = part.capitalize()
-        if part_capital not in self.PARTS:
+        if part_capital not in self.PARTS:  # type: ignore[assignment]
             message = f'Part "{part}" not in available parts: {self.PARTS}'
             raise ValueError(message)
         return part_capital
