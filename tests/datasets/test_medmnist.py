@@ -2,7 +2,6 @@ import os
 
 import pytest
 import torch
-
 from torchio.datasets.medmnist import AdrenalMNIST3D
 from torchio.datasets.medmnist import FractureMNIST3D
 from torchio.datasets.medmnist import NoduleMNIST3D

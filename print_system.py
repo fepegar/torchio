@@ -6,7 +6,6 @@ import sys
 import numpy
 import SimpleITK as sitk
 import torch
-
 import torchio
 
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """Tests for CLI tool package."""
 from click.testing import CliRunner
-
-from .utils import TorchioTestCase
 from torchio.cli import apply_transform
 from torchio.cli import print_info
+
+from .utils import TorchioTestCase
 
 
 class TestCLI(TorchioTestCase):

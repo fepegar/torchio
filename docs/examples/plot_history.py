@@ -11,7 +11,6 @@ import pprint
 
 import matplotlib.pyplot as plt
 import torch
-
 import torchio as tio
 
 torch.manual_seed(0)

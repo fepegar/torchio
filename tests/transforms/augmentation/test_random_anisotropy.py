@@ -1,8 +1,8 @@
 import torch
-
-from ...utils import TorchioTestCase
 from torchio import RandomAnisotropy
 from torchio import ScalarImage
+
+from ...utils import TorchioTestCase
 
 
 class TestRandomAnisotropy(TorchioTestCase):

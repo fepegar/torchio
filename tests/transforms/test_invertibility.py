@@ -2,10 +2,10 @@ import copy
 import warnings
 
 import torch
-
 import torchio as tio
-from ..utils import TorchioTestCase
 from torchio.transforms.intensity_transform import IntensityTransform
+
+from ..utils import TorchioTestCase
 
 
 class TestInvertibility(TorchioTestCase):
