@@ -77,7 +77,9 @@ class Blur(IntensityTransform):
             if self.arguments_are_dict():
                 assert isinstance(self.std, dict)
                 stds = self.std[name]
-            stds_channels: np.ndarray = np.tile(stds, (image.num_channels, 1))  # type: ignore  # noqa: E501
+            repets = image.num_channels, 1
+            stds_channels: np.ndarray
+            stds_channels = np.tile(stds, repets)  # type: ignore[arg-type]
             transformed_tensors = []
             for std, channel in zip(stds_channels, image.data):
                 transformed_tensor = blur(
