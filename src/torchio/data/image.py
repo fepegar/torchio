@@ -220,7 +220,7 @@ class Image(dict):
         """Tensor data. Same as :class:`Image.tensor`."""
         return self[DATA]
 
-    @data.setter  # type: ignore
+    @data.setter  # type: ignore[misc]
     @deprecated(version='0.18.16', reason=deprecation_message)
     def data(self, tensor: TypeData):
         self.set_data(tensor)
