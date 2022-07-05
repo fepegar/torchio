@@ -1,7 +1,8 @@
-from ...utils import TorchioTestCase
 from torchio.transforms import OneOf
 from torchio.transforms import RandomAffine
 from torchio.transforms import RandomElasticDeformation
+
+from ...utils import TorchioTestCase
 
 
 class TestOneOf(TorchioTestCase):

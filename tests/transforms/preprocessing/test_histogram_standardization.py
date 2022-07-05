@@ -1,12 +1,12 @@
 import numpy as np
 import torch
-
-from ...utils import TorchioTestCase
 from torchio import LabelMap
 from torchio import ScalarImage
 from torchio import Subject
 from torchio import SubjectsDataset
 from torchio.transforms import HistogramStandardization
+
+from ...utils import TorchioTestCase
 
 
 class TestHistogramStandardization(TorchioTestCase):

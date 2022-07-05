@@ -1,5 +1,6 @@
-from ...utils import TorchioTestCase
 from torchio.transforms import RandomLabelsToImage
+
+from ...utils import TorchioTestCase
 
 
 class TestRandomLabelsToImage(TorchioTestCase):

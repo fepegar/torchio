@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import torch
+import torchio as tio
 from torch.utils.data import DataLoader
 
-import torchio as tio
 from ..utils import TorchioTestCase
 
 

@@ -1,8 +1,8 @@
 import torch
-
 import torchio
-from ...utils import TorchioTestCase
 from torchio.data import UniformSampler
+
+from ...utils import TorchioTestCase
 
 
 class TestUniformSampler(TorchioTestCase):

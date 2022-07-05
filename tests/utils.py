@@ -11,10 +11,9 @@ from typing import Set
 
 import numpy as np
 import torch
+import torchio as tio
 from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_array_equal
-
-import torchio as tio
 
 
 class TorchioTestCase(unittest.TestCase):

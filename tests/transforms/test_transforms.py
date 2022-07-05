@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 import SimpleITK as sitk
 import torch
-
 import torchio as tio
+
 from ..utils import TorchioTestCase
 
 

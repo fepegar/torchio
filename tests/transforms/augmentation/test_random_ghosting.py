@@ -1,5 +1,6 @@
-from ...utils import TorchioTestCase
 from torchio import RandomGhosting
+
+from ...utils import TorchioTestCase
 
 
 class TestRandomGhosting(TorchioTestCase):

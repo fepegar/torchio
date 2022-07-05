@@ -1,8 +1,8 @@
 import torch
-
 import torchio as tio
-from ...utils import TorchioTestCase
 from torchio.data import WeightedSampler
+
+from ...utils import TorchioTestCase
 
 
 class TestWeightedSampler(TorchioTestCase):
