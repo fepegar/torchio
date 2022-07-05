@@ -27,7 +27,7 @@ from ..typing import TypeNumber
 from ..typing import TypeTripletInt
 from ..utils import to_tuple
 from .data_parser import DataParser
-from .data_parser import TypeTransformInput
+from .data_parser import TypeTransformInOut
 from .interpolation import get_sitk_interpolator
 from .interpolation import Interpolation
 
@@ -120,8 +120,8 @@ class Transform(ABC):
 
     def __call__(
             self,
-            data: TypeTransformInput,
-    ) -> TypeTransformInput:
+            data: TypeTransformInOut,
+    ) -> TypeTransformInOut:
         """Transform data and return a result of the same type.
 
         Args:

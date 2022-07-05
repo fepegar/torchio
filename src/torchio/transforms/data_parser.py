@@ -1,6 +1,6 @@
+from typing import TypeVar
 from typing import Optional
 from typing import Sequence
-from typing import Union
 
 import nibabel as nib
 import numpy as np
@@ -16,7 +16,7 @@ from ..data.subject import Subject
 from ..typing import TypeData
 
 
-TypeTransformInput = Union[
+TransformInOutTypes = [
     Subject,
     Image,
     torch.Tensor,
@@ -25,12 +25,13 @@ TypeTransformInput = Union[
     dict,
     nib.Nifti1Image,
 ]
+TypeTransformInOut = TypeVar('TypeTransformInOut', *TransformInOutTypes)
 
 
 class DataParser:
     def __init__(
             self,
-            data: TypeTransformInput,
+            data: TypeTransformInOut,
             keys: Optional[Sequence[str]] = None,
             label_keys: Optional[Sequence[str]] = None,
     ):
