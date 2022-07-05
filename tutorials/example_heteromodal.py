@@ -7,10 +7,14 @@ missing for some of the subjects, as in
 
 """
 import logging
+
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
-from torchio import ScalarImage, LabelMap, Subject, SubjectsDataset, Queue
+from torchio import LabelMap
+from torchio import Queue
+from torchio import ScalarImage
+from torchio import Subject
+from torchio import SubjectsDataset
 from torchio.data import UniformSampler
 
 

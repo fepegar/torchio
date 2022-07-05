@@ -1,8 +1,9 @@
 import warnings
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 
-import torch
 import numpy as np
+import torch
 
 from ...constants import CHANNELS_DIMENSION
 from ..sampler import GridSampler

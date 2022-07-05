@@ -1,7 +1,9 @@
 # Use duecredit to provide a citation to relevant work to
 # be cited. This does nothing unless the user has duecredit installed
 # and calls this with duecredit (as in `python -m duecredit script.py`):
-from .external.due import due, Doi, BibTeX
+from .external.due import BibTeX
+from .external.due import Doi
+from .external.due import due
 
 BIBTEX = r"""@article{perez-garcia_torchio_2021,
     title = {TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},

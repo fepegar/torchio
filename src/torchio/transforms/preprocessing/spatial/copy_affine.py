@@ -1,6 +1,7 @@
 import copy
-from ....data.subject import Subject
+
 from ... import SpatialTransform
+from ....data.subject import Subject
 
 
 class CopyAffine(SpatialTransform):

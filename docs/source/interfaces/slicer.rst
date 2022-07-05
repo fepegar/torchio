@@ -68,5 +68,5 @@ TorchIO documentation.
     :alt: Apply transform
 
 
-You can click on the ``Toggle volumes`` button to switch between input and output
-volumes.
+You can click on the ``Toggle volumes`` button to switch between input and
+output volumes.

@@ -2,10 +2,10 @@ import abc
 import tempfile
 from typing import Tuple
 
-from ..data.subject import _RawSubjectCopySubject
 from .. import ScalarImage
-from ..utils import get_torchio_cache_dir
+from ..data.subject import _RawSubjectCopySubject
 from ..download import download_and_extract_archive
+from ..utils import get_torchio_cache_dir
 
 
 class VisibleHuman(abc.ABC, _RawSubjectCopySubject):

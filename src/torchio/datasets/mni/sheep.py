@@ -2,8 +2,8 @@ import shutil
 import urllib.parse
 
 from ...data import ScalarImage
-from ...utils import compress
 from ...download import download_and_extract_archive
+from ...utils import compress
 from .mni import SubjectMNI
 
 

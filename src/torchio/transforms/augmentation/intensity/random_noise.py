@@ -1,10 +1,14 @@
 from collections import defaultdict
-from typing import Tuple, Union, Dict, Sequence
+from typing import Dict
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import torch
-from ....data.subject import Subject
-from ... import IntensityTransform
+
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
 
 
 class RandomNoise(RandomTransform, IntensityTransform):

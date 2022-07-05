@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import copy
-from typing import Sequence, Optional, Callable, Iterable, List
+from typing import Callable
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Sequence
 
 from torch.utils.data import Dataset
 
-from .subject import Subject
 from ..utils import get_subjects_from_batch
+from .subject import Subject
 
 
 class SubjectsDataset(Dataset):

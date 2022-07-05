@@ -1,5 +1,6 @@
 import numpy as np
 from torchio.transforms import ToCanonical
+
 from ...utils import TorchioTestCase
 
 

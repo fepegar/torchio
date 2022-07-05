@@ -1,13 +1,14 @@
 import warnings
 
-import torch
 import numpy as np
+import torch
 
-from .typing import TypePath
+from .data.image import Image
+from .data.image import LabelMap
 from .data.subject import Subject
-from .data.image import Image, LabelMap
-from .transforms.preprocessing.spatial.to_canonical import ToCanonical
 from .transforms.preprocessing.intensity.rescale import RescaleIntensity
+from .transforms.preprocessing.spatial.to_canonical import ToCanonical
+from .typing import TypePath
 
 
 def import_mpl_plt():

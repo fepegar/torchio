@@ -1,14 +1,20 @@
 from pathlib import Path
-from typing import Dict, Callable, Tuple, Sequence, Union, Optional
+from typing import Callable
+from typing import Dict
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 from tqdm import tqdm
 
-from ....typing import TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
-from .normalization_transform import NormalizationTransform, TypeMaskingMethod
+from ....typing import TypePath
+from .normalization_transform import NormalizationTransform
+from .normalization_transform import TypeMaskingMethod
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100

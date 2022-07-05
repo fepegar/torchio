@@ -5,7 +5,6 @@ Exclude images from transform
 In this example we show how the kwargs ``include`` and ``exclude`` can be
 used to apply a transform to only some of the images within a subject.
 """
-
 import torch
 import torchio as tio
 

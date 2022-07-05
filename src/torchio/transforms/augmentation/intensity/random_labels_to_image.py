@@ -1,13 +1,18 @@
-from typing import Tuple, Optional, Sequence, List
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
 
 import torch
 
-from ....utils import check_sequence
-from ....data.subject import Subject
-from ....typing import TypeData, TypeRangeFloat
-from ....data.image import ScalarImage, LabelMap
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.image import LabelMap
+from ....data.image import ScalarImage
+from ....data.subject import Subject
+from ....typing import TypeData
+from ....typing import TypeRangeFloat
+from ....utils import check_sequence
 
 
 class RandomLabelsToImage(RandomTransform, IntensityTransform):

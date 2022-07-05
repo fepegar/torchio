@@ -1,15 +1,13 @@
 import os
-import torch
-import pytest
 
-from torchio.datasets.medmnist import (
-    OrganMNIST3D,
-    NoduleMNIST3D,
-    AdrenalMNIST3D,
-    FractureMNIST3D,
-    VesselMNIST3D,
-    SynapseMNIST3D,
-)
+import pytest
+import torch
+from torchio.datasets.medmnist import AdrenalMNIST3D
+from torchio.datasets.medmnist import FractureMNIST3D
+from torchio.datasets.medmnist import NoduleMNIST3D
+from torchio.datasets.medmnist import OrganMNIST3D
+from torchio.datasets.medmnist import SynapseMNIST3D
+from torchio.datasets.medmnist import VesselMNIST3D
 
 
 classes = (

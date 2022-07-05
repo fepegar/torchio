@@ -1,10 +1,14 @@
-from typing import Union, Tuple, List
-import torch
+from typing import List
+from typing import Tuple
+from typing import Union
+
 import numpy as np
+import torch
+
+from .. import RandomTransform
+from ... import SpatialTransform
 from ....data.subject import Subject
 from ....utils import to_tuple
-from ... import SpatialTransform
-from .. import RandomTransform
 
 
 class RandomFlip(RandomTransform, SpatialTransform):

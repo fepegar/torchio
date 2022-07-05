@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from ....data.image import LabelMap
 from ....data.subject import Subject

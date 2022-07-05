@@ -1,11 +1,12 @@
-import sys
 import copy
+import sys
 import tempfile
 
-import torch
-import pytest
 import numpy as np
+import pytest
+import torch
 import torchio as tio
+
 from ..utils import TorchioTestCase
 
 

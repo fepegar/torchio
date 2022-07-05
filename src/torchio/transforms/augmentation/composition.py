@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import warnings
-from typing import Union, Sequence, Dict
+from typing import Dict
+from typing import Sequence
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ...data.subject import Subject
-from .. import Transform
 from . import RandomTransform
+from .. import Transform
+from ...data.subject import Subject
 
 
 TypeTransformsDict = Union[Dict[Transform, float], Sequence[Transform]]

@@ -1,14 +1,18 @@
 import warnings
-from typing import Union, Tuple, Optional, Sequence
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 
-from .pad import Pad
-from .crop import Crop
 from ... import SpatialTransform
-from ...transform import TypeTripletInt, TypeSixBounds
-from ....utils import parse_spatial_shape
 from ....data.subject import Subject
+from ....utils import parse_spatial_shape
+from ...transform import TypeSixBounds
+from ...transform import TypeTripletInt
+from .crop import Crop
+from .pad import Pad
 
 
 class CropOrPad(SpatialTransform):
