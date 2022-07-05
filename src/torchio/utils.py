@@ -20,7 +20,7 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 from torch.utils.data._utils.collate import default_collate
-from tqdm import trange
+from tqdm.auto import trange
 
 from . import constants
 from .typing import TypeNumber

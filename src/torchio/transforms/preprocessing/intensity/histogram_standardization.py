@@ -6,9 +6,9 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
-import numpy as np
 import torch
-from tqdm import tqdm
+import numpy as np
+from tqdm.auto import tqdm
 
 from ....data.io import read_image
 from ....data.subject import Subject
