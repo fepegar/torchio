@@ -49,13 +49,15 @@ repos:
     - id: add-trailing-comma
 
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0  # Use the ref you want to point at
+    rev: v1.9.0
     hooks:
-      - id: python-check-blanket-noqa  # enforce that noqa annotations always occur with specific codes
-      - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
-      - id: python-use-type-annotations  # enforce that type annotations are used instead of type comments
-      - id: rst-backticks  # detect common mistake of using single backticks when writing rst
-      # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
+      - id: python-check-blanket-noqa         # enforce that noqa annotations always occur with specific codes
+      - id: python-check-blanket-type-ignore  # enforce that # type: ignore annotations always occur with specific codes
+      - id: python-no-log-warn                # check for the deprecated .warn() method of python loggers
+      - id: python-use-type-annotations       # enforce that type annotations are used instead of type comments
+      - id: rst-backticks                     # detect common mistake of using single backticks when writing rst
+      - id: rst-directive-colons              # detect mistake of rst directive not ending with double colon
+      - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
