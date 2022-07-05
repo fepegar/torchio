@@ -11,8 +11,9 @@ import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torchio as tio
 from PIL import Image
+
+import torchio as tio
 
 
 def read_clip(path, undersample=4):

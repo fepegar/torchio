@@ -1,7 +1,7 @@
 import torch
-from torchio import RandomFlip
 
 from ...utils import TorchioTestCase
+from torchio import RandomFlip
 
 
 class TestRandomFlip(TorchioTestCase):

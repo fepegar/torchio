@@ -1,6 +1,5 @@
-from torchio.transforms import RandomElasticDeformation
-
 from ...utils import TorchioTestCase
+from torchio.transforms import RandomElasticDeformation
 
 
 class TestRandomElasticDeformation(TorchioTestCase):

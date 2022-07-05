@@ -1,6 +1,5 @@
-from torchio import RandomSpike
-
 from ...utils import TorchioTestCase
+from torchio import RandomSpike
 
 
 class TestRandomSpike(TorchioTestCase):

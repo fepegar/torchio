@@ -1,7 +1,7 @@
 import torch
-from torchio.transforms import Crop
 
 from ...utils import TorchioTestCase
+from torchio.transforms import Crop
 
 
 class TestCrop(TorchioTestCase):

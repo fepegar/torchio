@@ -5,8 +5,8 @@ import tempfile
 import numpy as np
 import pytest
 import torch
-import torchio as tio
 
+import torchio as tio
 from ..utils import TorchioTestCase
 
 

@@ -5,10 +5,10 @@ import numpy as np
 import pytest
 import SimpleITK as sitk
 import torch
-from torchio.data import io
-from torchio.data import ScalarImage
 
 from ..utils import TorchioTestCase
+from torchio.data import io
+from torchio.data import ScalarImage
 
 
 class TestIO(TorchioTestCase):

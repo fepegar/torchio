@@ -10,6 +10,7 @@ import logging
 
 import torch.nn as nn
 from torch.utils.data import DataLoader
+
 from torchio import LabelMap
 from torchio import Queue
 from torchio import ScalarImage

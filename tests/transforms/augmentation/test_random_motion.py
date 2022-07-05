@@ -1,6 +1,5 @@
-from torchio import RandomMotion
-
 from ...utils import TorchioTestCase
+from torchio import RandomMotion
 
 
 class TestRandomMotion(TorchioTestCase):
