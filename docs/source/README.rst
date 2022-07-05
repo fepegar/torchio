@@ -2,8 +2,8 @@
 TorchIO
 #######
 
-|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
-|Tests-status| |Lint-status|
+|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook|
+|Docs-status| |Tests-status| |Lint-status|
 |Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
 |Slack| |Twitter| |Twitter-commits| |YouTube|
 

@@ -70,6 +70,11 @@ repos:
     hooks:
     - id: setup-cfg-fmt
 
+  - repo: https://github.com/PyCQA/doc8
+    rev: 0.11.2
+    hooks:
+    - id: doc8
+
 # The following hook constantly conflicts with the pre-commit CI bot
   # - repo: https://github.com/asottile/reorder_python_imports
   #   rev: v3.3.0
