@@ -1,23 +1,23 @@
 import warnings
 from pathlib import Path
-from typing import Tuple, Union, Optional
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-import torch
-import numpy as np
 import nibabel as nib
+import numpy as np
 import SimpleITK as sitk
+import torch
 
 from ..constants import REPO_URL
-from ..typing import (
-    TypePath,
-    TypeData,
-    TypeDataAffine,
-    TypeDirection,
-    TypeTripletFloat,
-    TypeDoubletInt,
-    TypeTripletInt,
-    TypeQuartetInt,
-)
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeDirection
+from ..typing import TypeDoubletInt
+from ..typing import TypePath
+from ..typing import TypeQuartetInt
+from ..typing import TypeTripletFloat
+from ..typing import TypeTripletInt
 
 
 # Matrices used to switch between LPS and RAS

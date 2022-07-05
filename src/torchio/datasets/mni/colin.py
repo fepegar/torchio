@@ -1,8 +1,9 @@
 import urllib.parse
 
-from ...utils import compress
-from ...data import ScalarImage, LabelMap
+from ...data import LabelMap
+from ...data import ScalarImage
 from ...download import download_and_extract_archive
+from ...utils import compress
 from .mni import SubjectMNI
 
 

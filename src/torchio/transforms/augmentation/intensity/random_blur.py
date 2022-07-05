@@ -1,14 +1,18 @@
 from collections import defaultdict
-from typing import Union, Tuple, Dict
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import scipy.ndimage as ndi
+import torch
 
-from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
-from ....data.subject import Subject
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeData
+from ....typing import TypeSextetFloat
+from ....typing import TypeTripletFloat
 
 
 class RandomBlur(RandomTransform, IntensityTransform):
@@ -77,7 +81,9 @@ class Blur(IntensityTransform):
             if self.arguments_are_dict():
                 assert isinstance(self.std, dict)
                 stds = self.std[name]
-            stds_channels: np.ndarray = np.tile(stds, (image.num_channels, 1))  # type: ignore  # noqa: E501
+            repets = image.num_channels, 1
+            stds_channels: np.ndarray
+            stds_channels = np.tile(stds, repets)  # type: ignore[arg-type]
             transformed_tensors = []
             for std, channel in zip(stds_channels, image.data):
                 transformed_tensor = blur(

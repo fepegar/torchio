@@ -1,12 +1,13 @@
 import warnings
-from typing import Union, Tuple
+from typing import Tuple
+from typing import Union
 
 import torch
 
-from ....typing import TypeRangeFloat
-from ....data.subject import Subject
-from ....utils import to_tuple
 from .. import RandomTransform
+from ....data.subject import Subject
+from ....typing import TypeRangeFloat
+from ....utils import to_tuple
 from ...preprocessing import Resample
 
 

@@ -1,8 +1,11 @@
-from typing import Sequence, Optional
+from typing import Optional
+from typing import Sequence
+
 import torch
-from ..typing import TypeCallable
-from ..data.subject import Subject
+
 from ..constants import TYPE
+from ..data.subject import Subject
+from ..typing import TypeCallable
 from .transform import Transform
 
 

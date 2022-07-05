@@ -1,28 +1,35 @@
 import copy
 import numbers
 import warnings
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Union, Tuple, Optional, Dict, Sequence, List
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ..utils import to_tuple
-from ..data.subject import Subject
-from ..data.io import nib_to_sitk, sitk_to_nib
 from ..data.image import LabelMap
-from ..typing import (
-    TypeKeys,
-    TypeData,
-    TypeDataAffine,
-    TypeNumber,
-    TypeCallable,
-    TypeTripletInt,
-)
-from .interpolation import Interpolation, get_sitk_interpolator
-from .data_parser import DataParser, TypeTransformInput
+from ..data.io import nib_to_sitk
+from ..data.io import sitk_to_nib
+from ..data.subject import Subject
+from ..typing import TypeCallable
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeKeys
+from ..typing import TypeNumber
+from ..typing import TypeTripletInt
+from ..utils import to_tuple
+from .data_parser import DataParser
+from .data_parser import TypeTransformInput
+from .interpolation import get_sitk_interpolator
+from .interpolation import Interpolation
 
 TypeSixBounds = Tuple[int, int, int, int, int, int]
 TypeBounds = Union[

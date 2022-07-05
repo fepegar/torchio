@@ -1,9 +1,9 @@
-from torch.utils.data import DataLoader
-
 import torch
 import torchio as tio
+from torch.utils.data import DataLoader
 from torchio.data import UniformSampler
 from torchio.utils import create_dummy_dataset
+
 from ..utils import TorchioTestCase
 
 

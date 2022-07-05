@@ -1,4 +1,5 @@
 from torchio.transforms import RandomLabelsToImage
+
 from ...utils import TorchioTestCase
 
 

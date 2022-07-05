@@ -1,7 +1,8 @@
 import torch
+
+from ... import IntensityTransform
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
-from ... import IntensityTransform
 
 
 class NormalizationTransform(IntensityTransform):

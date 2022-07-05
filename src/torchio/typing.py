@@ -1,8 +1,12 @@
 import os
-from typing import Union, Tuple, Callable, Optional, Sequence
+from typing import Callable
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
 
 # For typing hints

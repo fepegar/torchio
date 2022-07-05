@@ -1,11 +1,13 @@
-from typing import Union, Generator, Optional
+from typing import Generator
+from typing import Optional
+from typing import Union
 
 import numpy as np
 
-from ...utils import to_tuple
 from ...data.subject import Subject
 from ...typing import TypeSpatialShape
 from ...typing import TypeTripletInt
+from ...utils import to_tuple
 from .sampler import PatchSampler
 
 

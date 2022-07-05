@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Tuple, Union, List, Sequence, Dict, TypeVar
+from typing import Dict
+from typing import List
+from typing import Sequence
+from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ....data.subject import Subject
-from ....utils import to_tuple
-from ....typing import TypeTuple, TypeTripletInt
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeTripletInt
+from ....typing import TypeTuple
+from ....utils import to_tuple
 
 
 TypeLocations = Sequence[Tuple[TypeTripletInt, TypeTripletInt]]

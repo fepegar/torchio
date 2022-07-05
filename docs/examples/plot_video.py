@@ -7,11 +7,9 @@ size of the clip (height and width) by two and
 ``RandomAffine(degrees=(0, 0, 20))`` to rotate a maximum of 20 degrees around
 the time axis.
 """
-
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchio as tio
 from PIL import Image

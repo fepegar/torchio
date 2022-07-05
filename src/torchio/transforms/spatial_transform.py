@@ -1,8 +1,8 @@
 from typing import List
 
-from .transform import Transform
 from ..data import Image
 from ..data.subject import Subject
+from .transform import Transform
 
 
 class SpatialTransform(Transform):

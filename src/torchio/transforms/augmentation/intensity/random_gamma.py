@@ -1,14 +1,15 @@
-from typing import Tuple, Dict
 from collections import defaultdict
+from typing import Dict
+from typing import Tuple
 
-import torch
 import numpy as np
+import torch
 
-from ....utils import to_tuple
-from ....typing import TypeRangeFloat
-from ....data.subject import Subject
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeRangeFloat
+from ....utils import to_tuple
 
 
 class RandomGamma(RandomTransform, IntensityTransform):

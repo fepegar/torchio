@@ -1,12 +1,14 @@
 from numbers import Number
-from typing import Union, Dict
+from typing import Dict
+from typing import Union
 
-import torch
-import numpy as np
 import nibabel as nib
+import numpy as np
+import torch
 
 from ....data.subject import Subject
-from .bounds_transform import BoundsTransform, TypeBounds
+from .bounds_transform import BoundsTransform
+from .bounds_transform import TypeBounds
 
 
 class Pad(BoundsTransform):

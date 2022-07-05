@@ -1,7 +1,11 @@
-import torch
 import numpy as np
+import torch
+from torchio import LabelMap
+from torchio import ScalarImage
+from torchio import Subject
+from torchio import SubjectsDataset
 from torchio.transforms import HistogramStandardization
-from torchio import LabelMap, ScalarImage, Subject, SubjectsDataset
+
 from ...utils import TorchioTestCase
 
 

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import Callable, Union
+from typing import Callable
+from typing import Union
 
 import numpy as np
 
 from ... import SpatialTransform
-from ....utils import to_tuple
 from ....data.subject import Subject
 from ....typing import TypeTripletInt
+from ....utils import to_tuple
 from .crop_or_pad import CropOrPad
 
 

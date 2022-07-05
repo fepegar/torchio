@@ -1,18 +1,21 @@
 import warnings
 from numbers import Number
-from typing import Tuple, Union, Sequence
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ....utils import to_tuple
+from .. import RandomTransform
+from ... import SpatialTransform
+from ....data.image import ScalarImage
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....data.image import ScalarImage
-from ....typing import TypeTripletInt, TypeTripletFloat
-from ... import SpatialTransform
-from .. import RandomTransform
+from ....typing import TypeTripletFloat
+from ....typing import TypeTripletInt
+from ....utils import to_tuple
 
 
 SPLINE_ORDER = 3

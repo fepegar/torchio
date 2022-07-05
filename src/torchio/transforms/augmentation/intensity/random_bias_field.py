@@ -1,13 +1,16 @@
 from collections import defaultdict
-from typing import Union, Tuple, Dict, List
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ....typing import TypeData
-from ....data.subject import Subject
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeData
 
 
 class RandomBiasField(RandomTransform, IntensityTransform):

@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import copy
 import pprint
-from typing import (
-    Any, Dict, List, Tuple, Optional, Sequence, TYPE_CHECKING, Callable,
-)
-
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..constants import TYPE, INTENSITY
-from .image import Image
+from ..constants import INTENSITY
+from ..constants import TYPE
 from ..utils import get_subclasses
+from .image import Image
 
 if TYPE_CHECKING:
     from ..transforms import Transform, Compose

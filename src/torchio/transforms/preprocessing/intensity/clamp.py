@@ -1,6 +1,8 @@
-from torchio.data.image import ScalarImage
 from typing import Optional
+
 import torch
+
+from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ...intensity_transform import IntensityTransform
 

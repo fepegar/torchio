@@ -1,14 +1,17 @@
 from itertools import islice
-from typing import List, Iterator, Optional
+from typing import Iterator
+from typing import List
+from typing import Optional
 
-import torch
 import humanize
-from torch.utils.data import Dataset, DataLoader
+import torch
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
 
 from .. import NUM_SAMPLES
-from .subject import Subject
-from .sampler import PatchSampler
 from .dataset import SubjectsDataset
+from .sampler import PatchSampler
+from .subject import Subject
 
 
 class Queue(Dataset):

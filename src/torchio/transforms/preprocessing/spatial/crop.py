@@ -1,8 +1,9 @@
-import numpy as np
 import nibabel as nib
+import numpy as np
 
 from ....data.subject import Subject
-from .bounds_transform import BoundsTransform, TypeBounds
+from .bounds_transform import BoundsTransform
+from .bounds_transform import TypeBounds
 
 
 class Crop(BoundsTransform):

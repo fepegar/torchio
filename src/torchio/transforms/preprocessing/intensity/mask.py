@@ -1,12 +1,13 @@
 import warnings
-from typing import Optional, Sequence
+from typing import Optional
+from typing import Sequence
 
 import torch
 
+from ... import IntensityTransform
 from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
-from ... import IntensityTransform
 
 
 class Mask(IntensityTransform):
