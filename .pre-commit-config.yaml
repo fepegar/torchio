@@ -65,7 +65,8 @@ repos:
       - id: pyupgrade
         args: ['--py37-plus', '--keep-runtime-typing']
 
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.3.0
-    hooks:
-    - id: reorder-python-imports
+# The following hook constantly conflicts with the pre-commit CI bot
+  # - repo: https://github.com/asottile/reorder_python_imports
+  #   rev: v3.3.0
+  #   hooks:
+  #   - id: reorder-python-imports
