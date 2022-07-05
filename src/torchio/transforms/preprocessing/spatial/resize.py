@@ -2,12 +2,12 @@ import warnings
 
 import numpy as np
 
-from ....utils import to_tuple
+from ... import SpatialTransform
 from ....data.subject import Subject
 from ....typing import TypeSpatialShape
-from ... import SpatialTransform
-from .resample import Resample
+from ....utils import to_tuple
 from .crop_or_pad import CropOrPad
+from .resample import Resample
 
 
 class Resize(SpatialTransform):

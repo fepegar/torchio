@@ -1,15 +1,20 @@
 from collections import defaultdict
-from typing import Tuple, Sequence, List, Union, Dict
+from typing import Dict
+from typing import List
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
+from .. import RandomTransform
+from ... import FourierTransform
+from ... import IntensityTransform
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
 from ....typing import TypeTripletFloat
-from ... import IntensityTransform, FourierTransform
-from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):

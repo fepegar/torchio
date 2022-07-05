@@ -1,4 +1,5 @@
 from torchio import RandomSpike
+
 from ...utils import TorchioTestCase
 
 

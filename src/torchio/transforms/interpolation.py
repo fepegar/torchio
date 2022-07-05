@@ -1,6 +1,6 @@
 # flake8: noqa: E501
-
 import enum
+
 import SimpleITK as sitk
 
 

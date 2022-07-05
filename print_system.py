@@ -1,12 +1,12 @@
 # flake8: noqa
-
+import platform
 import re
 import sys
-import platform
-import torchio
-import torch
+
 import numpy
 import SimpleITK as sitk
+import torch
+import torchio
 
 
 sitk_version = re.findall('SimpleITK Version: (.*?)\n', str(sitk.Version()))[0]

@@ -1,11 +1,13 @@
-from typing import Optional, Generator
+from typing import Generator
+from typing import Optional
 
-import torch
 import numpy as np
+import torch
 
-from ...typing import TypeSpatialShape, TypeTripletInt
-from ...data.subject import Subject
 from ...constants import LOCATION
+from ...data.subject import Subject
+from ...typing import TypeSpatialShape
+from ...typing import TypeTripletInt
 from ...utils import to_tuple
 
 

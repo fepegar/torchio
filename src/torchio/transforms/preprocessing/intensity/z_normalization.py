@@ -1,7 +1,10 @@
 from typing import Optional
+
 import torch
+
 from ....data.subject import Subject
-from .normalization_transform import NormalizationTransform, TypeMaskingMethod
+from .normalization_transform import NormalizationTransform
+from .normalization_transform import TypeMaskingMethod
 
 
 class ZNormalization(NormalizationTransform):

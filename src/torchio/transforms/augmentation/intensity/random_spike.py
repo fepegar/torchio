@@ -1,13 +1,16 @@
-from numbers import Number
 from collections import defaultdict
-from typing import Tuple, Union, Dict
+from numbers import Number
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ....data.subject import Subject
-from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
+from ... import FourierTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
 
 
 class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):

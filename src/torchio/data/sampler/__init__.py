@@ -1,8 +1,9 @@
 from .grid import GridSampler
 from .label import LabelSampler
+from .sampler import PatchSampler
+from .sampler import RandomSampler
 from .uniform import UniformSampler
 from .weighted import WeightedSampler
-from .sampler import PatchSampler, RandomSampler
 
 __all__ = [
     'GridSampler',

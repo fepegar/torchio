@@ -2,10 +2,13 @@ import csv
 from pathlib import Path
 from typing import Optional
 
-from ..typing import TypePath
-from ..transforms import Transform
+from .. import LabelMap
+from .. import ScalarImage
+from .. import Subject
+from .. import SubjectsDataset
 from ..download import download_and_extract_archive
-from .. import SubjectsDataset, Subject, ScalarImage, LabelMap
+from ..transforms import Transform
+from ..typing import TypePath
 
 
 class EPISURG(SubjectsDataset):

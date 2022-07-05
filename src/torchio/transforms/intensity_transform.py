@@ -1,8 +1,9 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from .transform import Transform
 from ..data.image import Image
 from ..data.subject import Subject
+from .transform import Transform
 
 
 class IntensityTransform(Transform):

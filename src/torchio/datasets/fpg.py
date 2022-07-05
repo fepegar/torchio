@@ -1,10 +1,10 @@
 import urllib.parse
 
-
-from .. import DATA_REPO, LabelMap, ScalarImage
+from .. import DATA_REPO
+from .. import LabelMap
+from .. import ScalarImage
 from ..data.io import read_matrix
 from ..data.subject import _RawSubjectCopySubject
-
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
 

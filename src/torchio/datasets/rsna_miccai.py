@@ -1,10 +1,15 @@
 import csv
 import warnings
 from pathlib import Path
-from typing import List, Sequence, Dict, Union
+from typing import Dict
+from typing import List
+from typing import Sequence
+from typing import Union
 
+from .. import ScalarImage
+from .. import Subject
+from .. import SubjectsDataset
 from ..typing import TypePath
-from .. import SubjectsDataset, Subject, ScalarImage
 
 
 class RSNAMICCAI(SubjectsDataset):

@@ -1,7 +1,9 @@
+from typing import Generator
+
 import torch
+
 from ...data.subject import Subject
 from .sampler import RandomSampler
-from typing import Generator
 
 
 class UniformSampler(RandomSampler):

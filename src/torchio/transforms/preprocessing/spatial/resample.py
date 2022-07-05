@@ -1,17 +1,23 @@
-from pathlib import Path
-from numbers import Number
 from collections.abc import Iterable
-from typing import Union, Tuple, Optional, Sized
+from numbers import Number
+from pathlib import Path
+from typing import Optional
+from typing import Sized
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ....data.io import sitk_to_nib, get_sitk_metadata_from_ras_affine
-from ....data.subject import Subject
-from ....typing import TypeTripletFloat, TypePath
-from ....data.image import Image, ScalarImage
 from ... import SpatialTransform
+from ....data.image import Image
+from ....data.image import ScalarImage
+from ....data.io import get_sitk_metadata_from_ras_affine
+from ....data.io import sitk_to_nib
+from ....data.subject import Subject
+from ....typing import TypePath
+from ....typing import TypeTripletFloat
 
 
 TypeSpacing = Union[float, Tuple[float, float, float]]

@@ -1,8 +1,9 @@
-import torch
-import numpy as np
 import nibabel as nib
-from ....data.subject import Subject
+import numpy as np
+import torch
+
 from ... import SpatialTransform
+from ....data.subject import Subject
 
 
 class ToCanonical(SpatialTransform):

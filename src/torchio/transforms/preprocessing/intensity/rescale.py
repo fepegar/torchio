@@ -1,12 +1,14 @@
 import warnings
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 
-import torch
 import numpy as np
+import torch
 
 from ....data.subject import Subject
 from ....typing import TypeRangeFloat
-from .normalization_transform import NormalizationTransform, TypeMaskingMethod
+from .normalization_transform import NormalizationTransform
+from .normalization_transform import TypeMaskingMethod
 
 
 class RescaleIntensity(NormalizationTransform):

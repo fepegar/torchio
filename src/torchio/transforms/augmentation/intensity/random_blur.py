@@ -1,14 +1,18 @@
 from collections import defaultdict
-from typing import Union, Tuple, Dict
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import scipy.ndimage as ndi
+import torch
 
-from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
-from ....data.subject import Subject
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeData
+from ....typing import TypeSextetFloat
+from ....typing import TypeTripletFloat
 
 
 class RandomBlur(RandomTransform, IntensityTransform):

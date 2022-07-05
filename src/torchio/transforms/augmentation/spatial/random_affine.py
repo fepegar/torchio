@@ -1,17 +1,24 @@
 from numbers import Number
-from typing import Tuple, Optional, Sequence, Union
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
+from .. import RandomTransform
+from ... import SpatialTransform
+from ....constants import INTENSITY
+from ....constants import TYPE
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....constants import INTENSITY, TYPE
-from ....utils import get_major_sitk_version, to_tuple
-from ....typing import TypeRangeFloat, TypeSextetFloat, TypeTripletFloat
-from ... import SpatialTransform
-from .. import RandomTransform
+from ....typing import TypeRangeFloat
+from ....typing import TypeSextetFloat
+from ....typing import TypeTripletFloat
+from ....utils import get_major_sitk_version
+from ....utils import to_tuple
 
 
 TypeOneToSixFloat = Union[TypeRangeFloat, TypeTripletFloat, TypeSextetFloat]

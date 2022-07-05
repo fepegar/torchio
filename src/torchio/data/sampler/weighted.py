@@ -1,7 +1,8 @@
-from typing import Optional, Generator
+from typing import Generator
+from typing import Optional
 
-import torch
 import numpy as np
+import torch
 
 from ...constants import MIN_FLOAT_32
 from ...typing import TypeSpatialShape

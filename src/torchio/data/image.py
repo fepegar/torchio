@@ -1,38 +1,48 @@
 import warnings
-from pathlib import Path
 from collections import Counter
-from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
+from pathlib import Path
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import humanize
-import numpy as np
 import nibabel as nib
+import numpy as np
 import SimpleITK as sitk
+import torch
 from deprecated import deprecated
 
-from ..utils import get_stem, guess_external_viewer
-from ..typing import (
-    TypePath,
-    TypeData,
-    TypeDataAffine,
-    TypeTripletInt,
-    TypeQuartetInt,
-    TypeTripletFloat,
-    TypeDirection3D,
-)
-from ..constants import DATA, TYPE, AFFINE, PATH, STEM, INTENSITY, LABEL
-from .io import (
-    ensure_4d,
-    read_image,
-    write_image,
-    nib_to_sitk,
-    sitk_to_nib,
-    check_uint_to_int,
-    get_rotation_and_spacing_from_affine,
-    get_sitk_metadata_from_ras_affine,
-    read_shape,
-    read_affine,
-)
+from ..constants import AFFINE
+from ..constants import DATA
+from ..constants import INTENSITY
+from ..constants import LABEL
+from ..constants import PATH
+from ..constants import STEM
+from ..constants import TYPE
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeDirection3D
+from ..typing import TypePath
+from ..typing import TypeQuartetInt
+from ..typing import TypeTripletFloat
+from ..typing import TypeTripletInt
+from ..utils import get_stem
+from ..utils import guess_external_viewer
+from .io import check_uint_to_int
+from .io import ensure_4d
+from .io import get_rotation_and_spacing_from_affine
+from .io import get_sitk_metadata_from_ras_affine
+from .io import nib_to_sitk
+from .io import read_affine
+from .io import read_image
+from .io import read_shape
+from .io import sitk_to_nib
+from .io import write_image
 
 
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM

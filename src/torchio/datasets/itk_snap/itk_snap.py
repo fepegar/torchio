@@ -1,8 +1,10 @@
 import urllib.parse
-from ...utils import get_torchio_cache_dir
+
+from ...data import LabelMap
+from ...data import ScalarImage
 from ...data.subject import _RawSubjectCopySubject
-from ...data import ScalarImage, LabelMap
 from ...download import download_and_extract_archive
+from ...utils import get_torchio_cache_dir
 
 
 class SubjectITKSNAP(_RawSubjectCopySubject):

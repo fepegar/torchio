@@ -1,8 +1,8 @@
 import torch
 
 from ...transform import TypeMaskingMethod
-from .remap_labels import RemapLabels
 from .label_transform import LabelTransform
+from .remap_labels import RemapLabels
 
 
 class SequentialLabels(LabelTransform):

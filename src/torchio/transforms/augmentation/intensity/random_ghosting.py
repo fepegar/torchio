@@ -1,12 +1,16 @@
 from collections import defaultdict
-from typing import Iterable, Tuple, Union, Dict
+from typing import Dict
+from typing import Iterable
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ....data.subject import Subject
-from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
+from ... import FourierTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
 
 
 class RandomGhosting(RandomTransform, IntensityTransform):
