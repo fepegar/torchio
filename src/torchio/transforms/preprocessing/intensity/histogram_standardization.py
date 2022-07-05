@@ -3,7 +3,7 @@ from typing import Dict, Callable, Tuple, Sequence, Union, Optional
 
 import torch
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ....typing import TypePath
 from ....data.io import read_image

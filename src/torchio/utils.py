@@ -14,7 +14,7 @@ from torch.utils.data._utils.collate import default_collate
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
-from tqdm import trange
+from tqdm.auto import trange
 
 from . import constants
 from .typing import TypeNumber, TypePath
