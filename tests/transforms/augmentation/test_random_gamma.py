@@ -1,7 +1,7 @@
 import torch
-from torchio import RandomGamma
 
 from ...utils import TorchioTestCase
+from torchio import RandomGamma
 
 
 class TestRandomGamma(TorchioTestCase):

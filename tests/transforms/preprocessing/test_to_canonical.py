@@ -1,7 +1,7 @@
 import numpy as np
-from torchio.transforms import ToCanonical
 
 from ...utils import TorchioTestCase
+from torchio.transforms import ToCanonical
 
 
 class TestToCanonical(TorchioTestCase):

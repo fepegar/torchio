@@ -1,6 +1,5 @@
-from torchio.data.sampler import RandomSampler
-
 from ...utils import TorchioTestCase
+from torchio.data.sampler import RandomSampler
 
 
 class TestRandomSampler(TorchioTestCase):

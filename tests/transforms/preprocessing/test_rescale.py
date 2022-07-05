@@ -2,8 +2,8 @@ import copy
 
 import numpy as np
 import torch
-import torchio as tio
 
+import torchio as tio
 from ...utils import TorchioTestCase
 
 

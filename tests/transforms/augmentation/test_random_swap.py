@@ -1,6 +1,5 @@
-from torchio import RandomSwap
-
 from ...utils import TorchioTestCase
+from torchio import RandomSwap
 
 
 class TestRandomSwap(TorchioTestCase):

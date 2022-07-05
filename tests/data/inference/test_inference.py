@@ -1,10 +1,10 @@
 from torch.utils.data import DataLoader
+
+from ...utils import TorchioTestCase
 from torchio import DATA
 from torchio import LOCATION
 from torchio.data.inference import GridAggregator
 from torchio.data.inference import GridSampler
-
-from ...utils import TorchioTestCase
 
 
 class TestInference(TorchioTestCase):

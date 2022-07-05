@@ -1,7 +1,6 @@
+from ..utils import TorchioTestCase
 from torchio.datasets import IXI
 from torchio.datasets import IXITiny
-
-from ..utils import TorchioTestCase
 
 
 class TestIXI(TorchioTestCase):

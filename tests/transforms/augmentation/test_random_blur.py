@@ -1,6 +1,5 @@
-from torchio import RandomBlur
-
 from ...utils import TorchioTestCase
+from torchio import RandomBlur
 
 
 class TestRandomBlur(TorchioTestCase):

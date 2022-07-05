@@ -1,6 +1,5 @@
-from torchio import RandomNoise
-
 from ...utils import TorchioTestCase
+from torchio import RandomNoise
 
 
 class TestRandomNoise(TorchioTestCase):

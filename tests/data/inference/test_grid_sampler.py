@@ -2,7 +2,6 @@
 from copy import copy
 
 import torchio as tio
-
 from ...utils import TorchioTestCase
 
 

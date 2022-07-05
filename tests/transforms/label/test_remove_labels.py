@@ -1,5 +1,4 @@
 import torchio as tio
-
 from ...utils import TorchioTestCase
 
 

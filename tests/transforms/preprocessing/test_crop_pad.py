@@ -1,6 +1,6 @@
 import numpy as np
-import torchio as tio
 
+import torchio as tio
 from ...utils import TorchioTestCase
 
 

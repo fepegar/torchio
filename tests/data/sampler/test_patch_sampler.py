@@ -1,6 +1,5 @@
-from torchio.data import PatchSampler
-
 from ...utils import TorchioTestCase
+from torchio.data import PatchSampler
 
 
 class TestPatchSampler(TorchioTestCase):
