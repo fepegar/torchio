@@ -1,59 +1,54 @@
-from .augmentation.composition import Compose
-from .augmentation.composition import OneOf
-from .augmentation.intensity import BiasField
-from .augmentation.intensity import Blur
-from .augmentation.intensity import Gamma
-from .augmentation.intensity import Ghosting
-from .augmentation.intensity import LabelsToImage
-from .augmentation.intensity import Motion
-from .augmentation.intensity import Noise
-from .augmentation.intensity import RandomBiasField
-from .augmentation.intensity import RandomBlur
-from .augmentation.intensity import RandomGamma
-from .augmentation.intensity import RandomGhosting
-from .augmentation.intensity import RandomLabelsToImage
-from .augmentation.intensity import RandomMotion
-from .augmentation.intensity import RandomNoise
-from .augmentation.intensity import RandomSpike
-from .augmentation.intensity import RandomSwap
-from .augmentation.intensity import Spike
-from .augmentation.intensity import Swap
-from .augmentation.spatial import Affine
-from .augmentation.spatial import ElasticDeformation
-from .augmentation.spatial import Flip
-from .augmentation.spatial import RandomAffine
-from .augmentation.spatial import RandomAnisotropy
-from .augmentation.spatial import RandomElasticDeformation
-from .augmentation.spatial import RandomFlip
+# noreorder
+
+from .transform import Transform
 from .fourier import FourierTransform
+from .spatial_transform import SpatialTransform
 from .intensity_transform import IntensityTransform
+from .preprocessing.label.label_transform import LabelTransform
+
+# Generic
 from .lambda_transform import Lambda
-from .preprocessing import Clamp
-from .preprocessing import Contour
-from .preprocessing import CopyAffine
-from .preprocessing import Crop
-from .preprocessing import CropOrPad
-from .preprocessing import EnsureShapeMultiple
-from .preprocessing import HistogramStandardization
-from .preprocessing import KeepLargestComponent
-from .preprocessing import Mask
-from .preprocessing import OneHot
+
+# Augmentation
+from .augmentation.composition import OneOf
+from .augmentation.composition import Compose
+
+from .augmentation.spatial import RandomFlip, Flip
+from .augmentation.spatial import RandomAffine, Affine
+from .augmentation.spatial import RandomAnisotropy
+from .augmentation.spatial import RandomElasticDeformation, ElasticDeformation
+
+from .augmentation.intensity import RandomSwap, Swap
+from .augmentation.intensity import RandomBlur, Blur
+from .augmentation.intensity import RandomNoise, Noise
+from .augmentation.intensity import RandomSpike, Spike
+from .augmentation.intensity import RandomGamma, Gamma
+from .augmentation.intensity import RandomMotion, Motion
+from .augmentation.intensity import RandomGhosting, Ghosting
+from .augmentation.intensity import RandomBiasField, BiasField
+from .augmentation.intensity import RandomLabelsToImage, LabelsToImage
+
+# Preprocessing
 from .preprocessing import Pad
-from .preprocessing import RemapLabels
-from .preprocessing import RemoveLabels
-from .preprocessing import Resample
-from .preprocessing import RescaleIntensity
+from .preprocessing import Crop
 from .preprocessing import Resize
-from .preprocessing import SequentialLabels
+from .preprocessing import Resample
+from .preprocessing import CropOrPad
+from .preprocessing import CopyAffine
 from .preprocessing import ToCanonical
 from .preprocessing import ZNormalization
+from .preprocessing import RescaleIntensity
+from .preprocessing import Clamp
+from .preprocessing import Mask
+from .preprocessing import EnsureShapeMultiple
+from .preprocessing import HistogramStandardization
 from .preprocessing.intensity.histogram_standardization import train_histogram
-from .preprocessing.label.label_transform import LabelTransform
-from .spatial_transform import SpatialTransform
-from .transform import Transform
-# Generic
-# Augmentation
-# Preprocessing
+from .preprocessing import OneHot
+from .preprocessing import Contour
+from .preprocessing import RemapLabels
+from .preprocessing import RemoveLabels
+from .preprocessing import SequentialLabels
+from .preprocessing import KeepLargestComponent
 
 
 __all__ = [
