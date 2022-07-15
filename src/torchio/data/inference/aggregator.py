@@ -1,5 +1,6 @@
 import warnings
 from typing import Tuple
+from typing import Optional
 
 import torch
 import numpy as np
@@ -39,8 +40,8 @@ class GridAggregator:
         self.patch_size = sampler.patch_size
         self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
-        self._avgmask_tensor = None
-        self._hann_window = None
+        self._avgmask_tensor: Optional[torch.Tensor] = None
+        self._hann_window: Optional[torch.Tensor] = None
 
     @staticmethod
     def _parse_overlap_mode(overlap_mode):
@@ -102,17 +103,20 @@ class GridAggregator:
             dtype=batch.dtype,
         )
 
-    def _initialize_hann_window(self, batch: torch.Tensor) -> None:
+    def _initialize_hann_window(self) -> None:
         if self._hann_window is not None:
             return
         self._hann_window = torch.tensor([1.])
         # create a n-dim hann window
-        for i, d in enumerate(self.patch_size):
-            v = [1 for d in self.patch_size]
-            v[i] = d
-            self._hann_window = self._hann_window * torch.hann_window(
-                d + 2, periodic=False,
-            )[1:-1].view(v)
+        for spatial_dim, size in enumerate(self.patch_size):
+            window_shape = np.ones_like(self.patch_size)
+            window_shape[spatial_dim] = size
+            window = torch.hann_window(
+                size + 2,
+                periodic=False,
+            )
+            window = window[1:-1].view(*window_shape)
+            self._hann_window = self._hann_window * window
 
     def add_batch(
             self,
@@ -174,14 +178,14 @@ class GridAggregator:
                     k_ini:k_fin,
                 ] += 1
         elif self.overlap_mode == 'hann':
-            """To handle edge and corners avoid numerical problems, save the we
-            save the hann window in a different tensor, at the end it will be
-            full of 1 (or close values) where we have an overlap and <1 where
-            we don't. When we will divide, where the patch doesn't overlap we
-            will cancel the multiplication
-            """
+            # To handle edge and corners avoid numerical problems, we save the
+            # hann window in a different tensor
+            # At the end, it will be filled with ones (or close values) where
+            # there is overlap and < 1 where there is not
+            # When we divide, the multiplication will be canceled in areas that
+            # do not overlap
             self._initialize_avgmask_tensor(batch)
-            self._initialize_hann_window(batch)
+            self._initialize_hann_window()
 
             if self._output_tensor.dtype != torch.float32:
                 self._output_tensor = self._output_tensor.float()
@@ -197,13 +201,13 @@ class GridAggregator:
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin
+                    k_ini:k_fin,
                 ] += patch
                 self._avgmask_tensor[
                     :,
                     i_ini:i_fin,
                     j_ini:j_fin,
-                    k_ini:k_fin
+                    k_ini:k_fin,
                 ] += self._hann_window
 
     def get_output_tensor(self) -> torch.Tensor:

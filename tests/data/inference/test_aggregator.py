@@ -7,7 +7,9 @@ class TestAggregator(TorchioTestCase):
     """Tests for `aggregator` module."""
 
     def aggregate(self, mode, fixture):
-        tensor = torch.ones(1, 1, 4, 4)
+        image_shape = 1, 1, 4, 4
+        tensor = torch.ones(image_shape)
+        fixture = torch.as_tensor(fixture).reshape(image_shape)
         image_name = 'img'
         subject = tio.Subject({image_name: tio.ScalarImage(tensor=tensor)})
         patch_size = 1, 3, 3
@@ -32,30 +34,30 @@ class TestAggregator(TorchioTestCase):
         self.assertTensorEqual(output, fixture)
 
     def test_overlap_crop(self):
-        fixture = torch.Tensor((
+        fixture = (
             (0, 0, 2, 2),
             (0, 0, 2, 2),
             (4, 4, 6, 6),
             (4, 4, 6, 6),
-        )).reshape(1, 1, 4, 4)
+        )
         self.aggregate('crop', fixture)
 
     def test_overlap_average(self):
-        fixture = torch.Tensor((
+        fixture = (
             (0, 1, 1, 2),
             (2, 3, 3, 4),
             (2, 3, 3, 4),
             (4, 5, 5, 6),
-        )).reshape(1, 1, 4, 4)
+        )
         self.aggregate('average', fixture)
 
     def test_overlap_hann(self):
-        fixture = torch.Tensor((
-            (0, 2 / 3, 4 / 3, 2),
-            (4 / 3, 2, 8 / 3, 10 / 3),
-            (8 / 3, 10 / 3, 4, 14 / 3),
-            (4, 14 / 3, 16 / 3, 6),
-        )).reshape(1, 1, 4, 4)
+        fixture = (
+            ( 0 / 3,  2 / 3,  4 / 3,  6 / 3),  # noqa: E201, E241
+            ( 4 / 3,  6 / 3,  8 / 3, 10 / 3),  # noqa: E201, E241
+            ( 8 / 3, 10 / 3, 12 / 3, 14 / 3),  # noqa: E201, E241
+            (12 / 3, 14 / 3, 16 / 3, 18 / 3),
+        )
         self.aggregate('hann', fixture)
 
     def run_sampler_aggregator(self, overlap_mode='crop'):
