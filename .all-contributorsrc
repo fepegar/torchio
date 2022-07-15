@@ -607,6 +607,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "zivy",
+      "name": "Ziv Yaniv",
+      "avatar_url": "https://avatars.githubusercontent.com/u/338645?v=4",
+      "profile": "https://yanivresearch.info/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
