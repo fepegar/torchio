@@ -114,7 +114,7 @@ class Subject(dict):
 
             >>> import torchio as tio
             >>> colin = tio.datasets.Colin27()
-            >>> colin.shape
+            >>> colin.spatial_shape
             (181, 217, 181)
         """
         self.check_consistent_spatial_shape()
@@ -130,7 +130,7 @@ class Subject(dict):
 
             >>> import torchio as tio
             >>> colin = tio.datasets.Slicer()
-            >>> colin.shape
+            >>> colin.spacing
             (1.0, 1.0, 1.2999954223632812)
         """
         self.check_consistent_attribute('spacing')
