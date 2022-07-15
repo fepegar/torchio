@@ -105,7 +105,7 @@ class GridAggregator:
 
     @staticmethod
     def _get_hann_window(patch_size):
-        hann_window_3d = torch.tensor([1.])
+        hann_window_3d = torch.as_tensor([1])
         # create a n-dim hann window
         for spatial_dim, size in enumerate(patch_size):
             window_shape = np.ones_like(patch_size)
