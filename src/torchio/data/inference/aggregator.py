@@ -1,7 +1,6 @@
 import warnings
 from typing import Optional
 from typing import Tuple
-from typing import Optional
 
 import numpy as np
 import torch
@@ -22,7 +21,7 @@ class GridAggregator:
         overlap_mode: If ``'crop'``, the overlapping predictions will be
             cropped. If ``'average'``, the predictions in the overlapping areas
             will be averaged with equal weights. If ``'hann'``, the predictions
-            in the overlapping areas will be weighted with a hann window
+            in the overlapping areas will be weighted with a Hann window
             function. See the `grid aggregator tests`_ for a raw visualization
             of the three modes.
 
@@ -104,20 +103,25 @@ class GridAggregator:
             dtype=batch.dtype,
         )
 
-    def _initialize_hann_window(self) -> None:
-        if self._hann_window is not None:
-            return
-        self._hann_window = torch.tensor([1.])
+    @staticmethod
+    def _get_hann_window(patch_size):
+        hann_window_3d = torch.tensor([1.])
         # create a n-dim hann window
-        for spatial_dim, size in enumerate(self.patch_size):
-            window_shape = np.ones_like(self.patch_size)
+        for spatial_dim, size in enumerate(patch_size):
+            window_shape = np.ones_like(patch_size)
             window_shape[spatial_dim] = size
-            window = torch.hann_window(
+            hann_window_1d = torch.hann_window(
                 size + 2,
                 periodic=False,
             )
-            window = window[1:-1].view(*window_shape)
-            self._hann_window = self._hann_window * window
+            hann_window_1d = hann_window_1d[1:-1].view(*window_shape)
+            hann_window_3d = hann_window_3d * hann_window_1d
+        return hann_window_3d
+
+    def _initialize_hann_window(self) -> None:
+        if self._hann_window is not None:
+            return
+        self._hann_window = self._get_hann_window(self.patch_size)
 
     def add_batch(
             self,
