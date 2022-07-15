@@ -1,20 +1,23 @@
 import warnings
 from pathlib import Path
-from typing import Tuple, Union, Optional
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-import torch
-import numpy as np
 import nibabel as nib
+import numpy as np
 import SimpleITK as sitk
+import torch
 
 from ..constants import REPO_URL
-from ..typing import (
-    TypePath,
-    TypeData,
-    TypeDataAffine,
-    TypeDirection,
-    TypeTripletFloat,
-)
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeDirection
+from ..typing import TypeDoubletInt
+from ..typing import TypePath
+from ..typing import TypeQuartetInt
+from ..typing import TypeTripletFloat
+from ..typing import TypeTripletInt
 
 
 # Matrices used to switch between LPS and RAS
@@ -87,18 +90,28 @@ def _read_dicom(directory: TypePath):
     return image
 
 
-def read_shape(path: TypePath) -> Tuple[int, int, int, int]:
+def read_shape(path: TypePath) -> TypeQuartetInt:
     reader = sitk.ImageFileReader()
     reader.SetFileName(str(path))
     reader.ReadImageInformation()
     num_channels = reader.GetNumberOfComponents()
-    spatial_shape = reader.GetSize()
     num_dimensions = reader.GetDimension()
+    assert 2 <= num_dimensions <= 4
     if num_dimensions == 2:
-        spatial_shape = *spatial_shape, 1
-    elif num_dimensions == 4:  # assume bad NIfTI
-        *spatial_shape, num_channels = spatial_shape
-    shape = (num_channels,) + tuple(spatial_shape)
+        spatial_shape_2d: TypeDoubletInt = reader.GetSize()
+        assert len(spatial_shape_2d) == 2
+        si, sj = spatial_shape_2d
+        sk = 1
+    elif num_dimensions == 4:
+        # We assume bad NIfTI file (channels encoded as spatial dimension)
+        spatial_shape_4d: TypeQuartetInt = reader.GetSize()
+        assert len(spatial_shape_4d) == 4
+        si, sj, sk, num_channels = spatial_shape_4d
+    elif num_dimensions == 3:
+        spatial_shape_3d: TypeTripletInt = reader.GetSize()
+        assert len(spatial_shape_3d) == 3
+        si, sj, sk = spatial_shape_3d
+    shape = num_channels, si, sj, sk
     return shape
 
 
@@ -130,7 +143,7 @@ def write_image(
 
 
 def _write_nibabel(
-        tensor: TypeData,
+        tensor: torch.Tensor,
         affine: TypeData,
         path: TypePath,
 ) -> None:
@@ -384,10 +397,11 @@ def get_sitk_metadata_from_ras_affine(
     origin_array = origin_lps if lps else origin_ras
     direction_array = direction_lps if lps else direction_ras
     direction_array = direction_array.flatten()
-    # The following are to comply with typing hints
-    # (there must be prettier ways to do this)
+    # The following are to comply with mypy
+    # (although there must be prettier ways to do this)
     ox, oy, oz = origin_array
     sx, sy, sz = spacing_array
+    direction: TypeDirection
     if is_2d:
         d1, d2, d3, d4 = direction_array
         direction = d1, d2, d3, d4

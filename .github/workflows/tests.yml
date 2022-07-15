@@ -11,6 +11,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+        exclude:
+          - os: macos-latest
+            python-version: '3.7'
+          - os: macos-latest
+            python-version: '3.8'
+          - os: macos-latest
+            python-version: '3.9'
+          - os: windows-latest
+            python-version: '3.7'
+          - os: windows-latest
+            python-version: '3.8'
+          - os: windows-latest
+            python-version: '3.9'
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -18,21 +32,21 @@ jobs:
       OS: ${{ matrix.os }}
 
     steps:
-      - name: Set up python
-        uses: actions/setup-python@v2
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Install tox
-        run: pip install tox codecov
+        run: pip install tox tox-gh-actions codecov
 
       - name: Run unit tests
-        run: tox -e py
+        run: tox
 
       - name: Upload coverage
         run: codecov
@@ -42,12 +56,12 @@ jobs:
 
     steps:
       - name: Set up python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 

@@ -1,10 +1,13 @@
 import urllib.parse
-from ...utils import get_torchio_cache_dir
-from ...data import Subject, ScalarImage, LabelMap
+
+from ...data import LabelMap
+from ...data import ScalarImage
+from ...data.subject import _RawSubjectCopySubject
 from ...download import download_and_extract_archive
+from ...utils import get_torchio_cache_dir
 
 
-class SubjectITKSNAP(Subject):
+class SubjectITKSNAP(_RawSubjectCopySubject):
     """ITK-SNAP Image Data Downloads.
 
     See `the ITK-SNAP website`_ for more information.

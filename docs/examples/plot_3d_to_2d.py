@@ -5,10 +5,9 @@ Sample slices from volumes
 In this example, volumes are padded, scaled, rotated and sometimes flipped.
 Then, 2D slices are extracted.
 """
-
+import matplotlib.pyplot as plt
 import torch
 import torchio as tio
-import matplotlib.pyplot as plt
 
 torch.manual_seed(0)
 max_queue_length = 16

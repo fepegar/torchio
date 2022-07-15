@@ -1,8 +1,11 @@
-from typing import Sequence, Optional
+from typing import Optional
+from typing import Sequence
+
 import torch
-from ..typing import TypeCallable
-from ..data.subject import Subject
+
 from ..constants import TYPE
+from ..data.subject import Subject
+from ..typing import TypeCallable
 from .transform import Transform
 
 
@@ -36,7 +39,7 @@ class Lambda(Transform):
         super().__init__(**kwargs)
         self.function = function
         self.types_to_apply = types_to_apply
-        self.args_names = 'function', 'types_to_apply'
+        self.args_names = ['function', 'types_to_apply']
 
     def apply_transform(self, subject: Subject) -> Subject:
         images = subject.get_images(

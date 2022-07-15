@@ -1,37 +1,48 @@
 import warnings
-from pathlib import Path
 from collections import Counter
-from typing import Any, Dict, Tuple, Optional, Union, Sequence, List, Callable
+from pathlib import Path
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import humanize
-import numpy as np
 import nibabel as nib
+import numpy as np
 import SimpleITK as sitk
+import torch
 from deprecated import deprecated
 
-from ..utils import get_stem, guess_external_viewer
-from ..typing import (
-    TypePath,
-    TypeData,
-    TypeDataAffine,
-    TypeTripletInt,
-    TypeTripletFloat,
-    TypeDirection3D,
-)
-from ..constants import DATA, TYPE, AFFINE, PATH, STEM, INTENSITY, LABEL
-from .io import (
-    ensure_4d,
-    read_image,
-    write_image,
-    nib_to_sitk,
-    sitk_to_nib,
-    check_uint_to_int,
-    get_rotation_and_spacing_from_affine,
-    get_sitk_metadata_from_ras_affine,
-    read_shape,
-    read_affine,
-)
+from ..constants import AFFINE
+from ..constants import DATA
+from ..constants import INTENSITY
+from ..constants import LABEL
+from ..constants import PATH
+from ..constants import STEM
+from ..constants import TYPE
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeDirection3D
+from ..typing import TypePath
+from ..typing import TypeQuartetInt
+from ..typing import TypeTripletFloat
+from ..typing import TypeTripletInt
+from ..utils import get_stem
+from ..utils import guess_external_viewer
+from .io import check_uint_to_int
+from .io import ensure_4d
+from .io import get_rotation_and_spacing_from_affine
+from .io import get_sitk_metadata_from_ras_affine
+from .io import nib_to_sitk
+from .io import read_affine
+from .io import read_image
+from .io import read_shape
+from .io import sitk_to_nib
+from .io import write_image
 
 
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
@@ -202,14 +213,14 @@ class Image(dict):
             if key in PROTECTED_KEYS:
                 continue
             kwargs[key] = value  # should I copy? deepcopy?
-        return self.__class__(**kwargs)
+        return type(self)(**kwargs)
 
     @property
     def data(self) -> torch.Tensor:
         """Tensor data. Same as :class:`Image.tensor`."""
         return self[DATA]
 
-    @data.setter  # type: ignore
+    @data.setter  # type: ignore[misc]
     @deprecated(version='0.18.16', reason=deprecation_message)
     def data(self, tensor: TypeData):
         self.set_data(tensor)
@@ -235,6 +246,8 @@ class Image(dict):
         if self._loaded or self._is_dir() or self._is_multipath():
             affine = self[AFFINE]
         else:
+            assert self.path is not None
+            assert isinstance(self.path, (str, Path))
             affine = read_affine(self.path)
         return affine
 
@@ -247,13 +260,18 @@ class Image(dict):
         return self[TYPE]
 
     @property
-    def shape(self) -> Tuple[int, int, int, int]:
+    def shape(self) -> TypeQuartetInt:
         """Tensor shape as :math:`(C, W, H, D)`."""
         custom_reader = self.reader is not read_image
-        multipath = not isinstance(self.path, (str, Path))
-        if self._loaded or custom_reader or multipath or self.path.is_dir():
-            shape = tuple(self.data.shape)
+        multipath = self._is_multipath()
+        if isinstance(self.path, Path):
+            is_dir = self.path.is_dir()
+        shape: TypeQuartetInt
+        if self._loaded or custom_reader or multipath or is_dir:
+            channels, si, sj, sk = self.data.shape
+            shape = channels, si, sj, sk
         else:
+            assert isinstance(self.path, (str, Path))
             shape = read_shape(self.path)
         return shape
 
@@ -289,18 +307,20 @@ class Image(dict):
         _, _, direction = get_sitk_metadata_from_ras_affine(
             self.affine, lps=False,
         )
-        return direction
+        return direction  # type: ignore[return-value]
 
     @property
     def spacing(self) -> Tuple[float, float, float]:
         """Voxel spacing in mm."""
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
-        return tuple(spacing)
+        sx, sy, sz = spacing
+        return sx, sy, sz
 
     @property
     def origin(self) -> Tuple[float, float, float]:
         """Center of first voxel in array, in mm."""
-        return tuple(self.affine[:3, 3])
+        ox, oy, oz = self.affine[:3, 3]
+        return ox, oy, oz
 
     @property
     def itemsize(self):
@@ -421,7 +441,7 @@ class Image(dict):
 
     def _parse_path(
             self,
-            path: Union[TypePath, Sequence[TypePath], None],
+            path: Optional[Union[TypePath, Sequence[TypePath]]],
     ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
@@ -429,9 +449,9 @@ class Image(dict):
             # https://github.com/fepegar/torchio/pull/838
             raise TypeError('The path argument cannot be a dictionary')
         elif self._is_paths_sequence(path):
-            return [self._parse_single_path(p) for p in path]
+            return [self._parse_single_path(p) for p in path]  # type: ignore[union-attr]  # noqa: E501
         else:
-            return self._parse_single_path(path)
+            return self._parse_single_path(path)  # type: ignore[arg-type]
 
     def _parse_tensor(
             self,
@@ -510,7 +530,12 @@ class Image(dict):
         """
         if self._loaded:
             return
-        paths = self.path if self._is_multipath() else [self.path]
+
+        paths: List[Path]
+        if self._is_multipath():
+            paths = self.path  # type: ignore[assignment]
+        else:
+            paths = [self.path]  # type: ignore[list-item]
         tensor, affine = self.read_and_check(paths[0])
         tensors = [tensor]
         for path in paths[1:]:
@@ -786,7 +811,7 @@ class LabelMap(Image):
 
     def count_nonzero(self) -> int:
         """Get the number of voxels that are not 0."""
-        return self.data.count_nonzero().item()
+        return int(self.data.count_nonzero().item())
 
     def count_labels(self) -> Dict[int, int]:
         """Get the number of voxels in each label."""

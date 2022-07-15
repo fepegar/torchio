@@ -1,7 +1,7 @@
 # pylint: disable=import-outside-toplevel
-
 """Console script for torchio."""
 import sys
+
 import click
 
 

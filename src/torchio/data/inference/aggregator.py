@@ -1,9 +1,10 @@
 import warnings
+from typing import Optional
 from typing import Tuple
 from typing import Optional
 
-import torch
 import numpy as np
+import torch
 
 from ...constants import CHANNELS_DIMENSION
 from ..sampler import GridSampler
@@ -35,7 +36,7 @@ class GridAggregator:
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
         self.spatial_shape = subject.spatial_shape
-        self._output_tensor = None
+        self._output_tensor: Optional[torch.Tensor] = None
         self.patch_overlap = sampler.patch_overlap
         self.patch_size = sampler.patch_size
         self._parse_overlap_mode(overlap_mode)
@@ -147,6 +148,7 @@ class GridAggregator:
             )
             raise RuntimeError(message)
         self._initialize_output_tensor(batch)
+        assert isinstance(self._output_tensor, torch.Tensor)
         if self.overlap_mode == 'crop':
             for patch, location in zip(batch, locations):
                 cropped_patch, new_location = self._crop_patch(
@@ -163,6 +165,7 @@ class GridAggregator:
                 ] = cropped_patch
         elif self.overlap_mode == 'average':
             self._initialize_avgmask_tensor(batch)
+            assert isinstance(self._avgmask_tensor, torch.Tensor)
             for patch, location in zip(batch, locations):
                 i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
                 self._output_tensor[
@@ -212,6 +215,7 @@ class GridAggregator:
 
     def get_output_tensor(self) -> torch.Tensor:
         """Get the aggregated volume after dense inference."""
+        assert isinstance(self._output_tensor, torch.Tensor)
         if self._output_tensor.dtype == torch.int64:
             message = (
                 'Medical image frameworks such as ITK do not support int64.'
@@ -232,7 +236,7 @@ class GridAggregator:
             from ...transforms import Crop
             border = self.patch_overlap // 2
             cropping = border.repeat(2)
-            crop = Crop(cropping)
-            return crop(output)
+            crop = Crop(cropping)  # type: ignore[arg-type]
+            return crop(output)  # type: ignore[return-value]
         else:
             return output

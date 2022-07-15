@@ -1,17 +1,19 @@
-import os
 import copy
-import shutil
+import os
 import random
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
 from random import shuffle
-from typing import Set, Sequence
+from typing import Sequence
+from typing import Set
 
-import torch
 import numpy as np
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+import torch
 import torchio as tio
+from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_equal
 
 
 class TorchioTestCase(unittest.TestCase):

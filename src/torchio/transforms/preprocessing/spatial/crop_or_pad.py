@@ -1,14 +1,18 @@
 import warnings
-from typing import Union, Tuple, Optional, Sequence
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 
-from .pad import Pad
-from .crop import Crop
 from ... import SpatialTransform
-from ...transform import TypeTripletInt, TypeSixBounds
-from ....utils import parse_spatial_shape
 from ....data.subject import Subject
+from ....utils import parse_spatial_shape
+from ...transform import TypeSixBounds
+from ...transform import TypeTripletInt
+from .crop import Crop
+from .pad import Pad
 
 
 class CropOrPad(SpatialTransform):
@@ -152,7 +156,8 @@ class CropOrPad(SpatialTransform):
         for number in parameters:
             ini, fin = int(np.ceil(number)), int(np.floor(number))
             result.extend([ini, fin])
-        return tuple(result)
+        i1, i2, j1, j2, k1, k2 = result
+        return i1, i2, j1, j2, k1, k2
 
     def _compute_cropping_padding_from_shapes(
             self,
@@ -257,18 +262,26 @@ class CropOrPad(SpatialTransform):
             padding.extend([pad_ini, pad_fin])
             cropping.extend([crop_ini, crop_fin])
         # Conversion for SimpleITK compatibility
-        padding = np.asarray(padding, dtype=int)
-        cropping = np.asarray(cropping, dtype=int)
-        padding_params = tuple(padding.tolist()) if padding.any() else None
-        cropping_params = tuple(cropping.tolist()) if cropping.any() else None
-        return padding_params, cropping_params
+        padding_array = np.asarray(padding, dtype=int)
+        cropping_array = np.asarray(cropping, dtype=int)
+        if padding_array.any():
+            padding_params = tuple(padding_array.tolist())
+        else:
+            padding_params = None
+        if cropping_array.any():
+            cropping_params = tuple(cropping_array.tolist())
+        else:
+            cropping_params = None
+        return padding_params, cropping_params  # type: ignore[return-value]
 
     def apply_transform(self, subject: Subject) -> Subject:
         subject.check_consistent_space()
         padding_params, cropping_params = self.compute_crop_or_pad(subject)
         padding_kwargs = {'padding_mode': self.padding_mode}
         if padding_params is not None:
-            subject = Pad(padding_params, **padding_kwargs)(subject)
+            pad = Pad(padding_params, **padding_kwargs)
+            subject = pad(subject)  # type: ignore[assignment]
         if cropping_params is not None:
-            subject = Crop(cropping_params)(subject)
+            crop = Crop(cropping_params)
+            subject = crop(subject)  # type: ignore[assignment]
         return subject

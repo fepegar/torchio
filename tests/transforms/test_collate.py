@@ -1,5 +1,6 @@
-from torch.utils.data import DataLoader
 import torchio as tio
+from torch.utils.data import DataLoader
+
 from ..utils import TorchioTestCase
 
 

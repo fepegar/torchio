@@ -1,5 +1,7 @@
 import torch
-from torchio import ScalarImage, RandomAnisotropy
+from torchio import RandomAnisotropy
+from torchio import ScalarImage
+
 from ...utils import TorchioTestCase
 
 

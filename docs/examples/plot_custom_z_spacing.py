@@ -8,7 +8,6 @@ image spacing across one axis only.
 Inspired by
 `this discussion <https://github.com/fepegar/torchio/discussions/885>`_.
 """
-
 import torch
 import torchio as tio
 

@@ -1,28 +1,35 @@
 import copy
 import numbers
 import warnings
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from contextlib import contextmanager
-from typing import Union, Tuple, Optional, Dict, Sequence
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ..utils import to_tuple
-from ..data.subject import Subject
-from ..data.io import nib_to_sitk, sitk_to_nib
 from ..data.image import LabelMap
-from ..typing import (
-    TypeKeys,
-    TypeData,
-    TypeDataAffine,
-    TypeNumber,
-    TypeCallable,
-    TypeTripletInt,
-)
-from .interpolation import Interpolation, get_sitk_interpolator
-from .data_parser import DataParser, TypeTransformInput
+from ..data.io import nib_to_sitk
+from ..data.io import sitk_to_nib
+from ..data.subject import Subject
+from ..typing import TypeCallable
+from ..typing import TypeData
+from ..typing import TypeDataAffine
+from ..typing import TypeKeys
+from ..typing import TypeNumber
+from ..typing import TypeTripletInt
+from ..utils import to_tuple
+from .data_parser import DataParser
+from .data_parser import TypeTransformInput
+from .interpolation import get_sitk_interpolator
+from .interpolation import Interpolation
 
 TypeSixBounds = Tuple[int, int, int, int, int, int]
 TypeBounds = Union[
@@ -109,7 +116,7 @@ class Transform(ABC):
         # args_names is the sequence of parameters from self that need to be
         # passed to a non-random version of a random transform. They are also
         # used to invert invertible transforms
-        self.args_names = ()
+        self.args_names: List[str] = []
 
     def __call__(
             self,
@@ -291,7 +298,7 @@ class Transform(ABC):
             return (min_range, nums_range)
 
         try:
-            min_value, max_value = nums_range
+            min_value, max_value = nums_range  # type: ignore[misc]
         except (TypeError, ValueError):
             raise ValueError(
                 f'If {name} is not a single number, it must be'
@@ -332,7 +339,7 @@ class Transform(ABC):
                     f'If "{name}" is a sequence, its values must be of'
                     f' type "{type_constraint}", not "{type(nums_range)}"',
                 )
-        return nums_range
+        return nums_range  # type: ignore[return-value]
 
     @staticmethod
     def parse_interpolation(interpolation: str) -> str:
@@ -377,7 +384,7 @@ class Transform(ABC):
 
     @staticmethod
     def sitk_to_nib(image: sitk.Image) -> TypeDataAffine:
-        return sitk_to_nib(image)
+        return sitk_to_nib(image)  # type: ignore[return-value]
 
     def _get_reproducing_arguments(self):
         """
@@ -417,33 +424,34 @@ class Transform(ABC):
         return get_sitk_interpolator(interpolation)
 
     @staticmethod
-    def parse_bounds(bounds_parameters: TypeBounds) -> TypeSixBounds:
+    def parse_bounds(bounds_parameters: TypeBounds) -> Optional[TypeSixBounds]:
         if bounds_parameters is None:
             return None
         try:
-            bounds_parameters = tuple(bounds_parameters)
+            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: E501
         except TypeError:
-            bounds_parameters = (bounds_parameters,)
+            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: E501
 
         # Check that numbers are integers
-        for number in bounds_parameters:
+        for number in bounds_parameters:  # type: ignore[union-attr]
             if not isinstance(number, (int, np.integer)) or number < 0:
                 message = (
                     'Bounds values must be integers greater or equal to zero,'
                     f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
-        bounds_parameters = tuple(int(n) for n in bounds_parameters)
-        bounds_parameters_length = len(bounds_parameters)
+        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: E501
+        bounds_parameters_length = len(bounds_parameters_tuple)
         if bounds_parameters_length == 6:
-            return bounds_parameters
+            return bounds_parameters_tuple  # type: ignore[return-value]
         if bounds_parameters_length == 1:
-            return 6 * bounds_parameters
+            return 6 * bounds_parameters_tuple  # type: ignore[return-value]
         if bounds_parameters_length == 3:
-            return tuple(np.repeat(bounds_parameters, 2).tolist())
+            repeat = np.repeat(bounds_parameters_tuple, 2).tolist()
+            return tuple(repeat)  # type: ignore[return-value]
         message = (
             'Bounds parameter must be an integer or a tuple of'
-            f' 3 or 6 integers, not {bounds_parameters}'
+            f' 3 or 6 integers, not {bounds_parameters_tuple}'
         )
         raise ValueError(message)
 
@@ -461,7 +469,7 @@ class Transform(ABC):
             masking_method: TypeMaskingMethod,
             subject: Subject,
             tensor: torch.Tensor,
-            labels: list = None,
+            labels: Optional[Sequence[int]] = None,
     ) -> torch.Tensor:
         if masking_method is None:
             return self.ones(tensor)
@@ -482,7 +490,7 @@ class Transform(ABC):
                     possible_axis, tensor,
                 )
         elif type(masking_method) in (tuple, list, int):
-            return self.get_mask_from_bounds(masking_method, tensor)
+            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: E501
         first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
         message = (
             'Masking method must be one of:\n'
@@ -532,6 +540,7 @@ class Transform(ABC):
             tensor: torch.Tensor,
     ) -> torch.Tensor:
         bounds_parameters = self.parse_bounds(bounds_parameters)
+        assert bounds_parameters is not None
         low = bounds_parameters[::2]
         high = bounds_parameters[1::2]
         i0, j0, k0 = low

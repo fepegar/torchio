@@ -1,7 +1,8 @@
-from typing import Optional, Tuple, Generator
+from typing import Generator
+from typing import Optional
 
-import torch
 import numpy as np
+import torch
 
 from ...constants import MIN_FLOAT_32
 from ...typing import TypeSpatialShape
@@ -51,7 +52,7 @@ class WeightedSampler(RandomSampler):
     def __init__(
             self,
             patch_size: TypeSpatialShape,
-            probability_map: str,
+            probability_map: Optional[str],
     ):
         super().__init__(patch_size)
         self.probability_map_name = probability_map
@@ -63,18 +64,19 @@ class WeightedSampler(RandomSampler):
             num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         probability_map = self.get_probability_map(subject)
-        probability_map = self.process_probability_map(
+        probability_map_array = self.process_probability_map(
             probability_map, subject,
         )
-        cdf = self.get_cumulative_distribution_function(probability_map)
+        cdf = self.get_cumulative_distribution_function(probability_map_array)
 
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
-            yield self.extract_patch(subject, probability_map, cdf)
+            yield self.extract_patch(subject, probability_map_array, cdf)
             if num_patches is not None:
                 patches_left -= 1
 
     def get_probability_map_image(self, subject: Subject) -> Image:
+        assert self.probability_map_name is not None
         if self.probability_map_name in subject:
             return subject[self.probability_map_name]
         else:
@@ -121,7 +123,7 @@ class WeightedSampler(RandomSampler):
     @staticmethod
     def clear_probability_borders(
             probability_map: np.ndarray,
-            patch_size: TypeSpatialShape,
+            patch_size: np.ndarray,
     ) -> None:
         # Set probability to 0 on voxels that wouldn't possibly be sampled
         # given the current patch size
@@ -165,21 +167,28 @@ class WeightedSampler(RandomSampler):
     @staticmethod
     def get_cumulative_distribution_function(
             probability_map: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> np.ndarray:
         """Return the cumulative distribution function of a probability map."""
         flat_map = probability_map.flatten()
         flat_map_normalized = flat_map / flat_map.sum()
         cdf = np.cumsum(flat_map_normalized)
         return cdf
 
-    def extract_patch(
+    def extract_patch(  # type: ignore[override]
             self,
             subject: Subject,
             probability_map: np.ndarray,
             cdf: np.ndarray,
     ) -> Subject:
-        index_ini = self.get_random_index_ini(probability_map, cdf)
-        cropped_subject = self.crop(subject, index_ini, self.patch_size)
+        i, j, k = self.get_random_index_ini(probability_map, cdf)
+        index_ini = i, j, k
+        si, sj, sk = self.patch_size
+        patch_size = si, sj, sk
+        cropped_subject = self.crop(
+            subject,
+            index_ini,
+            patch_size,
+        )
         return cropped_subject
 
     def get_random_index_ini(

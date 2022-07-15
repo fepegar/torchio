@@ -1,14 +1,20 @@
 from pathlib import Path
-from typing import Dict, Callable, Tuple, Sequence, Union, Optional
+from typing import Callable
+from typing import Dict
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import torch
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
-from ....typing import TypePath
 from ....data.io import read_image
 from ....data.subject import Subject
-from .normalization_transform import NormalizationTransform, TypeMaskingMethod
+from ....typing import TypePath
+from .normalization_transform import NormalizationTransform
+from .normalization_transform import TypeMaskingMethod
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
@@ -54,7 +60,7 @@ class HistogramStandardization(NormalizationTransform):
         super().__init__(masking_method=masking_method, **kwargs)
         self.landmarks = landmarks
         self.landmarks_dict = self._parse_landmarks(landmarks)
-        self.args_names = 'landmarks', 'masking_method'
+        self.args_names = ['landmarks', 'masking_method']
 
     @staticmethod
     def _parse_landmarks(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
@@ -89,7 +95,7 @@ class HistogramStandardization(NormalizationTransform):
             raise KeyError(message)
         image = subject[image_name]
         landmarks = self.landmarks_dict[image_name]
-        normalized = normalize(image.data, landmarks, mask=mask)
+        normalized = _normalize(image.data, landmarks, mask=mask.numpy())
         image.set_data(normalized)
 
     @classmethod
@@ -153,16 +159,17 @@ class HistogramStandardization(NormalizationTransform):
             >>> transform = HistogramStandardization(landmarks_dict)
         """  # noqa: E501
         is_masks_list = isinstance(mask_path, Sequence)
-        if is_masks_list and len(mask_path) != len(images_paths):
+        if is_masks_list and len(mask_path) != len(images_paths):  # type: ignore[arg-type]  # noqa: E501
             message = (
-                f'Different number of images ({len(images_paths)})'
-                f' and mask ({len(mask_path)}) paths found'
+                f'Different number of images ({len(images_paths)})'  # type: ignore[arg-type]  # noqa: E501
+                f' and mask ({len(mask_path)}) paths found'  # type: ignore[arg-type]  # noqa: E501
             )
             raise ValueError(message)
         quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff
         percentiles_cutoff = 100 * np.array(quantiles_cutoff)
         percentiles_database = []
-        percentiles = _get_percentiles(percentiles_cutoff)
+        a, b = percentiles_cutoff  # for mypy
+        percentiles = _get_percentiles((a, b))
         for i, image_file_path in enumerate(tqdm(images_paths)):
             tensor, _ = read_image(image_file_path)
             if masking_function is not None:
@@ -172,16 +179,17 @@ class HistogramStandardization(NormalizationTransform):
                     mask = np.ones_like(tensor, dtype=bool)
                 else:
                     if is_masks_list:
+                        assert isinstance(mask_path, Sequence)
                         path = mask_path[i]
                     else:
-                        path = mask_path
+                        path = mask_path  # type: ignore[assignment]
                     mask, _ = read_image(path)
                     mask = mask.numpy() > 0
             array = tensor.numpy()
             percentile_values = np.percentile(array[mask], percentiles)
             percentiles_database.append(percentile_values)
-        percentiles_database = np.vstack(percentiles_database)
-        mapping = _get_average_mapping(percentiles_database)
+        percentiles_database_array = np.vstack(percentiles_database)
+        mapping = _get_average_mapping(percentiles_database_array)
 
         if output_path is not None:
             output_path = Path(output_path).expanduser()
@@ -195,18 +203,18 @@ class HistogramStandardization(NormalizationTransform):
         return mapping
 
 
-def _standardize_cutoff(cutoff: np.ndarray) -> np.ndarray:
+def _standardize_cutoff(cutoff: Sequence[float]) -> np.ndarray:
     """Standardize the cutoff values given in the configuration.
 
     Computes percentile landmark normalization by default.
 
     """
-    cutoff = np.asarray(cutoff)
-    cutoff[0] = max(0, cutoff[0])
-    cutoff[1] = min(1, cutoff[1])
-    cutoff[0] = np.min([cutoff[0], 0.09])
-    cutoff[1] = np.max([cutoff[1], 0.91])
-    return cutoff
+    cutoff_array = np.asarray(cutoff)
+    cutoff_array[0] = max(0, cutoff_array[0])
+    cutoff_array[1] = min(1, cutoff_array[1])
+    cutoff_array[0] = np.min([cutoff_array[0], 0.09])
+    cutoff_array[1] = np.max([cutoff_array[1], 0.91])
+    return cutoff_array
 
 
 def _get_average_mapping(percentiles_database: np.ndarray) -> np.ndarray:
@@ -236,7 +244,7 @@ def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
     return np.array(percentiles)
 
 
-def normalize(
+def _normalize(
         tensor: torch.Tensor,
         landmarks: np.ndarray,
         mask: Optional[np.ndarray],
@@ -259,7 +267,8 @@ def normalize(
 
     quantiles_cutoff = _standardize_cutoff(cutoff_)
     percentiles_cutoff = 100 * np.array(quantiles_cutoff)
-    percentiles = _get_percentiles(percentiles_cutoff)
+    a, b = percentiles_cutoff  # for mypy
+    percentiles = _get_percentiles((a, b))
     percentile_values = np.percentile(data[mask], percentiles)
 
     # Apply linear histogram standardization

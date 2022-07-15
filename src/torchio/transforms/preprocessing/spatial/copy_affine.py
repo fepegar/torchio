@@ -1,6 +1,7 @@
 import copy
-from ....data.subject import Subject
+
 from ... import SpatialTransform
+from ....data.subject import Subject
 
 
 class CopyAffine(SpatialTransform):
@@ -68,7 +69,7 @@ class CopyAffine(SpatialTransform):
             )
             raise ValueError(message)
         self.target = target
-        self.args_names = ('target',)
+        self.args_names = ['target']
 
     def apply_transform(self, subject: Subject) -> Subject:
         if self.target not in subject:

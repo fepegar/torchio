@@ -1,10 +1,14 @@
 from collections import defaultdict
-from typing import Tuple, Union, Dict, Sequence
+from typing import Dict
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import torch
-from ....data.subject import Subject
-from ... import IntensityTransform
+
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
 
 
 class RandomNoise(RandomTransform, IntensityTransform):
@@ -39,7 +43,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
         self.std_range = self._parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for image_name in self.get_images_dict(subject):
             mean, std, seed = self.get_params(self.mean_range, self.std_range)
             arguments['mean'][image_name] = mean
@@ -47,15 +51,16 @@ class RandomNoise(RandomTransform, IntensityTransform):
             arguments['seed'][image_name] = seed
         transform = Noise(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(
             self,
             mean_range: Tuple[float, float],
             std_range: Tuple[float, float],
-    ) -> Tuple[float, float]:
-        mean = self.sample_uniform(*mean_range).item()
-        std = self.sample_uniform(*std_range).item()
+    ) -> Tuple[float, float, int]:
+        mean = self.sample_uniform(*mean_range)
+        std = self.sample_uniform(*std_range)
         seed = self._get_random_seed()
         return mean, std, seed
 
@@ -82,18 +87,21 @@ class Noise(IntensityTransform):
             **kwargs
     ):
         super().__init__(**kwargs)
-        self.mean = mean
+        self.mean = mean  # type: ignore[assignment]
         self.std = std
         self.seed = seed
         self.invert_transform = False
-        self.args_names = 'mean', 'std', 'seed'
+        self.args_names = ['mean', 'std', 'seed']
 
     def apply_transform(self, subject: Subject) -> Subject:
         mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                mean, std, seed = (arg[name] for arg in args)
+                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: E501
+                mean, std, seed = values  # type: ignore[assignment]  # noqa: E501
             with self._use_seed(seed):
+                assert isinstance(mean, float)
+                assert isinstance(std, float)
                 noise = get_noise(image.data, mean, std)
             if self.invert_transform:
                 noise *= -1

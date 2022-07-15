@@ -2,8 +2,8 @@
 TorchIO
 #######
 
-|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook| |Docs-status|
-|Tests-status| |Lint-status|
+|PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook|
+|Docs-status| |Tests-status|
 |Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
 |Slack| |Twitter| |Twitter-commits| |YouTube|
 
@@ -84,10 +84,6 @@ If you found a bug or have a feature request, please open an issue:
 .. |Docs-status| image:: https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs
    :target: https://torchio.rtfd.io/?badge=latest
    :alt: Documentation status
-
-.. |Lint-status| image:: https://github.com/fepegar/torchio/actions/workflows/lint.yml/badge.svg
-   :target: https://github.com/fepegar/torchio/actions/workflows/lint.yml
-   :alt: Lint status
 
 .. |Tests-status| image:: https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/fepegar/torchio/actions/workflows/tests.yml

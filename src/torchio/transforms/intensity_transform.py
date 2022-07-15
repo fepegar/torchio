@@ -1,8 +1,9 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from .transform import Transform
 from ..data.image import Image
 from ..data.subject import Subject
+from .transform import Transform
 
 
 class IntensityTransform(Transform):
@@ -26,7 +27,7 @@ class IntensityTransform(Transform):
     def arguments_are_dict(self) -> bool:
         """Check if main arguments are dict.
 
-        Return True if the type of all attributes specified in the
+        Return ``True`` if the type of all attributes specified in the
         :attr:`args_names` have ``dict`` type.
         """
         args = [getattr(self, name) for name in self.args_names]

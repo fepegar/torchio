@@ -1,14 +1,18 @@
 from collections import defaultdict
-from typing import Union, Tuple, Dict
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import scipy.ndimage as ndi
+import torch
 
-from ....typing import TypeData, TypeTripletFloat, TypeSextetFloat
-from ....data.subject import Subject
-from ... import IntensityTransform
 from .. import RandomTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
+from ....typing import TypeData
+from ....typing import TypeSextetFloat
+from ....typing import TypeTripletFloat
 
 
 class RandomBlur(RandomTransform, IntensityTransform):
@@ -38,12 +42,13 @@ class RandomBlur(RandomTransform, IntensityTransform):
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for name in self.get_images_dict(subject):
             std = self.get_params(self.std_ranges)
             arguments['std'][name] = std
         transform = Blur(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(self, std_ranges: TypeSextetFloat) -> TypeTripletFloat:
@@ -68,14 +73,17 @@ class Blur(IntensityTransform):
     ):
         super().__init__(**kwargs)
         self.std = std
-        self.args_names = ('std',)
+        self.args_names = ['std']
 
     def apply_transform(self, subject: Subject) -> Subject:
         stds = self.std
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.std, dict)
                 stds = self.std[name]
-            stds_channels = np.tile(stds, (image.num_channels, 1))
+            repets = image.num_channels, 1
+            stds_channels: np.ndarray
+            stds_channels = np.tile(stds, repets)  # type: ignore[arg-type]
             transformed_tensors = []
             for std, channel in zip(stds_channels, image.data):
                 transformed_tensor = blur(

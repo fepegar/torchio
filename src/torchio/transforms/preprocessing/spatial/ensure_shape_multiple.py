@@ -1,11 +1,14 @@
+from __future__ import annotations
+
+from typing import Callable
 from typing import Union
 
 import numpy as np
 
 from ... import SpatialTransform
-from ....utils import to_tuple
 from ....data.subject import Subject
 from ....typing import TypeTripletInt
+from ....utils import to_tuple
 from .crop_or_pad import CropOrPad
 
 
@@ -125,8 +128,10 @@ class EnsureShapeMultiple(SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         source_shape = np.array(subject.spatial_shape, np.uint16)
-        function = np.floor if self.method == 'crop' else np.ceil
+        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]  # noqa: E501
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
         target_shape = np.maximum(target_shape, 1)
-        return CropOrPad(target_shape.astype(int))(subject)
+        transform = CropOrPad(target_shape.astype(int))
+        subject = transform(subject)  # type: ignore[assignment]
+        return subject

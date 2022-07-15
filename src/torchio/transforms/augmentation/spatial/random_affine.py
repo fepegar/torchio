@@ -1,17 +1,24 @@
 from numbers import Number
-from typing import Tuple, Optional, Sequence, Union
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
+from .. import RandomTransform
+from ... import SpatialTransform
+from ....constants import INTENSITY
+from ....constants import TYPE
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....constants import INTENSITY, TYPE
-from ....utils import get_major_sitk_version, to_tuple
-from ....typing import TypeRangeFloat, TypeSextetFloat, TypeTripletFloat
-from ... import SpatialTransform
-from .. import RandomTransform
+from ....typing import TypeRangeFloat
+from ....typing import TypeSextetFloat
+from ....typing import TypeTripletFloat
+from ....utils import get_major_sitk_version
+from ....utils import to_tuple
 
 
 TypeOneToSixFloat = Union[TypeRangeFloat, TypeTripletFloat, TypeSextetFloat]
@@ -170,6 +177,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         }
         transform = Affine(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
 
@@ -251,7 +259,7 @@ class Affine(SpatialTransform):
         )
         self.invert_transform = False
         self.check_shape = check_shape
-        self.args_names = (
+        self.args_names = [
             'scales',
             'degrees',
             'translation',
@@ -260,7 +268,7 @@ class Affine(SpatialTransform):
             'image_interpolation',
             'label_interpolation',
             'check_shape',
-        )
+        ]
 
     @staticmethod
     def _get_scaling_transform(
@@ -269,8 +277,8 @@ class Affine(SpatialTransform):
     ) -> sitk.ScaleTransform:
         # 1.5 means the objects look 1.5 times larger
         transform = sitk.ScaleTransform(3)
-        scaling_params = np.array(scaling_params).astype(float)
-        transform.SetScale(scaling_params)
+        scaling_params_array = np.array(scaling_params).astype(float)
+        transform.SetScale(scaling_params_array)
         if center_lps is not None:
             transform.SetCenter(center_lps)
         return transform
@@ -282,11 +290,11 @@ class Affine(SpatialTransform):
             center_lps: Optional[TypeTripletFloat] = None,
     ) -> sitk.Euler3DTransform:
 
-        def ras_to_lps(triplet: np.ndarray):
+        def ras_to_lps(triplet: Sequence[float]):
             return np.array((-1, -1, 1), dtype=float) * np.asarray(triplet)
 
         transform = sitk.Euler3DTransform()
-        radians = np.radians(degrees)
+        radians = np.radians(degrees).tolist()
 
         # SimpleITK uses LPS
         radians_lps = ras_to_lps(radians)
@@ -346,6 +354,7 @@ class Affine(SpatialTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         if self.check_shape:
             subject.check_consistent_spatial_shape()
+        default_value: float
         for image in self.get_images(subject):
             transform = self.get_affine_transform(image)
             transformed_tensors = []
@@ -371,7 +380,8 @@ class Affine(SpatialTransform):
                             sitk_image, filter_otsu=True,
                         )
                     else:
-                        default_value = self.default_pad_value
+                        assert isinstance(self.default_pad_value, Number)
+                        default_value = float(self.default_pad_value)
                 transformed_tensor = self.apply_affine_transform(
                     sitk_image,
                     transform,

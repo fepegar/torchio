@@ -1,11 +1,13 @@
-from typing import Optional, Sequence
+import warnings
+from typing import Optional
+from typing import Sequence
 
 import torch
 
-from ....data.image import LabelMap
+from ... import IntensityTransform
+from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
-from ... import IntensityTransform
 
 
 class Mask(IntensityTransform):
@@ -16,9 +18,15 @@ class Mask(IntensityTransform):
             :class:`~torchio.transforms.preprocessing.intensity.NormalizationTransform`.
         outside_value: Value to set for all voxels outside of the mask.
         labels: If a label map is used to generate the mask,
-            sequence of labels to consider.
+            sequence of labels to consider. If ``None``, all values larger than
+            zero will be used for the mask.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
+
+    Raises:
+        RuntimeWarning: If a 4D image is masked with a 3D mask, the mask will
+            be expanded along the channels (first) dimension, and a warning
+            will be raised.
 
     Example:
         >>> import torchio as tio
@@ -59,10 +67,15 @@ class Mask(IntensityTransform):
                 image.data,
                 self.masking_labels,
             )
+            assert isinstance(image, ScalarImage)
             self.apply_masking(image, mask_data)
         return subject
 
-    def apply_masking(self, image: LabelMap, mask_data: torch.Tensor) -> None:
+    def apply_masking(
+            self,
+            image: ScalarImage,
+            mask_data: torch.Tensor,
+    ) -> None:
         masked = mask(image.data, mask_data, self.outside_value)
         image.set_data(masked)
 
@@ -72,7 +85,16 @@ def mask(
         mask: torch.Tensor,
         outside_value: float,
 ) -> torch.Tensor:
-    array = tensor.clone().numpy()
-    mask = mask.numpy()
+    array = tensor.clone()
+    num_channels_array = array.shape[0]
+    num_channels_mask = mask.shape[0]
+    if num_channels_array != num_channels_mask:
+        assert num_channels_mask == 1
+        message = (
+            f'Expanding mask with shape {mask.shape}'
+            f' to match shape {array.shape} of input image'
+        )
+        warnings.warn(message, RuntimeWarning)
+        mask = mask.expand(*array.shape)
     array[~mask] = outside_value
-    return torch.as_tensor(array)
+    return array

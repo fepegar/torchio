@@ -4,17 +4,15 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
-
 # -- Path setup --------------------------------------------------------------
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
 import sys
-from typing import List
 from datetime import date
+from typing import List
 sys.path.insert(0, os.path.abspath('../../src'))
 import torchio  # noqa: E402
 
@@ -230,16 +228,6 @@ sphinx_gallery_conf = {
     'examples_dirs': '../examples',   # example scripts
     'gallery_dirs': 'auto_examples',  # where to save gallery generated output
     'matplotlib_animations': True,
-    'binder': {
-        # Required keys
-        'org': 'fepegar',
-        'repo': 'torchio',
-        'branch': 'main',
-        'binderhub_url': 'https://mybinder.org',
-        'dependencies': '../requirements.txt',
-        # Optional keys
-        'use_jupyter_lab': False,
-    },
 }
 
 # autosummary_generate = True  # Turn on sphinx.ext.autosummary

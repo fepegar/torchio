@@ -15,8 +15,8 @@ Subclasses are used to indicate specific types of images,
 such as :class:`ScalarImage` and :class:`LabelMap`,
 which are used to store, e.g., CT scans and segmentations, respectively.
 
-An instance of :class:`Image` can be created using a filepath, a PyTorch tensor,
-or a NumPy array.
+An instance of :class:`Image` can be created using a filepath,
+a PyTorch tensor, or a NumPy array.
 This class uses lazy loading, i.e., the data is not loaded from disk at
 instantiation time.
 Instead, the data is only loaded when needed for an operation

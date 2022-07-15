@@ -1,6 +1,10 @@
+from typing import Optional
+
 import torch
+
 from ....data.subject import Subject
-from .normalization_transform import NormalizationTransform, TypeMaskingMethod
+from .normalization_transform import NormalizationTransform
+from .normalization_transform import TypeMaskingMethod
 
 
 class ZNormalization(NormalizationTransform):
@@ -18,7 +22,7 @@ class ZNormalization(NormalizationTransform):
             **kwargs
     ):
         super().__init__(masking_method=masking_method, **kwargs)
-        self.args_names = ('masking_method',)
+        self.args_names = ['masking_method']
 
     def apply_normalization(
             self,
@@ -40,7 +44,10 @@ class ZNormalization(NormalizationTransform):
         image.set_data(standardized)
 
     @staticmethod
-    def znorm(tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    def znorm(
+            tensor: torch.Tensor,
+            mask: torch.Tensor,
+    ) -> Optional[torch.Tensor]:
         tensor = tensor.clone().float()
         values = tensor.masked_select(mask)
         mean, std = values.mean(), values.std()

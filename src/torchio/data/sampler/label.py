@@ -1,12 +1,15 @@
-from typing import Dict, Optional
+from typing import Dict
+from typing import Optional
 
-import torch
 import numpy as np
+import numpy.typing as npt
+import torch
 
-from ...data.image import LabelMap
+from ...constants import LABEL
+from ...constants import TYPE
+from ...data.image import Image
 from ...data.subject import Subject
 from ...typing import TypeSpatialShape
-from ...constants import TYPE, LABEL
 from .weighted import WeightedSampler
 
 
@@ -66,7 +69,7 @@ class LabelSampler(WeightedSampler):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
 
-    def get_probability_map_image(self, subject: Subject) -> LabelMap:
+    def get_probability_map_image(self, subject: Subject) -> Image:
         if self.probability_map_name is None:
             for image in subject.get_images(intensity_only=False):
                 if image[TYPE] == LABEL:
@@ -105,7 +108,7 @@ class LabelSampler(WeightedSampler):
     def get_probabilities_from_label_map(
             label_map: torch.Tensor,
             label_probabilities_dict: Dict[int, float],
-            patch_size: np.ndarray,
+            patch_size: npt.NDArray[np.uint],
     ) -> torch.Tensor:
         """Create probability map according to label map probabilities."""
         patch_size = patch_size.astype(int)

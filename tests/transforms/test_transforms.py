@@ -1,10 +1,12 @@
 import copy
-import torch
-import pytest
-import numpy as np
-import torchio as tio
+
 import nibabel as nib
+import numpy as np
+import pytest
 import SimpleITK as sitk
+import torch
+import torchio as tio
+
 from ..utils import TorchioTestCase
 
 

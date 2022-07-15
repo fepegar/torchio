@@ -1,8 +1,9 @@
-import numpy as np
 import nibabel as nib
+import numpy as np
 
 from ....data.subject import Subject
-from .bounds_transform import BoundsTransform, TypeBounds
+from .bounds_transform import BoundsTransform
+from .bounds_transform import TypeBounds
 
 
 class Crop(BoundsTransform):
@@ -36,9 +37,10 @@ class Crop(BoundsTransform):
     ):
         super().__init__(cropping, **kwargs)
         self.cropping = cropping
-        self.args_names = ('cropping',)
+        self.args_names = ['cropping']
 
     def apply_transform(self, sample) -> Subject:
+        assert self.bounds_parameters is not None
         low = self.bounds_parameters[::2]
         high = self.bounds_parameters[1::2]
         index_ini = low

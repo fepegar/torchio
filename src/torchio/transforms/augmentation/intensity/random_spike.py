@@ -1,12 +1,16 @@
 from collections import defaultdict
-from typing import Tuple, Union, Dict
+from numbers import Number
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
+import torch
 
-from ....data.subject import Subject
-from ... import IntensityTransform, FourierTransform
 from .. import RandomTransform
+from ... import FourierTransform
+from ... import IntensityTransform
+from ....data.subject import Subject
 
 
 class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
@@ -47,12 +51,12 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
         self.intensity_range = self._parse_range(
             intensity, 'intensity_range',
         )
-        self.num_spikes_range = self._parse_range(
+        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: E501
             num_spikes, 'num_spikes', min_constraint=0, type_constraint=int,
         )
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments = defaultdict(dict)
+        arguments: Dict[str, dict] = defaultdict(dict)
         for image_name in self.get_images_dict(subject):
             spikes_positions_param, intensity_param = self.get_params(
                 self.num_spikes_range,
@@ -62,6 +66,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             arguments['intensity'][image_name] = intensity_param
         transform = Spike(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(
@@ -70,10 +75,10 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             intensity_range: Tuple[float, float],
     ) -> Tuple[np.ndarray, float]:
         ns_min, ns_max = num_spikes_range
-        num_spikes_param = torch.randint(ns_min, ns_max + 1, (1,)).item()
+        num_spikes_param = int(torch.randint(ns_min, ns_max + 1, (1,)).item())
         intensity_param = self.sample_uniform(*intensity_range)
         spikes_positions = torch.rand(num_spikes_param, 3).numpy()
-        return spikes_positions, intensity_param.item()
+        return spikes_positions, intensity_param
 
 
 class Spike(IntensityTransform, FourierTransform):
@@ -103,7 +108,7 @@ class Spike(IntensityTransform, FourierTransform):
         super().__init__(**kwargs)
         self.spikes_positions = spikes_positions
         self.intensity = intensity
-        self.args_names = 'spikes_positions', 'intensity'
+        self.args_names = ['spikes_positions', 'intensity']
         self.invert_transform = False
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -112,12 +117,14 @@ class Spike(IntensityTransform, FourierTransform):
         for image_name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
                 spikes_positions = self.spikes_positions[image_name]
+                assert isinstance(self.intensity, dict)
                 intensity = self.intensity[image_name]
             transformed_tensors = []
             for channel in image.data:
+                assert isinstance(intensity, Number)
                 transformed_tensor = self.add_artifact(
                     channel,
-                    spikes_positions,
+                    np.asarray(spikes_positions),
                     intensity,
                 )
                 transformed_tensors.append(transformed_tensor)

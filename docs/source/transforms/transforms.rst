@@ -76,12 +76,14 @@ Reproducibility
 ---------------
 
 When transforms are instantiated, we typically need to pass values that will be
-used to sample the transform parameters when the :meth:`~torchio.transforms.Transform.__call__` method of the
-transform is called, i.e., when the transform instance is called.
+used to sample the transform parameters when the
+:meth:`~torchio.transforms.Transform.__call__` method of the transform is
+called, i.e., when the transform instance is called.
 
 All random transforms have a corresponding deterministic class, that can be
-applied again to obtain exactly the same result. The :class:`~torchio.Subject` class
-contains some convenient methods to reproduce transforms::
+applied again to obtain exactly the same result.
+The :class:`~torchio.Subject` class contains some convenient methods to
+reproduce transforms::
 
     >>> import torchio as tio
     >>> subject = tio.datasets.FPG()
@@ -110,14 +112,14 @@ contains some convenient methods to reproduce transforms::
 Invertibility
 -------------
 
-Inverting transforms can be especially useful in scenarios in which one needs to
-apply some transformation, infer a segmentation on the transformed data and
+Inverting transforms can be especially useful in scenarios in which one needs
+to apply some transformation, infer a segmentation on the transformed data and
 apply the inverse transform to the inference in order to bring it back to the
 original space.
 
 This is particularly useful, for example, for
 `test-time augmentation <https://www.nature.com/articles/s41598-020-61808-3>`_
-or `aleatoric uncertainty estimation <https://www.sciencedirect.com/science/article/pii/S0925231219301961>`_.
+or `aleatoric uncertainty estimation <https://www.sciencedirect.com/science/article/pii/S0925231219301961>`_::
 
     >>> import torchio as tio
     >>> # Mock a segmentation CNN
@@ -139,8 +141,8 @@ or `aleatoric uncertainty estimation <https://www.sciencedirect.com/science/arti
 Transforms can be classified in three types, according to their degree of
 invertibility:
 
-- Lossless: transforms that can be inverted with no loss of information, such as
-  :class:`~torchio.transforms.RandomFlip`,
+- Lossless: transforms that can be inverted with no loss of information,
+  such as :class:`~torchio.transforms.RandomFlip`,
   :class:`~torchio.transforms.Pad`,
   or :class:`~torchio.transforms.RandomNoise`.
 
@@ -151,8 +153,9 @@ invertibility:
 - Impossible: transforms that cannot be inverted, such as
   :class:`~torchio.transforms.RandomBlur`.
 
-Non-invertible transforms will be ignored by the :meth:`~torchio.Subject.apply_inverse_transform`
-method of :class:`~torchio.Subject`.
+Non-invertible transforms will be ignored by the
+:meth:`~torchio.Subject.apply_inverse_transform` method of
+:class:`~torchio.Subject`.
 
 
 .. _Interpolation:

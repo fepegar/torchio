@@ -1,18 +1,21 @@
 import warnings
 from numbers import Number
-from typing import Tuple, Union, Sequence
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-import torch
 import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ....utils import to_tuple
+from .. import RandomTransform
+from ... import SpatialTransform
+from ....data.image import ScalarImage
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
-from ....data.image import ScalarImage
-from ....typing import TypeTripletInt, TypeTripletFloat
-from ... import SpatialTransform
-from .. import RandomTransform
+from ....typing import TypeTripletFloat
+from ....typing import TypeTripletInt
+from ....utils import to_tuple
 
 
 SPLINE_ORDER = 3
@@ -129,9 +132,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
-        _parse_num_control_points(self.num_control_points)
+        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: E501
         self.max_displacement = to_tuple(max_displacement, length=3)
-        _parse_max_displacement(self.max_displacement)
+        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: E501
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
             raise ValueError('locked_borders must be 0, 1, or 2')
@@ -176,8 +179,8 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         subject.check_consistent_spatial_shape()
         control_points = self.get_params(
-            self.num_control_points,
-            self.max_displacement,
+            self.num_control_points,  # type: ignore[arg-type]
+            self.max_displacement,  # type: ignore[arg-type]
             self.num_locked_borders,
         )
 
@@ -190,6 +193,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
 
         transform = ElasticDeformation(**self.add_include_exclude(arguments))
         transformed = transform(subject)
+        assert isinstance(transformed, Subject)
         return transformed
 
 
@@ -223,12 +227,12 @@ class ElasticDeformation(SpatialTransform):
             label_interpolation,
         )
         self.invert_transform = False
-        self.args_names = (
+        self.args_names = [
             'control_points',
             'image_interpolation',
             'label_interpolation',
             'max_displacement',
-        )
+        ]
 
     def get_bspline_transform(
             self,
@@ -298,7 +302,7 @@ class ElasticDeformation(SpatialTransform):
             bspline_transform = self.get_bspline_transform(image)
             self.parse_free_form_transform(
                 bspline_transform,
-                self.max_displacement,
+                self.max_displacement,  # type: ignore[arg-type]
             )
             interpolator = self.get_sitk_interpolator(interpolation)
             resampler = sitk.ResampleImageFilter()

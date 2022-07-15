@@ -1,14 +1,19 @@
-from typing import Optional, Sequence, Union
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
-import torch
-import numpy as np
 import nibabel as nib
+import numpy as np
 import SimpleITK as sitk
+import torch
 
-from ..typing import TypeData
+from ..data.image import Image
+from ..data.image import LabelMap
+from ..data.image import ScalarImage
+from ..data.io import nib_to_sitk
+from ..data.io import sitk_to_nib
 from ..data.subject import Subject
-from ..data.image import Image, LabelMap, ScalarImage
-from ..data.io import nib_to_sitk, sitk_to_nib
+from ..typing import TypeData
 
 
 TypeTransformInput = Union[
@@ -116,7 +121,7 @@ class DataParser:
             raise ValueError(message)
         return self._get_subject_from_tensor(data)
 
-    def _get_subject_from_tensor(self, tensor: torch.Tensor) -> Subject:
+    def _get_subject_from_tensor(self, tensor: TypeData) -> Subject:
         image = ScalarImage(tensor=tensor)
         return self._get_subject_from_image(image)
 
@@ -131,7 +136,7 @@ class DataParser:
             label_keys: Optional[Sequence[str]] = None,
     ) -> Subject:
         subject_dict = {}
-        label_keys = {} if label_keys is None else label_keys
+        label_keys = [] if label_keys is None else label_keys
         for key, value in data.items():
             if key in image_keys:
                 class_ = LabelMap if key in label_keys else ScalarImage

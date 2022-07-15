@@ -2,12 +2,12 @@ import warnings
 
 import numpy as np
 
-from ....utils import to_tuple
+from ... import SpatialTransform
 from ....data.subject import Subject
 from ....typing import TypeSpatialShape
-from ... import SpatialTransform
-from .resample import Resample
+from ....utils import to_tuple
 from .crop_or_pad import CropOrPad
+from .resample import Resample
 
 
 class Resize(SpatialTransform):
@@ -43,11 +43,11 @@ class Resize(SpatialTransform):
         self.label_interpolation = self.parse_interpolation(
             label_interpolation,
         )
-        self.args_names = (
+        self.args_names = [
             'target_shape',
             'image_interpolation',
             'label_interpolation',
-        )
+        ]
 
     def apply_transform(self, subject: Subject) -> Subject:
         shape_in = np.asarray(subject.spatial_shape)
@@ -62,6 +62,7 @@ class Resize(SpatialTransform):
             label_interpolation=self.label_interpolation,
         )
         resampled = resample(subject)
+        assert isinstance(resampled, Subject)
         # Sometimes, the output shape is one voxel too large
         # Probably because Resample uses np.ceil to compute the shape
         if not resampled.spatial_shape == tuple(shape_out):
@@ -70,6 +71,7 @@ class Resize(SpatialTransform):
                 f' != target shape {tuple(shape_out)}. Fixing with CropOrPad'
             )
             warnings.warn(message)
-            crop_pad = CropOrPad(shape_out)
+            crop_pad = CropOrPad(shape_out)  # type: ignore[arg-type]
             resampled = crop_pad(resampled)
+        assert isinstance(resampled, Subject)
         return resampled

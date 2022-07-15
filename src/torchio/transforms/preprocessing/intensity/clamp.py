@@ -1,6 +1,8 @@
-from torchio.data.image import ScalarImage
 from typing import Optional
+
 import torch
+
+from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ...intensity_transform import IntensityTransform
 
@@ -43,10 +45,11 @@ class Clamp(IntensityTransform):
     ):
         super().__init__(**kwargs)
         self.out_min, self.out_max = out_min, out_max
-        self.args_names = 'out_min', 'out_max'
+        self.args_names = ['out_min', 'out_max']
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
+            assert isinstance(image, ScalarImage)
             self.apply_clamp(image)
         return subject
 

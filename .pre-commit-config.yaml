@@ -9,16 +9,16 @@ repos:
       - id: check-builtin-literals     # Require literal syntax when initializing empty or zero Python builtin types
       - id: check-docstring-first      # Checks a common error of defining a docstring after code
       - id: check-merge-conflict       # Check for files that contain merge conflict strings
+      - id: check-toml                 # Attempts to load all TOML files to verify syntax
+      - id: check-yaml                 # Attempts to load all yaml files to verify syntax
       - id: check-vcs-permalinks       # Ensures that links to vcs websites are permalinks
       - id: debug-statements           # Check for debugger imports and py37+ `breakpoint()` calls in python source
       - id: detect-private-key         # Detects the presence of private keys
-      - id: double-quote-string-fixer  # Replaces double quoted strings with single quoted strings.
+      - id: double-quote-string-fixer  # Replaces double quoted strings with single quoted strings
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # This hook trims trailing whitespace
         exclude: setup.cfg
-      - id: file-contents-sorter       # Sort the lines in specified files
-        files: .*requirements.*\.txt$
 
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
@@ -49,16 +49,34 @@ repos:
     - id: add-trailing-comma
 
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0  # Use the ref you want to point at
+    rev: v1.9.0
     hooks:
-      - id: python-check-blanket-noqa  # enforce that noqa annotations always occur with specific codes
-      - id: python-no-log-warn  # check for the deprecated .warn() method of python loggers
-      - id: python-use-type-annotations  # enforce that type annotations are used instead of type comments
-      - id: rst-backticks  # detect common mistake of using single backticks when writing rst
-      # - id: rst-inline-touching-normal  # detect mistake of inline code touching normal text in rst
+      - id: python-check-blanket-noqa         # enforce that noqa annotations always occur with specific codes
+      - id: python-check-blanket-type-ignore  # enforce that # type: ignore annotations always occur with specific codes
+      - id: python-no-log-warn                # check for the deprecated .warn() method of python loggers
+      - id: python-use-type-annotations       # enforce that type annotations are used instead of type comments
+      - id: rst-backticks                     # detect common mistake of using single backticks when writing rst
+      - id: rst-directive-colons              # detect mistake of rst directive not ending with double colon
+      - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.34.0
+    rev: v2.37.1
     hooks:
       - id: pyupgrade
-        args: ['--py37-plus']
+        args: ['--py37-plus', '--keep-runtime-typing']
+
+  - repo: https://github.com/asottile/setup-cfg-fmt
+    rev: v1.20.1
+    hooks:
+    - id: setup-cfg-fmt
+
+  - repo: https://github.com/PyCQA/doc8
+    rev: 0.11.2
+    hooks:
+    - id: doc8
+
+# The following hook constantly conflicts with the pre-commit CI bot
+  # - repo: https://github.com/asottile/reorder_python_imports
+  #   rev: v3.3.0
+  #   hooks:
+  #   - id: reorder-python-imports
