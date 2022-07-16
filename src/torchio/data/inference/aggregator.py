@@ -197,6 +197,7 @@ class GridAggregator:
             if self._output_tensor.dtype != torch.float32:
                 self._output_tensor = self._output_tensor.float()
 
+            assert isinstance(self._avgmask_tensor, torch.Tensor)  # for mypy
             if self._avgmask_tensor.dtype != torch.float32:
                 self._avgmask_tensor = self._avgmask_tensor.float()
 
@@ -228,6 +229,7 @@ class GridAggregator:
             warnings.warn(message, RuntimeWarning)
             self._output_tensor = self._output_tensor.type(torch.int32)
         if self.overlap_mode in ['average', 'hann']:
+            assert isinstance(self._avgmask_tensor, torch.Tensor)  # for mypy
             # true_divide is used instead of / in case the PyTorch version is
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526
