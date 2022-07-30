@@ -17,6 +17,7 @@ from .mni import ICBM2009CNonlinearSymmetric
 from .mni import Pediatric
 from .mni import Sheep
 from .rsna_miccai import RSNAMICCAI
+from .rsna_spine_fracture import RSNACervicalSpineFracture
 from .slicer import Slicer
 from .visible_human import VisibleFemale
 from .visible_human import VisibleMale
@@ -29,6 +30,7 @@ __all__ = [
     'IXI',
     'IXITiny',
     'RSNAMICCAI',
+    'RSNACervicalSpineFracture',
     'EPISURG',
     'BrainTumor',
     'T1T2',
