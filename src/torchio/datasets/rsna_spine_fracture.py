@@ -1,16 +1,21 @@
 from pathlib import Path
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 from types import ModuleType
 
+from .. import Image
 from .. import LabelMap
 from .. import ScalarImage
 from .. import Subject
 from .. import SubjectsDataset
 from ..typing import TypePath
 from ..utils import normalize_path
+
+
+TypeBoxes = List[Dict[str, Union[str, float, int]]]
 
 
 class RSNACervicalSpineFracture(SubjectsDataset):
@@ -122,11 +127,13 @@ class RSNACervicalSpineFracture(SubjectsDataset):
 
     def _get_subject(
         self,
-        subject_dict: Dict[str, Union[str, int]],
+        csv_row_dict: Dict[str, Union[str, int]],
         image_dir: Path,
         seg_path: Optional[Path],
-        boxes: List[Dict[str, Union[str, float, int]]],
+        boxes: TypeBoxes,
     ) -> Subject:
+        subject_dict: Dict[str, Any] = {}
+        subject_dict.update(csv_row_dict)
         subject_dict['ct'] = ScalarImage(image_dir)
         if seg_path is not None:
             subject_dict['seg'] = LabelMap(seg_path)
