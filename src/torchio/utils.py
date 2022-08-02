@@ -366,3 +366,7 @@ def parse_spatial_shape(shape):
         )
         raise ValueError(message)
     return result
+
+
+def normalize_path(path: TypePath):
+    return Path(path).expanduser().resolve()
