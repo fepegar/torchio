@@ -6,7 +6,6 @@ from typing import Optional
 from typing import Union
 from types import ModuleType
 
-from .. import Image
 from .. import LabelMap
 from .. import ScalarImage
 from .. import Subject
@@ -34,14 +33,12 @@ class RSNACervicalSpineFracture(SubjectsDataset):
     def __init__(
         self,
         root_dir: TypePath,
-        train: bool = True,
         add_segmentations: bool = False,
         add_bounding_boxes: bool = False,
         **kwargs,
     ):
         self.root_dir = normalize_path(root_dir)
         subjects = self._get_subjects(
-            train,
             add_segmentations,
             add_bounding_boxes,
         )
@@ -64,7 +61,6 @@ class RSNACervicalSpineFracture(SubjectsDataset):
 
     def _get_subjects(
         self,
-        train: bool,
         add_segmentations: bool,
         add_bounding_boxes: bool,
     ) -> List[Subject]:
@@ -72,41 +68,40 @@ class RSNACervicalSpineFracture(SubjectsDataset):
         pd = get_pandas()
         from tqdm.auto import tqdm
 
-        if train:
-            train_dir = self.root_dir / 'train_images'
-            image_dirs_dict = self._get_image_dirs_dict(train_dir)
+        split_name = 'train'
+        images_dirname = f'{split_name}_images'
+        images_dir = self.root_dir / images_dirname
+        image_dirs_dict = self._get_image_dirs_dict(images_dir)
 
-            segmentations_dir = self.root_dir / 'segmentations'
-            seg_paths_dict = self._get_segs_paths_dict(segmentations_dir)
+        segmentations_dir = self.root_dir / 'segmentations'
+        seg_paths_dict = self._get_segs_paths_dict(segmentations_dir)
 
-            bboxes_path = self.root_dir / 'train_bounding_boxes.csv'
-            bounding_boxes_df = pd.read_csv(bboxes_path)
-            grouped_boxes = bounding_boxes_df.groupby(self.UID)
+        bboxes_path = self.root_dir / 'train_bounding_boxes.csv'
+        bounding_boxes_df = pd.read_csv(bboxes_path)
+        grouped_boxes = bounding_boxes_df.groupby(self.UID)
 
-            train_df = pd.read_csv(self.root_dir / 'train.csv')
-            for _, row in tqdm(list(train_df.iterrows())):
-                uid = row[self.UID]
-                image_dir = image_dirs_dict[uid]
-                if add_segmentations:
-                    seg_path = seg_paths_dict.get(uid, None)
-                else:
-                    seg_path = None
-                boxes = []
-                if add_bounding_boxes:
-                    try:
-                        boxes_df = grouped_boxes.get_group(uid)
-                        boxes = [dict(row) for _, row in boxes_df.iterrows()]
-                    except KeyError:
-                        pass
-                subject = self._get_subject(
-                    dict(row),
-                    image_dir,
-                    seg_path,
-                    boxes,
-                )
-                subjects.append(subject)
-        else:
-            raise NotImplementedError
+        df = pd.read_csv(self.root_dir / f'{split_name}.csv')
+
+        for _, row in tqdm(list(df.iterrows())):
+            uid = row[self.UID]
+            image_dir = image_dirs_dict[uid]
+            seg_path = None
+            if add_segmentations:
+                seg_path = seg_paths_dict.get(uid, None)
+            boxes = []
+            if add_bounding_boxes:
+                try:
+                    boxes_df = grouped_boxes.get_group(uid)
+                    boxes = [dict(row) for _, row in boxes_df.iterrows()]
+                except KeyError:
+                    pass
+            subject = self._get_subject(
+                dict(row),
+                image_dir,
+                seg_path,
+                boxes,
+            )
+            subjects.append(subject)
         return subjects
 
     @staticmethod
