@@ -71,3 +71,38 @@ class TestQueue(TorchioTestCase):
         queue = self.run_queue()
         memory_string = queue.get_max_memory_pretty()
         assert isinstance(memory_string, str)
+
+    def test_queue_order(self):
+        for i in range(len(self.subjects_list)):
+            self.subjects_list[i]['ID'] = i
+        subjects_dataset = tio.SubjectsDataset(self.subjects_list)
+        patch_size = 10
+        sampler = UniformSampler(patch_size)
+        queue_dataset = tio.Queue(
+            subjects_dataset,
+            max_length=6,
+            samples_per_volume=1,
+            sampler=sampler,
+            num_workers=2,
+            shuffle_subjects=False,
+            shuffle_patches=False
+        )
+        batch_loader = DataLoader(queue_dataset, batch_size=3, shuffle=False, num_workers=0, drop_last=False)
+        self.assertEqual(list(range(len(queue_dataset))),
+                         [x['ID'] for x in subjects_dataset])
+        queue_dataset.patches_list.clear()
+        queue_dataset._initialize_subjects_iterable()
+        sequential_idlist = []
+        for i, mb in enumerate(queue_dataset):
+            if i == len(subjects_dataset):
+                break
+            sequential_idlist.append(mb['ID'])
+        self.assertEqual(list(range(len(subjects_dataset))),
+                         sequential_idlist)
+        queue_dataset.patches_list.clear()
+        queue_dataset._initialize_subjects_iterable()
+        sequential_idlist = []
+        for mb in batch_loader:
+            sequential_idlist.extend(mb['ID'])
+        self.assertEqual(list(range(len(subjects_dataset))),
+                         sequential_idlist)
