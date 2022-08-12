@@ -171,7 +171,7 @@ class Queue(Dataset):
         if not self.patches_list:
             self._print('Patches list is empty.')
             self._fill()
-        sample_patch = self.patches_list.pop()
+        sample_patch = self.patches_list.pop(0)
         self.num_sampled_patches += 1
         return sample_patch
 
