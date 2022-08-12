@@ -85,11 +85,13 @@ class TestQueue(TorchioTestCase):
             sampler=sampler,
             num_workers=2,
             shuffle_subjects=False,
-            shuffle_patches=False
+            shuffle_patches=False,
         )
         batch_loader = DataLoader(queue_dataset, batch_size=3, shuffle=False, num_workers=0, drop_last=False)
-        self.assertEqual(list(range(len(queue_dataset))),
-                         [x['ID'] for x in subjects_dataset])
+        self.assertEqual(
+            list(range(len(queue_dataset))),
+            [x['ID'] for x in subjects_dataset],
+        )
         queue_dataset.patches_list.clear()
         queue_dataset._initialize_subjects_iterable()
         sequential_idlist = []
@@ -97,12 +99,16 @@ class TestQueue(TorchioTestCase):
             if i == len(subjects_dataset):
                 break
             sequential_idlist.append(mb['ID'])
-        self.assertEqual(list(range(len(subjects_dataset))),
-                         sequential_idlist)
+        self.assertEqual(
+            list(range(len(subjects_dataset))),
+            sequential_idlist,
+        )
         queue_dataset.patches_list.clear()
         queue_dataset._initialize_subjects_iterable()
         sequential_idlist = []
         for mb in batch_loader:
             sequential_idlist.extend(mb['ID'])
-        self.assertEqual(list(range(len(subjects_dataset))),
-                         sequential_idlist)
+        self.assertEqual(
+            list(range(len(subjects_dataset))),
+            sequential_idlist,
+        )
