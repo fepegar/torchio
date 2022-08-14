@@ -92,7 +92,7 @@ class TestQueue(TorchioTestCase):
             batch_size=3,
             shuffle=False,
             num_workers=0,
-            drop_last=False
+            drop_last=False,
         )
         self.assertEqual(
             list(range(len(queue_dataset))),
