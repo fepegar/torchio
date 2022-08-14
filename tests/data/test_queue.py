@@ -87,7 +87,13 @@ class TestQueue(TorchioTestCase):
             shuffle_subjects=False,
             shuffle_patches=False,
         )
-        batch_loader = DataLoader(queue_dataset, batch_size=3, shuffle=False, num_workers=0, drop_last=False)
+        batch_loader = DataLoader(
+            queue_dataset,
+            batch_size=3,
+            shuffle=False,
+            num_workers=0,
+            drop_last=False
+        )
         self.assertEqual(
             list(range(len(queue_dataset))),
             [x['ID'] for x in subjects_dataset],
