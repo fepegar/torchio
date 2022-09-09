@@ -26,7 +26,7 @@ repos:
       - id: flake8
         additional_dependencies: [
           flake8-blind-except,      # check for blind, catch-all "except:" statements
-          flake8-broken-line,       # forbid backslashes for line breaks
+          # flake8-broken-line,       # forbid backslashes for line breaks
           flake8-bugbear,           # find likely bugs and design problems
           flake8-builtins,          # check for python builtins being used as variables or parameters
           flake8-class-newline,     # lint for newline after class definitions
