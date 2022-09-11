@@ -348,7 +348,7 @@ def sitk_to_nib(
         data = data.transpose(3, 0, 1, 2)
         input_spatial_dims = 3
     if not keepdim:
-        data = ensure_4d(data, num_spatial_dims=input_spatial_dims)
+        data = ensure_4d(data, num_spatial_dims=input_spatial_dims).numpy()
     assert data.shape[0] == num_components
     affine = get_ras_affine_from_sitk(image)
     return data, affine
@@ -413,7 +413,7 @@ def get_sitk_metadata_from_ras_affine(
     return origin, spacing, direction
 
 
-def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> TypeData:
+def ensure_4d(tensor: TypeData, num_spatial_dims=None) -> torch.Tensor:
     # I wish named tensors were properly supported in PyTorch
     tensor = torch.as_tensor(tensor)
     num_dimensions = tensor.ndim
