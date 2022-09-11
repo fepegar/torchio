@@ -24,3 +24,13 @@ class TestPad(TorchioTestCase):
         padded = tio.Pad(1, padding_mode=2)(self.sample_subject)
         again = padded.history[0](self.sample_subject)
         assert not torch.isnan(again.t1.data).any()
+
+    def test_padding_modes(self):
+        def padding_func():
+            return
+
+        for padding_mode in [0, *tio.Pad.PADDING_MODES, padding_func]:
+            tio.Pad(0, padding_mode=padding_mode)
+
+        with self.assertRaises(KeyError):
+            tio.Pad(0, padding_mode='abc')
