@@ -11,7 +11,7 @@ class FourierTransform:
             transformed = torch.fft.fftn(tensor)
             fshift = torch.fft.fftshift(transformed)
             return fshift
-        except ModuleNotFoundError:
+        except (ModuleNotFoundError, AttributeError):
             import torch
             transformed = np.fft.fftn(tensor)
             fshift = np.fft.fftshift(transformed)
@@ -24,7 +24,7 @@ class FourierTransform:
             f_ishift = torch.fft.ifftshift(tensor)
             img_back = torch.fft.ifftn(f_ishift)
             return img_back
-        except ModuleNotFoundError:
+        except (ModuleNotFoundError, AttributeError):
             import torch
             f_ishift = np.fft.ifftshift(tensor)
             img_back = np.fft.ifftn(f_ishift)
