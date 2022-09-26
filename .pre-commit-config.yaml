@@ -21,7 +21,7 @@ repos:
         exclude: setup.cfg
 
   - repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
+    rev: 5.0.4
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -44,7 +44,7 @@ repos:
         ]
 
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.2.3
+    rev: v2.3.0
     hooks:
     - id: add-trailing-comma
 
@@ -60,7 +60,7 @@ repos:
       - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.3
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         args: ['--py37-plus', '--keep-runtime-typing']
