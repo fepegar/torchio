@@ -247,3 +247,17 @@ class TestImage(TorchioTestCase):
         np.save(test_path, tensor)
         image = tio.ScalarImage(test_path, reader=numpy_reader)
         image.load()
+
+    def test_load_unload(self):
+        path = self.get_image_path('unload')
+        image = tio.ScalarImage(path)
+        with self.assertRaises(RuntimeError):
+            image.unload()
+        image.load()
+        image.unload()
+
+    def test_unload_no_path(self):
+        tensor = torch.rand(1, 2, 3, 4)
+        image = tio.ScalarImage(tensor=tensor)
+        with self.assertRaises(RuntimeError):
+            image.unload()

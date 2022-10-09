@@ -561,6 +561,25 @@ class Image(dict):
         self.affine = affine
         self._loaded = True
 
+    def unload(self) -> None:
+        """Unload the image from memory.
+
+        Raises:
+            RuntimeError: If the images has not been loaded yet or if no path
+                is available.
+        """
+        if not self._loaded:
+            raise RuntimeError('Image cannot be unloaded as it is not loaded')
+        if self.path is None:
+            message = (
+                'Cannot unload image as no path is available'
+                ' from where the image could be loaded again'
+            )
+            raise RuntimeError(message)
+        self[DATA] = None
+        self[AFFINE] = None
+        self._loaded = False
+
     def read_and_check(self, path: TypePath) -> TypeDataAffine:
         tensor, affine = self.reader(path)
         # Make sure the data type is compatible with PyTorch

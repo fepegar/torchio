@@ -369,6 +369,11 @@ class Subject(dict):
         for image in self.get_images(intensity_only=False):
             image.load()
 
+    def unload(self) -> None:
+        """Unload images in subject."""
+        for image in self.get_images(intensity_only=False):
+            image.unload()
+
     def update_attributes(self) -> None:
         # This allows to get images using attribute notation, e.g. subject.t1
         self.__dict__.update(self)
