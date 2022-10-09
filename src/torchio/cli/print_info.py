@@ -34,7 +34,6 @@ def main(
 ):
     """Print information about an image and, optionally, show it.
 
-    \b
     Example:
     $ tiohd input.nii.gz
     """
