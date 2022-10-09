@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import torch
 from torchio import LabelMap
 from torchio import ScalarImage
@@ -49,7 +50,7 @@ class TestHistogramStandardization(TorchioTestCase):
         )
 
     def test_bad_paths_lengths(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             HistogramStandardization.train(
                 [1, 2],
                 mask_path=[1, 2, 3],
@@ -65,7 +66,7 @@ class TestHistogramStandardization(TorchioTestCase):
         landmarks = np.linspace(0, 100, 13)
         landmarks_dict = {'wrong_key': landmarks}
         transform = HistogramStandardization(landmarks_dict)
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             transform(self.dataset[0])
 
     def test_with_saved_dict(self):

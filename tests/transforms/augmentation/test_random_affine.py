@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -32,7 +33,7 @@ class TestRandomAffine(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
         total = transformed.t1.data.sum()
-        self.assertEqual(total, 0)
+        assert total == 0
 
     def test_no_rotation(self):
         transform = tio.RandomAffine(
@@ -42,7 +43,7 @@ class TestRandomAffine(TorchioTestCase):
             center='image',
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(
+        self.assert_tensor_almost_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
         )
@@ -55,7 +56,7 @@ class TestRandomAffine(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
         transformed = transform(transformed)
-        self.assertTensorAlmostEqual(
+        self.assert_tensor_almost_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
         )
@@ -70,60 +71,60 @@ class TestRandomAffine(TorchioTestCase):
         tio.RandomAffine(default_pad_value='otsu')(self.sample_subject)
 
     def test_bad_center(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(center='bad')
 
     def test_negative_scales(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(scales=(-1, 1))
 
     def test_scale_too_large(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(scales=1.5)
 
     def test_scales_range_with_negative_min(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(scales=(-1, 4))
 
     def test_wrong_scales_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(scales='wrong')
 
     def test_wrong_degrees_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(degrees='wrong')
 
     def test_too_many_translation_values(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(translation=(-10, 4, 42))
 
     def test_wrong_translation_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(translation='wrong')
 
     def test_wrong_center(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(center=0)
 
     def test_wrong_default_pad_value(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(default_pad_value='wrong')
 
     def test_wrong_image_interpolation_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.RandomAffine(image_interpolation=0)
 
     def test_wrong_image_interpolation_value(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(image_interpolation='wrong')
 
     def test_incompatible_args_isotropic(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomAffine(scales=(0.8, 0.5, 0.1), isotropic=True)
 
     def test_parse_scales(self):
         def do_assert(transform):
-            self.assertEqual(transform.scales, 3 * (0.9, 1.1))
+            assert transform.scales == 3 * (0.9, 1.1)
         do_assert(tio.RandomAffine(scales=0.1))
         do_assert(tio.RandomAffine(scales=(0.9, 1.1)))
         do_assert(tio.RandomAffine(scales=3 * (0.1,)))
@@ -131,7 +132,7 @@ class TestRandomAffine(TorchioTestCase):
 
     def test_parse_degrees(self):
         def do_assert(transform):
-            self.assertEqual(transform.degrees, 3 * (-10, 10))
+            assert transform.degrees == 3 * (-10, 10)
         do_assert(tio.RandomAffine(degrees=10))
         do_assert(tio.RandomAffine(degrees=(-10, 10)))
         do_assert(tio.RandomAffine(degrees=3 * (10,)))
@@ -139,7 +140,7 @@ class TestRandomAffine(TorchioTestCase):
 
     def test_parse_translation(self):
         def do_assert(transform):
-            self.assertEqual(transform.translation, 3 * (-10, 10))
+            assert transform.translation == 3 * (-10, 10)
         do_assert(tio.RandomAffine(translation=10))
         do_assert(tio.RandomAffine(translation=(-10, 10)))
         do_assert(tio.RandomAffine(translation=3 * (10,)))
@@ -167,12 +168,12 @@ class TestRandomAffine(TorchioTestCase):
             translation,
         )
         transformed = apply_affine(tensor)
-        self.assertTensorAlmostEqual(transformed, expected)
+        self.assert_tensor_almost_equal(transformed, expected)
 
     def test_different_spaces(self):
         t1 = self.sample_subject.t1
         label = tio.Resample(2)(self.sample_subject.label)
         new_subject = tio.Subject(t1=t1, label=label)
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.RandomAffine()(new_subject)
         tio.RandomAffine(check_shape=False)(new_subject)

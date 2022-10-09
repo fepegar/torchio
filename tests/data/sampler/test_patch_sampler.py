@@ -1,3 +1,4 @@
+import pytest
 from torchio.data import PatchSampler
 
 from ...utils import TorchioTestCase
@@ -6,11 +7,11 @@ from ...utils import TorchioTestCase
 class TestPatchSampler(TorchioTestCase):
     """Tests for `PatchSampler` class."""
     def test_bad_patch_size(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             PatchSampler(0)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             PatchSampler(-1)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             PatchSampler(1.5)
 
     def test_extract_patch(self):
