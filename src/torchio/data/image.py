@@ -23,6 +23,7 @@ from ..constants import INTENSITY
 from ..constants import LABEL
 from ..constants import PATH
 from ..constants import STEM
+from ..constants import TENSOR
 from ..constants import TYPE
 from ..typing import TypeData
 from ..typing import TypeDataAffine
@@ -204,11 +205,12 @@ class Image(dict):
 
     def __copy__(self):
         kwargs = {
-            'tensor': self.data,
-            'affine': self.affine,
-            'type': self.type,
-            'path': self.path,
+            TYPE: self.type,
+            PATH: self.path,
         }
+        if self._loaded:
+            kwargs[TENSOR] = self.data
+            kwargs[AFFINE] = self.affine
         for key, value in self.items():
             if key in PROTECTED_KEYS:
                 continue
