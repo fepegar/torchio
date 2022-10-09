@@ -253,5 +253,11 @@ class TestImage(TorchioTestCase):
         path = self.get_image_path('im_copy')
         my_image = tio.LabelMap(path)
         assert not my_image._loaded
-        _ = copy.copy(my_image)
+        new_image = copy.copy(my_image)
         assert not my_image._loaded
+        assert not new_image._loaded
+
+        my_image.load()
+        new_image = copy.copy(my_image)
+        assert my_image._loaded
+        assert new_image._loaded
