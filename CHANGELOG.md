@@ -1,8 +1,6 @@
-History
-=======
+# Changelog
 
-0.18.0 (29-11-2020)
--------------------
+## 0.18.0 (29-11-2020)
 
 * Add ``FPG`` dataset
 * Optimize cropping in samplers
@@ -29,8 +27,7 @@ History
 * Add support to pass parameters per axis, e.g. for ``RandomAffine`` (#346)
 * Remove deprecated transforms ``Resample`` and ``CenterCropOrPad``
 
-0.17.0 (23-06-2020)
--------------------
+## 0.17.0 (23-06-2020)
 
 * Add transforms history to ``Subject`` attributes to improve traceability
 * Add support to use an initial transformation in ``Resample``
@@ -54,34 +51,26 @@ History
 * Improve representation (``repr()``) of ``Image``
 * Use lazy loading in ``Image``
 
-
-0.16.0 (21-04-2020)
--------------------
+## 0.16.0 (21-04-2020)
 
 * Add advanced padding options for ``RandomAffine``
 * Add reference space options in ``Resample``
 * Add probability argument to all transforms
 * Add ``OneOf`` and ``Compose`` transforms to improve composability
 
-
-0.15.0 (07-04-2020)
--------------------
+## 0.15.0 (07-04-2020)
 
 * Refactor ``RandomElasticDeformation`` transform
 * Make ``Subject`` inherit from ``dict``
 
-
-0.14.0 (31-03-2020)
--------------------
+## 0.14.0 (31-03-2020)
 
 * Add ``datasets`` module
 * Add support for DICOM files
 * Add documentation
 * Add ``CropOrPad`` transform
 
-
-0.13.0 (24-02-2020)
--------------------
+## 0.13.0 (24-02-2020)
 
 * Add ``Subject`` class
 * Add random blur transform
@@ -89,71 +78,49 @@ History
 * Add random patches swapping transform
 * Add MRI k-space ghosting artefact augmentation
 
-
-0.12.0 (21-01-2020)
--------------------
+## 0.12.0 (21-01-2020)
 
 * Add ToCanonical transform
 * Add CenterCropOrPad transform
 
-
-0.11.0 (15-01-2020)
--------------------
+## 0.11.0 (15-01-2020)
 
 * Add Resample transform
 
-
-0.10.0 (15-01-2020)
--------------------
+## 0.10.0 (15-01-2020)
 
 * Add Pad transform
 * Add Crop transform
 
-
-0.9.0 (14-01-2020)
-------------------
+## 0.9.0 (14-01-2020)
 
 * Add CLI tool to transform an image from file
 
-
-0.8.0 (11-01-2020)
-------------------
+## 0.8.0 (11-01-2020)
 
 * Add Image class
 
-
-0.7.0 (02-01-2020)
-------------------
+## 0.7.0 (02-01-2020)
 
 * Make transforms use PyTorch tensors consistently
 
-
-0.6.0 (02-01-2020)
-------------------
+## 0.6.0 (02-01-2020)
 
 * Add support for NRRD
 
-
-0.5.0 (01-01-2020)
-------------------
+## 0.5.0 (01-01-2020)
 
 * Add bias field transform
 
-
-0.4.0 (29-12-2019)
-------------------
+## 0.4.0 (29-12-2019)
 
 * Add MRI k-space motion artefact augmentation
 
-
-0.3.0 (21-12-2019)
-------------------
+## 0.3.0 (21-12-2019)
 
 * Add Rescale transform
 * Add support for multimodal data and missing modalities
 
-
-0.2.0 (2019-12-06)
-------------------
+## 0.2.0 (2019-12-06)
 
 * First release on PyPI.
