@@ -1,3 +1,4 @@
+import pytest
 from torchio import RandomMotion
 
 from ...utils import TorchioTestCase
@@ -6,7 +7,7 @@ from ...utils import TorchioTestCase
 class TestRandomMotion(TorchioTestCase):
     """Tests for `RandomMotion`."""
     def test_bad_num_transforms_value(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(num_transforms=0)
 
     def test_no_movement(self):
@@ -16,10 +17,11 @@ class TestRandomMotion(TorchioTestCase):
             num_transforms=1,
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(
+        self.assert_tensor_almost_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
-            decimal=4,
+            atol=1e-4,
+            rtol=0,
         )
 
     def test_with_movement(self):
@@ -27,31 +29,31 @@ class TestRandomMotion(TorchioTestCase):
             num_transforms=1,
         )
         transformed = transform(self.sample_subject)
-        self.assertTensorNotEqual(
+        self.assert_tensor_not_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
         )
 
     def test_negative_degrees(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(degrees=-10)
 
     def test_wrong_degrees_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(degrees='wrong')
 
     def test_negative_translation(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(translation=-10)
 
     def test_wrong_translation_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(translation='wrong')
 
     def test_wrong_image_interpolation_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             RandomMotion(image_interpolation=0)
 
     def test_wrong_image_interpolation_value(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             RandomMotion(image_interpolation='wrong')

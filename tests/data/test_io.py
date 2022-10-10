@@ -33,25 +33,25 @@ class TestIO(TorchioTestCase):
 
     def test_save_rgb(self):
         im = ScalarImage(tensor=torch.rand(1, 4, 5, 1))
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             im.save(self.dir / 'test.jpg')
 
     def test_read_dicom_file(self):
         tensor, _ = io.read_image(self.dicom_path)
-        self.assertEqual(tuple(tensor.shape), (1, 88, 128, 1))
+        assert tuple(tensor.shape) == (1, 88, 128, 1)
 
     def test_read_dicom_dir(self):
         tensor, _ = io.read_image(self.dicom_dir)
-        self.assertEqual(tuple(tensor.shape), (1, 88, 128, 17))
+        assert tuple(tensor.shape) == (1, 88, 128, 17)
 
     def test_dicom_dir_missing(self):
-        with self.assertRaises(FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
             io._read_dicom('missing')
 
     def test_dicom_dir_no_files(self):
         empty = self.dir / 'empty'
         empty.mkdir()
-        with self.assertRaises(FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
             io._read_dicom(empty)
 
     def write_read_matrix(self, suffix):
@@ -73,7 +73,7 @@ class TestIO(TorchioTestCase):
 
     def test_ensure_4d_5d_t_gt_1(self):
         tensor = torch.rand(3, 4, 5, 2, 2)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             io.ensure_4d(tensor)
 
     def test_ensure_4d_2d(self):
@@ -102,14 +102,14 @@ class TestIO(TorchioTestCase):
 
     def test_ensure_4d_nd_not_supported(self):
         tensor = torch.rand(1, 2, 3, 4, 5)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             io.ensure_4d(tensor)
 
     def test_sitk_to_nib(self):
         data = np.random.rand(10, 12)
         image = sitk.GetImageFromArray(data)
         tensor, _ = io.sitk_to_nib(image)
-        self.assertAlmostEqual(data.sum(), tensor.sum())
+        assert data.sum() == pytest.approx(tensor.sum())
 
     def test_sitk_to_affine(self):
         spacing = 1, 2, 3
@@ -123,7 +123,7 @@ class TestIO(TorchioTestCase):
         fixture = np.diag((*spacing, 1))
         fixture[:3, 3] = origin_ras
         affine = io.get_ras_affine_from_sitk(image)
-        self.assertTensorAlmostEqual(fixture, affine)
+        self.assert_tensor_almost_equal(fixture, affine)
 
 
 # This doesn't work as a method of the class
@@ -151,11 +151,11 @@ def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
     load_function = getattr(io, f'_read_{save_lib}')
     save_function(tensor, affine, path)
     loaded_tensor, loaded_affine = load_function(path)
-    TorchioTestCase.assertTensorEqual(
+    TorchioTestCase.assert_tensor_equal(
         tensor.squeeze(), loaded_tensor.squeeze(),
-        f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}',
+        msg=f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}',
     )
-    TorchioTestCase.assertTensorEqual(affine, loaded_affine)
+    TorchioTestCase.assert_tensor_equal(affine, loaded_affine)
 
 
 class TestNibabelToSimpleITK(TorchioTestCase):
@@ -165,7 +165,7 @@ class TestNibabelToSimpleITK(TorchioTestCase):
         self.affine = np.eye(4)
 
     def test_wrong_num_dims(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             io.nib_to_sitk(np.random.rand(10, 10), self.affine)
 
     def test_2d_single(self):

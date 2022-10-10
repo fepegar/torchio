@@ -15,8 +15,8 @@ class TestReproducibility(TorchioTestCase):
         with warnings.catch_warnings():  # ignore elastic deformation warning
             warnings.simplefilter('ignore', (RuntimeWarning, UserWarning))
             new_transformed = reproducing_transform(self.sample_subject)
-        self.assertTensorEqual(transformed.t1.data, new_transformed.t1.data)
-        self.assertTensorEqual(
+        self.assert_tensor_equal(transformed.t1.data, new_transformed.t1.data)
+        self.assert_tensor_equal(
             transformed.label.data,
             new_transformed.label.data,
         )

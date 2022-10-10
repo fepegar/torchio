@@ -1,5 +1,6 @@
 import copy
 
+import pytest
 import torch
 import torchio as tio
 
@@ -54,5 +55,5 @@ class TestUtils(TorchioTestCase):
         tio.utils.add_images_from_batch(subjects, preds)
 
     def test_empty_batch(self):
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.utils.get_batch_images_and_size({})

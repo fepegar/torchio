@@ -1,13 +1,14 @@
-from torchio.data.sampler import RandomSampler
+import pytest
+import torchio as tio
 
 from ...utils import TorchioTestCase
 
 
 class TestRandomSampler(TorchioTestCase):
-    """Tests for `RandomSampler` class."""
+
     def test_not_implemented(self):
-        sampler = RandomSampler(1)
-        with self.assertRaises(NotImplementedError):
+        sampler = tio.data.sampler.RandomSampler(1)
+        with pytest.raises(NotImplementedError):
             sampler(self.sample_subject, 5)
-        with self.assertRaises(NotImplementedError):
+        with pytest.raises(NotImplementedError):
             sampler.get_probability_map(self.sample_subject)

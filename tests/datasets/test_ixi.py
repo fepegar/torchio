@@ -1,5 +1,5 @@
-from torchio.datasets import IXI
-from torchio.datasets import IXITiny
+import pytest
+import torchio as tio
 
 from ..utils import TorchioTestCase
 
@@ -8,9 +8,9 @@ class TestIXI(TorchioTestCase):
     """Tests for `ixi` module."""
 
     def test_not_downloaded(self):
-        with self.assertRaises(RuntimeError):
-            IXI('testing123', download=False)
+        with pytest.raises(RuntimeError):
+            tio.datasets.IXI('testing123', download=False)
 
     def test_tiny_not_downloaded(self):
-        with self.assertRaises(RuntimeError):
-            IXITiny('testing123', download=False)
+        with pytest.raises(RuntimeError):
+            tio.datasets.IXITiny('testing123', download=False)

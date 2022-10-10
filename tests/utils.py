@@ -10,10 +10,9 @@ from typing import Sequence
 from typing import Set
 
 import numpy as np
+import pytest
 import torch
 import torchio as tio
-from numpy.testing import assert_array_almost_equal
-from numpy.testing import assert_array_equal
 
 
 class TorchioTestCase(unittest.TestCase):
@@ -209,21 +208,30 @@ class TorchioTestCase(unittest.TestCase):
     def get_tests_data_dir(self):
         return Path(__file__).parent / 'image_data'
 
-    def assertTensorNotEqual(self, *args, **kwargs):  # noqa: N802
-        message_kwarg = {'msg': args[2]} if len(args) == 3 else {}
-        with self.assertRaises(AssertionError, **message_kwarg):
-            self.assertTensorEqual(*args, **kwargs)
+    def assert_tensor_not_equal(self, *args, **kwargs):  # noqa: N802
+        with pytest.raises(AssertionError):
+            self.assert_tensor_equal(*args, **kwargs)
 
     @staticmethod
-    def assertTensorEqual(*args, **kwargs):  # noqa: N802
-        assert_array_equal(*args, **kwargs)
+    def assert_tensor_equal(*args, **kwargs):  # noqa: N802
+        torch.testing.assert_close(
+            *args,
+            rtol=0,
+            atol=0,
+            check_dtype=False,
+            **kwargs,
+        )
 
     @staticmethod
-    def assertTensorAlmostEqual(*args, **kwargs):  # noqa: N802
-        assert_array_almost_equal(*args, **kwargs)
+    def assert_tensor_almost_equal(*args, **kwargs):  # noqa: N802
+        torch.testing.assert_close(
+            *args,
+            **kwargs,
+            check_dtype=False,
+        )
 
     @staticmethod
-    def assertTensorAllZeros(tensor):  # noqa: N802
+    def assert_tensor_all_zeros(tensor):  # noqa: N802
         assert torch.all(tensor == 0)
 
     def get_large_composed_transform(self):

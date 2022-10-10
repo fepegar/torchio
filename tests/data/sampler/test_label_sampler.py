@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -11,7 +12,7 @@ class TestLabelSampler(TorchioTestCase):
         sampler = tio.LabelSampler(5)
         for patch in sampler(self.sample_subject, num_patches=10):
             patch_center = patch['label'][tio.DATA][0, 2, 2, 2]
-            self.assertEqual(patch_center, 1)
+            assert patch_center == 1
 
     def test_label_probabilities(self):
         labels = torch.Tensor((0, 0, 1, 1, 2, 1, 0)).reshape(1, 1, 1, -1)
@@ -64,7 +65,7 @@ class TestLabelSampler(TorchioTestCase):
         im = tio.ScalarImage(tensor=torch.rand(1, 1, 1, 1))
         subject = tio.Subject(image=im, no_label=im)
         sampler = tio.LabelSampler(1)
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             next(sampler(subject))
 
     def test_empty_map(self):
@@ -75,5 +76,5 @@ class TestLabelSampler(TorchioTestCase):
         label_im = tio.LabelMap(tensor=label)
         subject = tio.Subject(image=im, label=label_im)
         sampler = tio.LabelSampler(4)
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             next(sampler(subject))
