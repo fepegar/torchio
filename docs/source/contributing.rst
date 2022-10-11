@@ -1,18 +1,17 @@
 .. highlight:: shell
 
-============
 Contributing
 ============
 
 Contributions are welcome, and they are greatly appreciated! Every little bit
 helps, and credit will always be given.
 
-You can contribute in many ways:
+You can contribute in many ways.
 
-Types of Contributions
+Types of contributions
 ----------------------
 
-Report Bugs
+Report bugs
 ~~~~~~~~~~~
 
 Report bugs
@@ -24,38 +23,39 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
+Fix bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bugs. Anything tagged with "bug" and "help
 wanted" is open to whoever wants to implement it.
 
-Implement Features
+Implement features
 ~~~~~~~~~~~~~~~~~~
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
-Write Documentation
+Write documentation
 ~~~~~~~~~~~~~~~~~~~
 
 TorchIO could always use more documentation, whether as part of the
 official TorchIO docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
-Submit Feedback
+Submit feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/fepegar/torchio/issues.
+The best way to send feedback is to open a discussion at
+https://github.com/fepegar/torchio/discussions.
 
 If you are proposing a feature:
 
 * Explain in detail how it would work.
 * Keep the scope as narrow as possible, to make it easier to implement.
-* Remember that this is a volunteer-driven project, and that contributions
-  are welcome :)
+* Remember that this is a volunteer-driven project, and contributions are
+  welcome :)
 
-Get Started!
+Get started!
 ------------
 
 Ready to contribute? Here's how to set up ``torchio`` for local development.
@@ -66,8 +66,8 @@ Ready to contribute? Here's how to set up ``torchio`` for local development.
 It's good practice to first discuss the proposed changes as the feature might
 already be implemented.
 
-2) Fork the ``torchio`` repo on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2) `Fork <https://github.com/fepegar/torchio/fork>`_ the ``torchio`` repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 3) Clone your fork locally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

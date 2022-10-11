@@ -12,6 +12,7 @@
     datasets
     interfaces/index
     auto_examples/index
+    contributing
     GitHub repository <https://github.com/fepegar/torchio>
     Paper <https://www.sciencedirect.com/science/article/pii/S0169260721003102>
 
