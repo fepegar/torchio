@@ -569,7 +569,8 @@
       "profile": "http://delanover.com",
       "contributions": [
         "ideas",
-        "code"
+        "code",
+        "bug"
       ]
     },
     {
@@ -642,5 +643,6 @@
   "projectOwner": "fepegar",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
