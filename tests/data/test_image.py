@@ -247,3 +247,17 @@ class TestImage(TorchioTestCase):
         np.save(test_path, tensor)
         image = tio.ScalarImage(test_path, reader=numpy_reader)
         image.load()
+
+    def test_copy_no_data(self):
+        # https://github.com/fepegar/torchio/issues/974
+        path = self.get_image_path('im_copy')
+        my_image = tio.LabelMap(path)
+        assert not my_image._loaded
+        new_image = copy.copy(my_image)
+        assert not my_image._loaded
+        assert not new_image._loaded
+
+        my_image.load()
+        new_image = copy.copy(my_image)
+        assert my_image._loaded
+        assert new_image._loaded
