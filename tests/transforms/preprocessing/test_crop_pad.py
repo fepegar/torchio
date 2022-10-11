@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import torchio as tio
 
 from ...utils import TorchioTestCase
@@ -11,8 +12,8 @@ class TestCropOrPad(TorchioTestCase):
         shape = sample_t1.spatial_shape
         transform = tio.CropOrPad(shape)
         transformed = transform(self.sample_subject)
-        self.assertTensorEqual(sample_t1.data, transformed['t1'].data)
-        self.assertTensorEqual(sample_t1.affine, transformed['t1'].affine)
+        self.assert_tensor_equal(sample_t1.data, transformed['t1'].data)
+        self.assert_tensor_equal(sample_t1.affine, transformed['t1'].affine)
 
     def test_no_changes_mask(self):
         sample_t1 = self.sample_subject['t1']
@@ -20,12 +21,12 @@ class TestCropOrPad(TorchioTestCase):
         sample_mask *= 0
         shape = sample_t1.spatial_shape
         transform = tio.CropOrPad(shape, mask_name='label')
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             transformed = transform(self.sample_subject)
         for key in transformed:
             image = self.sample_subject[key]
-            self.assertTensorEqual(image.data, transformed[key].data)
-            self.assertTensorEqual(image.affine, transformed[key].affine)
+            self.assert_tensor_equal(image.data, transformed[key].data)
+            self.assert_tensor_equal(image.affine, transformed[key].affine)
 
     def test_different_shape(self):
         shape = self.sample_subject['t1'].spatial_shape
@@ -42,7 +43,7 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample_subject)
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape)
+            assert target_shape == result_shape
 
     def test_only_pad(self):
         target_shape = 11, 22, 30
@@ -50,7 +51,7 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample_subject)
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape)
+            assert target_shape == result_shape
 
     def test_only_crop(self):
         target_shape = 9, 18, 30
@@ -58,18 +59,18 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample_subject)
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(target_shape, result_shape)
+            assert target_shape == result_shape
 
     def test_shape_negative(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.CropOrPad(-1)
 
     def test_shape_float(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.CropOrPad(2.5)
 
     def test_shape_string(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.CropOrPad('')
 
     def test_shape_one(self):
@@ -77,11 +78,11 @@ class TestCropOrPad(TorchioTestCase):
         transformed = transform(self.sample_subject)
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual((1, 1, 1), result_shape)
+            assert result_shape == (1, 1, 1)
 
     def test_wrong_mask_name(self):
         cop = tio.CropOrPad(1, mask_name='wrong')
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             cop(self.sample_subject)
 
     def test_empty_mask(self):
@@ -89,7 +90,7 @@ class TestCropOrPad(TorchioTestCase):
         transform = tio.CropOrPad(target_shape, mask_name='label')
         mask = self.sample_subject['label'].data
         mask *= 0
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             transform(self.sample_subject)
 
     def mask_only(self, target_shape):
@@ -107,9 +108,8 @@ class TestCropOrPad(TorchioTestCase):
         assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            self.assertEqual(
-                target_shape, result_shape,
-                f'Wrong shape for image: {key}',
+            assert target_shape == result_shape, (
+                f'Wrong shape for image: {key}'
             )
 
     def test_mask_only_pad(self):
@@ -130,13 +130,13 @@ class TestCropOrPad(TorchioTestCase):
         transformed_mask = transform_mask(self.sample_subject)
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
-            self.assertTensorEqual(
+            self.assert_tensor_equal(
                 image_center.data, image_mask.data,
-                'Data is different after cropping',
+                msg='Data is different after cropping',
             )
-            self.assertTensorEqual(
+            self.assert_tensor_equal(
                 image_center.affine, image_mask.affine,
-                'Physical position is different after cropping',
+                msg='Physical position is different after cropping',
             )
 
     def test_mask_corners(self):
@@ -154,13 +154,13 @@ class TestCropOrPad(TorchioTestCase):
         transformed_mask = transform_mask(self.sample_subject)
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
-            self.assertTensorEqual(
+            self.assert_tensor_equal(
                 image_center.data, image_mask.data,
-                'Data is different after cropping',
+                msg='Data is different after cropping',
             )
-            self.assertTensorEqual(
+            self.assert_tensor_equal(
                 image_center.affine, image_mask.affine,
-                'Physical position is different after cropping',
+                msg='Physical position is different after cropping',
             )
 
     def test_2d(self):
@@ -177,11 +177,11 @@ class TestCropOrPad(TorchioTestCase):
         assert transformed.shape == (1, 12, 12, 1)
 
     def test_no_target_no_mask(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.CropOrPad()
 
     def test_labels_but_no_mask(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.CropOrPad(target_shape=(3, 4, 5), labels=[2, 3])
 
     def test_no_target(self):

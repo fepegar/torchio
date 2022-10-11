@@ -30,9 +30,11 @@ class BITE(SubjectsDataset, abc.ABC):
         self.kwargs = kwargs
         super().__init__(subjects_list, transform=transform, **kwargs)
 
+    @abc.abstractmethod
     def _download(self, root: Path):
         raise NotImplementedError
 
+    @abc.abstractmethod
     def _get_subjects_list(self, root: Path):
         raise NotImplementedError
 

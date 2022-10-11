@@ -158,10 +158,12 @@ class Queue(Dataset):
         self.num_workers = num_workers
         self.verbose = verbose
         self._subjects_iterable = None
+        self._incomplete_subject = None
+        self._num_patches_incomplete = 0
+        self._num_sampled_subjects = 0
         if start_background:
             self._initialize_subjects_iterable()
         self.patches_list: List[Subject] = []
-        self.num_sampled_patches = 0
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -171,8 +173,8 @@ class Queue(Dataset):
         if not self.patches_list:
             self._print('Patches list is empty.')
             self._fill()
+            self.patches_list.reverse()
         sample_patch = self.patches_list.pop()
-        self.num_sampled_patches += 1
         return sample_patch
 
     def __repr__(self):
@@ -181,7 +183,6 @@ class Queue(Dataset):
             f'num_subjects={self.num_subjects}',
             f'num_patches={self.num_patches}',
             f'samples_per_volume={self.samples_per_volume}',
-            f'num_sampled_patches={self.num_sampled_patches}',
             f'iterations_per_epoch={self.iterations_per_epoch}',
         ]
         attributes_string = ', '.join(attributes)
@@ -227,19 +228,28 @@ class Queue(Dataset):
     def _fill(self) -> None:
         assert self.sampler is not None
 
-        num_subjects = 0
+        if self._incomplete_subject is not None:
+            subject = self._incomplete_subject
+            iterable = self.sampler(subject)
+            patches = list(islice(iterable, self._num_patches_incomplete))
+            self.patches_list.extend(patches)
+            self._incomplete_subject = None
+
         while True:
             subject = self._get_next_subject()
             iterable = self.sampler(subject)
             num_samples = self._get_subject_num_samples(subject)
             num_free_slots = self.max_length - len(self.patches_list)
+            if num_free_slots < num_samples:
+                self._incomplete_subject = subject
+                self._num_patches_incomplete = num_samples - num_free_slots
             num_samples = min(num_samples, num_free_slots)
             patches = list(islice(iterable, num_samples))
             self.patches_list.extend(patches)
-            num_subjects += 1
+            self._num_sampled_subjects += 1
             list_full = len(self.patches_list) >= self.max_length
-            all_subjects_sampled = num_subjects >= len(self.subjects_dataset)
-            if list_full or all_subjects_sampled:
+            all_sampled = self._num_sampled_subjects >= self.num_subjects
+            if list_full or all_sampled:
                 break
 
         if self.shuffle_patches:
@@ -283,6 +293,7 @@ class Queue(Dataset):
             collate_fn=self._get_first_item,
             shuffle=self.shuffle_subjects,
         )
+        self._num_sampled_subjects = 0
         return iter(subjects_loader)
 
     def get_max_memory(self, subject: Optional[Subject] = None) -> int:

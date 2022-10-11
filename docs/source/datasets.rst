@@ -52,8 +52,8 @@ EPISURG
     :show-inheritance:
 
 
-RSNAMICCAI
-----------
+Kaggle datasets
+---------------
 
 .. currentmodule:: torchio.datasets.rsna_miccai
 
@@ -61,6 +61,15 @@ RSNAMICCAI
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RSNAMICCAI
+    :show-inheritance:
+
+
+.. currentmodule:: torchio.datasets.rsna_spine_fracture
+
+:class:`RSNACervicalSpineFracture`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: RSNACervicalSpineFracture
     :show-inheritance:
 
 

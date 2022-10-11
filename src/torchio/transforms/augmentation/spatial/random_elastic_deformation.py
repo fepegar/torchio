@@ -237,7 +237,7 @@ class ElasticDeformation(SpatialTransform):
     def get_bspline_transform(
             self,
             image: sitk.Image,
-    ) -> sitk.BSplineTransformInitializer:
+    ) -> sitk.BSplineTransform:
         control_points = self.control_points.copy()
         if self.invert_transform:
             control_points *= -1
@@ -253,7 +253,7 @@ class ElasticDeformation(SpatialTransform):
 
     @staticmethod
     def parse_free_form_transform(
-            transform: sitk.Transform,
+            transform: sitk.BSplineTransform,
             max_displacement: Sequence[TypeTripletInt],
     ) -> None:
         """Issue a warning is possible folding is detected."""

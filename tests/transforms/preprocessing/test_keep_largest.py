@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -14,5 +15,5 @@ class TestKeepLargestComponent(TorchioTestCase):
 
     def test_multichannel(self):
         label_map = tio.LabelMap(tensor=torch.rand(2, 3, 3, 3) > 1)
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.KeepLargestComponent()(label_map)

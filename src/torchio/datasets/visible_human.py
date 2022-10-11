@@ -1,4 +1,3 @@
-import abc
 import tempfile
 from typing import Tuple
 
@@ -8,7 +7,7 @@ from ..download import download_and_extract_archive
 from ..utils import get_torchio_cache_dir
 
 
-class VisibleHuman(abc.ABC, _RawSubjectCopySubject):
+class VisibleHuman(_RawSubjectCopySubject):
 
     URL = 'https://mri.radiology.uiowa.edu/website_documents/visible_human_tar_files/{}{}.tar.gz'  # noqa: E501, FS003
     PARTS: Tuple[str, ...]

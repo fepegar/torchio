@@ -1,11 +1,11 @@
-import torch
+import pytest
 import torchio as tio
+import torch
 
 from ...utils import TorchioTestCase
 
 
 class TestMask(TorchioTestCase):
-    """Tests for :class:`tio.Mask` class."""
 
     def test_single_mask(self):
         negated_mask = self.sample_subject.label.data.logical_not()
@@ -70,6 +70,6 @@ class TestMask(TorchioTestCase):
         mask = tio.LabelMap(tensor=torch.ones(1, 4, 5, 6))
         subject = tio.Subject(image=image, mask_lm=mask)
         transform = tio.Mask(masking_method='mask_lm')
-        with self.assertWarnsRegex(RuntimeWarning, '^Expanding.*'):
+        with pytest.warns(RuntimeWarning, match='^Expanding.*'):
             masked = transform(subject)
         assert masked.image.shape == image.shape

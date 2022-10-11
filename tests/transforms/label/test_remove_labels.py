@@ -19,10 +19,10 @@ class TestRemoveLabels(TorchioTestCase):
         for removed_label in labels_to_remove:
             original_mask = subject.label.data == removed_label
             new_values = transformed.label.data[original_mask]
-            self.assertTensorAllZeros(new_values)
+            self.assert_tensor_all_zeros(new_values)
 
         for remaining_label in remaining_labels:
             original_mask = subject.label.data == remaining_label
             original_values = subject.label.data[original_mask]
             output_values = transformed.label.data[original_mask]
-            self.assertTensorEqual(original_values, output_values)
+            self.assert_tensor_equal(original_values, output_values)

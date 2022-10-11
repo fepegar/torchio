@@ -1,3 +1,4 @@
+import pytest
 import torch
 from torchio import LABEL
 from torchio.transforms import Lambda
@@ -10,17 +11,17 @@ class TestLambda(TorchioTestCase):
 
     def test_wrong_return_type(self):
         transform = Lambda(lambda x: 'Not a tensor')
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform(self.sample_subject)
 
     def test_wrong_return_data_type(self):
         transform = Lambda(lambda x: torch.rand(1) > 0)
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform(self.sample_subject)
 
     def test_wrong_return_shape(self):
         transform = Lambda(lambda x: torch.rand(1))
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform(self.sample_subject)
 
     def test_lambda(self):

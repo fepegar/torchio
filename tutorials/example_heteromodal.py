@@ -65,7 +65,7 @@ def main():
     model = nn.Identity()
 
     for epoch_index in range(num_epochs):
-        logging.info(f'Epoch {epoch_index}')
+        logging.info('Epoch %s', epoch_index)
         for batch in batch_loader:  # batch is a *list* here, not a dictionary
             logits = model(batch)
             logging.info([batch[idx].keys() for idx in range(batch_size)])

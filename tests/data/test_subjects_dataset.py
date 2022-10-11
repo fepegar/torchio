@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+import pytest
 import torch
 import torchio as tio
 from torch.utils.data import DataLoader
@@ -16,38 +16,38 @@ class TestSubjectsDataset(TorchioTestCase):
         self.iterate_dataset(self.subjects_list)
 
     def test_empty_subjects_list(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.iterate_dataset([])
 
     def test_empty_subjects_tuple(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.iterate_dataset(())
 
     def test_wrong_subjects_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.iterate_dataset(0)
 
     def test_wrong_subject_type_int(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.iterate_dataset([0])
 
     def test_wrong_subject_type_dict(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             self.iterate_dataset([{}])
 
     def test_wrong_index(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.dataset[:3]
 
     def test_wrong_transform_init(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.SubjectsDataset(
                 self.subjects_list,
                 transform={},
             )
 
     def test_wrong_transform_arg(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.dataset.set_transform(1)
 
     @staticmethod
@@ -61,7 +61,7 @@ class TestSubjectsDataset(TorchioTestCase):
         loader = DataLoader(dataset)
         batch = tio.utils.get_first_item(loader)
         new_dataset = tio.SubjectsDataset.from_batch(batch)
-        self.assertTensorEqual(
+        self.assert_tensor_equal(
             dataset[0].t1.data,
             new_dataset[0].t1.data,
         )

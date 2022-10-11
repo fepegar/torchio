@@ -28,6 +28,6 @@ def test_sequential(original_labels):
     for i, label in enumerate(original_labels):
         original_mask = tensor == label
         new_mask = transformed.label.data == i
-        TorchioTestCase.assertTensorEqual(original_mask, new_mask)
+        TorchioTestCase.assert_tensor_equal(original_mask, new_mask)
     inverted = transformed.apply_inverse_transform()
-    TorchioTestCase.assertTensorEqual(tensor, inverted.label.data)
+    TorchioTestCase.assert_tensor_equal(tensor, inverted.label.data)

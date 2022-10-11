@@ -20,8 +20,10 @@ class GridAggregator:
             extract the patches.
         overlap_mode: If ``'crop'``, the overlapping predictions will be
             cropped. If ``'average'``, the predictions in the overlapping areas
-            will be averaged with equal weights. See the
-            `grid aggregator tests`_ for a raw visualization of both modes.
+            will be averaged with equal weights. If ``'hann'``, the predictions
+            in the overlapping areas will be weighted with a Hann window
+            function. See the `grid aggregator tests`_ for a raw visualization
+            of the three modes.
 
     .. _grid aggregator tests: https://github.com/fepegar/torchio/blob/main/tests/data/inference/test_aggregator.py
 
@@ -35,15 +37,17 @@ class GridAggregator:
         self.spatial_shape = subject.spatial_shape
         self._output_tensor: Optional[torch.Tensor] = None
         self.patch_overlap = sampler.patch_overlap
+        self.patch_size = sampler.patch_size
         self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
         self._avgmask_tensor: Optional[torch.Tensor] = None
+        self._hann_window: Optional[torch.Tensor] = None
 
     @staticmethod
     def _parse_overlap_mode(overlap_mode):
-        if overlap_mode not in ('crop', 'average'):
+        if overlap_mode not in ('crop', 'average', 'hann'):
             message = (
-                'Overlap mode must be "crop" or "average" but '
+                'Overlap mode must be "crop", "average" or "hann" but '
                 f' "{overlap_mode}" was passed'
             )
             raise ValueError(message)
@@ -98,6 +102,26 @@ class GridAggregator:
             *self.spatial_shape,
             dtype=batch.dtype,
         )
+
+    @staticmethod
+    def _get_hann_window(patch_size):
+        hann_window_3d = torch.as_tensor([1])
+        # create a n-dim hann window
+        for spatial_dim, size in enumerate(patch_size):
+            window_shape = np.ones_like(patch_size)
+            window_shape[spatial_dim] = size
+            hann_window_1d = torch.hann_window(
+                size + 2,
+                periodic=False,
+            )
+            hann_window_1d = hann_window_1d[1:-1].view(*window_shape)
+            hann_window_3d = hann_window_3d * hann_window_1d
+        return hann_window_3d
+
+    def _initialize_hann_window(self) -> None:
+        if self._hann_window is not None:
+            return
+        self._hann_window = self._get_hann_window(self.patch_size)
 
     def add_batch(
             self,
@@ -160,6 +184,39 @@ class GridAggregator:
                     j_ini:j_fin,
                     k_ini:k_fin,
                 ] += 1
+        elif self.overlap_mode == 'hann':
+            # To handle edge and corners avoid numerical problems, we save the
+            # hann window in a different tensor
+            # At the end, it will be filled with ones (or close values) where
+            # there is overlap and < 1 where there is not
+            # When we divide, the multiplication will be canceled in areas that
+            # do not overlap
+            self._initialize_avgmask_tensor(batch)
+            self._initialize_hann_window()
+
+            if self._output_tensor.dtype != torch.float32:
+                self._output_tensor = self._output_tensor.float()
+
+            assert isinstance(self._avgmask_tensor, torch.Tensor)  # for mypy
+            if self._avgmask_tensor.dtype != torch.float32:
+                self._avgmask_tensor = self._avgmask_tensor.float()
+
+            for patch, location in zip(batch, locations):
+                i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
+
+                patch = patch * self._hann_window
+                self._output_tensor[
+                    :,
+                    i_ini:i_fin,
+                    j_ini:j_fin,
+                    k_ini:k_fin,
+                ] += patch
+                self._avgmask_tensor[
+                    :,
+                    i_ini:i_fin,
+                    j_ini:j_fin,
+                    k_ini:k_fin,
+                ] += self._hann_window
 
     def get_output_tensor(self) -> torch.Tensor:
         """Get the aggregated volume after dense inference."""
@@ -171,8 +228,8 @@ class GridAggregator:
             )
             warnings.warn(message, RuntimeWarning)
             self._output_tensor = self._output_tensor.type(torch.int32)
-        if self.overlap_mode == 'average':
-            assert isinstance(self._avgmask_tensor, torch.Tensor)
+        if self.overlap_mode in ['average', 'hann']:
+            assert isinstance(self._avgmask_tensor, torch.Tensor)  # for mypy
             # true_divide is used instead of / in case the PyTorch version is
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526

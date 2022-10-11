@@ -1,50 +1,63 @@
 # pylint: disable=import-outside-toplevel
-"""Console script for torchio."""
-import sys
 
-import click
+from pathlib import Path
+
+import typer
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 
-@click.command()
-@click.argument('input-path', type=click.Path(exists=True))
-@click.argument('transform-name', type=str)
-@click.argument('output-path', type=click.Path())
-@click.option(
-    '--kwargs', '-k',
-    type=str,
-    help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
-)
-@click.option(
-    '--imclass', '-c',
-    type=str,
-    default='ScalarImage',
-    help='Subclass of torchio.Image used to instantiate the image.',
-)
-@click.option(
-    '--seed', '-s',
-    type=int,
-    help='Seed for PyTorch random number generator.',
-)
-@click.option(
-    '--verbose/--no-verbose', '-v',
-    type=bool,
-    default=False,
-    help='Print random transform parameters.',
-)
+app = typer.Typer()
+
+
+@app.command()
 def main(
-        input_path,
-        transform_name,
-        output_path,
-        kwargs,
-        imclass,
-        seed,
-        verbose,
+    input_path: Path = typer.Argument(  # noqa: B008
+        ...,
+        exists=True,
+        file_okay=True,
+        dir_okay=True,
+        readable=True,
+    ),
+    transform_name: str = typer.Argument(...),  # noqa: B008
+    output_path: Path = typer.Argument(  # noqa: B008
+        ...,
+        file_okay=True,
+        dir_okay=False,
+        writable=True,
+    ),
+    kwargs: str = typer.Option(  # noqa: B008
+        None,
+        '--kwargs', '-k',
+        help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
+    ),
+    imclass: str = typer.Option(  # noqa: B008
+        'ScalarImage',
+        '--imclass', '-c',
+        help=(
+            'Name of the subclass of torchio.Image'
+            ' that will be used to instantiate the image.'
+        ),
+    ),
+    seed: int = typer.Option(  # noqa: B008
+        None,
+        '--seed', '-s',
+        help='Seed for PyTorch random number generator.',
+    ),
+    verbose: bool = typer.Option(  # noqa: B008
+        False,
+        help='Print random transform parameters.',
+    ),
+    show_progress: bool = typer.Option(  # noqa: B008
+        True,
+        '--show-progress/--hide-progress',
+        '-p/-P',
+        help='Show animations indicating progress.',
+    ),
 ):
     """Apply transform to an image.
 
-    \b
     Example:
-    $ torchio-transform -k "degrees=(-5,15) num_transforms=3" input.nrrd RandomMotion output.nii
+    $ tiotr input.nrrd RandomMotion output.nii "degrees=(-5,15) num_transforms=3" -v
     """  # noqa: E501
     # Imports are placed here so that the tool loads faster if not being run
     import torch
@@ -61,14 +74,20 @@ def main(
     transform = transform_class(**params_dict)
     if seed is not None:
         torch.manual_seed(seed)
-    apply_transform_to_file(
-        input_path,
-        transform,
-        output_path,
-        verbose=verbose,
-        class_=imclass,
-    )
-    return 0
+    with Progress(
+        SpinnerColumn(),
+        TextColumn('[progress.description]{task.description}'),  # noqa: FS003
+        transient=True,
+        disable=not show_progress,
+    ) as progress:
+        progress.add_task('Applying transform', total=1)
+        apply_transform_to_file(
+            input_path,
+            transform,
+            output_path,
+            verbose=verbose,
+            class_=imclass,
+        )
 
 
 def get_params_dict_from_kwargs(kwargs):
@@ -88,5 +107,4 @@ def get_params_dict_from_kwargs(kwargs):
 
 
 if __name__ == '__main__':
-    # pylint: disable=no-value-for-parameter
-    sys.exit(main())  # pragma: no cover
+    app()
