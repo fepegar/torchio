@@ -21,7 +21,7 @@
 * Add deterministic versions of all random transforms
 * Add support to invert transforms
 * Add support for SimpleITK > 1
-* Add ``pre-commit`` to help contributions and improve coda quality
+* Add ``pre-commit`` to help contributions and improve code quality
 * Add DICOM data for testing
 * Add some visualization support (``Subject.plot``, ``Image.plot``)
 * Add support to pass parameters per axis, e.g. for ``RandomAffine`` (#346)
