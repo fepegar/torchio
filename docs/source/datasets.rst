@@ -29,15 +29,11 @@ IXI
 ~~~~~~~~~~~~~
 
 .. autoclass:: IXI
-    :show-inheritance:
-
 
 :class:`IXITiny`
 ~~~~~~~~~~~~~~~~~
 
 .. autoclass:: IXITiny
-    :show-inheritance:
-
 
 EPISURG
 -------
@@ -49,8 +45,6 @@ EPISURG
 
 .. autoclass:: EPISURG
     :members:
-    :show-inheritance:
-
 
 Kaggle datasets
 ---------------
@@ -61,8 +55,6 @@ Kaggle datasets
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RSNAMICCAI
-    :show-inheritance:
-
 
 .. currentmodule:: torchio.datasets.rsna_spine_fracture
 
@@ -70,8 +62,6 @@ Kaggle datasets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RSNACervicalSpineFracture
-    :show-inheritance:
-
 
 MNI
 ---
@@ -84,15 +74,11 @@ MNI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: ICBM2009CNonlinearSymmetric
-    :show-inheritance:
-
 
 :class:`Colin27`
 ~~~~~~~~~~~~~~~~
 
 .. autoclass:: Colin27
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -104,8 +90,6 @@ MNI
 ~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: Pediatric
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -117,8 +101,6 @@ MNI
 ~~~~~~~~~~~~~~
 
 .. autoclass:: Sheep
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -132,8 +114,6 @@ MNI
 ~~~~~~~~~~~~~~
 
 .. autoclass:: BITE3
-    :show-inheritance:
-
 
 .. currentmodule:: torchio.datasets.visible_human
 
@@ -153,8 +133,6 @@ photographed and digitized (from `Wikipedia <https://en.wikipedia.org/wiki/Visib
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: VisibleMale
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -165,8 +143,6 @@ photographed and digitized (from `Wikipedia <https://en.wikipedia.org/wiki/Visib
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: VisibleFemale
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -184,8 +160,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: BrainTumor
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -196,8 +170,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~
 
 .. autoclass:: T1T2
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -209,8 +181,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: AorticValve
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -228,8 +198,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~
 
 .. autoclass:: Slicer
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -243,8 +211,6 @@ FPG
 .. currentmodule:: torchio.datasets.fpg
 
 .. autoclass:: FPG
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
