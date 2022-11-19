@@ -381,6 +381,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center"><a href="https://github.com/LucaLumetti"><img src="https://avatars.githubusercontent.com/u/7543386?v=4?s=100" width="100px;" alt="Luca Lumetti"/><br /><sub><b>Luca Lumetti</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=LucaLumetti" title="Code">💻</a> <a href="https://github.com/fepegar/torchio/commits?author=LucaLumetti" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/chagelo"><img src="https://avatars.githubusercontent.com/u/49865033?v=4?s=100" width="100px;" alt="chagelo"/><br /><sub><b>chagelo</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Achagelo" title="Bug reports">🐛</a></td>
       <td align="center"><a href="https://github.com/mueller-franzes"><img src="https://avatars.githubusercontent.com/u/56117447?v=4?s=100" width="100px;" alt="mueller-franzes"/><br /><sub><b>mueller-franzes</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=mueller-franzes" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/wahabk"><img src="https://avatars.githubusercontent.com/u/43846328?v=4?s=100" width="100px;" alt="Abdelwahab Kawafi"/><br /><sub><b>Abdelwahab Kawafi</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Awahabk" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
