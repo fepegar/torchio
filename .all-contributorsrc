@@ -646,6 +646,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "wahabk",
+      "name": "Abdelwahab Kawafi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43846328?v=4",
+      "profile": "https://github.com/wahabk",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
