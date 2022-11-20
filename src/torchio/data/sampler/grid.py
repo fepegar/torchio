@@ -41,6 +41,9 @@ class GridSampler(PatchSampler):
             on each side before sampling. If the sampler is passed to a
             :class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
+        model_output_size: Tuple of integers :math:`(w, h, d)` of the model's
+            output if it is smaller than patch_size.
+            This argument is optional and defaults to `None`
 
     Example:
 
@@ -61,12 +64,14 @@ class GridSampler(PatchSampler):
         :attr:`patch_overlap` is twice :attr:`border` in NiftyNet
         tutorial.
     """
+
     def __init__(
-            self,
-            subject: Optional[Subject] = None,
-            patch_size: TypeSpatialShape = None,
-            patch_overlap: TypeSpatialShape = (0, 0, 0),
-            padding_mode: Union[str, float, None] = None,
+        self,
+        subject: Optional[Subject] = None,
+        patch_size: TypeSpatialShape = None,
+        patch_overlap: TypeSpatialShape = (0, 0, 0),
+        padding_mode: Union[str, float, None] = None,
+        model_output_size: Union[tuple, None] = None,
     ):
         if patch_size is None:
             raise ValueError('A value for patch_size must be given')
@@ -76,6 +81,27 @@ class GridSampler(PatchSampler):
         if subject is not None and not isinstance(subject, Subject):
             raise ValueError('The subject argument must be None or Subject')
         assert subject is not None
+
+        self.model_output_size = model_output_size
+        if self.model_output_size is None:
+            self.patch_diffs = np.array([0, 0, 0])
+        elif isinstance(self.model_output_size, tuple):
+            assert len(self.model_output_size) == 3
+            if self.padding_mode is None:
+                self.padding_mode = 'constant'
+            self.patch_diffs = (
+                np.array(patch_size) - np.array(self.model_output_size)
+            ) // 2
+            self.patch_overlap = [
+                max(diff * 2, overlap)
+                for diff, overlap in zip(self.patch_diffs, self.patch_overlap)
+            ]
+            self.patch_overlap = np.array(
+                to_tuple(self.patch_overlap, length=3),
+            )
+        else:
+            raise ValueError('model_output_size can be None or tuple')
+
         self.subject = self._pad(subject)
         self.locations = self._compute_locations(self.subject)
 
@@ -87,11 +113,13 @@ class GridSampler(PatchSampler):
         location = self.locations[index]
         index_ini = location[:3]
         cropped_subject = self.crop(self.subject, index_ini, self.patch_size)
+
         return cropped_subject
 
     def _pad(self, subject: Subject) -> Subject:
         if self.padding_mode is not None:
             from ...transforms import Pad
+
             border = self.patch_overlap // 2
             padding = border.repeat(2)
             pad = Pad(padding, padding_mode=self.padding_mode)  # type: ignore[arg-type]  # noqa: E501
@@ -106,8 +134,8 @@ class GridSampler(PatchSampler):
         return self._get_patches_locations(*sizes)  # type: ignore[arg-type]
 
     def _generate_patches(  # type: ignore[override]
-            self,
-            subject: Subject,
+        self,
+        subject: Subject,
     ) -> Generator[Subject, None, None]:
         subject = self._pad(subject)
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
@@ -119,9 +147,9 @@ class GridSampler(PatchSampler):
 
     @staticmethod
     def _parse_sizes(
-            image_size: TypeTripletInt,
-            patch_size: TypeTripletInt,
-            patch_overlap: TypeTripletInt,
+        image_size: TypeTripletInt,
+        patch_size: TypeTripletInt,
+        patch_overlap: TypeTripletInt,
     ) -> None:
         image_size_array = np.array(image_size)
         patch_size_array = np.array(patch_size)
@@ -147,9 +175,9 @@ class GridSampler(PatchSampler):
 
     @staticmethod
     def _get_patches_locations(
-            image_size: TypeTripletInt,
-            patch_size: TypeTripletInt,
-            patch_overlap: TypeTripletInt,
+        image_size: TypeTripletInt,
+        patch_size: TypeTripletInt,
+        patch_overlap: TypeTripletInt,
     ) -> np.ndarray:
         # Example with image_size 10, patch_size 5, overlap 2:
         # [0 1 2 3 4 5 6 7 8 9]
