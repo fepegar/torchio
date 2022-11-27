@@ -36,12 +36,21 @@ class GridAggregator:
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
         self.spatial_shape = subject.spatial_shape
+        # print(self.spatial_shape, subject.shape, subject.history)
         self._output_tensor: Optional[torch.Tensor] = None
         self.patch_overlap = sampler.patch_overlap
         self.patch_size = sampler.patch_size
         self.model_output_size = sampler.model_output_size
         if self.model_output_size is not None:
             self.patch_diffs = sampler.patch_diffs
+            self.spatial_shape = np.array(subject.spatial_shape) - (
+                np.array(self.patch_diffs) * 2
+            )
+            self.volume_padded = False  # Only for average?
+            # IF patch_overlap is not bigger than patch_diffs.
+            # No need for cropping if output size is smaller
+            # If volume is padded, do I need to ?
+
         self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
         self._avgmask_tensor: Optional[torch.Tensor] = None
@@ -69,7 +78,10 @@ class GridAggregator:
         crop_ini = half_overlap.copy()
         crop_fin = half_overlap.copy()
 
-        # If the volume has been padded, we don't need to worry about cropping
+        # If the volume has been padded,
+        # we don't need to worry about cropping
+        # IF patch_overlap is not bigger than patch_diffs.
+        # No need for cropping if output size is smaller
         if self.volume_padded:
             pass
         else:
@@ -148,14 +160,15 @@ class GridAggregator:
         assert len(np.unique(patch_sizes, axis=0)) == 1
         input_spatial_shape = tuple(batch.shape[-3:])
         target_spatial_shape = tuple(patch_sizes[0])
-        if (
+        # print(locations)
+        if (  # check if the user provided argument for smaller output size
             input_spatial_shape < target_spatial_shape
             and self.model_output_size is not None
         ):
-            locations[:, :3] = locations[:, :3] + (self.patch_diffs)
-            locations[:, 3:] = locations[:, 3:] - (self.patch_diffs)
+            # locations[:, :3] = locations[:, :3] + (self.patch_diffs)
+            locations[:, 3:] = locations[:, 3:] - (self.patch_diffs * 2)
             # the subject is now forced to be padded and output tensor isn't
-            # so is 0 in input is actually -patch_diff for output?
+            # so is 0 in input is actually -patch_diff for output
         elif input_spatial_shape != target_spatial_shape:
             message = (
                 f'The shape of the input batch, {input_spatial_shape},'
@@ -163,13 +176,15 @@ class GridAggregator:
                 f' which is {target_spatial_shape}'
             )
             raise RuntimeError(message)
+        # print(locations)
+        # print(batch.shape)
         self._initialize_output_tensor(batch)
         assert isinstance(self._output_tensor, torch.Tensor)
         if self.overlap_mode == 'crop':
             for patch, location in zip(batch, locations):
                 cropped_patch, new_location = self._crop_patch(
                     patch,
-                    location,
+                    location,  # edit this or crop_patch?
                     self.patch_overlap,
                 )
                 i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = new_location

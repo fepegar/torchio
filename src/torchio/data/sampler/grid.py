@@ -85,6 +85,8 @@ class GridSampler(PatchSampler):
             pass
         elif isinstance(self.model_output_size, tuple):
             assert len(self.model_output_size) == 3
+            if self.padding_mode is None:
+                self.padding_mode = 'constant'
             self.patch_diffs = (
                 np.array(patch_size) - np.array(self.model_output_size)
             ) // 2
@@ -92,7 +94,9 @@ class GridSampler(PatchSampler):
                 max(diff * 2, overlap)
                 for diff, overlap in zip(self.patch_diffs, self.patch_overlap)
             ]
-            self.patch_overlap = np.array(self.patch_overlap, length=3)
+            self.patch_overlap = np.array(
+                to_tuple(self.patch_overlap, length=3),
+            )
         else:
             raise ValueError('model_output_size can be None or tuple')
 
@@ -107,6 +111,7 @@ class GridSampler(PatchSampler):
         location = self.locations[index]
         index_ini = location[:3]
         cropped_subject = self.crop(self.subject, index_ini, self.patch_size)
+
         return cropped_subject
 
     def _pad(self, subject: Subject) -> Subject:
