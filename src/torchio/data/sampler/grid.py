@@ -82,7 +82,7 @@ class GridSampler(PatchSampler):
 
         self.model_output_size = model_output_size
         if self.model_output_size is None:
-            pass
+            self.patch_diffs = np.array([0, 0, 0])
         elif isinstance(self.model_output_size, tuple):
             assert len(self.model_output_size) == 3
             if self.padding_mode is None:

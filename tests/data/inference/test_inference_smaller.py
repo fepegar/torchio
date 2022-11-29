@@ -6,8 +6,6 @@ from torchio.data.inference import GridSampler
 
 from ...utils import TorchioTestCase
 
-# import napari
-
 
 class TestInference(TorchioTestCase):
     """Tests for `inference` module."""
@@ -19,14 +17,15 @@ class TestInference(TorchioTestCase):
         self.try_inference(3)
 
     def try_inference(self, padding_mode):
-        for mode in ['average']:  # 'crop', 'hann',
+        for overlap_mode in [
+            'average',
+            'crop',
+        ]:  # not checking for 'hann' since assertiion fails
             for n in 17, 27:
                 patch_size = 10, 15, n
                 model_output_size = 10 - 2, 15 - 2, n - 2
                 patch_overlap = 0, 0, 0  # this is important
                 batch_size = 6
-
-                # print(mode)
 
                 grid_sampler = GridSampler(
                     self.sample_subject,
@@ -35,7 +34,10 @@ class TestInference(TorchioTestCase):
                     padding_mode=padding_mode,
                     model_output_size=model_output_size,
                 )
-                aggregator = GridAggregator(grid_sampler, overlap_mode=mode)
+                aggregator = GridAggregator(
+                    grid_sampler,
+                    overlap_mode=overlap_mode,
+                )
                 patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
                 for patches_batch in patch_loader:
                     input_tensor = patches_batch['t1'][DATA]
@@ -55,14 +57,9 @@ class TestInference(TorchioTestCase):
                         j_ini:j_fin,
                         k_ini:k_fin,
                     ]
-                    # print(outputs.shape, locations.shape)
                     aggregator.add_batch(outputs, locations)
 
                 output = aggregator.get_output_tensor()
-                # print(output.shape, output.min(), output.max())
-                # print(output)
-                # napari.view_image(np.array(-output))
-                # napari.run()
                 assert (output == -5).all()
                 assert output.shape == self.sample_subject.t1.shape
 
