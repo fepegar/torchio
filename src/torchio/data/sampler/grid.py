@@ -41,7 +41,9 @@ class GridSampler(PatchSampler):
             on each side before sampling. If the sampler is passed to a
             :class:`~torchio.data.GridAggregator`, it will crop the output
             to its original size.
-        model_output_size:
+        model_output_size: Tuple of integers :math:`(w, h, d)` of the model's
+            output if it is smaller than patch_size.
+            This argument is optional and defaults to `None`
 
     Example:
 
