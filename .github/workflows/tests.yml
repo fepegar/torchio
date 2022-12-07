@@ -48,6 +48,11 @@ jobs:
       - name: Run unit tests
         run: tox
 
+      - name: Check packaging issues
+        run: |
+          pip install pyroma
+          pyroma .
+
       - name: Upload coverage
         run: codecov
 
