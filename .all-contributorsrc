@@ -656,6 +656,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "arthursw",
+      "name": "Arthur Masson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1814799?v=4",
+      "profile": "http://arthurmasson.xyz",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
