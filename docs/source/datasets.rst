@@ -115,39 +115,6 @@ MNI
 
 .. autoclass:: BITE3
 
-.. currentmodule:: torchio.datasets.visible_human
-
-
-Visible Human Project
----------------------
-
-The `Visible Human Project <https://www.nlm.nih.gov/research/visible/visible_human.html>`_
-is an effort to create a detailed data set of cross-sectional photographs of
-the human body, in order to facilitate anatomy visualization applications.
-It is used as a tool for the progression of medical findings, in which these
-findings link anatomy to its audiences.
-A male and a female cadaver were cut into thin slices which were then
-photographed and digitized (from `Wikipedia <https://en.wikipedia.org/wiki/Visible_Human_Project>`_).
-
-:class:`VisibleMale`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: VisibleMale
-.. plot::
-
-    import torchio as tio
-    tio.datasets.VisibleMale('Shoulder').plot()
-
-
-:class:`VisibleFemale`
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: VisibleFemale
-.. plot::
-
-    import torchio as tio
-    tio.datasets.VisibleFemale('Shoulder').plot()
-
 
 ITK-SNAP
 --------

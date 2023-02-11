@@ -19,8 +19,6 @@ from .mni import Sheep
 from .rsna_miccai import RSNAMICCAI
 from .rsna_spine_fracture import RSNACervicalSpineFracture
 from .slicer import Slicer
-from .visible_human import VisibleFemale
-from .visible_human import VisibleMale
 
 
 __all__ = [
@@ -39,8 +37,6 @@ __all__ = [
     'Sheep',
     'Pediatric',
     'ICBM2009CNonlinearSymmetric',
-    'VisibleFemale',
-    'VisibleMale',
     'OrganMNIST3D',
     'NoduleMNIST3D',
     'AdrenalMNIST3D',
