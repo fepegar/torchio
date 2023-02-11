@@ -49,7 +49,7 @@ class ZNormalization(NormalizationTransform):
             mask: torch.Tensor,
     ) -> Optional[torch.Tensor]:
         tensor = tensor.clone().float()
-        values = tensor.masked_select(mask)
+        values = tensor[mask]
         mean, std = values.mean(), values.std()
         if std == 0:
             return None
