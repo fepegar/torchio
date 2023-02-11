@@ -158,7 +158,7 @@ class Queue(Dataset):
         self.num_workers = num_workers
         self.verbose = verbose
         self._subjects_iterable = None
-        self._incomplete_subject = None
+        self._incomplete_subject: Optional[Subject] = None
         self._num_patches_incomplete = 0
         self._num_sampled_subjects = 0
         if start_background:

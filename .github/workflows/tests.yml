@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         exclude:
           - os: macos-latest
             python-version: '3.7'
@@ -18,6 +18,8 @@ jobs:
             python-version: '3.8'
           - os: macos-latest
             python-version: '3.9'
+          - os: macos-latest
+            python-version: '3.11'
           - os: windows-latest
             python-version: '3.7'
           - os: windows-latest
@@ -26,6 +28,8 @@ jobs:
             python-version: '3.9'
           - os: windows-latest
             python-version: '3.10'
+          - os: windows-latest
+            python-version: '3.11'
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -59,7 +63,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Checkout repository
         uses: actions/checkout@v3

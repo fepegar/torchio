@@ -68,6 +68,7 @@ repos:
     rev: v2.2.0
     hooks:
     - id: setup-cfg-fmt
+      args: ['--include-version-classifiers']
 
   - repo: https://github.com/PyCQA/doc8
     rev: v1.1.1
