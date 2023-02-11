@@ -101,8 +101,6 @@ class GridSampler(PatchSampler):
         return subject
 
     def _compute_locations(self, subject: Subject):
-        if subject is None:
-            return None
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
         self._parse_sizes(*sizes)  # type: ignore[arg-type]
         return self._get_patches_locations(*sizes)  # type: ignore[arg-type]
