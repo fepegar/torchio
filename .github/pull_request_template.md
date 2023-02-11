@@ -1,8 +1,12 @@
-<!-- Replace {issue_number} with the issue that will be closed after merging this PR -->
+<!-- Replace {issue_number} with the issue that will be closed after merging this PR.
+For example: Fixes #37.
+If there isn't one, delete the line below. -->
+
 Fixes #{issue_number}.
 
 **Description**
-A few sentences describing the changes proposed in this pull request.
+
+<!-- Write a few sentences describing the changes proposed in this pull request. -->
 
 **Checklist**
 
@@ -20,4 +24,3 @@ CONTRIBUTING (https://github.com/fepegar/torchio/blob/main/CONTRIBUTING.rst) doc
 - [ ] In-line docstrings updated
 - [ ] Documentation updated, tested running `make html` inside the `docs/` folder
 - [ ] This pull request is ready to be reviewed
-- [ ] If the PR is ready and there are multiple commits, I have [squashed them and force-pushed](https://www.w3docs.com/snippets/git/how-to-combine-multiple-commits-into-one-with-3-steps.html#force-pushing-commits-7)
