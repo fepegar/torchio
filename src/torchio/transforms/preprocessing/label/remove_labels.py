@@ -5,7 +5,9 @@ from .remap_labels import RemapLabels
 
 
 class RemoveLabels(RemapLabels):
-    r"""Remove labels from a label map by remapping them to the background label.
+    r"""Remove labels from a label map.
+
+    The removed labels are remapped to the background label.
 
     This transformation is not `invertible <invertibility>`_.
 
