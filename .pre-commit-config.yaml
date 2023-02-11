@@ -66,10 +66,10 @@ repos:
         args: ['--py37-plus', '--keep-runtime-typing']
 
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.0.0
+    rev: v2.2.0
     hooks:
     - id: setup-cfg-fmt
-      args: ['--include-version-classifiers', '--max-py-version', '311']
+      args: ['--include-version-classifiers']
 
   - repo: https://github.com/PyCQA/doc8
     rev: v1.0.0
