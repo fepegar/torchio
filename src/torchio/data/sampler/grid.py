@@ -19,10 +19,7 @@ class GridSampler(PatchSampler):
 
     Args:
         subject: Instance of :class:`~torchio.data.Subject`
-            from which patches will be extracted. This argument should only be
-            used before instantiating a :class:`~torchio.data.GridAggregator`,
-            or to precompute the number of patches that would be generated from
-            a subject.
+            from which patches will be extracted.
         patch_size: Tuple of integers :math:`(w, h, d)` to generate patches
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided,
@@ -45,13 +42,13 @@ class GridSampler(PatchSampler):
     Example:
 
         >>> import torchio as tio
-        >>> sampler = tio.GridSampler(patch_size=88)
         >>> colin = tio.datasets.Colin27()
-        >>> for i, patch in enumerate(sampler(colin)):
+        >>> sampler = tio.GridSampler(colin, patch_size=88)
+        >>> for i, patch in enumerate(sampler()):
         ...     patch.t1.save(f'patch_{i}.nii.gz')
         ...
         >>> # To figure out the number of patches beforehand:
-        >>> sampler = tio.GridSampler(subject=colin, patch_size=88)
+        >>> sampler = tio.GridSampler(colin, patch_size=88)
         >>> len(sampler)
         8
 
@@ -63,7 +60,7 @@ class GridSampler(PatchSampler):
     """
     def __init__(
             self,
-            subject: Optional[Subject] = None,
+            subject: Subject,
             patch_size: Optional[TypeSpatialShape] = None,
             patch_overlap: TypeSpatialShape = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
@@ -73,9 +70,6 @@ class GridSampler(PatchSampler):
         super().__init__(patch_size)
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
         self.padding_mode = padding_mode
-        if subject is not None and not isinstance(subject, Subject):
-            raise ValueError('The subject argument must be None or Subject')
-        assert subject is not None
         self.subject = self._pad(subject)
         self.locations = self._compute_locations(self.subject)
 
@@ -88,6 +82,14 @@ class GridSampler(PatchSampler):
         index_ini = location[:3]
         cropped_subject = self.crop(self.subject, index_ini, self.patch_size)
         return cropped_subject
+
+    def __call__(
+            self,
+            subject: Optional[Subject] = None,
+            num_patches: Optional[int] = None,
+    ) -> Generator[Subject, None, None]:
+        subject = self.subject if subject is None else subject
+        return super().__call__(subject, num_patches=num_patches)
 
     def _pad(self, subject: Subject) -> Subject:
         if self.padding_mode is not None:
