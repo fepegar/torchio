@@ -16,29 +16,18 @@ For more information about patch-based training, see
 
 
 .. autoclass:: UniformSampler
-    :show-inheritance:
-
 
 .. autoclass:: WeightedSampler
-    :show-inheritance:
-
 
 .. autoclass:: LabelSampler
-    :show-inheritance:
-
 
 .. autoclass:: PatchSampler
-    :show-inheritance:
-
 
 .. autoclass:: GridSampler
     :noindex:
-    :show-inheritance:
-
 
 Queue
 -----
 
 .. autoclass:: Queue
     :members:
-    :show-inheritance:

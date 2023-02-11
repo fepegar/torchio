@@ -129,7 +129,7 @@ class Image(dict):
     def __init__(
             self,
             path: Union[TypePath, Sequence[TypePath], None] = None,
-            type: str = None,  # noqa: A002
+            type: Optional[str] = None,  # noqa: A002
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default

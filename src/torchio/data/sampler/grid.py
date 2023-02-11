@@ -64,7 +64,7 @@ class GridSampler(PatchSampler):
     def __init__(
             self,
             subject: Optional[Subject] = None,
-            patch_size: TypeSpatialShape = None,
+            patch_size: Optional[TypeSpatialShape] = None,
             patch_overlap: TypeSpatialShape = (0, 0, 0),
             padding_mode: Union[str, float, None] = None,
     ):
