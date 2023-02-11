@@ -1,8 +1,7 @@
-name: Unit tests and coverage
+name: Test
 
 on:
   push:
-  pull_request:
   schedule:
     - cron: "0 4 * * *"
 
@@ -25,6 +24,8 @@ jobs:
             python-version: '3.8'
           - os: windows-latest
             python-version: '3.9'
+          - os: windows-latest
+            python-version: '3.10'
       fail-fast: false
 
     runs-on: ${{ matrix.os }}

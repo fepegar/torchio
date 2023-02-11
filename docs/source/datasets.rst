@@ -29,15 +29,11 @@ IXI
 ~~~~~~~~~~~~~
 
 .. autoclass:: IXI
-    :show-inheritance:
-
 
 :class:`IXITiny`
 ~~~~~~~~~~~~~~~~~
 
 .. autoclass:: IXITiny
-    :show-inheritance:
-
 
 EPISURG
 -------
@@ -49,8 +45,6 @@ EPISURG
 
 .. autoclass:: EPISURG
     :members:
-    :show-inheritance:
-
 
 Kaggle datasets
 ---------------
@@ -61,8 +55,6 @@ Kaggle datasets
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RSNAMICCAI
-    :show-inheritance:
-
 
 .. currentmodule:: torchio.datasets.rsna_spine_fracture
 
@@ -70,8 +62,6 @@ Kaggle datasets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: RSNACervicalSpineFracture
-    :show-inheritance:
-
 
 MNI
 ---
@@ -84,15 +74,11 @@ MNI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: ICBM2009CNonlinearSymmetric
-    :show-inheritance:
-
 
 :class:`Colin27`
 ~~~~~~~~~~~~~~~~
 
 .. autoclass:: Colin27
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -104,8 +90,6 @@ MNI
 ~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: Pediatric
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -117,8 +101,6 @@ MNI
 ~~~~~~~~~~~~~~
 
 .. autoclass:: Sheep
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -132,45 +114,6 @@ MNI
 ~~~~~~~~~~~~~~
 
 .. autoclass:: BITE3
-    :show-inheritance:
-
-
-.. currentmodule:: torchio.datasets.visible_human
-
-
-Visible Human Project
----------------------
-
-The `Visible Human Project <https://www.nlm.nih.gov/research/visible/visible_human.html>`_
-is an effort to create a detailed data set of cross-sectional photographs of
-the human body, in order to facilitate anatomy visualization applications.
-It is used as a tool for the progression of medical findings, in which these
-findings link anatomy to its audiences.
-A male and a female cadaver were cut into thin slices which were then
-photographed and digitized (from `Wikipedia <https://en.wikipedia.org/wiki/Visible_Human_Project>`_).
-
-:class:`VisibleMale`
-~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: VisibleMale
-    :show-inheritance:
-
-.. plot::
-
-    import torchio as tio
-    tio.datasets.VisibleMale('Shoulder').plot()
-
-
-:class:`VisibleFemale`
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: VisibleFemale
-    :show-inheritance:
-
-.. plot::
-
-    import torchio as tio
-    tio.datasets.VisibleFemale('Shoulder').plot()
 
 
 ITK-SNAP
@@ -184,8 +127,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: BrainTumor
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -196,8 +137,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~
 
 .. autoclass:: T1T2
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -209,8 +148,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: AorticValve
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -228,8 +165,6 @@ ITK-SNAP
 ~~~~~~~~~~~~~~~
 
 .. autoclass:: Slicer
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio
@@ -243,8 +178,6 @@ FPG
 .. currentmodule:: torchio.datasets.fpg
 
 .. autoclass:: FPG
-    :show-inheritance:
-
 .. plot::
 
     import torchio as tio

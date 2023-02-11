@@ -37,13 +37,8 @@ structure.
 
 
 .. autoclass:: ScalarImage
-    :show-inheritance:
-
 
 .. autoclass:: LabelMap
-    :show-inheritance:
-
 
 .. autoclass:: Image
     :members:
-    :show-inheritance:

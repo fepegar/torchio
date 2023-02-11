@@ -2,7 +2,6 @@ from typing import Dict
 from typing import Optional
 
 import numpy as np
-import numpy.typing as npt
 import torch
 
 from ...constants import LABEL
@@ -108,7 +107,7 @@ class LabelSampler(WeightedSampler):
     def get_probabilities_from_label_map(
             label_map: torch.Tensor,
             label_probabilities_dict: Dict[int, float],
-            patch_size: npt.NDArray[np.uint],
+            patch_size: np.ndarray,
     ) -> torch.Tensor:
         """Create probability map according to label map probabilities."""
         patch_size = patch_size.astype(int)
