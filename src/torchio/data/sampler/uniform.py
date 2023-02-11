@@ -1,4 +1,5 @@
 from typing import Generator
+from typing import Optional
 
 import torch
 
@@ -19,7 +20,7 @@ class UniformSampler(RandomSampler):
     def _generate_patches(
             self,
             subject: Subject,
-            num_patches: int = None,
+            num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         valid_range = subject.spatial_shape - self.patch_size
         patches_left = num_patches if num_patches is not None else True

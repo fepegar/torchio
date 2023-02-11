@@ -54,7 +54,7 @@ def download_and_extract_archive(
         download_root: TypePath,
         extract_root: Optional[TypePath] = None,
         filename: Optional[TypePath] = None,
-        md5: str = None,
+        md5: Optional[str] = None,
         remove_finished: bool = False,
 ) -> None:
     download_root = os.path.expanduser(download_root)
@@ -124,7 +124,7 @@ def download_url(
         url: str,
         root: TypePath,
         filename: Optional[TypePath] = None,
-        md5: str = None,
+        md5: Optional[str] = None,
 ) -> None:
     """Download a file from a url and place it in root.
 

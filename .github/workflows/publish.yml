@@ -1,12 +1,12 @@
 # Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 
-name: Publish on PyPI
+name: Publish
 
 on: push
 
 jobs:
   Build-and-publish:
-    name: Build and publish Python distributions to PyPI
+    name: Build and publish if needed
     runs-on: ubuntu-latest
 
     steps:

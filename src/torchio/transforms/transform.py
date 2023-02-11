@@ -237,9 +237,9 @@ class Transform(ABC):
     def _parse_range(
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
-            min_constraint: TypeNumber = None,
-            max_constraint: TypeNumber = None,
-            type_constraint: type = None,
+            min_constraint: Optional[TypeNumber] = None,
+            max_constraint: Optional[TypeNumber] = None,
+            type_constraint: Optional[type] = None,
     ) -> Tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
