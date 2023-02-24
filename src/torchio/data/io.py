@@ -36,7 +36,7 @@ def read_image(path: TypePath) -> TypeDataAffine:
         message = (
             f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
         )
-        warnings.warn(message)
+        warnings.warn(message, stacklevel=2)
         try:
             result = _read_nibabel(path)
         except nib.loadsave.ImageFileError as e:
@@ -160,12 +160,14 @@ def _write_nibabel(
     else:
         tensor = tensor[np.newaxis].permute(2, 3, 4, 0, 1)
     suffix = Path(str(path).replace('.gz', '')).suffix
+    img: Union[nib.Nifti1Image, nib.Nifti1Pair]
     if '.nii' in suffix:
         img = nib.Nifti1Image(np.asarray(tensor), affine)
     elif '.hdr' in suffix or '.img' in suffix:
         img = nib.Nifti1Pair(np.asarray(tensor), affine)
     else:
         raise nib.loadsave.ImageFileError
+    assert isinstance(img.header, nib.Nifti1Header)
     if num_components > 1:
         img.header.set_intent('vector')
     img.header['qform_code'] = 1
@@ -186,6 +188,7 @@ def _write_sitk(
         warnings.warn(
             f'Casting to uint 8 before saving to {path}',
             RuntimeWarning,
+            stacklevel=2,
         )
         tensor = tensor.numpy().astype(np.uint8)
     if squeeze is None:
