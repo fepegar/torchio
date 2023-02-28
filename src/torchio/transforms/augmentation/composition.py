@@ -66,11 +66,15 @@ class Compose(Transform):
                 transforms.append(transform.inverse())
             elif warn:
                 message = f'Skipping {transform.name} as it is not invertible'
-                warnings.warn(message, RuntimeWarning)
+                warnings.warn(message, RuntimeWarning, stacklevel=2)
         transforms.reverse()
         result = Compose(transforms)
         if not transforms and warn:
-            warnings.warn('No invertible transforms found', RuntimeWarning)
+            warnings.warn(
+                'No invertible transforms found',
+                RuntimeWarning,
+                stacklevel=2,
+            )
         return result
 
 
