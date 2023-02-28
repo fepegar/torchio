@@ -70,7 +70,7 @@ class Resize(SpatialTransform):
                 f'Output shape {resampled.spatial_shape}'
                 f' != target shape {tuple(shape_out)}. Fixing with CropOrPad'
             )
-            warnings.warn(message)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
             crop_pad = CropOrPad(shape_out)  # type: ignore[arg-type]
             resampled = crop_pad(resampled)
         assert isinstance(resampled, Subject)
