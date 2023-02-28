@@ -7,6 +7,7 @@ import humanize
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+from torch.utils.data import Sampler
 
 from .. import NUM_SAMPLES
 from .dataset import SubjectsDataset
@@ -68,8 +69,11 @@ class Queue(Dataset):
             but training will be slower.
         sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
             to extract patches from the volumes.
-        subject_sampler : Set sampler to get the subject from subjects_dataset.
-            None in normal cases; use DistributedSampler when using DDP.
+        subject_sampler: Sampler to get subjects from the dataset.
+            It should be an instance of
+            :class:`~torch.utils.data.distributed.DistributedSampler` when
+            running `distributed training
+            <https://pytorch.org/tutorials/beginner/dist_overview.html>`_.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
@@ -137,25 +141,32 @@ class Queue(Dataset):
     ...         inputs = patches_batch['t1'][tio.DATA]  # key 't1' is in subject
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
-    ...
-    ...
-    >>> # Usage with DistributedSampler in DistributedDataParallel
-    >>> import torch.utils.data.distributed as dis
-    >>>
-    >>> # Assume a process running on DDP
-    >>>
-    >>> sampler = tio.data.UniformSampler(patch_size)
+
+
+    Example:
+
+    >>> # Usage with distributed training
+    >>> import torch.distributed as dist
+    >>> from torch.utils.data.distributed import DistributedSampler
+    >>> # Assume a process running on distributed node 3
+    >>> rank = 3
+    >>> patch_sampler = tio.data.UniformSampler(patch_size)
     >>> subject = tio.datasets.Colin27()
     >>> subjects_dataset = tio.SubjectsDataset(10 * [subject])
-    >>> subject_sampler = dis.DistributedSampler(subjects_dataset, rank=prc_id, shuffle=True, drop_last=True)
-    >>> # When learning with two processes, each process is assigned 5(=10/2) subjects.
+    >>> subject_sampler = dist.DistributedSampler(
+    ...     subjects_dataset,
+    ...     rank=local_rank,
+    ...     shuffle=True,
+    ...     drop_last=True,
+    ... )
+    >>> # Each process is assigned (len(subjects_dataset) // num_processes) subjects
     >>> patches_queue = tio.Queue(
     ...     subjects_dataset,
     ...     queue_length,
     ...     samples_per_volume,
-    ...     sampler,
+    ...     patch_sampler,
     ...     num_workers=4,
-    ...     subject_sampler=subject_sampler
+    ...     subject_sampler=subject_sampler,
     ... )
     >>> patches_loader = DataLoader(
     ...     patches_queue,
@@ -177,7 +188,7 @@ class Queue(Dataset):
             max_length: int,
             samples_per_volume: int,
             sampler: PatchSampler,
-            subject_sampler: torch.utils.data.Sampler = None,
+            subject_sampler: Optional[Sampler] = None,
             num_workers: int = 0,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
@@ -201,12 +212,11 @@ class Queue(Dataset):
             self._initialize_subjects_iterable()
         self.patches_list: List[Subject] = []
 
-        if self.subject_sampler is not None:
-            if self.shuffle_subjects:
-                raise ValueError(
-                    'Shuffle_subject cannot be used'
-                    ' when subject_sampler exists.',
-                )
+        if self.shuffle_subjects and self.subject_sampler is not None:
+            raise ValueError(
+                'The flag shuffle_subjects cannot be set'
+                ' when a subject sampler is passed',
+            )
 
     def __len__(self):
         return self.iterations_per_epoch
