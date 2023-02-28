@@ -103,9 +103,9 @@ class Transform(ABC):
         if keys is not None:
             message = (
                 'The "keys" argument is deprecated and will be removed in the'
-                ' future. Use "include" instead.'
+                ' future. Use "include" instead'
             )
-            warnings.warn(message)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
             include, exclude,
