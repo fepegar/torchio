@@ -247,7 +247,15 @@ class TestImage(TorchioTestCase):
         np.save(test_path, tensor)
         image = tio.ScalarImage(test_path, reader=numpy_reader)
         image.load()
-
+    def test_image_unload(self):
+        path = self.get_image_path("unload")
+        image = tio.ScalarImage(path)
+        image.load()
+        assert image._loaded
+        image.unload()
+        assert not image._loaded
+        assert image[tio.constants.DATA] is None
+        assert image[tio.constants.AFFINE] is None
     def test_load_unload(self):
         path = self.get_image_path('unload')
         image = tio.ScalarImage(path)
