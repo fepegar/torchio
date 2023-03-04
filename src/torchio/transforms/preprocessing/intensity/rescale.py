@@ -59,9 +59,12 @@ class RescaleIntensity(NormalizationTransform):
         self.percentiles = self._parse_range(
             percentiles, 'percentiles', min_constraint=0, max_constraint=100,
         )
+
+        self.in_min: Optional[float]
+        self.in_max: Optional[float]
         if self.in_min_max is not None:
             self.in_min, self.in_max = self._parse_range(
-                in_min_max, 'in_min_max',
+                self.in_min_max, 'in_min_max',
             )
         else:
             self.in_min = None
@@ -105,6 +108,8 @@ class RescaleIntensity(NormalizationTransform):
                 (array.min(), array.max()), 'in_min_max',
             )
             self.in_min, self.in_max = self.in_min_max
+        assert self.in_min is not None
+        assert self.in_max is not None
         in_range = self.in_max - self.in_min
         if in_range == 0:  # should this be compared using a tolerance?
             message = (
