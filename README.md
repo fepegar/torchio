@@ -386,6 +386,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://arthurmasson.xyz"><img src="https://avatars.githubusercontent.com/u/1814799?v=4?s=100" width="100px;" alt="Arthur Masson"/><br /><sub><b>Arthur Masson</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aarthursw" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=arthursw" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/hsyang1222"><img src="https://avatars.githubusercontent.com/u/79962117?v=4?s=100" width="100px;" alt="양현식"/><br /><sub><b>양현식</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=hsyang1222" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nicoloesch"><img src="https://avatars.githubusercontent.com/u/70891565?v=4?s=100" width="100px;" alt="nicoloesch"/><br /><sub><b>nicoloesch</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=nicoloesch" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
