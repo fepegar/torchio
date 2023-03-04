@@ -116,5 +116,5 @@ class TestRescaleIntensity(TorchioTestCase):
         transformed = transform(subject)
         assert transformed.t1.data.min() == 0
         assert transformed.t1.data.max() == 1
-        inverted = subject.apply_inverse_transform()
+        inverted = transformed.apply_inverse_transform()
         self.assert_tensor_almost_equal(inverted.t1.data, data)
