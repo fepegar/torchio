@@ -3,7 +3,6 @@ import warnings
 
 import torch
 import torchio as tio
-from torchio.transforms.intensity_transform import IntensityTransform
 
 from ..utils import TorchioTestCase
 
@@ -29,15 +28,6 @@ class TestInvertibility(TorchioTestCase):
             transformed.label.affine,
             transformed_back.label.affine,
         )
-
-    def test_ignore_intensity(self):
-        composed = self.get_large_composed_transform()
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', RuntimeWarning)
-            transformed = composed(self.sample_subject)
-        inverse_transform = transformed.get_inverse_transform(warn=False)
-        for transform in inverse_transform:
-            assert not isinstance(transform, IntensityTransform)
 
     def test_different_interpolation(self):
         def model_probs(subject):

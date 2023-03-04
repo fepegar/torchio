@@ -142,14 +142,14 @@ class HistogramStandardization(NormalizationTransform):
             ...     if t1_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t1_paths)
             ... )
-            >>> torch.save(t1_landmarks, t1_landmarks_path)
+            >>> np.save(t1_landmarks_path, t1_landmarks)
             >>>
             >>> t2_landmarks = (
             ...     t2_landmarks_path
             ...     if t2_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t2_paths)
             ... )
-            >>> torch.save(t2_landmarks, t2_landmarks_path)
+            >>> np.save(t2_landmarks_path, t2_landmarks)
             >>>
             >>> landmarks_dict = {
             ...     't1': t1_landmarks,
