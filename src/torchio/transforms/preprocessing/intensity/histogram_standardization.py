@@ -134,18 +134,18 @@ class HistogramStandardization(NormalizationTransform):
             >>> t1_paths = ['subject_a_t1.nii', 'subject_b_t1.nii.gz']
             >>> t2_paths = ['subject_a_t2.nii', 'subject_b_t2.nii.gz']
             >>>
-            >>> t1_landmarks_path = Path('t1_landmarks.pt')
-            >>> t2_landmarks_path = Path('t2_landmarks.pt')
+            >>> t1_landmarks_path = Path('t1_landmarks.npy')
+            >>> t2_landmarks_path = Path('t2_landmarks.npy')
             >>>
             >>> t1_landmarks = (
-            ...     torch.load(t1_landmarks_path)
+            ...     t1_landmarks_path
             ...     if t1_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t1_paths)
             ... )
             >>> torch.save(t1_landmarks, t1_landmarks_path)
             >>>
             >>> t2_landmarks = (
-            ...     torch.load(t2_landmarks_path)
+            ...     t2_landmarks_path
             ...     if t2_landmarks_path.is_file()
             ...     else HistogramStandardization.train(t2_paths)
             ... )
