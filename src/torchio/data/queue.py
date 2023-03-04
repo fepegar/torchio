@@ -7,6 +7,7 @@ import humanize
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+from torch.utils.data import Sampler
 
 from .. import NUM_SAMPLES
 from .dataset import SubjectsDataset
@@ -68,6 +69,11 @@ class Queue(Dataset):
             but training will be slower.
         sampler: A subclass of :class:`~torchio.data.sampler.PatchSampler` used
             to extract patches from the volumes.
+        subject_sampler: Sampler to get subjects from the dataset.
+            It should be an instance of
+            :class:`~torch.utils.data.distributed.DistributedSampler` when
+            running `distributed training
+            <https://pytorch.org/tutorials/beginner/dist_overview.html>`_.
         num_workers: Number of subprocesses to use for data loading
             (as in :class:`torch.utils.data.DataLoader`).
             ``0`` means that the data will be loaded in the main process.
@@ -136,6 +142,45 @@ class Queue(Dataset):
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
 
+
+    Example:
+
+    >>> # Usage with distributed training
+    >>> import torch.distributed as dist
+    >>> from torch.utils.data.distributed import DistributedSampler
+    >>> # Assume a process running on distributed node 3
+    >>> rank = 3
+    >>> patch_sampler = tio.data.UniformSampler(patch_size)
+    >>> subject = tio.datasets.Colin27()
+    >>> subjects_dataset = tio.SubjectsDataset(10 * [subject])
+    >>> subject_sampler = dist.DistributedSampler(
+    ...     subjects_dataset,
+    ...     rank=local_rank,
+    ...     shuffle=True,
+    ...     drop_last=True,
+    ... )
+    >>> # Each process is assigned (len(subjects_dataset) // num_processes) subjects
+    >>> patches_queue = tio.Queue(
+    ...     subjects_dataset,
+    ...     queue_length,
+    ...     samples_per_volume,
+    ...     patch_sampler,
+    ...     num_workers=4,
+    ...     subject_sampler=subject_sampler,
+    ... )
+    >>> patches_loader = DataLoader(
+    ...     patches_queue,
+    ...     batch_size=16,
+    ...     num_workers=0,  # this must be 0
+    ... )
+    >>> num_epochs = 2
+    >>> model = torch.nn.Identity()
+    >>> for epoch_index in range(num_epochs):
+    ...     subject_sampler.set_epoch(epoch_index)
+    ...     for patches_batch in patches_loader:
+    ...         inputs = patches_batch['t1'][tio.DATA]  # key 't1' is in subject
+    ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
+    ...         logits = model(inputs)  # model being an instance of torch.nn.Module
     """  # noqa: E501
     def __init__(
             self,
@@ -143,6 +188,7 @@ class Queue(Dataset):
             max_length: int,
             samples_per_volume: int,
             sampler: PatchSampler,
+            subject_sampler: Optional[Sampler] = None,
             num_workers: int = 0,
             shuffle_subjects: bool = True,
             shuffle_patches: bool = True,
@@ -155,6 +201,7 @@ class Queue(Dataset):
         self.shuffle_patches = shuffle_patches
         self.samples_per_volume = samples_per_volume
         self.sampler = sampler
+        self.subject_sampler = subject_sampler
         self.num_workers = num_workers
         self.verbose = verbose
         self._subjects_iterable = None
@@ -164,6 +211,12 @@ class Queue(Dataset):
         if start_background:
             self._initialize_subjects_iterable()
         self.patches_list: List[Subject] = []
+
+        if self.shuffle_subjects and self.subject_sampler is not None:
+            raise ValueError(
+                'The flag shuffle_subjects cannot be set'
+                ' when a subject sampler is passed',
+            )
 
     def __len__(self):
         return self.iterations_per_epoch
@@ -291,6 +344,7 @@ class Queue(Dataset):
             num_workers=self.num_workers,
             batch_size=1,
             collate_fn=self._get_first_item,
+            sampler=self.subject_sampler,
             shuffle=self.shuffle_subjects,
         )
         self._num_sampled_subjects = 0

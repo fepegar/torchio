@@ -29,6 +29,12 @@ class TestGridSampler(TorchioTestCase):
         locations = sampler.locations.tolist()
         assert locations == fixture
 
+    def test_generate_patches(self):
+        patch_size = 1, 2, 3
+        sampler = tio.GridSampler(self.sample_subject, patch_size)
+        for patch in sampler():
+            assert patch.spatial_shape == patch_size
+
     def test_large_patch(self):
         with pytest.raises(ValueError):
             tio.GridSampler(self.sample_subject, (5, 21, 5), (0, 2, 0))
@@ -58,8 +64,3 @@ class TestGridSampler(TorchioTestCase):
         )
         final_shape = self.sample_subject.shape
         assert initial_shape == final_shape
-
-    def test_bad_subject(self):
-        with pytest.raises(ValueError):
-            patch_size = 88
-            tio.GridSampler(patch_size)

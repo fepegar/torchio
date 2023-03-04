@@ -656,6 +656,25 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "arthursw",
+      "name": "Arthur Masson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1814799?v=4",
+      "profile": "http://arthurmasson.xyz",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "hsyang1222",
+      "name": "양현식",
+      "avatar_url": "https://avatars.githubusercontent.com/u/79962117?v=4",
+      "profile": "https://github.com/hsyang1222",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

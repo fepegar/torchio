@@ -186,7 +186,7 @@ class TestImage(TorchioTestCase):
             im.data = im.data
 
     def test_no_type(self):
-        with pytest.warns(UserWarning):
+        with pytest.warns(DeprecationWarning):
             tio.Image(tensor=torch.rand(1, 2, 3, 4))
 
     def test_custom_reader(self):
@@ -208,7 +208,7 @@ class TestImage(TorchioTestCase):
         assert_shape((4, 5, 5, 5), (4, 5, 5, 5))
 
     def test_fast_gif(self):
-        with pytest.warns(UserWarning):
+        with pytest.warns(RuntimeWarning):
             with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
                 self.sample_subject.t1.to_gif(0, 0.0001, f.name)
 
