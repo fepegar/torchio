@@ -1,0 +1,95 @@
+name: Code quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * *"
+
+jobs:
+
+  mypy:
+    name: Type checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install tox
+        run: pip install tox
+
+      - name: Run mypy
+        run: tox -e mypy
+
+  flake8:
+    name: Code style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run flake8 hooks
+        run: pre-commit run --all-files flake8
+
+  black:
+    name: Code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install black
+        run: pip install black
+
+      - name: Run black
+        run: black --check --diff .
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run doc8 hook
+        run: pre-commit run --all-files doc8

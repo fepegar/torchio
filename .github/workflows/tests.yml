@@ -61,27 +61,6 @@ jobs:
       - name: Upload coverage
         run: codecov
 
-  mypy:
-    name: Type checks
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install tox
-        run: pip install tox
-
-      - name: Run mypy
-        run: tox -e mypy
-
   cli:
     name: CLI smoke tests
     runs-on: ubuntu-latest
