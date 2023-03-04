@@ -182,7 +182,7 @@ class Subject(dict):
     def get_inverse_transform(
             self,
             warn: bool = True,
-            ignore_intensity: bool = True,
+            ignore_intensity: bool = False,
             image_interpolation: Optional[str] = None,
     ) -> Compose:
         """Get a reversed list of the inverses of the applied transforms.
