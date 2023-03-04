@@ -20,6 +20,11 @@ repos:
       - id: trailing-whitespace        # This hook trims trailing whitespace
         exclude: setup.cfg
 
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+    - id: black
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0
     hooks:
@@ -38,11 +43,6 @@ repos:
           flake8-2020,              # check for misuse of `sys.version` or `sys.version_info`
           pep8-naming,              # check PEP-8 naming conventions
         ]
-
-  - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.4.0
-    hooks:
-    - id: add-trailing-comma
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
@@ -71,8 +71,3 @@ repos:
     rev: v1.1.1
     hooks:
     - id: doc8
-
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-    - id: black
