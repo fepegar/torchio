@@ -573,7 +573,8 @@ class Image(dict):
                 is available.
         """
         if not self._loaded:
-            raise RuntimeError('Image cannot be unloaded as it is not loaded')
+            message = 'Image cannot be unloaded as it has not been loaded yet'
+            raise RuntimeError(message)
         if self.path is None:
             message = (
                 'Cannot unload image as no path is available'
