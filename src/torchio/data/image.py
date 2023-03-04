@@ -654,8 +654,8 @@ class Image(dict):
 
         .. note:: Values will be clamped to 0-255 and cast to uint8.
 
-        .. note:: To use this method, `Pillow` needs to be installed:
-            `pip install Pillow`.
+        .. note:: To use this method, Pillow needs to be installed:
+            ``pip install Pillow``.
         """
         try:
             from PIL import Image as ImagePIL
