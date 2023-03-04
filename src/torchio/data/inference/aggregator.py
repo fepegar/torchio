@@ -31,6 +31,7 @@ class GridAggregator:
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch-based sampling.
     """  # noqa: E501
+
     def __init__(self, sampler: GridSampler, overlap_mode: str = 'crop'):
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
@@ -38,6 +39,15 @@ class GridAggregator:
         self._output_tensor: Optional[torch.Tensor] = None
         self.patch_overlap = sampler.patch_overlap
         self.patch_size = sampler.patch_size
+        self.model_output_size = sampler.model_output_size
+        self.patch_diffs = sampler.patch_diffs
+        if self.model_output_size is not None:
+            self.patch_diffs = sampler.patch_diffs
+            self.spatial_shape = np.array(subject.spatial_shape) - (
+                np.array(self.patch_diffs) * 2
+            )  # remove auto-padding from spatial shape
+            self.volume_padded = False
+
         self._parse_overlap_mode(overlap_mode)
         self.overlap_mode = overlap_mode
         self._avgmask_tensor: Optional[torch.Tensor] = None
@@ -53,19 +63,24 @@ class GridAggregator:
             raise ValueError(message)
 
     def _crop_patch(
-            self,
-            patch: torch.Tensor,
-            location: np.ndarray,
-            overlap: np.ndarray,
+        self,
+        patch: torch.Tensor,
+        location: np.ndarray,
+        overlap: np.ndarray,
+        patch_diffs: np.ndarray,
     ) -> Tuple[torch.Tensor, np.ndarray]:
         half_overlap = overlap // 2  # overlap is always even in grid sampler
         index_ini, index_fin = location[:3], location[3:]
 
         # If the patch is not at the border, we crop half the overlap
-        crop_ini = half_overlap.copy()
-        crop_fin = half_overlap.copy()
+        # but remove input and output patch_diffs
+        # If patch_overlap is not bigger than patch_diffs.
+        # No need for cropping if output size is smaller
+        crop_ini = half_overlap.copy() - patch_diffs
+        crop_fin = half_overlap.copy() - patch_diffs
 
-        # If the volume has been padded, we don't need to worry about cropping
+        # If the volume has been padded,
+        # we don't need to worry about cropping
         if self.volume_padded:
             pass
         else:
@@ -121,12 +136,17 @@ class GridAggregator:
     def _initialize_hann_window(self) -> None:
         if self._hann_window is not None:
             return
-        self._hann_window = self._get_hann_window(self.patch_size)
+        if self.model_output_size is None:
+            self._hann_window = self._get_hann_window(self.patch_size)
+        else:
+            # If the model output size is smaller
+            # the hann window needs to be smaller as well
+            self._hann_window = self._get_hann_window(self.model_output_size)
 
     def add_batch(
-            self,
-            batch_tensor: torch.Tensor,
-            locations: torch.Tensor,
+        self,
+        batch_tensor: torch.Tensor,
+        locations: torch.Tensor,
     ) -> None:
         """Add batch processed by a CNN to the output prediction volume.
 
@@ -143,8 +163,20 @@ class GridAggregator:
         # There should be only one patch size
         assert len(np.unique(patch_sizes, axis=0)) == 1
         input_spatial_shape = tuple(batch.shape[-3:])
-        target_spatial_shape = tuple(patch_sizes[0])
-        if input_spatial_shape != target_spatial_shape:
+        # Should target size be self.patch_size?
+        target_spatial_shape = tuple(
+            patch_sizes[0],
+        )
+        # check if the user provided argument for
+        # smaller output size before raising error
+        if (
+            input_spatial_shape < target_spatial_shape
+            and self.model_output_size is not None
+        ):
+            locations[:, 3:] = locations[:, 3:] - (self.patch_diffs * 2)
+            # the subject is now forced to be padded and output tensor isn't
+            # so is 0 in input is actually -patch_diff for output
+        elif input_spatial_shape != target_spatial_shape:
             message = (
                 f'The shape of the input batch, {input_spatial_shape},'
                 ' does not match the shape of the target location,'
@@ -159,6 +191,7 @@ class GridAggregator:
                     patch,
                     location,
                     self.patch_overlap,
+                    self.patch_diffs,
                 )
                 i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = new_location
                 self._output_tensor[
@@ -234,12 +267,14 @@ class GridAggregator:
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526
             output = torch.true_divide(
-                self._output_tensor, self._avgmask_tensor,
+                self._output_tensor,
+                self._avgmask_tensor,
             )
         else:
             output = self._output_tensor
         if self.volume_padded:
             from ...transforms import Crop
+
             border = self.patch_overlap // 2
             cropping = border.repeat(2)
             crop = Crop(cropping)  # type: ignore[arg-type]

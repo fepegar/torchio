@@ -23,7 +23,8 @@ class TestInference(TorchioTestCase):
         ]:  # not checking for 'hann' since assertiion fails
             for n in 17, 27:
                 patch_size = 10, 15, n
-                patch_overlap = 4, 6, 8
+                model_output_size = 10 - 2, 15 - 2, n - 2
+                patch_overlap = 0, 0, 0  # this is important
                 batch_size = 6
 
                 grid_sampler = GridSampler(
@@ -31,6 +32,7 @@ class TestInference(TorchioTestCase):
                     patch_size,
                     patch_overlap,
                     padding_mode=padding_mode,
+                    model_output_size=model_output_size,
                 )
                 aggregator = GridAggregator(
                     grid_sampler,
@@ -42,6 +44,19 @@ class TestInference(TorchioTestCase):
                     locations = patches_batch[LOCATION]
                     logits = model(input_tensor)  # some model
                     outputs = logits
+                    i_ini, j_ini, k_ini = 1, 1, 1
+                    i_fin, j_fin, k_fin = (
+                        patch_size[0] - 1,
+                        patch_size[1] - 1,
+                        patch_size[2] - 1,
+                    )
+                    outputs = outputs[
+                        :,
+                        :,
+                        i_ini:i_fin,
+                        j_ini:j_fin,
+                        k_ini:k_fin,
+                    ]
                     aggregator.add_batch(outputs, locations)
 
                 output = aggregator.get_output_tensor()
