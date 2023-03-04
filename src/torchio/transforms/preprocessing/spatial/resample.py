@@ -76,7 +76,6 @@ class Resample(SpatialTransform):
         t1_resampled = resample(subject.t1)
         subject.add_image(t1_resampled, 'Downsampled')
         subject.plot()
-
     """  # noqa: B950
 
     def __init__(
@@ -313,8 +312,8 @@ class Resample(SpatialTransform):
     def get_sigma(downsampling_factor, spacing):
         """Compute optimal standard deviation for Gaussian kernel.
 
-        From Cardoso et al., "Scale factor point spread function matching:
-        beyond aliasing in image resampling", MICCAI 2015
+        From Cardoso et al., "Scale factor point spread function
+        matching: beyond aliasing in image resampling", MICCAI 2015
         """
         k = downsampling_factor
         variance = (k**2 - 1**2) * (2 * np.sqrt(2 * np.log(2))) ** (-2)

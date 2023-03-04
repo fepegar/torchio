@@ -24,7 +24,6 @@ class Compose(Transform):
             :class:`~torchio.transforms.Transform`.
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
-
     """
 
     def __init__(self, transforms: Sequence[Transform], **kwargs):
@@ -100,7 +99,6 @@ class OneOf(RandomTransform):
         ... }  # Using 3 and 1 as probabilities would have the same effect
         >>> transform = tio.OneOf(transforms_dict)
         >>> transformed = transform(colin)
-
     """
 
     def __init__(self, transforms: TypeTransformsDict, **kwargs):

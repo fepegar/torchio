@@ -2,10 +2,8 @@
 # ex: set sts=4 ts=4 sw=4 et:
 # noqa: E800
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
-"""
-
-Stub file for a guaranteed safe import of duecredit constructs:  if duecredit
-is not available.
+"""Stub file for a guaranteed safe import of duecredit constructs:  if
+duecredit is not available.
 
 To use it, place it into your project codebase to be imported, e.g. copy as
 
@@ -29,14 +27,14 @@ __version__ = '0.0.8'
 
 
 class InactiveDueCreditCollector:
-    """Just a stub at the Collector which would not do anything"""
+    """Just a stub at the Collector which would not do anything."""
 
     def _donothing(self, *args, **kwargs):
-        """Perform no good and no bad"""
+        """Perform no good and no bad."""
         pass
 
     def dcite(self, *args, **kwargs):
-        """If I could cite I would"""
+        """If I could cite I would."""
 
         def nondecorating_decorator(func):
             return func
@@ -51,7 +49,7 @@ class InactiveDueCreditCollector:
 
 
 def _donothing_func(*args, **kwargs):
-    """Perform no good and no bad"""
+    """Perform no good and no bad."""
     pass
 
 

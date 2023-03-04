@@ -144,8 +144,8 @@ def _write_nibabel(
 ) -> None:
     """Write an image using NiBabel.
 
-    Expects a path with an extension that can be used by nibabel.save
-    to write a NIfTI-1 image, such as '.nii.gz' or '.img'
+    Expects a path with an extension that can be used by nibabel.save to
+    write a NIfTI-1 image, such as '.nii.gz' or '.img'
     """
     assert tensor.ndim == 4
     num_components = tensor.shape[0]
@@ -219,7 +219,7 @@ def write_matrix(matrix: torch.Tensor, path: TypePath):
 
 
 def _to_itk_convention(matrix):
-    """RAS to LPS"""
+    """RAS to LPS."""
     matrix = np.dot(FLIPXY_44, matrix)
     matrix = np.dot(matrix, FLIPXY_44)
     matrix = np.linalg.inv(matrix)
@@ -227,7 +227,7 @@ def _to_itk_convention(matrix):
 
 
 def _from_itk_convention(matrix):
-    """LPS to RAS"""
+    """LPS to RAS."""
     matrix = np.dot(matrix, FLIPXY_44)
     matrix = np.dot(FLIPXY_44, matrix)
     matrix = np.linalg.inv(matrix)
@@ -235,7 +235,7 @@ def _from_itk_convention(matrix):
 
 
 def _read_itk_matrix(path):
-    """Read an affine transform in ITK's .tfm format"""
+    """Read an affine transform in ITK's .tfm format."""
     transform = sitk.ReadTransform(str(path))
     parameters = transform.GetParameters()
     rotation_parameters = parameters[:9]
@@ -263,7 +263,7 @@ def _matrix_to_itk_transform(matrix, dimensions=3):
 
 
 def _read_niftyreg_matrix(trsf_path):
-    """Read a NiftyReg matrix and return it as a NumPy array"""
+    """Read a NiftyReg matrix and return it as a NumPy array."""
     matrix = np.loadtxt(trsf_path)
     matrix = np.linalg.inv(matrix)
     return torch.as_tensor(matrix)

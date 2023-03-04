@@ -406,10 +406,8 @@ class Transform(ABC):
         return sitk_to_nib(image)  # type: ignore[return-value]
 
     def _get_reproducing_arguments(self):
-        """
-        Return a dictionary with the arguments that would be necessary to
-        reproduce the transform exactly.
-        """
+        """Return a dictionary with the arguments that would be necessary to
+        reproduce the transform exactly."""
         reproducing_arguments = {
             'include': self.include,
             'exclude': self.exclude,
@@ -432,7 +430,7 @@ class Transform(ABC):
     @staticmethod
     @contextmanager
     def _use_seed(seed):
-        """Perform an operation using a specific seed for the PyTorch RNG"""
+        """Perform an operation using a specific seed for the PyTorch RNG."""
         torch_rng_state = torch.random.get_rng_state()
         torch.manual_seed(seed)
         yield

@@ -118,7 +118,7 @@ class TestCropOrPad(TorchioTestCase):
         self.mask_only((9, 18, 30))
 
     def test_center_mask(self):
-        """The mask bounding box and the input image have the same center"""
+        """The mask bounding box and the input image have the same center."""
         target_shape = 8, 22, 30
         transform_center = tio.CropOrPad(target_shape)
         transform_mask = tio.CropOrPad(target_shape, mask_name='label')
@@ -141,7 +141,7 @@ class TestCropOrPad(TorchioTestCase):
             )
 
     def test_mask_corners(self):
-        """The mask bounding box and the input image have the same center"""
+        """The mask bounding box and the input image have the same center."""
         target_shape = 8, 22, 30
         transform_center = tio.CropOrPad(target_shape)
         transform_mask = tio.CropOrPad(

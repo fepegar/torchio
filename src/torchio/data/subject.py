@@ -49,7 +49,6 @@ class Subject(dict):
         ...     'hospital': 'Hospital Juan Negrín',
         ... }
         >>> subject = tio.Subject(subject_dict)
-
     """  # noqa: B950
 
     def __init__(self, *args, **kwargs: Dict[str, Any]):
@@ -96,7 +95,6 @@ class Subject(dict):
             >>> colin = tio.datasets.Colin27()
             >>> colin.shape
             (1, 181, 217, 181)
-
         """
         self.check_consistent_attribute('shape')
         return self.get_first_image().shape

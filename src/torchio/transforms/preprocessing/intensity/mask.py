@@ -45,7 +45,6 @@ class Mask(IntensityTransform):
         masked = mask(subject)
         subject.add_image(masked.t1, 'Masked')
         subject.plot()
-
     """  # noqa: B950
 
     def __init__(

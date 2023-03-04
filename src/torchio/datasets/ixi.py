@@ -1,9 +1,6 @@
-"""
-The `Information eXtraction from Images (IXI)`_
-dataset contains "nearly 600 MR images from normal, healthy subjects",
-including "T1, T2 and PD-weighted images,
-MRA images and Diffusion-weighted images (15 directions)".
-
+"""The `Information eXtraction from Images (IXI)`_ dataset contains "nearly 600
+MR images from normal, healthy subjects", including "T1, T2 and PD-weighted
+images, MRA images and Diffusion-weighted images (15 directions)".
 
 .. note ::
     This data is made available under the

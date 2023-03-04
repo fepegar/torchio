@@ -226,7 +226,6 @@ class WeightedSampler(RandomSampler):
             >>> histogram  # doctest:+SKIP
             array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
-
         """  # noqa: B950
         # Get first value larger than random number ensuring the random number
         # is not exactly 0 (see https://github.com/fepegar/torchio/issues/510)

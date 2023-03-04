@@ -208,7 +208,6 @@ def _standardize_cutoff(cutoff: Sequence[float]) -> np.ndarray:
     """Standardize the cutoff values given in the configuration.
 
     Computes percentile landmark normalization by default.
-
     """
     cutoff_array = np.asarray(cutoff)
     cutoff_array[0] = max(0, cutoff_array[0])
