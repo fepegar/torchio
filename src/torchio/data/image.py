@@ -226,7 +226,7 @@ class Image(dict):
 
     @property
     def data(self) -> torch.Tensor:
-        """Tensor data. Same as :class:`Image.tensor`."""
+        """Tensor data (same as :class:`Image.tensor`)."""
         return self[DATA]
 
     @data.setter  # type: ignore[misc]
@@ -244,7 +244,7 @@ class Image(dict):
 
     @property
     def tensor(self) -> torch.Tensor:
-        """Tensor data. Same as :class:`Image.data`."""
+        """Tensor data (same as :class:`Image.data`)."""
         return self.data
 
     @property
@@ -653,6 +653,7 @@ class Image(dict):
         """Get the image as an instance of :class:`PIL.Image`.
 
         .. note:: Values will be clamped to 0-255 and cast to uint8.
+
         .. note:: To use this method, `Pillow` needs to be installed:
             `pip install Pillow`.
         """

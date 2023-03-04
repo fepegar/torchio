@@ -142,7 +142,8 @@ def _write_nibabel(
     affine: TypeData,
     path: TypePath,
 ) -> None:
-    """
+    """Write an image using NiBabel.
+
     Expects a path with an extension that can be used by nibabel.save
     to write a NIfTI-1 image, such as '.nii.gz' or '.img'
     """
