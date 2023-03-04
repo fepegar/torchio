@@ -16,6 +16,6 @@ jobs:
           # - "Do something."
           # - "Does something"
           # - "Do"
-          regex: '^[A-Z][a-zA-Z]*(?<!s)( [a-zA-Z]+)+[^.]$'  # Thanks, ChatGPT
+          regex: '^[A-Z][a-zA-Z]*(?<!s)( [a-zA-Z0-9]+)+[^.]$'  # Thanks, ChatGPT
           min_length: 10
           max_length: 72
