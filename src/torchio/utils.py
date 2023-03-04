@@ -32,14 +32,24 @@ def to_tuple(
     value: Any,
     length: int = 1,
 ) -> Tuple[TypeNumber, ...]:
-    """
-    to_tuple(1, length=1) -> (1,)
-    to_tuple(1, length=3) -> (1, 1, 1)
+    """Convert variable to tuple of length n.
+
+    Example:
+        >>> from torchio.utils import to_tuple
+        >>> to_tuple(1, length=1)
+        (1,)
+        >>> to_tuple(1, length=3)
+        (1, 1, 1)
 
     If value is an iterable, n is ignored and tuple(value) is returned
-    to_tuple((1,), length=1) -> (1,)
-    to_tuple((1, 2), length=1) -> (1, 2)
-    to_tuple([1, 2], length=3) -> (1, 2)
+
+    Example:
+        >>> to_tuple((1,), length=1)
+        (1,)
+        >>> to_tuple((1, 2), length=1)
+        (1, 2)
+        >>> to_tuple([1, 2], length=3)
+        (1, 2)
     """
     try:
         iter(value)
@@ -52,8 +62,12 @@ def to_tuple(
 def get_stem(
     path: Union[TypePath, Sequence[TypePath]],
 ) -> Union[str, List[str]]:
-    """
-    '/home/user/image.nii.gz' -> 'image'
+    """Get stem of path or paths.
+
+    Example:
+        >>> from torchio.utils import get_stem
+        >>> get_stem('/home/user/my_image.nii.gz')
+        'my_image'
     """
 
     def _get_stem(path_string: TypePath) -> str:
@@ -318,8 +332,8 @@ def add_images_from_batch(
 def guess_external_viewer() -> Optional[Path]:
     """Guess the path to an executable that could be used to visualize images.
 
-    Currently, it looks for 1) ITK-SNAP and 2) 3D Slicer. Implemented for macOS
-    and Windows.
+    Currently, it looks for 1) ITK-SNAP and 2) 3D Slicer. Implemented
+    for macOS and Windows.
     """
     if 'SITK_SHOW_COMMAND' in os.environ:
         return Path(os.environ['SITK_SHOW_COMMAND'])

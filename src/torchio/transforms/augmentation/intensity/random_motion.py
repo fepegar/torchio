@@ -264,7 +264,7 @@ class Motion(IntensityTransform, FourierTransform):
 
     @staticmethod
     def sort_spectra(spectra: List[torch.Tensor], times: np.ndarray):
-        """Use original spectrum to fill the center of k-space"""
+        """Use original spectrum to fill the center of k-space."""
         num_spectra = len(spectra)
         if np.any(times > 0.5):
             index = np.where(times > 0.5)[0].min()

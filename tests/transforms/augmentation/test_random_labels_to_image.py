@@ -15,9 +15,11 @@ class TestRandomLabelsToImage(TorchioTestCase):
         self.assertIn('image_from_labels', transformed)
 
     def test_deterministic_simulation(self):
-        """The transform creates an image where values are equal to given
-        mean if standard deviation is zero.
-        Using a label map."""
+        """The transform creates an image where values are equal to given mean
+        if standard deviation is zero.
+
+        Using a label map.
+        """
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5, 2],
@@ -36,7 +38,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_deterministic_simulation_with_discretized_label_map(self):
         """The transform creates an image where values are equal to given mean
         if standard deviation is zero.
-        Using a discretized label map."""
+
+        Using a discretized label map.
+        """
         transform = RandomLabelsToImage(
             label_key='label',
             mean=[0.5, 2],
@@ -54,8 +58,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
         )
 
     def test_deterministic_simulation_with_pv_map(self):
-        """The transform creates an image where values are equal to given
-        mean weighted by partial-volume if standard deviation is zero."""
+        """The transform creates an image where values are equal to given mean
+        weighted by partial-volume if standard deviation is zero."""
         subject = self.get_subject_with_partial_volume_label_map(components=2)
         transform = RandomLabelsToImage(
             label_key='label',
@@ -72,7 +76,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_deterministic_simulation_with_discretized_pv_map(self):
         """The transform creates an image where values are equal to given mean
         if standard deviation is zero.
-        Using a discretized partial-volume label map."""
+
+        Using a discretized partial-volume label map.
+        """
         subject = self.get_subject_with_partial_volume_label_map()
         transform = RandomLabelsToImage(
             label_key='label',
@@ -89,7 +95,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_filling(self):
         """The transform can fill in the generated image with an already
         existing image.
-        Using a label map."""
+
+        Using a label map.
+        """
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
@@ -105,7 +113,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_filling_with_discretized_label_map(self):
         """The transform can fill in the generated image with an already
         existing image.
-        Using a discretized label map."""
+
+        Using a discretized label map.
+        """
         transform = RandomLabelsToImage(
             label_key='label',
             image_key='t1',
@@ -122,7 +132,9 @@ class TestRandomLabelsToImage(TorchioTestCase):
     def test_filling_with_discretized_pv_label_map(self):
         """The transform can fill in the generated image with an already
         existing image.
-        Using a discretized partial-volume label map."""
+
+        Using a discretized partial-volume label map.
+        """
         subject = self.get_subject_with_partial_volume_label_map(components=2)
         transform = RandomLabelsToImage(
             label_key='label',
@@ -150,8 +162,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
         self.assert_tensor_not_equal(original_t1, transformed.t1.data)
 
     def test_with_bad_default_mean_range(self):
-        """The transform raises an error if default_mean is not a
-        single value nor a tuple of two values."""
+        """The transform raises an error if default_mean is not a single value
+        nor a tuple of two values."""
         with pytest.raises(ValueError):
             RandomLabelsToImage(label_key='label', default_mean=(0, 1, 2))
 
@@ -161,8 +173,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
             RandomLabelsToImage(label_key='label', default_mean='wrong')
 
     def test_with_bad_default_std_range(self):
-        """The transform raises an error if default_std is not a
-        single value nor a tuple of two values."""
+        """The transform raises an error if default_std is not a single value
+        nor a tuple of two values."""
         with pytest.raises(ValueError):
             RandomLabelsToImage(label_key='label', default_std=(0, 1, 2))
 
@@ -195,8 +207,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
             RandomLabelsToImage(label_key='label', mean=42)
 
     def test_with_wrong_mean_elements_type(self):
-        """The transform raises an error if wrong type are given for
-        mean elements."""
+        """The transform raises an error if wrong type are given for mean
+        elements."""
         with pytest.raises(ValueError):
             RandomLabelsToImage(label_key='label', mean=['wrong'])
 
@@ -206,8 +218,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
             RandomLabelsToImage(label_key='label', std=42)
 
     def test_with_wrong_std_elements_type(self):
-        """The transform raises an error if wrong type are given for
-        std elements."""
+        """The transform raises an error if wrong type are given for std
+        elements."""
         with pytest.raises(ValueError):
             RandomLabelsToImage(label_key='label', std=['wrong'])
 
@@ -217,8 +229,8 @@ class TestRandomLabelsToImage(TorchioTestCase):
             RandomLabelsToImage(label_key='label', mean=[0], std=[0, 1])
 
     def test_mean_and_used_labels_len_not_matching(self):
-        """The transform raises an error if mean and used_labels
-        length don't match."""
+        """The transform raises an error if mean and used_labels length don't
+        match."""
         with pytest.raises(AssertionError):
             RandomLabelsToImage(
                 label_key='label',
@@ -227,21 +239,21 @@ class TestRandomLabelsToImage(TorchioTestCase):
             )
 
     def test_std_and_used_labels_len_not_matching(self):
-        """The transform raises an error if std and used_labels
-        length don't match."""
+        """The transform raises an error if std and used_labels length don't
+        match."""
         with pytest.raises(AssertionError):
             RandomLabelsToImage(label_key='label', std=[0], used_labels=[0, 1])
 
     def test_mean_not_matching_number_of_labels(self):
-        """The transform raises an error at runtime if mean length
-        does not match label numbers."""
+        """The transform raises an error at runtime if mean length does not
+        match label numbers."""
         transform = RandomLabelsToImage(label_key='label', mean=[0])
         with pytest.raises(RuntimeError):
             transform(self.sample_subject)
 
     def test_std_not_matching_number_of_labels(self):
-        """The transform raises an error at runtime if std length
-        does not match label numbers."""
+        """The transform raises an error at runtime if std length does not
+        match label numbers."""
         transform = RandomLabelsToImage(label_key='label', std=[1, 2, 3])
         with pytest.raises(RuntimeError):
             transform(self.sample_subject)

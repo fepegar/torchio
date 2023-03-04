@@ -1,7 +1,7 @@
-"""
-Most of this code is from torchvision.
-I will remove all this once verbosity is reduced.
-More info: https://github.com/pytorch/vision/issues/2830
+"""Most of this code is from torchvision.
+
+I will remove all this once verbosity is reduced. More info:
+https://github.com/pytorch/vision/issues/2830
 """
 import gzip
 import hashlib

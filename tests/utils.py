@@ -107,7 +107,7 @@ class TorchioTestCase(unittest.TestCase):
         return subject
 
     def get_reference_image_and_path(self):
-        """Return a reference image and its path"""
+        """Return a reference image and its path."""
         path = self.get_image_path(
             'ref',
             shape=(10, 20, 31),

@@ -35,7 +35,6 @@ class Clamp(IntensityTransform):
         ct_clamped = clamp(ct)
         subject.add_image(ct_clamped, 'Clamped')
         subject.plot()
-
     """
 
     def __init__(
