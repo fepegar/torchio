@@ -1,4 +1,4 @@
-name: Test
+name: Tests
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
     - cron: "0 4 * * *"
 
 jobs:
-  Unit-tests:
+  pytest:
+    name: Unit tests
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -23,6 +24,7 @@ jobs:
             python-version: '3.9'
           - os: macos-latest
             python-version: '3.11'
+
           - os: windows-latest
             python-version: '3.7'
           - os: windows-latest
@@ -40,7 +42,7 @@ jobs:
       OS: ${{ matrix.os }}
 
     steps:
-      - name: Set up python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -51,19 +53,20 @@ jobs:
           fetch-depth: 0
 
       - name: Install tox
-        run: pip install tox tox-gh-actions codecov
+        run: pip install tox codecov
 
       - name: Run unit tests
-        run: tox
+        run: tox -e py
 
       - name: Upload coverage
         run: codecov
 
-  CLI-tests:
+  cli:
+    name: CLI smoke tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
