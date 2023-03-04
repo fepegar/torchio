@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomGamma(TorchioTestCase):
     """Tests for `RandomGamma`."""
+
     def get_random_tensor_zero_one(self):
         return torch.rand(4, 5, 6, 7)
 
@@ -27,7 +28,8 @@ class TestRandomGamma(TorchioTestCase):
         tensor = self.get_random_tensor_zero_one()
         transformed = transform(tensor)
         self.assert_tensor_almost_equal(
-            tensor == 1, transformed,
+            tensor == 1,
+            transformed,
         )
 
     def test_with_low_gamma(self):
@@ -35,7 +37,8 @@ class TestRandomGamma(TorchioTestCase):
         tensor = self.get_random_tensor_zero_one()
         transformed = transform(tensor)
         self.assert_tensor_almost_equal(
-            tensor > 0, transformed,
+            tensor > 0,
+            transformed,
         )
 
     def test_wrong_gamma_type(self):

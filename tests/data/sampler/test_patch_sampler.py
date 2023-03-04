@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestPatchSampler(TorchioTestCase):
     """Tests for `PatchSampler` class."""
+
     def test_bad_patch_size(self):
         with pytest.raises(ValueError):
             PatchSampler(0)

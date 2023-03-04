@@ -29,7 +29,6 @@ def read_clip(path, undersample=4):
 
 
 def plot_gif(image):
-
     def _update_frame(num):
         frame = get_frame(image, num)
         im.set_data(frame)
@@ -49,17 +48,19 @@ def plot_gif(image):
     )
 
 
-# Source: https://thehigherlearning.wordpress.com/2014/06/25/watching-a-cell-divide-under-an-electron-microscope-is-mesmerizing-gif/  # noqa: E501
+# Source: https://thehigherlearning.wordpress.com/2014/06/25/watching-a-cell-divide-under-an-electron-microscope-is-mesmerizing-gif/  # noqa: B950
 array, delay = read_clip('nBTu3oi.gif')
 plt.imshow(array[..., 0].transpose(1, 2, 0))
 plt.plot()
 image = tio.ScalarImage(tensor=array, delay=delay)
 original_animation = plot_gif(image)
 
-transform = tio.Compose((
-    tio.Resample((2, 2, 1)),
-    tio.RandomAffine(degrees=(0, 0, 20)),
-))
+transform = tio.Compose(
+    (
+        tio.Resample((2, 2, 1)),
+        tio.RandomAffine(degrees=(0, 0, 20)),
+    )
+)
 
 torch.manual_seed(0)
 transformed = transform(image)

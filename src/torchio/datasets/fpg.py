@@ -51,7 +51,6 @@ class FPG(_RawSubjectCopySubject):
             ),
             'seg': LabelMap(
                 download_root / self.filenames['seg'],
-
                 rigid_matrix=rigid,
                 affine_matrix=affine,
             ),

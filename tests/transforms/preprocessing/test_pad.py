@@ -8,6 +8,7 @@ from ...utils import TorchioTestCase
 
 class TestPad(TorchioTestCase):
     """Tests for `Pad`."""
+
     def test_pad(self):
         image = self.sample_subject.t1
         padding = 1, 2, 3, 4, 5, 6

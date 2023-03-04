@@ -4,7 +4,6 @@ from ..utils import TorchioTestCase
 
 
 class TestReproducibility(TorchioTestCase):
-
     def test_all_random_transforms(self):
         transform = self.get_large_composed_transform()
         # Ignore elastic deformation and gamma warnings during execution

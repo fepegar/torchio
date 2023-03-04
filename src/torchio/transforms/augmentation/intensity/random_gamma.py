@@ -61,22 +61,16 @@ class RandomGamma(RandomTransform, IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(subject)
-    """  # noqa: E501
-    def __init__(
-            self,
-            log_gamma: TypeRangeFloat = (-0.3, 0.3),
-            **kwargs
-    ):
+    """  # noqa: B950
+
+    def __init__(self, log_gamma: TypeRangeFloat = (-0.3, 0.3), **kwargs):
         super().__init__(**kwargs)
         self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
         arguments: Dict[str, dict] = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
-            gammas = [
-                self.get_params(self.log_gamma_range)
-                for _ in image.data
-            ]
+            gammas = [self.get_params(self.log_gamma_range) for _ in image.data]
             arguments['gamma'][name] = gammas
         transform = Gamma(**self.add_include_exclude(arguments))
         transformed = transform(subject)
@@ -120,12 +114,9 @@ class Gamma(IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.Gamma(0.8)
         >>> transformed = transform(subject)
-    """  # noqa: E501
-    def __init__(
-            self,
-            gamma: float,
-            **kwargs
-    ):
+    """  # noqa: B950
+
+    def __init__(self, gamma: float, **kwargs):
         super().__init__(**kwargs)
         self.gamma = gamma
         self.args_names = ['gamma']
@@ -155,5 +146,5 @@ def power(tensor, gamma):
     if tensor.min() < 0:
         output = tensor.sign() * tensor.abs() ** gamma
     else:
-        output = tensor ** gamma
+        output = tensor**gamma
     return output

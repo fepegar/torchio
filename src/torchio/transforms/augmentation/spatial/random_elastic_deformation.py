@@ -118,23 +118,23 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         .. [#] Technically, :math:`2 \epsilon` should be added to the
             image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
             source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
-            self,
-            num_control_points: Union[int, Tuple[int, int, int]] = 7,
-            max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
-            locked_borders: int = 2,
-            image_interpolation: str = 'linear',
-            label_interpolation: str = 'nearest',
-            **kwargs
+        self,
+        num_control_points: Union[int, Tuple[int, int, int]] = 7,
+        max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
+        locked_borders: int = 2,
+        image_interpolation: str = 'linear',
+        label_interpolation: str = 'nearest',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
-        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: E501
+        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: B950
         self.max_displacement = to_tuple(max_displacement, length=3)
-        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: E501
+        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: B950
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
             raise ValueError('locked_borders must be 0, 1, or 2')
@@ -154,9 +154,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
 
     @staticmethod
     def get_params(
-            num_control_points: TypeTripletInt,
-            max_displacement: Tuple[float, float, float],
-            num_locked_borders: int,
+        num_control_points: TypeTripletInt,
+        max_displacement: Tuple[float, float, float],
+        num_locked_borders: int,
     ) -> np.ndarray:
         grid_shape = num_control_points
         num_dimensions = 3
@@ -210,12 +210,12 @@ class ElasticDeformation(SpatialTransform):
     """
 
     def __init__(
-            self,
-            control_points: np.ndarray,
-            max_displacement: TypeTripletFloat,
-            image_interpolation: str = 'linear',
-            label_interpolation: str = 'nearest',
-            **kwargs
+        self,
+        control_points: np.ndarray,
+        max_displacement: TypeTripletFloat,
+        image_interpolation: str = 'linear',
+        label_interpolation: str = 'nearest',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.control_points = control_points
@@ -235,8 +235,8 @@ class ElasticDeformation(SpatialTransform):
         ]
 
     def get_bspline_transform(
-            self,
-            image: sitk.Image,
+        self,
+        image: sitk.Image,
     ) -> sitk.BSplineTransform:
         control_points = self.control_points.copy()
         if self.invert_transform:
@@ -253,15 +253,15 @@ class ElasticDeformation(SpatialTransform):
 
     @staticmethod
     def parse_free_form_transform(
-            transform: sitk.BSplineTransform,
-            max_displacement: Sequence[TypeTripletInt],
+        transform: sitk.BSplineTransform,
+        max_displacement: Sequence[TypeTripletInt],
     ) -> None:
         """Issue a warning is possible folding is detected."""
         coefficient_images = transform.GetCoefficientImages()
         grid_spacing = coefficient_images[0].GetSpacing()
         conflicts = np.array(max_displacement) > np.array(grid_spacing) / 2
         if np.any(conflicts):
-            where, = np.where(conflicts)
+            (where,) = np.where(conflicts)
             message = (
                 'The maximum displacement is larger than the coarse grid'
                 f' spacing for dimensions: {where.tolist()}, so folding may'
@@ -289,10 +289,10 @@ class ElasticDeformation(SpatialTransform):
         return subject
 
     def apply_bspline_transform(
-            self,
-            tensor: torch.Tensor,
-            affine: np.ndarray,
-            interpolation: str,
+        self,
+        tensor: torch.Tensor,
+        affine: np.ndarray,
+        interpolation: str,
     ) -> torch.Tensor:
         assert tensor.dim() == 4
         results = []
@@ -319,7 +319,7 @@ class ElasticDeformation(SpatialTransform):
 
 
 def _parse_num_control_points(
-        num_control_points: TypeTripletInt,
+    num_control_points: TypeTripletInt,
 ) -> None:
     for axis, number in enumerate(num_control_points):
         if not isinstance(number, int) or number < 4:
@@ -331,7 +331,7 @@ def _parse_num_control_points(
 
 
 def _parse_max_displacement(
-        max_displacement: Tuple[float, float, float],
+    max_displacement: Tuple[float, float, float],
 ) -> None:
     for axis, number in enumerate(max_displacement):
         if not isinstance(number, Number) or number < 0:

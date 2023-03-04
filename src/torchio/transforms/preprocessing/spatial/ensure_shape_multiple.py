@@ -112,13 +112,14 @@ class EnsureShapeMultiple(SpatialTransform):
         >>> transformed = transform(image_2d)
         >>> transformed.shape
         torch.Size([1, 176, 216, 1])
-    """  # noqa: E501
+    """  # noqa: B950
+
     def __init__(
-            self,
-            target_multiple: Union[int, TypeTripletInt],
-            *,
-            method: str = 'pad',
-            **kwargs
+        self,
+        target_multiple: Union[int, TypeTripletInt],
+        *,
+        method: str = 'pad',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.target_multiple = np.array(to_tuple(target_multiple, 3))
@@ -128,7 +129,7 @@ class EnsureShapeMultiple(SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         source_shape = np.array(subject.spatial_shape, np.uint16)
-        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]  # noqa: E501
+        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]  # noqa: B950
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
         target_shape = np.maximum(target_shape, 1)

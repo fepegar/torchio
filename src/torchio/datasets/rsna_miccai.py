@@ -50,18 +50,19 @@ class RSNAMICCAI(SubjectsDataset):
 
 
     .. _RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge: https://www.kaggle.com/c/rsna-miccai-brain-tumor-radiogenomic-classification
-    """  # noqa: E501
+    """  # noqa: B950
+
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'
     bad_subjects = '00109', '00123', '00709'
 
     def __init__(
-            self,
-            root_dir: TypePath,
-            train: bool = True,
-            ignore_empty: bool = True,
-            modalities: Sequence[str] = ('T1w', 'T1wCE', 'T2w', 'FLAIR'),
-            **kwargs,
+        self,
+        root_dir: TypePath,
+        train: bool = True,
+        ignore_empty: bool = True,
+        modalities: Sequence[str] = ('T1w', 'T1wCE', 'T2w', 'FLAIR'),
+        **kwargs,
     ):
         self.root_dir = Path(root_dir).expanduser().resolve()
         if isinstance(modalities, str):
@@ -72,10 +73,10 @@ class RSNAMICCAI(SubjectsDataset):
         self.train = train
 
     def _get_subjects(
-            self,
-            root_dir: Path,
-            train: bool,
-            ignore_empty: bool,
+        self,
+        root_dir: Path,
+        train: bool,
+        ignore_empty: bool,
     ) -> List[Subject]:
         subjects = []
         if train:
@@ -84,8 +85,7 @@ class RSNAMICCAI(SubjectsDataset):
                 with open(csv_path) as csvfile:
                     reader = csv.DictReader(csvfile)
                     labels_dict = {
-                        row[self.id_key]: int(row[self.label_key])
-                        for row in reader
+                        row[self.id_key]: int(row[self.label_key]) for row in reader
                     }
             except FileNotFoundError:
                 warnings.warn(

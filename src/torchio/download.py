@@ -50,12 +50,12 @@ def gen_bar_updater():
 
 # Adapted from torchvision, removing print statements
 def download_and_extract_archive(
-        url: str,
-        download_root: TypePath,
-        extract_root: Optional[TypePath] = None,
-        filename: Optional[TypePath] = None,
-        md5: Optional[str] = None,
-        remove_finished: bool = False,
+    url: str,
+    download_root: TypePath,
+    extract_root: Optional[TypePath] = None,
+    filename: Optional[TypePath] = None,
+    md5: Optional[str] = None,
+    remove_finished: bool = False,
 ) -> None:
     download_root = os.path.expanduser(download_root)
     if extract_root is None:
@@ -121,10 +121,10 @@ def extract_archive(from_path, to_path=None, remove_finished=False):
 
 # Adapted from torchvision, removing print statements
 def download_url(
-        url: str,
-        root: TypePath,
-        filename: Optional[TypePath] = None,
-        md5: Optional[str] = None,
+    url: str,
+    root: TypePath,
+    filename: Optional[TypePath] = None,
+    md5: Optional[str] = None,
 ) -> None:
     """Download a file from a url and place it in root.
 
@@ -146,19 +146,23 @@ def download_url(
         try:
             print('Downloading ' + url + ' to ' + fpath)  # noqa: T201
             urllib.request.urlretrieve(
-                url, fpath,
+                url,
+                fpath,
                 reporthook=gen_bar_updater(),
             )
         except (urllib.error.URLError, OSError) as e:
             if url[:5] == 'https':
                 url = url.replace('https:', 'http:')
                 message = (
-                    'Failed download. Trying https -> http instead.'
-                    ' Downloading ' + url + ' to ' + fpath
+                    'Failed download. Trying https -> http instead. Downloading '
+                    + url
+                    + ' to '
+                    + fpath
                 )
                 print(message)  # noqa: T201
                 urllib.request.urlretrieve(
-                    url, fpath,
+                    url,
+                    fpath,
                     reporthook=gen_bar_updater(),
                 )
             else:

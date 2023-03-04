@@ -32,11 +32,12 @@ class RandomNoise(RandomTransform, IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            mean: Union[float, Tuple[float, float]] = 0,
-            std: Union[float, Tuple[float, float]] = (0, 0.25),
-            **kwargs
+        self,
+        mean: Union[float, Tuple[float, float]] = 0,
+        std: Union[float, Tuple[float, float]] = (0, 0.25),
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.mean_range = self._parse_range(mean, 'mean')
@@ -55,9 +56,9 @@ class RandomNoise(RandomTransform, IntensityTransform):
         return transformed
 
     def get_params(
-            self,
-            mean_range: Tuple[float, float],
-            std_range: Tuple[float, float],
+        self,
+        mean_range: Tuple[float, float],
+        std_range: Tuple[float, float],
     ) -> Tuple[float, float, int]:
         mean = self.sample_uniform(*mean_range)
         std = self.sample_uniform(*std_range)
@@ -79,12 +80,13 @@ class Noise(IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            mean: Union[float, Dict[str, float]],
-            std: Union[float, Dict[str, float]],
-            seed: Union[int, Sequence[int]],
-            **kwargs
+        self,
+        mean: Union[float, Dict[str, float]],
+        std: Union[float, Dict[str, float]],
+        seed: Union[int, Sequence[int]],
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.mean = mean  # type: ignore[assignment]
@@ -97,8 +99,8 @@ class Noise(IntensityTransform):
         mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: E501
-                mean, std, seed = values  # type: ignore[assignment]  # noqa: E501
+                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: B950
+                mean, std, seed = values  # type: ignore[assignment]  # noqa: B950
             with self._use_seed(seed):
                 assert isinstance(mean, float)
                 assert isinstance(std, float)

@@ -13,7 +13,6 @@ import torchio as tio
 
 
 class ResampleZ:
-
     def __init__(self, spacing_z):
         self.spacing_z = spacing_z
 

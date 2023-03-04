@@ -5,7 +5,6 @@ from ...utils import TorchioTestCase
 
 
 class TestEnsureShapeMultiple(TorchioTestCase):
-
     def test_bad_method(self):
         with pytest.raises(ValueError):
             tio.EnsureShapeMultiple(1, method='bad')

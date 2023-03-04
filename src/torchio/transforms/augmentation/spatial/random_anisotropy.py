@@ -44,29 +44,31 @@ class RandomAnisotropy(RandomTransform):
         ... )   # Multiply spacing of one of the 3 axes by a factor randomly chosen in [2, 5]
         >>> colin = tio.datasets.Colin27()
         >>> transformed = transform(colin)
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
-            self,
-            axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
-            downsampling: TypeRangeFloat = (1.5, 5),
-            image_interpolation: str = 'linear',
-            scalars_only: bool = True,
-            **kwargs
+        self,
+        axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
+        downsampling: TypeRangeFloat = (1.5, 5),
+        image_interpolation: str = 'linear',
+        scalars_only: bool = True,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.axes = self.parse_axes(axes)
         self.downsampling_range = self._parse_range(
-            downsampling, 'downsampling', min_constraint=1,
+            downsampling,
+            'downsampling',
+            min_constraint=1,
         )
         parsed_interpolation = self.parse_interpolation(image_interpolation)
         self.image_interpolation = parsed_interpolation
         self.scalars_only = scalars_only
 
     def get_params(
-            self,
-            axes: Tuple[int, ...],
-            downsampling_range: Tuple[float, float],
+        self,
+        axes: Tuple[int, ...],
+        downsampling_range: Tuple[float, float],
     ) -> Tuple[int, float]:
         axis = axes[torch.randint(0, len(axes), (1,))]
         downsampling = self.sample_uniform(*downsampling_range)
@@ -105,8 +107,7 @@ class RandomAnisotropy(RandomTransform):
 
         sx, sy, sz = target_spacing  # for mypy
         downsample = Resample(
-            target=(sx, sy, sz),
-            **self.add_include_exclude(arguments)
+            target=(sx, sy, sz), **self.add_include_exclude(arguments)
         )
         downsampled = downsample(subject)
         image = subject.get_first_image()

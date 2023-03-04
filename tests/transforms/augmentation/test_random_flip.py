@@ -6,7 +6,6 @@ from ...utils import TorchioTestCase
 
 
 class TestRandomFlip(TorchioTestCase):
-
     def test_2d(self):
         subject = self.make_2d(self.sample_subject)
         transform = tio.RandomFlip(axes=(1, 2), flip_probability=1)

@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestOneHot(TorchioTestCase):
     """Tests for `OneHot`."""
+
     def test_one_hot(self):
         image = self.sample_subject.label
         one_hot = tio.OneHot(num_classes=3)(image)

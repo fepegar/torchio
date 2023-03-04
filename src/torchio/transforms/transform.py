@@ -40,9 +40,12 @@ TypeBounds = Union[
 ]
 TypeMaskingMethod = Union[str, TypeCallable, TypeBounds, None]
 ANATOMICAL_AXES = (
-    'Left', 'Right',
-    'Posterior', 'Anterior',
-    'Inferior', 'Superior',
+    'Left',
+    'Right',
+    'Posterior',
+    'Anterior',
+    'Inferior',
+    'Superior',
 )
 
 
@@ -87,16 +90,17 @@ class Transform(ABC):
         label_keys: If the input is a dictionary, names of images that
             correspond to label maps.
     """
+
     def __init__(
-            self,
-            p: float = 1,
-            copy: bool = True,
-            include: TypeKeys = None,
-            exclude: TypeKeys = None,
-            keys: TypeKeys = None,
-            keep: Optional[Dict[str, str]] = None,
-            parse_input: bool = True,
-            label_keys: Optional[Sequence[str]] = None,
+        self,
+        p: float = 1,
+        copy: bool = True,
+        include: TypeKeys = None,
+        exclude: TypeKeys = None,
+        keys: TypeKeys = None,
+        keep: Optional[Dict[str, str]] = None,
+        parse_input: bool = True,
+        label_keys: Optional[Sequence[str]] = None,
     ):
         self.probability = self.parse_probability(p)
         self.copy = copy
@@ -108,7 +112,8 @@ class Transform(ABC):
             warnings.warn(message, DeprecationWarning, stacklevel=2)
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
-            include, exclude,
+            include,
+            exclude,
         )
         self.keep = keep
         self.parse_input = parse_input
@@ -119,8 +124,8 @@ class Transform(ABC):
         self.args_names: List[str] = []
 
     def __call__(
-            self,
-            data: TypeTransformInput,
+        self,
+        data: TypeTransformInput,
     ) -> TypeTransformInput:
         """Transform data and return a result of the same type.
 
@@ -194,6 +199,7 @@ class Transform(ABC):
         from .augmentation import RandomTransform
         from . import Compose, OneOf, CropOrPad, EnsureShapeMultiple
         from .preprocessing import SequentialLabels, Resize
+
         call_others = (
             RandomTransform,
             Compose,
@@ -235,11 +241,11 @@ class Transform(ABC):
 
     @staticmethod
     def _parse_range(
-            nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
-            name: str,
-            min_constraint: Optional[TypeNumber] = None,
-            max_constraint: Optional[TypeNumber] = None,
-            type_constraint: Optional[type] = None,
+        nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
+        name: str,
+        min_constraint: Optional[TypeNumber] = None,
+        max_constraint: Optional[TypeNumber] = None,
+        type_constraint: Optional[type] = None,
     ) -> Tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
@@ -275,24 +281,32 @@ class Transform(ABC):
         if isinstance(nums_range, numbers.Number):  # single number given
             if nums_range < 0:
                 raise ValueError(
-                    f'If {name} is a single number,'
-                    f' it must be positive, not {nums_range}',
+                    (
+                        f'If {name} is a single number,'
+                        f' it must be positive, not {nums_range}'
+                    ),
                 )
             if min_constraint is not None and nums_range < min_constraint:
                 raise ValueError(
-                    f'If {name} is a single number, it must be greater'
-                    f' than {min_constraint}, not {nums_range}',
+                    (
+                        f'If {name} is a single number, it must be greater'
+                        f' than {min_constraint}, not {nums_range}'
+                    ),
                 )
             if max_constraint is not None and nums_range > max_constraint:
                 raise ValueError(
-                    f'If {name} is a single number, it must be smaller'
-                    f' than {max_constraint}, not {nums_range}',
+                    (
+                        f'If {name} is a single number, it must be smaller'
+                        f' than {max_constraint}, not {nums_range}'
+                    ),
                 )
             if type_constraint is not None:
                 if not isinstance(nums_range, type_constraint):
                     raise ValueError(
-                        f'If {name} is a single number, it must be of'
-                        f' type {type_constraint}, not {nums_range}',
+                        (
+                            f'If {name} is a single number, it must be of'
+                            f' type {type_constraint}, not {nums_range}'
+                        ),
                     )
             min_range = -nums_range if min_constraint is None else nums_range
             return (min_range, nums_range)
@@ -301,34 +315,40 @@ class Transform(ABC):
             min_value, max_value = nums_range  # type: ignore[misc]
         except (TypeError, ValueError):
             raise ValueError(
-                f'If {name} is not a single number, it must be'
-                f' a sequence of len 2, not {nums_range}',
+                (
+                    f'If {name} is not a single number, it must be'
+                    f' a sequence of len 2, not {nums_range}'
+                ),
             )
 
         min_is_number = isinstance(min_value, numbers.Number)
         max_is_number = isinstance(max_value, numbers.Number)
         if not min_is_number or not max_is_number:
-            message = (
-                f'{name} values must be numbers, not {nums_range}'
-            )
+            message = f'{name} values must be numbers, not {nums_range}'
             raise ValueError(message)
 
         if min_value > max_value:
             raise ValueError(
-                f'If {name} is a sequence, the second value must be'
-                f' equal or greater than the first, but it is {nums_range}',
+                (
+                    f'If {name} is a sequence, the second value must be'
+                    f' equal or greater than the first, but it is {nums_range}'
+                ),
             )
 
         if min_constraint is not None and min_value < min_constraint:
             raise ValueError(
-                f'If {name} is a sequence, the first value must be greater'
-                f' than {min_constraint}, but it is {min_value}',
+                (
+                    f'If {name} is a sequence, the first value must be greater'
+                    f' than {min_constraint}, but it is {min_value}'
+                ),
             )
 
         if max_constraint is not None and max_value > max_constraint:
             raise ValueError(
-                f'If {name} is a sequence, the second value must be smaller'
-                f' than {max_constraint}, but it is {max_value}',
+                (
+                    f'If {name} is a sequence, the second value must be'
+                    f' smaller than {max_constraint}, but it is {max_value}'
+                ),
             )
 
         if type_constraint is not None:
@@ -336,8 +356,10 @@ class Transform(ABC):
             max_type_ok = isinstance(max_value, type_constraint)
             if not min_type_ok or not max_type_ok:
                 raise ValueError(
-                    f'If "{name}" is a sequence, its values must be of'
-                    f' type "{type_constraint}", not "{type(nums_range)}"',
+                    (
+                        f'If "{name}" is a sequence, its values must be of'
+                        f' type "{type_constraint}", not "{type(nums_range)}"'
+                    ),
                 )
         return nums_range  # type: ignore[return-value]
 
@@ -362,17 +384,14 @@ class Transform(ABC):
     def parse_probability(probability: float) -> float:
         is_number = isinstance(probability, numbers.Number)
         if not (is_number and 0 <= probability <= 1):
-            message = (
-                'Probability must be a number in [0, 1],'
-                f' not {probability}'
-            )
+            message = f'Probability must be a number in [0, 1], not {probability}'
             raise ValueError(message)
         return probability
 
     @staticmethod
     def parse_include_and_exclude(
-            include: TypeKeys = None,
-            exclude: TypeKeys = None,
+        include: TypeKeys = None,
+        exclude: TypeKeys = None,
     ) -> Tuple[TypeKeys, TypeKeys]:
         if include is not None and exclude is not None:
             raise ValueError('Include and exclude cannot both be specified')
@@ -428,9 +447,9 @@ class Transform(ABC):
         if bounds_parameters is None:
             return None
         try:
-            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: E501
+            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: B950
         except TypeError:
-            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: E501
+            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: B950
 
         # Check that numbers are integers
         for number in bounds_parameters:  # type: ignore[union-attr]
@@ -440,7 +459,7 @@ class Transform(ABC):
                     f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
-        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: E501
+        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: B950
         bounds_parameters_length = len(bounds_parameters_tuple)
         if bounds_parameters_length == 6:
             return bounds_parameters_tuple  # type: ignore[return-value]
@@ -465,11 +484,11 @@ class Transform(ABC):
         return mask
 
     def get_mask_from_masking_method(
-            self,
-            masking_method: TypeMaskingMethod,
-            subject: Subject,
-            tensor: torch.Tensor,
-            labels: Optional[Sequence[int]] = None,
+        self,
+        masking_method: TypeMaskingMethod,
+        subject: Subject,
+        tensor: torch.Tensor,
+        labels: Optional[Sequence[int]] = None,
     ) -> torch.Tensor:
         if masking_method is None:
             return self.ones(tensor)
@@ -487,10 +506,11 @@ class Transform(ABC):
             possible_axis = masking_method.capitalize()
             if possible_axis in ANATOMICAL_AXES:
                 return self.get_mask_from_anatomical_label(
-                    possible_axis, tensor,
+                    possible_axis,
+                    tensor,
                 )
         elif type(masking_method) in (tuple, list, int):
-            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: E501
+            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: B950
         first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
         message = (
             'Masking method must be one of:\n'
@@ -507,8 +527,8 @@ class Transform(ABC):
 
     @staticmethod
     def get_mask_from_anatomical_label(
-            anatomical_label: str,
-            tensor: torch.Tensor,
+        anatomical_label: str,
+        tensor: torch.Tensor,
     ) -> torch.Tensor:
         # Assume the image is in RAS orientation
         anatomical_label = anatomical_label.capitalize()
@@ -521,23 +541,23 @@ class Transform(ABC):
         mask = torch.zeros_like(tensor, dtype=torch.bool)
         _, width, height, depth = tensor.shape
         if anatomical_label == 'Right':
-            mask[:, width // 2:] = True
+            mask[:, width // 2 :] = True
         elif anatomical_label == 'Left':
-            mask[:, :width // 2] = True
+            mask[:, : width // 2] = True
         elif anatomical_label == 'Anterior':
-            mask[:, :, height // 2:] = True
+            mask[:, :, height // 2 :] = True
         elif anatomical_label == 'Posterior':
-            mask[:, :, :height // 2] = True
+            mask[:, :, : height // 2] = True
         elif anatomical_label == 'Superior':
-            mask[:, :, :, depth // 2:] = True
+            mask[:, :, :, depth // 2 :] = True
         elif anatomical_label == 'Inferior':
-            mask[:, :, :, :depth // 2] = True
+            mask[:, :, :, : depth // 2] = True
         return mask
 
     def get_mask_from_bounds(
-            self,
-            bounds_parameters: TypeBounds,
-            tensor: torch.Tensor,
+        self,
+        bounds_parameters: TypeBounds,
+        tensor: torch.Tensor,
     ) -> torch.Tensor:
         bounds_parameters = self.parse_bounds(bounds_parameters)
         assert bounds_parameters is not None

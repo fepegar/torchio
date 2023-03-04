@@ -62,13 +62,13 @@ class SubjectsDataset(Dataset):
 
     .. tip:: To quickly iterate over the subjects without loading the images,
         use :meth:`dry_iter()`.
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
-            self,
-            subjects: Sequence[Subject],
-            transform: Optional[Callable] = None,
-            load_getitem: bool = True,
+        self,
+        subjects: Sequence[Subject],
+        transform: Optional[Callable] = None,
+        load_getitem: bool = True,
     ):
         self._parse_subjects_list(subjects)
         self._subjects = subjects
@@ -141,9 +141,7 @@ class SubjectsDataset(Dataset):
         try:
             iter(subjects_list)
         except TypeError as e:
-            message = (
-                f'Subject list must be an iterable, not {type(subjects_list)}'
-            )
+            message = f'Subject list must be an iterable, not {type(subjects_list)}'
             raise TypeError(message) from e
 
         # Check that it's not empty

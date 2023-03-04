@@ -8,6 +8,7 @@ from .transform import Transform
 
 class IntensityTransform(Transform):
     """Transform that modifies voxel intensities only."""
+
     def get_images_dict(self, subject: Subject) -> Dict[str, Image]:
         images_dict = subject.get_images_dict(
             intensity_only=True,

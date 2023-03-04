@@ -20,13 +20,15 @@ subject = tio.datasets.FPG()
 subject.remove_image('seg')
 subjects = 4 * [subject]
 
-transform = tio.Compose((
-    tio.ToCanonical(),
-    tio.RandomGamma(p=0.75),
-    tio.RandomBlur(p=0.5),
-    tio.RandomFlip(),
-    tio.RescaleIntensity(out_min_max=(-1, 1)),
-))
+transform = tio.Compose(
+    (
+        tio.ToCanonical(),
+        tio.RandomGamma(p=0.75),
+        tio.RandomBlur(p=0.5),
+        tio.RandomFlip(),
+        tio.RescaleIntensity(out_min_max=(-1, 1)),
+    )
+)
 
 dataset = tio.SubjectsDataset(subjects, transform=transform)
 
@@ -35,7 +37,9 @@ print('Applied transforms:')  # noqa: T201
 pprint.pprint(transformed.history)  # noqa: T203
 print('\nComposed transform to reproduce history:')  # noqa: T201
 print(transformed.get_composed_history())  # noqa: T201
-print('\nComposed transform to invert applied transforms when possible:')  # noqa: T201, E501
+print(
+    '\nComposed transform to invert applied transforms when possible:'
+)  # noqa: T201, B950
 print(transformed.get_inverse_transform(ignore_intensity=False))  # noqa: T201
 
 loader = torch.utils.data.DataLoader(

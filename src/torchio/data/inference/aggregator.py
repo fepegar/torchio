@@ -30,7 +30,8 @@ class GridAggregator:
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
         information about patch-based sampling.
-    """  # noqa: E501
+    """  # noqa: B950
+
     def __init__(self, sampler: GridSampler, overlap_mode: str = 'crop'):
         subject = sampler.subject
         self.volume_padded = sampler.padding_mode is not None
@@ -53,10 +54,10 @@ class GridAggregator:
             raise ValueError(message)
 
     def _crop_patch(
-            self,
-            patch: torch.Tensor,
-            location: np.ndarray,
-            overlap: np.ndarray,
+        self,
+        patch: torch.Tensor,
+        location: np.ndarray,
+        overlap: np.ndarray,
     ) -> Tuple[torch.Tensor, np.ndarray]:
         half_overlap = overlap // 2  # overlap is always even in grid sampler
         index_ini, index_fin = location[:3], location[3:]
@@ -124,9 +125,9 @@ class GridAggregator:
         self._hann_window = self._get_hann_window(self.patch_size)
 
     def add_batch(
-            self,
-            batch_tensor: torch.Tensor,
-            locations: torch.Tensor,
+        self,
+        batch_tensor: torch.Tensor,
+        locations: torch.Tensor,
     ) -> None:
         """Add batch processed by a CNN to the output prediction volume.
 
@@ -234,12 +235,14 @@ class GridAggregator:
             # old and one the operands is int:
             # https://github.com/fepegar/torchio/issues/526
             output = torch.true_divide(
-                self._output_tensor, self._avgmask_tensor,
+                self._output_tensor,
+                self._avgmask_tensor,
             )
         else:
             output = self._output_tensor
         if self.volume_padded:
             from ...transforms import Crop
+
             border = self.patch_overlap // 2
             cropping = border.repeat(2)
             crop = Crop(cropping)  # type: ignore[arg-type]

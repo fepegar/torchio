@@ -5,7 +5,6 @@ from ...utils import TorchioTestCase
 
 
 class TestCrop(TorchioTestCase):
-
     def test_tensor_single_channel(self):
         crop = tio.Crop(1)
         assert crop(torch.rand(1, 10, 10, 10)).shape == (1, 8, 8, 8)

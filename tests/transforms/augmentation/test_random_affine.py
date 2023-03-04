@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomAffine(TorchioTestCase):
     """Tests for `RandomAffine`."""
+
     def setUp(self):
         # Set image origin far from center
         super().setUp()
@@ -125,6 +126,7 @@ class TestRandomAffine(TorchioTestCase):
     def test_parse_scales(self):
         def do_assert(transform):
             assert transform.scales == 3 * (0.9, 1.1)
+
         do_assert(tio.RandomAffine(scales=0.1))
         do_assert(tio.RandomAffine(scales=(0.9, 1.1)))
         do_assert(tio.RandomAffine(scales=3 * (0.1,)))
@@ -133,6 +135,7 @@ class TestRandomAffine(TorchioTestCase):
     def test_parse_degrees(self):
         def do_assert(transform):
             assert transform.degrees == 3 * (-10, 10)
+
         do_assert(tio.RandomAffine(degrees=10))
         do_assert(tio.RandomAffine(degrees=(-10, 10)))
         do_assert(tio.RandomAffine(degrees=3 * (10,)))
@@ -141,6 +144,7 @@ class TestRandomAffine(TorchioTestCase):
     def test_parse_translation(self):
         def do_assert(transform):
             assert transform.translation == 3 * (-10, 10)
+
         do_assert(tio.RandomAffine(translation=10))
         do_assert(tio.RandomAffine(translation=(-10, 10)))
         do_assert(tio.RandomAffine(translation=3 * (10,)))

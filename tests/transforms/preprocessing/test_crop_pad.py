@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestCropOrPad(TorchioTestCase):
     """Tests for `CropOrPad`."""
+
     def test_no_changes(self):
         sample_t1 = self.sample_subject['t1']
         shape = sample_t1.spatial_shape
@@ -108,9 +109,7 @@ class TestCropOrPad(TorchioTestCase):
         assert len(set_shapes) == 1, message
         for key in transformed:
             result_shape = transformed[key].spatial_shape
-            assert target_shape == result_shape, (
-                f'Wrong shape for image: {key}'
-            )
+            assert target_shape == result_shape, f'Wrong shape for image: {key}'
 
     def test_mask_only_pad(self):
         self.mask_only((11, 22, 30))
@@ -131,11 +130,13 @@ class TestCropOrPad(TorchioTestCase):
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
             self.assert_tensor_equal(
-                image_center.data, image_mask.data,
+                image_center.data,
+                image_mask.data,
                 msg='Data is different after cropping',
             )
             self.assert_tensor_equal(
-                image_center.affine, image_mask.affine,
+                image_center.affine,
+                image_mask.affine,
                 msg='Physical position is different after cropping',
             )
 
@@ -144,7 +145,8 @@ class TestCropOrPad(TorchioTestCase):
         target_shape = 8, 22, 30
         transform_center = tio.CropOrPad(target_shape)
         transform_mask = tio.CropOrPad(
-            target_shape, mask_name='label',
+            target_shape,
+            mask_name='label',
         )
         mask = self.sample_subject['label'].data
         mask *= 0
@@ -155,11 +157,13 @@ class TestCropOrPad(TorchioTestCase):
         zipped = zip(transformed_center.values(), transformed_mask.values())
         for image_center, image_mask in zipped:
             self.assert_tensor_equal(
-                image_center.data, image_mask.data,
+                image_center.data,
+                image_mask.data,
                 msg='Data is different after cropping',
             )
             self.assert_tensor_equal(
-                image_center.affine, image_mask.affine,
+                image_center.affine,
+                image_mask.affine,
                 msg='Physical position is different after cropping',
             )
 

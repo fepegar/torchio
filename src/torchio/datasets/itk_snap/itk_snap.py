@@ -13,7 +13,8 @@ class SubjectITKSNAP(_RawSubjectCopySubject):
     See `the ITK-SNAP website`_ for more information.
 
     .. _the ITK-SNAP website: http://www.itksnap.org/pmwiki/pmwiki.php?n=Downloads.Data
-    """  # noqa: E501
+    """  # noqa: B950
+
     url_base = 'https://www.nitrc.org/frs/download.php/'
 
     def __init__(self, name, code):
@@ -35,7 +36,6 @@ class SubjectITKSNAP(_RawSubjectCopySubject):
 
 
 class BrainTumor(SubjectITKSNAP):
-
     def __init__(self):
         super().__init__('braintumor', '6161')
 
@@ -54,7 +54,6 @@ class BrainTumor(SubjectITKSNAP):
 
 
 class T1T2(SubjectITKSNAP):
-
     def __init__(self):
         super().__init__('ashs_test', '10983')
 
@@ -68,7 +67,6 @@ class T1T2(SubjectITKSNAP):
 
 
 class AorticValve(SubjectITKSNAP):
-
     def __init__(self):
         super().__init__('bav_example', '11021')
 

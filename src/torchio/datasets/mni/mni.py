@@ -8,6 +8,7 @@ class SubjectMNI(_RawSubjectCopySubject):
     See `the website <http://nist.mni.mcgill.ca/?page_id=714>`_
     for more information.
     """
+
     url_base = 'http://packages.bic.mni.mcgill.ca/mni-models/'
 
     @property

@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestKeepLargestComponent(TorchioTestCase):
     """Tests for `KeepLargestComponent`."""
+
     def test_one_hot(self):
         tensor = torch.as_tensor([1, 0, 1, 1, 0, 1]).reshape(1, 1, 1, 6)
         label_map = tio.LabelMap(tensor=tensor)

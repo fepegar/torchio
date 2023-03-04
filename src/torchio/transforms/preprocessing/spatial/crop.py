@@ -30,11 +30,8 @@ class Crop(BoundsTransform):
     .. seealso:: If you want to pass the output shape instead, please use
         :class:`~torchio.transforms.CropOrPad` instead.
     """
-    def __init__(
-            self,
-            cropping: TypeBounds,
-            **kwargs
-    ):
+
+    def __init__(self, cropping: TypeBounds, **kwargs):
         super().__init__(cropping, **kwargs)
         self.cropping = cropping
         self.args_names = ['cropping']
@@ -57,4 +54,5 @@ class Crop(BoundsTransform):
 
     def inverse(self):
         from .pad import Pad
+
         return Pad(self.cropping)

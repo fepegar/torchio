@@ -23,6 +23,7 @@ class PatchSampler:
         using child classes such as :class:`~torchio.data.UniformSampler` and
         :class:`~torchio.data.WeightedSampler`.
     """
+
     def __init__(self, patch_size: TypeSpatialShape):
         patch_size_array = np.array(to_tuple(patch_size, length=3))
         for n in patch_size_array:
@@ -35,18 +36,18 @@ class PatchSampler:
         self.patch_size = patch_size_array.astype(np.uint16)
 
     def extract_patch(
-            self,
-            subject: Subject,
-            index_ini: TypeTripletInt,
+        self,
+        subject: Subject,
+        index_ini: TypeTripletInt,
     ) -> Subject:
-        cropped_subject = self.crop(subject, index_ini, self.patch_size)  # type: ignore[arg-type]  # noqa: E501
+        cropped_subject = self.crop(subject, index_ini, self.patch_size)  # type: ignore[arg-type]  # noqa: B950
         return cropped_subject
 
     def crop(
-            self,
-            subject: Subject,
-            index_ini: TypeTripletInt,
-            patch_size: TypeTripletInt,
+        self,
+        subject: Subject,
+        index_ini: TypeTripletInt,
+        patch_size: TypeTripletInt,
     ) -> Subject:
         transform = self._get_crop_transform(subject, index_ini, patch_size)
         cropped_subject = transform(subject)
@@ -60,11 +61,12 @@ class PatchSampler:
 
     @staticmethod
     def _get_crop_transform(
-            subject,
-            index_ini: TypeTripletInt,
-            patch_size: TypeSpatialShape,
+        subject,
+        index_ini: TypeTripletInt,
+        patch_size: TypeSpatialShape,
     ):
         from ...transforms.preprocessing.spatial.crop import Crop
+
         shape = np.array(subject.spatial_shape, dtype=np.uint16)
         index_ini_array = np.array(index_ini, dtype=np.uint16)
         patch_size_array = np.array(patch_size, dtype=np.uint16)
@@ -78,9 +80,9 @@ class PatchSampler:
         return Crop(cropping)  # type: ignore[arg-type]
 
     def __call__(
-            self,
-            subject: Subject,
-            num_patches: Optional[int] = None,
+        self,
+        subject: Subject,
+        num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         subject.check_consistent_space()
         if np.any(self.patch_size > subject.spatial_shape):
@@ -93,9 +95,9 @@ class PatchSampler:
         return self._generate_patches(subject, **kwargs)
 
     def _generate_patches(
-            self,
-            subject: Subject,
-            num_patches: Optional[int] = None,
+        self,
+        subject: Subject,
+        num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         raise NotImplementedError
 
@@ -108,5 +110,6 @@ class RandomSampler(PatchSampler):
             of size :math:`w \times h \times d`.
             If a single number :math:`n` is provided, :math:`w = h = d = n`.
     """
+
     def get_probability_map(self, subject: Subject):
         raise NotImplementedError

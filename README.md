@@ -52,6 +52,9 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <b>Code</b>
         </td>
         <td align="center">
+            <a href="https://github.com/psf/black">
+                <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code quality">
+            </a>
             <a href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main">
                 <img src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer" alt="Code quality">
             </a>

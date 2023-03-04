@@ -18,17 +18,14 @@ class UniformSampler(RandomSampler):
         return torch.ones(1, *subject.spatial_shape)
 
     def _generate_patches(
-            self,
-            subject: Subject,
-            num_patches: Optional[int] = None,
+        self,
+        subject: Subject,
+        num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         valid_range = subject.spatial_shape - self.patch_size
         patches_left = num_patches if num_patches is not None else True
         while patches_left:
-            i, j, k = tuple(
-                int(torch.randint(x + 1, (1,)).item())
-                for x in valid_range
-            )
+            i, j, k = tuple(int(torch.randint(x + 1, (1,)).item()) for x in valid_range)
             index_ini = i, j, k
             yield self.extract_patch(subject, index_ini)
             if num_patches is not None:

@@ -36,15 +36,17 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            coefficients: Union[float, Tuple[float, float]] = 0.5,
-            order: int = 3,
-            **kwargs
+        self,
+        coefficients: Union[float, Tuple[float, float]] = 0.5,
+        order: int = 3,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.coefficients_range = self._parse_range(
-            coefficients, 'coefficients_range',
+            coefficients,
+            'coefficients_range',
         )
         self.order = _parse_order(order)
 
@@ -63,9 +65,9 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         return transformed
 
     def get_params(
-            self,
-            order: int,
-            coefficients_range: Tuple[float, float],
+        self,
+        order: int,
+        coefficients_range: Tuple[float, float],
     ) -> List[float]:
         # Sampling of the appropriate number of coefficients for the creation
         # of the bias field map
@@ -87,11 +89,12 @@ class BiasField(IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            coefficients: Union[List[float], Dict[str, List[float]]],
-            order: Union[int, Dict[str, int]],
-            **kwargs
+        self,
+        coefficients: Union[List[float], Dict[str, List[float]]],
+        order: Union[int, Dict[str, int]],
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.coefficients = coefficients
@@ -116,7 +119,9 @@ class BiasField(IntensityTransform):
                 coefficients, order = self.coefficients[name], self.order[name]
             assert isinstance(order, int)
             bias_field = self.generate_bias_field(
-                image.data, order, coefficients,  # type: ignore[arg-type]
+                image.data,
+                order,
+                coefficients,  # type: ignore[arg-type]
             )
             if self.invert_transform:
                 np.divide(1, bias_field, out=bias_field)
@@ -125,9 +130,9 @@ class BiasField(IntensityTransform):
 
     @staticmethod
     def generate_bias_field(
-            data: TypeData,
-            order: int,
-            coefficients: TypeData,
+        data: TypeData,
+        order: int,
+        coefficients: TypeData,
     ) -> np.ndarray:
         # Create the bias field map using a linear combination of polynomial
         # functions and the coefficients previously sampled
@@ -152,9 +157,9 @@ class BiasField(IntensityTransform):
                     coefficient = coefficients[i]
                     new_map = (
                         coefficient
-                        * x_mesh ** x_order
-                        * y_mesh ** y_order
-                        * z_mesh ** z_order
+                        * x_mesh**x_order
+                        * y_mesh**y_order
+                        * z_mesh**z_order
                     )
                     bias_field += np.transpose(new_map, (1, 0, 2))  # why?
                     i += 1

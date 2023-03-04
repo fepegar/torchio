@@ -8,7 +8,6 @@ from .mni import SubjectMNI
 
 
 class Sheep(SubjectMNI):
-
     def __init__(self):
         self.name = 'NIFTI_ovine_05mm'
         self.url_dir = urllib.parse.urljoin(self.url_base, 'sheep/')

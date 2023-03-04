@@ -5,7 +5,6 @@ from ..utils import TorchioTestCase
 
 
 class TestCollate(TorchioTestCase):
-
     def get_heterogeneous_dataset(self):
         # Keys missing in one of the samples will not be present in the batch
         # This is relevant for the case in which a transform is applied to some
@@ -17,7 +16,6 @@ class TestCollate(TorchioTestCase):
         data = sample_no, sample_yes
 
         class Dataset:
-
             def __init__(self, data):
                 self.data = data
 

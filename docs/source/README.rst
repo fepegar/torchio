@@ -3,7 +3,7 @@ TorchIO
 #######
 
 |PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook|
-|Docs-status| |Tests-status|
+|Docs-status| |Tests-status| |Black|
 |Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
 |Slack| |Twitter| |Twitter-commits| |YouTube|
 
@@ -88,6 +88,10 @@ If you found a bug or have a feature request, please open an issue:
 .. |Tests-status| image:: https://github.com/fepegar/torchio/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/fepegar/torchio/actions/workflows/tests.yml
    :alt: Tests status
+
+.. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Code style: black
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg
    :target: https://codecov.io/github/fepegar/torchio

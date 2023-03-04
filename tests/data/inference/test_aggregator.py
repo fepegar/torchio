@@ -55,9 +55,9 @@ class TestAggregator(TorchioTestCase):
 
     def test_overlap_hann(self):
         fixture = (
-            ( 0 / 3,  2 / 3,  4 / 3,  6 / 3),  # noqa: E201, E241
-            ( 4 / 3,  6 / 3,  8 / 3, 10 / 3),  # noqa: E201, E241
-            ( 8 / 3, 10 / 3, 12 / 3, 14 / 3),  # noqa: E201, E241
+            (0 / 3, 2 / 3, 4 / 3, 6 / 3),  # noqa: E201, E241
+            (4 / 3, 6 / 3, 8 / 3, 10 / 3),  # noqa: E201, E241
+            (8 / 3, 10 / 3, 12 / 3, 14 / 3),  # noqa: E201, E241
             (12 / 3, 14 / 3, 16 / 3, 18 / 3),
         )
         self.aggregate('hann', fixture)
@@ -94,7 +94,7 @@ class TestAggregator(TorchioTestCase):
         img = torch.zeros((1, ims, 1, 1))
         bbox = [bb1, bb2]
 
-        img[:, bbox[0]:bbox[1]] = 1
+        img[:, bbox[0] : bbox[1]] = 1
         image = tio.LabelMap(tensor=img)
         subject = tio.Subject(image=image)
         grid_sampler = tio.inference.GridSampler(
@@ -118,7 +118,7 @@ class TestAggregator(TorchioTestCase):
         self.run_patch_crop_issue(padding_mode='constant')
 
     def test_bad_aggregator_shape(self):
-        # https://github.com/microsoft/InnerEye-DeepLearning/pull/677/checks?check_run_id=5395915817  # noqa: E501
+        # https://github.com/microsoft/InnerEye-DeepLearning/pull/677/checks?check_run_id=5395915817  # noqa: B950
         tensor = torch.ones(1, 40, 40, 40)
         image_name = 'img'
         subject = tio.Subject({image_name: tio.ScalarImage(tensor=tensor)})

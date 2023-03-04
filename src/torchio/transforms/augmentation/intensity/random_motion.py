@@ -49,13 +49,14 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
     .. warning:: Large numbers of movements lead to longer execution times for
         3D images.
     """
+
     def __init__(
-            self,
-            degrees: float = 10,
-            translation: float = 10,  # in mm
-            num_transforms: int = 2,
-            image_interpolation: str = 'linear',
-            **kwargs
+        self,
+        degrees: float = 10,
+        translation: float = 10,  # in mm
+        num_transforms: int = 2,
+        image_interpolation: str = 'linear',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.degrees_range = self.parse_degrees(degrees)
@@ -91,19 +92,21 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         return transformed
 
     def get_params(
-            self,
-            degrees_range: Tuple[float, float],
-            translation_range: Tuple[float, float],
-            num_transforms: int,
-            perturbation: float = 0.3,
-            is_2d: bool = False,
+        self,
+        degrees_range: Tuple[float, float],
+        translation_range: Tuple[float, float],
+        num_transforms: int,
+        perturbation: float = 0.3,
+        is_2d: bool = False,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # If perturbation is 0, time intervals between movements are constant
         degrees_params = self.get_params_array(
-            degrees_range, num_transforms,
+            degrees_range,
+            num_transforms,
         )
         translation_params = self.get_params_array(
-            translation_range, num_transforms,
+            translation_range,
+            num_transforms,
         )
         if is_2d:  # imagine sagittal (1, A, S)
             degrees_params[:, :-1] = 0  # rotate around Z axis only
@@ -138,13 +141,16 @@ class Motion(IntensityTransform, FourierTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
-            translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
-            times: Union[Sequence[float], Dict[str, Sequence[float]]],
-            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],  # noqa: E501
-            **kwargs
+        self,
+        degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+        translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+        times: Union[Sequence[float], Dict[str, Sequence[float]]],
+        image_interpolation: Union[
+            Sequence[str], Dict[str, Sequence[str]]
+        ],  # noqa: B950
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.degrees = degrees
@@ -198,10 +204,10 @@ class Motion(IntensityTransform, FourierTransform):
         return subject
 
     def get_rigid_transforms(
-            self,
-            degrees_params: np.ndarray,
-            translation_params: np.ndarray,
-            image: sitk.Image,
+        self,
+        degrees_params: np.ndarray,
+        translation_params: np.ndarray,
+        image: sitk.Image,
     ) -> List[sitk.Euler3DTransform]:
         center_ijk = np.array(image.GetSize()) / 2
         center_lps = image.TransformContinuousIndexToPhysicalPoint(center_ijk)
@@ -235,10 +241,10 @@ class Motion(IntensityTransform, FourierTransform):
         return transform
 
     def resample_images(
-            self,
-            image: sitk.Image,
-            transforms: Sequence[sitk.Euler3DTransform],
-            interpolation: str,
+        self,
+        image: sitk.Image,
+        transforms: Sequence[sitk.Euler3DTransform],
+        interpolation: str,
     ) -> List[sitk.Image]:
         floating = reference = image
         default_value = np.float64(sitk.GetArrayViewFromImage(image).min())
@@ -267,11 +273,11 @@ class Motion(IntensityTransform, FourierTransform):
         spectra[0], spectra[index] = spectra[index], spectra[0]
 
     def add_artifact(
-            self,
-            image: sitk.Image,
-            transforms: Sequence[sitk.Euler3DTransform],
-            times: np.ndarray,
-            interpolation: str,
+        self,
+        image: sitk.Image,
+        transforms: Sequence[sitk.Euler3DTransform],
+        times: np.ndarray,
+        interpolation: str,
     ):
         images = self.resample_images(image, transforms, interpolation)
         spectra = []

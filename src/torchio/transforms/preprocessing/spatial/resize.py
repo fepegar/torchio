@@ -28,12 +28,13 @@ class Resize(SpatialTransform):
         image_interpolation: See :ref:`Interpolation`.
         label_interpolation: See :ref:`Interpolation`.
     """
+
     def __init__(
-            self,
-            target_shape: TypeSpatialShape,
-            image_interpolation: str = 'linear',
-            label_interpolation: str = 'nearest',
-            **kwargs
+        self,
+        target_shape: TypeSpatialShape,
+        image_interpolation: str = 'linear',
+        label_interpolation: str = 'nearest',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.target_shape = np.asarray(to_tuple(target_shape, length=3))

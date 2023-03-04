@@ -5,6 +5,7 @@ from ...utils import TorchioTestCase
 
 class TestRemoveLabels(TorchioTestCase):
     """Tests for `RemoveLabels`."""
+
     def test_remove(self):
         original_labels = (1, 2, 3, 4, 5, 6, 7)
         labels_to_remove = (1, 2, 5, 6)

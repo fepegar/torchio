@@ -14,9 +14,7 @@ class TestTransforms(TorchioTestCase):
     """Tests for all transforms."""
 
     def get_transform(self, channels, is_3d=True, labels=True):
-        landmarks_dict = {
-            channel: np.linspace(0, 100, 13) for channel in channels
-        }
+        landmarks_dict = {channel: np.linspace(0, 100, 13) for channel in channels}
         disp = 1 if is_3d else (1, 1, 0.01)
         elastic = tio.RandomElasticDeformation(max_displacement=disp)
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
@@ -48,10 +46,12 @@ class TestTransforms(TorchioTestCase):
             tio.HistogramStandardization(landmarks_dict),
             elastic,
             tio.RandomAffine(),
-            tio.OneOf({
-                tio.RandomAffine(): 3,
-                elastic: 1,
-            }),
+            tio.OneOf(
+                {
+                    tio.RandomAffine(): 3,
+                    elastic: 1,
+                }
+            ),
             tio.RemapLabels(remapping=remapping, masking_method='Left'),
             tio.RemoveLabels([1, 3]),
             tio.SequentialLabels(),
@@ -76,7 +76,8 @@ class TestTransforms(TorchioTestCase):
 
     def test_transforms_image(self):
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False,
+            channels=('default_image_name',),
+            labels=False,
         )
         transformed = transform(self.sample_subject.t1)
         assert isinstance(transformed, tio.ScalarImage)
@@ -84,7 +85,8 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False,
+            channels=('default_image_name',),
+            labels=False,
         )
         transformed = transform(tensor)
         assert isinstance(transformed, torch.Tensor)
@@ -92,7 +94,8 @@ class TestTransforms(TorchioTestCase):
     def test_transforms_array(self):
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False,
+            channels=('default_image_name',),
+            labels=False,
         )
         transformed = transform(tensor)
         assert isinstance(transformed, np.ndarray)
@@ -102,7 +105,8 @@ class TestTransforms(TorchioTestCase):
         affine = np.diag((-1, 2, -3, 1))
         image = tio.data.io.nib_to_sitk(tensor, affine)
         transform = self.get_transform(
-            channels=('default_image_name',), labels=False,
+            channels=('default_image_name',),
+            labels=False,
         )
         transformed = transform(image)
         assert isinstance(transformed, sitk.Image)
@@ -136,9 +140,9 @@ class TestTransforms(TorchioTestCase):
                 'CopyAffine',
             )
             if transform.name not in exclude:
-                assert subject.shape[0] == transformed.shape[0], (
-                    f'Different number of channels after {transform.name}'
-                )
+                assert (
+                    subject.shape[0] == transformed.shape[0]
+                ), f'Different number of channels after {transform.name}'
                 self.assert_tensor_not_equal(
                     subject.t1.data[1],
                     transformed.t1.data[1],
@@ -227,7 +231,6 @@ class TestTransforms(TorchioTestCase):
 
 
 class TestTransform(TorchioTestCase):
-
     def test_abstract_transform(self):
         with pytest.raises(TypeError):
             tio.Transform()
@@ -268,6 +271,7 @@ class TestTransform(TorchioTestCase):
     def test_apply_transform_missing(self):
         class T(tio.Transform):
             pass
+
         with pytest.raises(TypeError):
             T().apply_transform(0)
 
@@ -279,11 +283,13 @@ class TestTransform(TorchioTestCase):
     def test_batch_history(self):
         # https://github.com/fepegar/torchio/discussions/743
         subject = self.sample_subject
-        transform = tio.Compose([
-            tio.RandomAffine(),
-            tio.CropOrPad(5),
-            tio.OneHot(),
-        ])
+        transform = tio.Compose(
+            [
+                tio.RandomAffine(),
+                tio.CropOrPad(5),
+                tio.OneHot(),
+            ]
+        )
         dataset = tio.SubjectsDataset([subject], transform=transform)
         loader = torch.utils.data.DataLoader(
             dataset,

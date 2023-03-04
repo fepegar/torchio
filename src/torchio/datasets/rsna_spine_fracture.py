@@ -26,7 +26,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
     instantiating this class.
 
     .. _RSNA 2022 Cervical Spine Fracture Detection: https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection/overview/evaluation
-    """  # noqa: E501
+    """  # noqa: B950
 
     UID = 'StudyInstanceUID'
 
@@ -112,6 +112,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
             else:
                 name = path.name.replace('.gz', '').replace('.nii', '')
                 return target == name
+
         found = list(filter(_filter, iterable))
         if found:
             assert len(found) == 1
@@ -140,6 +141,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
 def get_pandas() -> ModuleType:
     try:
         import pandas
+
         return pandas
     except ImportError as e:
         message = (

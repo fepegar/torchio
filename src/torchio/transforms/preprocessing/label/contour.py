@@ -10,6 +10,7 @@ class Contour(LabelTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def apply_transform(self, subject):
         for image in self.get_images(subject):
             if image.num_channels > 1:

@@ -132,12 +132,13 @@ class RemapLabels(LabelTransform):
         >>> transformed = transform(subject)
         >>> # Apply the inverse on the right side only. The labels are correctly split into left/right.
         >>> inverse_transformed = transformed.apply_inverse_transform()
-    """  # noqa: E501
+    """  # noqa: B950
+
     def __init__(
-            self,
-            remapping: Dict[int, int],
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
+        self,
+        remapping: Dict[int, int],
+        masking_method: TypeMaskingMethod = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.kwargs = kwargs

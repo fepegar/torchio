@@ -37,11 +37,12 @@ class RandomSwap(RandomTransform, IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            patch_size: TypeTuple = 15,
-            num_iterations: int = 100,
-            **kwargs,
+        self,
+        patch_size: TypeTuple = 15,
+        num_iterations: int = 100,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.patch_size = np.array(to_tuple(patch_size))
@@ -51,21 +52,19 @@ class RandomSwap(RandomTransform, IntensityTransform):
     def _parse_num_iterations(num_iterations):
         if not isinstance(num_iterations, int):
             raise TypeError(
-                'num_iterations must be an int,'
-                f'not {num_iterations}',
+                f'num_iterations must be an int,not {num_iterations}',
             )
         if num_iterations < 0:
             raise ValueError(
-                'num_iterations must be positive,'
-                f'not {num_iterations}',
+                f'num_iterations must be positive,not {num_iterations}',
             )
         return num_iterations
 
     @staticmethod
     def get_params(
-            tensor: torch.Tensor,
-            patch_size: np.ndarray,
-            num_iterations: int,
+        tensor: torch.Tensor,
+        patch_size: np.ndarray,
+        num_iterations: int,
     ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
         si, sj, sk = tensor.shape[-3:]
         spatial_shape = si, sj, sk  # for mypy
@@ -120,11 +119,12 @@ class Swap(IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
-            locations: Union[TypeLocations, Dict[str, TypeLocations]],
-            **kwargs
+        self,
+        patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
+        locations: Union[TypeLocations, Dict[str, TypeLocations]],
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.locations = locations
@@ -143,15 +143,15 @@ class Swap(IntensityTransform):
             if self.invert_transform:
                 assert isinstance(locations, list)
                 locations.reverse()
-            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: E501
+            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: B950
             image.set_data(swapped)
         return subject
 
 
 def _swap(
-        tensor: torch.Tensor,
-        patch_size: TypeTuple,
-        locations: List[Tuple[np.ndarray, np.ndarray]],
+    tensor: torch.Tensor,
+    patch_size: TypeTuple,
+    locations: List[Tuple[np.ndarray, np.ndarray]],
 ) -> torch.Tensor:
     # Note this function modifies the input in-place
     tensor = tensor.clone()
@@ -167,9 +167,9 @@ def _swap(
 
 
 def _insert(
-        tensor: TensorArray,
-        patch: TensorArray,
-        index_ini: np.ndarray,
+    tensor: TensorArray,
+    patch: TensorArray,
+    index_ini: np.ndarray,
 ) -> None:
     index_fin = index_ini + np.array(patch.shape[-3:])
     i_ini, j_ini, k_ini = index_ini
@@ -178,9 +178,9 @@ def _insert(
 
 
 def _crop(
-        image: TensorArray,
-        index_ini: np.ndarray,
-        index_fin: np.ndarray,
+    image: TensorArray,
+    index_ini: np.ndarray,
+    index_fin: np.ndarray,
 ) -> TensorArray:
     i_ini, j_ini, k_ini = index_ini
     i_fin, j_fin, k_fin = index_fin
@@ -188,8 +188,8 @@ def _crop(
 
 
 def get_random_indices_from_shape(
-        spatial_shape: Sequence[int],
-        patch_size: Sequence[int],
+    spatial_shape: Sequence[int],
+    patch_size: Sequence[int],
 ) -> Tuple[np.ndarray, np.ndarray]:
     assert len(spatial_shape) == 3
     assert len(patch_size) in (1, 3)

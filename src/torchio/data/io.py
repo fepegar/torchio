@@ -33,9 +33,7 @@ def read_image(path: TypePath) -> TypeDataAffine:
     try:
         result = _read_sitk(path)
     except RuntimeError as e:  # try with NiBabel
-        message = (
-            f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
-        )
+        message = f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
         warnings.warn(message, stacklevel=2)
         try:
             result = _read_nibabel(path)
@@ -80,10 +78,7 @@ def _read_dicom(directory: TypePath):
     reader = sitk.ImageSeriesReader()
     dicom_names = reader.GetGDCMSeriesFileNames(str(directory))
     if not dicom_names:
-        message = (
-            f'The directory "{directory}"'
-            ' does not seem to contain DICOM files'
-        )
+        message = f'The directory "{directory}" does not seem to contain DICOM files'
         raise FileNotFoundError(message)
     reader.SetFileNames(dicom_names)
     image = reader.Execute()
@@ -130,10 +125,10 @@ def get_reader(path: TypePath, read: bool = True) -> sitk.ImageFileReader:
 
 
 def write_image(
-        tensor: torch.Tensor,
-        affine: TypeData,
-        path: TypePath,
-        squeeze: Optional[bool] = None,
+    tensor: torch.Tensor,
+    affine: TypeData,
+    path: TypePath,
+    squeeze: Optional[bool] = None,
 ) -> None:
     args = tensor, affine, path
     try:
@@ -143,9 +138,9 @@ def write_image(
 
 
 def _write_nibabel(
-        tensor: torch.Tensor,
-        affine: TypeData,
-        path: TypePath,
+    tensor: torch.Tensor,
+    affine: TypeData,
+    path: TypePath,
 ) -> None:
     """
     Expects a path with an extension that can be used by nibabel.save
@@ -176,11 +171,11 @@ def _write_nibabel(
 
 
 def _write_sitk(
-        tensor: torch.Tensor,
-        affine: TypeData,
-        path: TypePath,
-        use_compression: bool = True,
-        squeeze: Optional[bool] = None,
+    tensor: torch.Tensor,
+    affine: TypeData,
+    path: TypePath,
+    use_compression: bool = True,
+    squeeze: Optional[bool] = None,
 ) -> None:
     assert tensor.ndim == 4
     path = Path(path)
@@ -280,7 +275,7 @@ def _write_niftyreg_matrix(matrix, txt_path):
 
 
 def get_rotation_and_spacing_from_affine(
-        affine: np.ndarray,
+    affine: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray]:
     # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
     rotation_zoom = affine[:3, :3]
@@ -290,10 +285,10 @@ def get_rotation_and_spacing_from_affine(
 
 
 def nib_to_sitk(
-        data: TypeData,
-        affine: TypeData,
-        force_3d: bool = False,
-        force_4d: bool = False,
+    data: TypeData,
+    affine: TypeData,
+    force_3d: bool = False,
+    force_4d: bool = False,
 ) -> sitk.Image:
     """Create a SimpleITK image from a tensor and a 4x4 affine matrix."""
     if data.ndim != 4:
@@ -327,14 +322,14 @@ def nib_to_sitk(
     if data.ndim == 4:
         assert image.GetNumberOfComponentsPerPixel() == data.shape[0]
     num_spatial_dims = 2 if is_2d else 3
-    assert image.GetSize() == data.shape[1:1 + num_spatial_dims]
+    assert image.GetSize() == data.shape[1 : 1 + num_spatial_dims]
 
     return image
 
 
 def sitk_to_nib(
-        image: sitk.Image,
-        keepdim: bool = False,
+    image: sitk.Image,
+    keepdim: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     data = check_uint_to_int(data)
@@ -358,7 +353,7 @@ def sitk_to_nib(
 
 
 def get_ras_affine_from_sitk(
-        sitk_object: Union[sitk.Image, sitk.ImageFileReader],
+    sitk_object: Union[sitk.Image, sitk.ImageFileReader],
 ) -> np.ndarray:
     spacing = np.array(sitk_object.GetSpacing())
     direction_lps = np.array(sitk_object.GetDirection())
@@ -386,9 +381,9 @@ def get_ras_affine_from_sitk(
 
 
 def get_sitk_metadata_from_ras_affine(
-        affine: np.ndarray,
-        is_2d: bool = False,
-        lps: bool = True,
+    affine: np.ndarray,
+    is_2d: bool = False,
+    lps: bool = True,
 ) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
     direction_ras, spacing_array = get_rotation_and_spacing_from_affine(affine)
     origin_ras = affine[:3, 3]

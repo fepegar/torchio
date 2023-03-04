@@ -7,6 +7,7 @@ from ...utils import TorchioTestCase
 
 class TestContour(TorchioTestCase):
     """Tests for `Contour`."""
+
     def test_one_hot(self):
         image = self.sample_subject.label
         tio.Contour()(image)

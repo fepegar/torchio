@@ -17,11 +17,11 @@ class BITE(SubjectsDataset, abc.ABC):
     base_url = 'http://www.bic.mni.mcgill.ca/uploads/Services/'
 
     def __init__(
-            self,
-            root: TypePath,
-            transform: Optional[Transform] = None,
-            download: bool = False,
-            **kwargs,
+        self,
+        root: TypePath,
+        transform: Optional[Transform] = None,
+        download: bool = False,
+        **kwargs,
     ):
         root = Path(root).expanduser().absolute()
         if download:
@@ -56,7 +56,8 @@ class BITE3(BITE):
         transform: An instance of
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
-    """  # noqa: E501
+    """  # noqa: B950
+
     dirname = 'group3'
 
     def _download(self, root: Path):

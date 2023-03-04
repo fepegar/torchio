@@ -27,12 +27,14 @@ def main(
     ),
     kwargs: str = typer.Option(  # noqa: B008
         None,
-        '--kwargs', '-k',
+        '--kwargs',
+        '-k',
         help='String of kwargs, e.g. "degrees=(-5,15) num_transforms=3".',
     ),
     imclass: str = typer.Option(  # noqa: B008
         'ScalarImage',
-        '--imclass', '-c',
+        '--imclass',
+        '-c',
         help=(
             'Name of the subclass of torchio.Image'
             ' that will be used to instantiate the image.'
@@ -40,7 +42,8 @@ def main(
     ),
     seed: int = typer.Option(  # noqa: B008
         None,
-        '--seed', '-s',
+        '--seed',
+        '-s',
         help='Seed for PyTorch random number generator.',
     ),
     verbose: bool = typer.Option(  # noqa: B008
@@ -58,7 +61,7 @@ def main(
 
     Example:
     $ tiotr input.nrrd RandomMotion output.nii "degrees=(-5,15) num_transforms=3" -v
-    """  # noqa: E501
+    """  # noqa: B950
     # Imports are placed here so that the tool loads faster if not being run
     import torch
     import torchio.transforms as transforms
@@ -92,6 +95,7 @@ def main(
 
 def get_params_dict_from_kwargs(kwargs):
     from torchio.utils import guess_type
+
     params_dict = {}
     if kwargs is not None:
         for substring in kwargs.split():

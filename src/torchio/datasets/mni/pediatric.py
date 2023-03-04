@@ -41,7 +41,8 @@ class Pediatric(SubjectMNI):
             ``(13, 18.5)``.
         symmetric: If ``True``, the left-right symmetric templates will be
             used. Else, the asymmetric (natural) templates will be used.
-    """  # noqa: E501
+    """  # noqa: B950
+
     def __init__(self, years, symmetric=False):
         self.url_dir = 'http://www.bic.mni.mcgill.ca/~vfonov/nihpd/obj1/'
         sym_string = 'sym' if symmetric else 'asym'

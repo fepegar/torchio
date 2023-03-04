@@ -16,7 +16,7 @@ class KeepLargestComponent(LabelTransform):
         extending this transform, please `open a new issue`_.
 
     .. _open a new issue: https://github.com/fepegar/torchio/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=Improve%20KeepLargestComponent%20transform
-    """  # noqa: E501
+    """  # noqa: B950
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):

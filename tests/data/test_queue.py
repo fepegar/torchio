@@ -10,6 +10,7 @@ from ..utils import TorchioTestCase
 
 class TestQueue(TorchioTestCase):
     """Tests for `queue` module."""
+
     def setUp(self):
         super().setUp()
         self.subjects_list = create_dummy_dataset(

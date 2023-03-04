@@ -50,16 +50,14 @@ class Subject(dict):
         ... }
         >>> subject = tio.Subject(subject_dict)
 
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(self, *args, **kwargs: Dict[str, Any]):
         if args:
             if len(args) == 1 and isinstance(args[0], dict):
                 kwargs.update(args[0])
             else:
-                message = (
-                    'Only one dictionary as positional argument is allowed'
-                )
+                message = 'Only one dictionary as positional argument is allowed'
                 raise ValueError(message)
         super().__init__(**kwargs)
         self._parse_images(self.get_images(intensity_only=False))
@@ -145,16 +143,14 @@ class Subject(dict):
         return all(i.is_2d() for i in self.get_images(intensity_only=False))
 
     def get_applied_transforms(
-            self,
-            ignore_intensity: bool = False,
-            image_interpolation: Optional[str] = None,
+        self,
+        ignore_intensity: bool = False,
+        image_interpolation: Optional[str] = None,
     ) -> List[Transform]:
         from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
-        name_to_transform = {
-            cls.__name__: cls
-            for cls in get_subclasses(Transform)
-        }
+
+        name_to_transform = {cls.__name__: cls for cls in get_subclasses(Transform)}
         transforms_list = []
         for transform_name, arguments in self.applied_transforms:
             transform = name_to_transform[transform_name](**arguments)
@@ -168,11 +164,12 @@ class Subject(dict):
         return transforms_list
 
     def get_composed_history(
-            self,
-            ignore_intensity: bool = False,
-            image_interpolation: Optional[str] = None,
+        self,
+        ignore_intensity: bool = False,
+        image_interpolation: Optional[str] = None,
     ) -> Compose:
         from ..transforms.augmentation.composition import Compose
+
         transforms = self.get_applied_transforms(
             ignore_intensity=ignore_intensity,
             image_interpolation=image_interpolation,
@@ -180,10 +177,10 @@ class Subject(dict):
         return Compose(transforms)
 
     def get_inverse_transform(
-            self,
-            warn: bool = True,
-            ignore_intensity: bool = False,
-            image_interpolation: Optional[str] = None,
+        self,
+        warn: bool = True,
+        ignore_intensity: bool = False,
+        image_interpolation: Optional[str] = None,
     ) -> Compose:
         """Get a reversed list of the inverses of the applied transforms.
 
@@ -219,11 +216,11 @@ class Subject(dict):
         self.applied_transforms = []
 
     def check_consistent_attribute(
-            self,
-            attribute: str,
-            relative_tolerance: float = 1e-6,
-            absolute_tolerance: float = 1e-6,
-            message: Optional[str] = None,
+        self,
+        attribute: str,
+        relative_tolerance: float = 1e-6,
+        absolute_tolerance: float = 1e-6,
+        message: Optional[str] = None,
     ) -> None:
         r"""Check for consistency of an attribute across all images.
 
@@ -254,10 +251,9 @@ class Subject(dict):
             attribute of two images being compared,
             :math:`t_{abs}` is the ``absolute_tolerance`` and
             :math:`t_{rel}` is the ``relative_tolerance``.
-        """  # noqa: E501
+        """  # noqa: B950
         message = (
-            f'More than one value for "{attribute}" found in subject images:'
-            '\n{}'
+            f'More than one value for "{attribute}" found in subject images:\n{{}}'
         )
 
         names_images = self.get_images_dict(intensity_only=False).items()
@@ -279,10 +275,12 @@ class Subject(dict):
                 )
                 if not all_close:
                     message = message.format(
-                        pprint.pformat({
-                            first_image: first_attribute,
-                            image_name: current_attribute,
-                        }),
+                        pprint.pformat(
+                            {
+                                first_image: first_attribute,
+                                image_name: current_attribute,
+                            }
+                        ),
                     )
                     raise RuntimeError(message)
         except TypeError:
@@ -315,7 +313,7 @@ class Subject(dict):
                 'As described above, some images in the subject are not in the'
                 ' same space. You probably can use the transforms ToCanonical'
                 ' and Resample to fix this, as explained at'
-                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'  # noqa: E501
+                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'  # noqa: B950
             )
             raise RuntimeError(message) from e
 
@@ -323,10 +321,10 @@ class Subject(dict):
         return list(self.get_images_dict(intensity_only=False).keys())
 
     def get_images_dict(
-            self,
-            intensity_only=True,
-            include: Optional[Sequence[str]] = None,
-            exclude: Optional[Sequence[str]] = None,
+        self,
+        intensity_only=True,
+        include: Optional[Sequence[str]] = None,
+        exclude: Optional[Sequence[str]] = None,
     ) -> Dict[str, Image]:
         images = {}
         for image_name, image in self.items():
@@ -342,10 +340,10 @@ class Subject(dict):
         return images
 
     def get_images(
-            self,
-            intensity_only=True,
-            include: Optional[Sequence[str]] = None,
-            exclude: Optional[Sequence[str]] = None,
+        self,
+        intensity_only=True,
+        include: Optional[Sequence[str]] = None,
+        exclude: Optional[Sequence[str]] = None,
     ) -> List[Image]:
         images_dict = self.get_images_dict(
             intensity_only=intensity_only,
@@ -358,9 +356,9 @@ class Subject(dict):
         return self.get_images(intensity_only=False)[0]
 
     def add_transform(
-            self,
-            transform: Transform,
-            parameters_dict: dict,
+        self,
+        transform: Transform,
+        parameters_dict: dict,
     ) -> None:
         self.applied_transforms.append((transform.name, parameters_dict))
 
@@ -382,8 +380,7 @@ class Subject(dict):
     def _check_image_name(image_name):
         if not isinstance(image_name, str):
             message = (
-                'The image name must be a string,'
-                f' but it has type "{type(image_name)}"'
+                f'The image name must be a string, but it has type "{type(image_name)}"'
             )
             raise ValueError(message)
         return image_name
@@ -414,6 +411,7 @@ class Subject(dict):
                 :meth:`~torchio.Image.plot`.
         """
         from ..visualization import plot_subject  # avoid circular import
+
         plot_subject(self, **kwargs)
 
 
@@ -435,6 +433,5 @@ def _subject_copy_helper(
 
 
 class _RawSubjectCopySubject(Subject):
-
     def __copy__(self):
         return _subject_copy_helper(self, Subject)

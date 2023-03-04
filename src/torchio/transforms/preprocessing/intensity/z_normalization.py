@@ -16,19 +16,16 @@ class ZNormalization(NormalizationTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(
-            self,
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
-    ):
+
+    def __init__(self, masking_method: TypeMaskingMethod = None, **kwargs):
         super().__init__(masking_method=masking_method, **kwargs)
         self.args_names = ['masking_method']
 
     def apply_normalization(
-            self,
-            subject: Subject,
-            image_name: str,
-            mask: torch.Tensor,
+        self,
+        subject: Subject,
+        image_name: str,
+        mask: torch.Tensor,
     ) -> None:
         image = subject[image_name]
         standardized = self.znorm(
@@ -45,8 +42,8 @@ class ZNormalization(NormalizationTransform):
 
     @staticmethod
     def znorm(
-            tensor: torch.Tensor,
-            mask: torch.Tensor,
+        tensor: torch.Tensor,
+        mask: torch.Tensor,
     ) -> Optional[torch.Tensor]:
         tensor = tensor.clone().float()
         values = tensor[mask]

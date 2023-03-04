@@ -8,6 +8,7 @@ from ...utils import TorchioTestCase
 
 class TestResample(TorchioTestCase):
     """Tests for `Resample`."""
+
     def test_spacing(self):
         # Should this raise an error if sizes are different?
         spacing = 2

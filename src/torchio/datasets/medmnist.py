@@ -20,6 +20,7 @@ class MedMNIST(SubjectsDataset):
     Args:
         split: Dataset split. Should be ``'train'``, ``'val'`` or ``'test'``.
     """
+
     BASE_URL = 'https://zenodo.org/record/5208230/files'
     SPLITS = 'train', 'training', 'val', 'validation', 'test', 'testing'
 

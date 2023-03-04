@@ -41,18 +41,23 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
     """
+
     def __init__(
-            self,
-            num_spikes: Union[int, Tuple[int, int]] = 1,
-            intensity: Union[float, Tuple[float, float]] = (1, 3),
-            **kwargs
+        self,
+        num_spikes: Union[int, Tuple[int, int]] = 1,
+        intensity: Union[float, Tuple[float, float]] = (1, 3),
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.intensity_range = self._parse_range(
-            intensity, 'intensity_range',
+            intensity,
+            'intensity_range',
         )
-        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: E501
-            num_spikes, 'num_spikes', min_constraint=0, type_constraint=int,
+        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: B950
+            num_spikes,
+            'num_spikes',
+            min_constraint=0,
+            type_constraint=int,
         )
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -70,9 +75,9 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
         return transformed
 
     def get_params(
-            self,
-            num_spikes_range: Tuple[int, int],
-            intensity_range: Tuple[float, float],
+        self,
+        num_spikes_range: Tuple[int, int],
+        intensity_range: Tuple[float, float],
     ) -> Tuple[np.ndarray, float]:
         ns_min, ns_max = num_spikes_range
         num_spikes_param = int(torch.randint(ns_min, ns_max + 1, (1,)).item())
@@ -99,11 +104,12 @@ class Spike(IntensityTransform, FourierTransform):
     .. note:: The execution time of this transform does not depend on the
         number of spikes.
     """
+
     def __init__(
-            self,
-            spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
-            intensity: Union[float, Dict[str, float]],
-            **kwargs
+        self,
+        spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
+        intensity: Union[float, Dict[str, float]],
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.spikes_positions = spikes_positions
@@ -132,10 +138,10 @@ class Spike(IntensityTransform, FourierTransform):
         return subject
 
     def add_artifact(
-            self,
-            tensor: torch.Tensor,
-            spikes_positions: np.ndarray,
-            intensity_factor: float,
+        self,
+        tensor: torch.Tensor,
+        spikes_positions: np.ndarray,
+        intensity_factor: float,
     ):
         if intensity_factor == 0 or len(spikes_positions) == 0:
             return tensor

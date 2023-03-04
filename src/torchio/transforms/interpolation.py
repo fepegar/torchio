@@ -1,4 +1,4 @@
-# flake8: noqa: E501
+# flake8: noqa: B950
 import enum
 
 import SimpleITK as sitk
@@ -14,6 +14,7 @@ class Interpolation(enum.Enum):
         >>> import torchio as tio
         >>> transform = tio.RandomAffine(image_interpolation='bspline')
     """
+
     #: Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.
     NEAREST: str = 'sitkNearestNeighbor'
 

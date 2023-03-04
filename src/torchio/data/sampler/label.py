@@ -59,11 +59,12 @@ class LabelSampler(WeightedSampler):
         ...     print(patch.shape)
 
     """
+
     def __init__(
-            self,
-            patch_size: TypeSpatialShape,
-            label_name: Optional[str] = None,
-            label_probabilities: Optional[Dict[int, float]] = None,
+        self,
+        patch_size: TypeSpatialShape,
+        label_name: Optional[str] = None,
+        label_probabilities: Optional[Dict[int, float]] = None,
     ):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
@@ -105,19 +106,16 @@ class LabelSampler(WeightedSampler):
 
     @staticmethod
     def get_probabilities_from_label_map(
-            label_map: torch.Tensor,
-            label_probabilities_dict: Dict[int, float],
-            patch_size: np.ndarray,
+        label_map: torch.Tensor,
+        label_probabilities_dict: Dict[int, float],
+        patch_size: np.ndarray,
     ) -> torch.Tensor:
         """Create probability map according to label map probabilities."""
         patch_size = patch_size.astype(int)
         ini_i, ini_j, ini_k = patch_size // 2
         spatial_shape = np.array(label_map.shape[1:])
         if np.any(patch_size > spatial_shape):
-            message = (
-                f'Patch size {patch_size}'
-                f'larger than label map {spatial_shape}'
-            )
+            message = f'Patch size {patch_size}larger than label map {spatial_shape}'
             raise RuntimeError(message)
         crop_fin_i, crop_fin_j, crop_fin_k = crop_fin = (patch_size - 1) // 2
         fin_i, fin_j, fin_k = spatial_shape - crop_fin

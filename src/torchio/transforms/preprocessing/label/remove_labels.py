@@ -55,12 +55,13 @@ class RemoveLabels(RemapLabels):
         }
         colin.plot(cmap_dict={'cls': colors, 'brain': colors})
     """
+
     def __init__(
-            self,
-            labels: Sequence[int],
-            background_label: int = 0,
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
+        self,
+        labels: Sequence[int],
+        background_label: int = 0,
+        masking_method: TypeMaskingMethod = None,
+        **kwargs,
     ):
         remapping = {label: background_label for label in labels}
         super().__init__(remapping, masking_method, **kwargs)

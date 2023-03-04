@@ -16,7 +16,6 @@ import torchio as tio
 
 
 class TorchioTestCase(unittest.TestCase):
-
     def setUp(self):
         """Set up test fixtures, if any."""
         self.dir = Path(tempfile.gettempdir()) / os.urandom(24).hex()
@@ -24,12 +23,14 @@ class TorchioTestCase(unittest.TestCase):
         random.seed(42)
         np.random.seed(42)
 
-        registration_matrix = np.array([
-            [1, 0, 0, 10],
-            [0, 1, 0, 0],
-            [0, 0, 1.2, 0],
-            [0, 0, 0, 1],
-        ])
+        registration_matrix = np.array(
+            [
+                [1, 0, 0, 10],
+                [0, 1, 0, 0],
+                [0, 0, 1.2, 0],
+                [0, 0, 0, 1],
+            ]
+        )
 
         subject_a = tio.Subject(
             t1=tio.ScalarImage(self.get_image_path('t1_a')),
@@ -123,7 +124,9 @@ class TorchioTestCase(unittest.TestCase):
             ),
             label=tio.LabelMap(
                 self.get_image_path(
-                    'label_d2', binary=False, components=components,
+                    'label_d2',
+                    binary=False,
+                    components=components,
                 ),
             ),
         )
@@ -132,7 +135,8 @@ class TorchioTestCase(unittest.TestCase):
         return tio.Subject(
             label=tio.LabelMap(
                 self.get_image_path(
-                    'label_multi', labels=labels,
+                    'label_multi',
+                    labels=labels,
                 ),
             ),
         )
@@ -156,16 +160,16 @@ class TorchioTestCase(unittest.TestCase):
         return tio.datasets.IXITiny(root_dir, download=True)
 
     def get_image_path(
-            self,
-            stem,
-            binary=False,
-            labels=None,
-            shape=(10, 20, 30),
-            spacing=(1, 1, 1),
-            components=1,
-            add_nans=False,
-            suffix=None,
-            force_binary_foreground=True,
+        self,
+        stem,
+        binary=False,
+        labels=None,
+        shape=(10, 20, 30),
+        spacing=(1, 1, 1),
+        components=1,
+        add_nans=False,
+        suffix=None,
+        force_binary_foreground=True,
     ):
         shape = (*shape, 1) if len(shape) == 2 else shape
         data = np.random.rand(components, *shape)
@@ -248,9 +252,7 @@ class TorchioTestCase(unittest.TestCase):
 
 def get_all_random_transforms():
     transforms_names = [
-        name
-        for name in dir(tio.transforms)
-        if name.startswith('Random')
+        name for name in dir(tio.transforms) if name.startswith('Random')
     ]
     classes = [getattr(tio.transforms, name) for name in transforms_names]
     return classes

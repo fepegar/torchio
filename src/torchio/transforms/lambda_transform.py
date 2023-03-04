@@ -28,13 +28,13 @@ class Lambda(Transform):
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = tio.Lambda(double)
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
-            self,
-            function: TypeCallable,
-            types_to_apply: Optional[Sequence[str]] = None,
-            **kwargs
+        self,
+        function: TypeCallable,
+        types_to_apply: Optional[Sequence[str]] = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.function = function

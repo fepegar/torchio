@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomSpike(TorchioTestCase):
     """Tests for `RandomSpike`."""
+
     def test_with_zero_intensity(self):
         transform = RandomSpike(intensity=0)
         transformed = transform(self.sample_subject)
