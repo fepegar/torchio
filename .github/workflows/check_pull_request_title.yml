@@ -1,0 +1,21 @@
+name: 'Check PR title'
+on:
+  pull_request:
+    types: [edited, opened, synchronize, reopened]
+
+jobs:
+  pr-title-check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login != 'allcontributors[bot]' }}
+    steps:
+      - uses: naveenk1223/action-pr-title@master
+        with:
+          # Valid titles: "Do something"
+          # Invalid title:
+          # - "do something"
+          # - "Do something."
+          # - "Does something"
+          # - "Do"
+          regex: '^[A-Z][a-zA-Z]*(?<!s)( [a-zA-Z]+)+[^.]$'  # Thanks, ChatGPT
+          min_length: 10
+          max_length: 72
