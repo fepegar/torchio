@@ -250,7 +250,7 @@ def make_gif(
             ' file format specification is 100 fps. The duration has been set'
             f' to {new_duration:.1f} seconds, instead of {duration:.1f}'
         )
-        warnings.warn(message)
+        warnings.warn(message, RuntimeWarning, stacklevel=2)
     images[0].save(
         output_path,
         save_all=True,

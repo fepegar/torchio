@@ -383,6 +383,10 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mueller-franzes"><img src="https://avatars.githubusercontent.com/u/56117447?v=4?s=100" width="100px;" alt="mueller-franzes"/><br /><sub><b>mueller-franzes</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=mueller-franzes" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wahabk"><img src="https://avatars.githubusercontent.com/u/43846328?v=4?s=100" width="100px;" alt="Abdelwahab Kawafi"/><br /><sub><b>Abdelwahab Kawafi</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Awahabk" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://arthurmasson.xyz"><img src="https://avatars.githubusercontent.com/u/1814799?v=4?s=100" width="100px;" alt="Arthur Masson"/><br /><sub><b>Arthur Masson</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aarthursw" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=arthursw" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hsyang1222"><img src="https://avatars.githubusercontent.com/u/79962117?v=4?s=100" width="100px;" alt="양현식"/><br /><sub><b>양현식</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=hsyang1222" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 

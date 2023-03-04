@@ -28,6 +28,6 @@ class TestResize(TorchioTestCase):
         affine = np.diag((5, 1, 1, 1))
         im = tio.ScalarImage(tensor=tensor, affine=affine)
         target = 12
-        with pytest.warns(UserWarning):
+        with pytest.warns(RuntimeWarning):
             result = tio.Resize(target)(im)
         assert result.spatial_shape == 3 * (target,)
