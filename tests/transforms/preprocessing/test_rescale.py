@@ -107,3 +107,14 @@ class TestRescaleIntensity(TorchioTestCase):
         rescale = tio.RescaleIntensity(masking_method='label')
         with pytest.warns(RuntimeWarning):
             rescale(subject)
+
+    def test_invert_rescaling(self):
+        torch.manual_seed(0)
+        transform = tio.RescaleIntensity(out_min_max=(0, 1))
+        data = torch.rand(1, 2, 3, 4).double()
+        subject = tio.Subject(t1=tio.ScalarImage(tensor=data))
+        transformed = transform(subject)
+        assert transformed.t1.data.min() == 0
+        assert transformed.t1.data.max() == 1
+        inverted = subject.apply_inverse_transform()
+        self.assert_tensor_almost_equal(inverted.t1.data, data)
