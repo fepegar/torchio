@@ -103,9 +103,9 @@ class Transform(ABC):
         if keys is not None:
             message = (
                 'The "keys" argument is deprecated and will be removed in the'
-                ' future. Use "include" instead.'
+                ' future. Use "include" instead'
             )
-            warnings.warn(message)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             include = keys
         self.include, self.exclude = self.parse_include_and_exclude(
             include, exclude,
@@ -237,9 +237,9 @@ class Transform(ABC):
     def _parse_range(
             nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
             name: str,
-            min_constraint: TypeNumber = None,
-            max_constraint: TypeNumber = None,
-            type_constraint: type = None,
+            min_constraint: Optional[TypeNumber] = None,
+            max_constraint: Optional[TypeNumber] = None,
+            type_constraint: Optional[type] = None,
     ) -> Tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 

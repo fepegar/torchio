@@ -69,10 +69,11 @@ class Pad(BoundsTransform):
     @classmethod
     def check_padding_mode(cls, padding_mode):
         is_number = isinstance(padding_mode, Number)
-        if not (padding_mode in cls.PADDING_MODES or is_number):
+        is_callable = callable(padding_mode)
+        if not (padding_mode in cls.PADDING_MODES or is_number or is_callable):
             message = (
                 f'Padding mode "{padding_mode}" not valid. Valid options are'
-                f' {list(cls.PADDING_MODES)} or a number'
+                f' {list(cls.PADDING_MODES)}, a number or a function'
             )
             raise KeyError(message)
 

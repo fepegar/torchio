@@ -66,12 +66,12 @@ class TestTransforms(TorchioTestCase):
         transform = tio.RandomNoise(include=('t1', 't2'))
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
         transformed = transform(input_dict)
-        self.assertIsInstance(transformed, dict)
+        assert isinstance(transformed, dict)
 
     def test_transforms_dict_no_keys(self):
         transform = tio.RandomNoise()
         input_dict = {k: v.data for (k, v) in self.sample_subject.items()}
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             transform(input_dict)
 
     def test_transforms_image(self):
@@ -79,7 +79,7 @@ class TestTransforms(TorchioTestCase):
             channels=('default_image_name',), labels=False,
         )
         transformed = transform(self.sample_subject.t1)
-        self.assertIsInstance(transformed, tio.ScalarImage)
+        assert isinstance(transformed, tio.ScalarImage)
 
     def test_transforms_tensor(self):
         tensor = torch.rand(2, 4, 5, 8)
@@ -87,7 +87,7 @@ class TestTransforms(TorchioTestCase):
             channels=('default_image_name',), labels=False,
         )
         transformed = transform(tensor)
-        self.assertIsInstance(transformed, torch.Tensor)
+        assert isinstance(transformed, torch.Tensor)
 
     def test_transforms_array(self):
         tensor = torch.rand(2, 4, 5, 8).numpy()
@@ -95,7 +95,7 @@ class TestTransforms(TorchioTestCase):
             channels=('default_image_name',), labels=False,
         )
         transformed = transform(tensor)
-        self.assertIsInstance(transformed, np.ndarray)
+        assert isinstance(transformed, np.ndarray)
 
     def test_transforms_sitk(self):
         tensor = torch.rand(2, 4, 5, 8)
@@ -105,18 +105,18 @@ class TestTransforms(TorchioTestCase):
             channels=('default_image_name',), labels=False,
         )
         transformed = transform(image)
-        self.assertIsInstance(transformed, sitk.Image)
+        assert isinstance(transformed, sitk.Image)
 
     def test_transforms_subject_3d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=True)
         transformed = transform(self.sample_subject)
-        self.assertIsInstance(transformed, tio.Subject)
+        assert isinstance(transformed, tio.Subject)
 
     def test_transforms_subject_2d(self):
         transform = self.get_transform(channels=('t1', 't2'), is_3d=False)
         subject = self.make_2d(self.sample_subject)
         transformed = transform(subject)
-        self.assertIsInstance(transformed, tio.Subject)
+        assert isinstance(transformed, tio.Subject)
 
     def test_transforms_subject_4d(self):
         composed = self.get_transform(channels=('t1', 't2'), is_3d=True)
@@ -136,26 +136,24 @@ class TestTransforms(TorchioTestCase):
                 'CopyAffine',
             )
             if transform.name not in exclude:
-                self.assertEqual(
-                    subject.shape[0],
-                    transformed.shape[0],
-                    f'Different number of channels after {transform.name}',
+                assert subject.shape[0] == transformed.shape[0], (
+                    f'Different number of channels after {transform.name}'
                 )
-                self.assertTensorNotEqual(
+                self.assert_tensor_not_equal(
                     subject.t1.data[1],
                     transformed.t1.data[1],
-                    f'No changes after {transform.name}',
+                    msg=f'No changes after {transform.name}',
                 )
             subject = transformed
-        self.assertIsInstance(transformed, tio.Subject)
+        assert isinstance(transformed, tio.Subject)
 
     def test_transform_noop(self):
         transform = tio.RandomMotion(p=0)
         transformed = transform(self.sample_subject)
-        self.assertIs(transformed, self.sample_subject)
+        assert transformed is self.sample_subject
         tensor = torch.rand(2, 4, 5, 8).numpy()
         transformed = transform(tensor)
-        self.assertIs(transformed, tensor)
+        assert transformed is tensor
 
     def test_original_unchanged(self):
         subject = copy.deepcopy(self.sample_subject)
@@ -164,10 +162,10 @@ class TestTransforms(TorchioTestCase):
         for transform in composed.transforms:
             original_data = copy.deepcopy(subject.t1.data)
             transform(subject)
-            self.assertTensorEqual(
+            self.assert_tensor_equal(
                 subject.t1.data,
                 original_data,
-                f'Changes after {transform.name}',
+                msg=f'Changes after {transform.name}',
             )
 
     def test_transforms_use_include(self):
@@ -175,16 +173,16 @@ class TestTransforms(TorchioTestCase):
         transform = tio.RandomNoise(include=['t1'])
         transformed = transform(self.sample_subject)
 
-        self.assertTensorNotEqual(
+        self.assert_tensor_not_equal(
             original_subject.t1.data,
             transformed.t1.data,
-            f'Changes after {transform.name}',
+            msg=f'Changes after {transform.name}',
         )
 
-        self.assertTensorEqual(
+        self.assert_tensor_equal(
             original_subject.t2.data,
             transformed.t2.data,
-            f'Changes after {transform.name}',
+            msg=f'Changes after {transform.name}',
         )
 
     def test_transforms_use_exclude(self):
@@ -192,24 +190,24 @@ class TestTransforms(TorchioTestCase):
         transform = tio.RandomNoise(exclude=['t2'])
         transformed = transform(self.sample_subject)
 
-        self.assertTensorNotEqual(
+        self.assert_tensor_not_equal(
             original_subject.t1.data,
             transformed.t1.data,
-            f'Changes after {transform.name}',
+            msg=f'Changes after {transform.name}',
         )
 
-        self.assertTensorEqual(
+        self.assert_tensor_equal(
             original_subject.t2.data,
             transformed.t2.data,
-            f'Changes after {transform.name}',
+            msg=f'Changes after {transform.name}',
         )
 
     def test_transforms_use_include_and_exclude(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomNoise(include=['t2'], exclude=['t1'])
 
     def test_keys_deprecated(self):
-        with self.assertWarns(UserWarning):
+        with pytest.warns(DeprecationWarning):
             tio.RandomNoise(keys=['t2'])
 
     def test_keep_original(self):
@@ -218,11 +216,11 @@ class TestTransforms(TorchioTestCase):
         transformed = tio.RandomAffine(keep={old: new})(subject)
         assert old in transformed
         assert new in transformed
-        self.assertTensorEqual(
+        self.assert_tensor_equal(
             transformed[new].data,
             subject[old].data,
         )
-        self.assertTensorNotEqual(
+        self.assert_tensor_not_equal(
             transformed[new].data,
             transformed[old].data,
         )
@@ -231,7 +229,7 @@ class TestTransforms(TorchioTestCase):
 class TestTransform(TorchioTestCase):
 
     def test_abstract_transform(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.Transform()
 
     def test_arguments_are_not_dict(self):
@@ -244,38 +242,38 @@ class TestTransform(TorchioTestCase):
 
     def test_arguments_are_and_are_not_dict(self):
         transform = tio.Noise(0, {'im': 1}, {'im': 0})
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform.arguments_are_dict()
 
     def test_bad_over_max(self):
         transform = tio.RandomNoise()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform._parse_range(2, 'name', max_constraint=1)
 
     def test_bad_over_max_range(self):
         transform = tio.RandomNoise()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform._parse_range((0, 2), 'name', max_constraint=1)
 
     def test_bad_type(self):
         transform = tio.RandomNoise()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform._parse_range(2.5, 'name', type_constraint=int)
 
     def test_no_numbers(self):
         transform = tio.RandomNoise()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform._parse_range('j', 'name')
 
     def test_apply_transform_missing(self):
         class T(tio.Transform):
             pass
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             T().apply_transform(0)
 
     def test_non_invertible(self):
         transform = tio.RandomBlur()
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             transform.inverse()
 
     def test_batch_history(self):
@@ -301,12 +299,12 @@ class TestTransform(TorchioTestCase):
 
     def test_bad_bounds_mask(self):
         transform = tio.ZNormalization(masking_method='test')
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform(self.sample_subject)
 
     def test_bounds_mask(self):
         transform = tio.ZNormalization()
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             transform.get_mask_from_anatomical_label('test', 0)
         tensor = torch.rand((1, 2, 2, 2))
 

@@ -198,7 +198,7 @@ class CropOrPad(SpatialTransform):
                 f' not found in subject keys "{tuple(subject.keys())}".'
                 ' Using volume center instead'
             )
-            warnings.warn(message, RuntimeWarning)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
             return self._compute_center_crop_or_pad(subject=subject)
 
         mask_data = self.get_mask_from_masking_method(
@@ -213,7 +213,7 @@ class CropOrPad(SpatialTransform):
                 f'All values found in the mask "{self.mask_name}"'
                 ' are zero. Using volume center instead'
             )
-            warnings.warn(message, RuntimeWarning)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
             return self._compute_center_crop_or_pad(subject=subject)
 
         # Let's assume that the center of first voxel is at coordinate 0.5

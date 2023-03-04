@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -32,7 +33,7 @@ class TestAggregator(TorchioTestCase):
             batch_data = batch[image_name][tio.DATA]
             aggregator.add_batch(batch_data, batch[tio.LOCATION])
         output = aggregator.get_output_tensor()
-        self.assertTensorEqual(output, fixture)
+        self.assert_tensor_equal(output, fixture)
 
     def test_overlap_crop(self):
         fixture = (
@@ -81,7 +82,7 @@ class TestAggregator(TorchioTestCase):
 
     def test_warning_int64(self):
         aggregator = self.run_sampler_aggregator()
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             aggregator.get_output_tensor()
 
     def run_patch_crop_issue(self, *, padding_mode):
@@ -108,7 +109,7 @@ class TestAggregator(TorchioTestCase):
             locations = patches_batch[tio.LOCATION]
             aggregator.add_batch(input_tensor, locations)
         output_tensor = aggregator.get_output_tensor()
-        self.assertTensorEqual(image.tensor, output_tensor)
+        self.assert_tensor_equal(image.tensor, output_tensor)
 
     def test_patch_crop_issue_no_padding(self):
         self.run_patch_crop_issue(padding_mode=None)
@@ -136,5 +137,5 @@ class TestAggregator(TorchioTestCase):
             crop = tio.CropOrPad(12)
             patches = [crop(patch) for patch in input_batch]
             inference_batch = torch.stack(patches)
-            with self.assertRaises(RuntimeError):
+            with pytest.raises(RuntimeError):
                 aggregator.add_batch(inference_batch, batch[tio.LOCATION])

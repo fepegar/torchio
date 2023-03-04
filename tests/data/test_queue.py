@@ -1,3 +1,4 @@
+from parameterized import parameterized
 import torch
 import torchio as tio
 from torch.utils.data import DataLoader
@@ -47,7 +48,8 @@ class TestQueue(TorchioTestCase):
     def test_queue_no_start_background(self):
         self.run_queue(num_workers=0, start_background=False)
 
-    def test_different_samples_per_volume(self):
+    @parameterized.expand([(11,), (12,)])
+    def test_different_samples_per_volume(self, max_length):
         image2 = tio.ScalarImage(tensor=2 * torch.ones(1, 1, 1, 1))
         image10 = tio.ScalarImage(tensor=10 * torch.ones(1, 1, 1, 1))
         subject2 = tio.Subject(im=image2, num_samples=2)
@@ -57,7 +59,7 @@ class TestQueue(TorchioTestCase):
         sampler = UniformSampler(patch_size)
         queue_dataset = tio.Queue(
             dataset,
-            max_length=12,
+            max_length=max_length,
             samples_per_volume=3,  # should be ignored
             sampler=sampler,
         )

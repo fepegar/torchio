@@ -7,9 +7,9 @@ Dataset
 
 .. currentmodule:: torchio.data
 
+
 :class:`SubjectsDataset`
 ------------------------
 
 .. autoclass:: SubjectsDataset
     :members:
-    :show-inheritance:

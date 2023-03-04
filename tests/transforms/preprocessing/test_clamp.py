@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -10,8 +11,8 @@ class TestClamp(TorchioTestCase):
     def test_out_min_max(self):
         transform = tio.Clamp(out_min=0, out_max=1)
         transformed = transform(self.sample_subject)
-        self.assertEqual(transformed.t1.data.min(), 0)
-        self.assertEqual(transformed.t1.data.max(), 1)
+        assert transformed.t1.data.min() == 0
+        assert transformed.t1.data.max() == 1
 
     def test_ct(self):
         ct_max = 1500
@@ -27,21 +28,21 @@ class TestClamp(TorchioTestCase):
         assert clamped.data.max() == ct_bone
 
     def test_too_many_values_for_out_min(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             clamp = tio.Clamp(out_min=(1, 2))
             clamp(self.sample_subject)
 
     def test_too_many_values_for_out_max(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             clamp = tio.Clamp(out_max=(1, 2))
             clamp(self.sample_subject)
 
     def test_wrong_out_min_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             clamp = tio.Clamp(out_min='foo')
             clamp(self.sample_subject)
 
     def test_wrong_out_max_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             clamp = tio.Clamp(out_max='foo')
             clamp(self.sample_subject)

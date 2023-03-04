@@ -13,4 +13,3 @@ in its :attr:`history` attribute (see :ref:`Reproducibility`).
 
 .. autoclass:: Subject
     :members:
-    :show-inheritance:

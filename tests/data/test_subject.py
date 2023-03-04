@@ -13,7 +13,7 @@ from ..utils import TorchioTestCase
 class TestSubject(TorchioTestCase):
     """Tests for `Subject`."""
     def test_positional_args(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.Subject(0)
 
     def test_input_dict(self):
@@ -26,13 +26,13 @@ class TestSubject(TorchioTestCase):
         with tempfile.NamedTemporaryFile(delete=False) as f:
             input_dict = {'image': tio.ScalarImage(f.name)}
             subject = tio.Subject(input_dict)
-            with self.assertRaises(RuntimeError):
-                with self.assertWarns(UserWarning):
+            with pytest.raises(RuntimeError):
+                with pytest.warns(UserWarning):
                     tio.RandomFlip()(subject)
 
     def test_history(self):
         transformed = tio.RandomGamma()(self.sample_subject)
-        self.assertIs(len(transformed.history), 1)
+        assert len(transformed.history) == 1
 
     def test_inconsistent_shape(self):
         subject = tio.Subject(
@@ -40,7 +40,7 @@ class TestSubject(TorchioTestCase):
             b=tio.ScalarImage(tensor=torch.rand(2, 2, 3, 4)),
         )
         subject.spatial_shape
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             subject.shape
 
     def test_inconsistent_spatial_shape(self):
@@ -48,7 +48,7 @@ class TestSubject(TorchioTestCase):
             a=tio.ScalarImage(tensor=torch.rand(1, 3, 3, 4)),
             b=tio.ScalarImage(tensor=torch.rand(2, 2, 3, 4)),
         )
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             subject.spatial_shape
 
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
@@ -92,9 +92,9 @@ class TestSubject(TorchioTestCase):
     def test_delete_image(self):
         subject = copy.deepcopy(self.sample_subject)
         subject.remove_image('t1')
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             subject['t1']
-        with self.assertRaises(AttributeError):
+        with pytest.raises(AttributeError):
             subject.t1
 
     def test_2d(self):
@@ -102,15 +102,15 @@ class TestSubject(TorchioTestCase):
         assert subject.is_2d()
 
     def test_different_non_numeric(self):
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             self.sample_subject.check_consistent_attribute('path')
 
     def test_bad_arg(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.Subject(0)
 
     def test_no_images(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.Subject(a=0)
 
     def test_copy_subject(self):

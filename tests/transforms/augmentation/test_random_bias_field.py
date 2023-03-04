@@ -1,3 +1,4 @@
+import pytest
 import torch
 import torchio as tio
 
@@ -9,7 +10,7 @@ class TestRandomBiasField(TorchioTestCase):
     def test_no_bias(self):
         transform = tio.RandomBiasField(coefficients=0)
         transformed = transform(self.sample_subject)
-        self.assertTensorAlmostEqual(
+        self.assert_tensor_almost_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
         )
@@ -17,21 +18,21 @@ class TestRandomBiasField(TorchioTestCase):
     def test_with_bias(self):
         transform = tio.RandomBiasField(coefficients=0.1)
         transformed = transform(self.sample_subject)
-        self.assertTensorNotEqual(
+        self.assert_tensor_not_equal(
             self.sample_subject.t1.data,
             transformed.t1.data,
         )
 
     def test_wrong_coefficient_type(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomBiasField(coefficients='wrong')
 
     def test_negative_order(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.RandomBiasField(order=-1)
 
     def test_wrong_order_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.RandomBiasField(order='wrong')
 
     def test_small_image(self):

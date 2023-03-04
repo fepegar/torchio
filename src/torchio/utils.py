@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -93,6 +94,7 @@ def create_dummy_dataset(
     else:
         images_dir.mkdir(exist_ok=True, parents=True)
         labels_dir.mkdir(exist_ok=True, parents=True)
+        iterable: Iterable[int]
         if verbose:
             print('Creating dummy dataset...')  # noqa: T201
             iterable = trange(num_images)

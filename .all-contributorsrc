@@ -257,7 +257,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/11719673?v=4",
       "profile": "http://www.cbica.upenn.edu/spati",
       "contributions": [
-        "platform"
+        "platform",
+        "doc"
       ]
     },
     {
@@ -349,7 +350,8 @@
       "profile": "https://github.com/ramonemiliani93",
       "contributions": [
         "doc",
-        "bug"
+        "bug",
+        "code"
       ]
     },
     {
@@ -569,7 +571,8 @@
       "profile": "http://delanover.com",
       "contributions": [
         "ideas",
-        "code"
+        "code",
+        "bug"
       ]
     },
     {
@@ -635,6 +638,43 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "mueller-franzes",
+      "name": "mueller-franzes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56117447?v=4",
+      "profile": "https://github.com/mueller-franzes",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "wahabk",
+      "name": "Abdelwahab Kawafi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43846328?v=4",
+      "profile": "https://github.com/wahabk",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "arthursw",
+      "name": "Arthur Masson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1814799?v=4",
+      "profile": "http://arthurmasson.xyz",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "hsyang1222",
+      "name": "양현식",
+      "avatar_url": "https://avatars.githubusercontent.com/u/79962117?v=4",
+      "profile": "https://github.com/hsyang1222",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -642,5 +682,6 @@
   "projectOwner": "fepegar",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }

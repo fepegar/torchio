@@ -94,7 +94,7 @@ def mask(
             f'Expanding mask with shape {mask.shape}'
             f' to match shape {array.shape} of input image'
         )
-        warnings.warn(message, RuntimeWarning)
+        warnings.warn(message, RuntimeWarning, stacklevel=2)
         mask = mask.expand(*array.shape)
     array[~mask] = outside_value
     return array

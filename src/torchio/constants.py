@@ -11,6 +11,7 @@ TYPE = 'type'
 STEM = 'stem'
 DATA = 'data'
 AFFINE = 'affine'
+TENSOR = 'tensor'
 
 # For aggregator
 IMAGE = 'image'

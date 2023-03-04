@@ -17,20 +17,20 @@ class TestImage(TorchioTestCase):
     """Tests for `Image`."""
 
     def test_image_not_found(self):
-        with self.assertRaises(FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
             tio.ScalarImage('nopath')
 
     @pytest.mark.skipif(sys.platform == 'win32', reason='Path not valid')
     def test_wrong_path_value(self):
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.ScalarImage('~&./@#"!?X7=+')
 
     def test_wrong_path_type(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.ScalarImage(5)
 
     def test_wrong_affine(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             tio.ScalarImage(5, affine=1)
 
     def test_tensor_flip(self):
@@ -43,20 +43,20 @@ class TestImage(TorchioTestCase):
 
     def test_wrong_scalar_image_type(self):
         data = torch.ones((1, 10, 10, 10))
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.ScalarImage(tensor=data, type=tio.LABEL)
 
     def test_wrong_label_map_type(self):
         data = torch.ones((1, 10, 10, 10))
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.LabelMap(tensor=data, type=tio.INTENSITY)
 
     def test_no_input(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.ScalarImage()
 
     def test_bad_key(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.ScalarImage(path='', data=5)
 
     def test_repr(self):
@@ -70,16 +70,16 @@ class TestImage(TorchioTestCase):
     def test_data_tensor(self):
         subject = copy.deepcopy(self.sample_subject)
         subject.load()
-        self.assertIs(subject.t1.data, subject.t1.tensor)
+        assert subject.t1.data is subject.t1.tensor
 
     def test_bad_affine(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             tio.ScalarImage(tensor=torch.rand(1, 2, 3, 4), affine=np.eye(3))
 
     def test_nans_tensor(self):
         tensor = np.random.rand(1, 2, 3, 4)
         tensor[0, 0, 0, 0] = np.nan
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             image = tio.ScalarImage(tensor=tensor, check_nans=True)
         image.set_check_nans(False)
 
@@ -88,11 +88,11 @@ class TestImage(TorchioTestCase):
         image = tio.ScalarImage(tensor=tensor)
         ras = image.get_center()
         lps = image.get_center(lps=True)
-        self.assertEqual(ras, (1, 1, 1))
-        self.assertEqual(lps, (-1, -1, 1))
+        assert ras == (1, 1, 1)
+        assert lps == (-1, -1, 1)
 
     def test_with_list_of_missing_files(self):
-        with self.assertRaises(FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
             tio.ScalarImage(path=['nopath', 'error'])
 
     def test_with_sequences_of_paths(self):
@@ -103,21 +103,21 @@ class TestImage(TorchioTestCase):
         paths_list = list(paths_tuple)
         for sequence in (paths_tuple, paths_list):
             image = tio.ScalarImage(path=sequence)
-            self.assertEqual(image.shape, (2, 5, 5, 5))
-            self.assertEqual(image[tio.STEM], ['path1', 'path2'])
+            assert image.shape == (2, 5, 5, 5)
+            assert image[tio.STEM] == ['path1', 'path2']
 
     def test_with_a_list_of_images_with_different_shapes(self):
         path1 = self.get_image_path('path1', shape=(5, 5, 5))
         path2 = self.get_image_path('path2', shape=(7, 5, 5))
         image = tio.ScalarImage(path=[path1, path2])
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             image.load()
 
     def test_with_a_list_of_images_with_different_affines(self):
         path1 = self.get_image_path('path1', spacing=(1, 1, 1))
         path2 = self.get_image_path('path2', spacing=(1, 2, 1))
         image = tio.ScalarImage(path=[path1, path2])
-        with self.assertWarns(RuntimeWarning):
+        with pytest.warns(RuntimeWarning):
             image.load()
 
     def test_with_a_list_of_2d_paths(self):
@@ -126,16 +126,16 @@ class TestImage(TorchioTestCase):
         path2 = self.get_image_path('path2', shape=shape, suffix='.img')
         path3 = self.get_image_path('path3', shape=shape, suffix='.hdr')
         image = tio.ScalarImage(path=[path1, path2, path3])
-        self.assertEqual(image.shape, (3, 5, 6, 1))
-        self.assertEqual(image[tio.STEM], ['path1', 'path2', 'path3'])
+        assert image.shape == (3, 5, 6, 1)
+        assert image[tio.STEM] == ['path1', 'path2', 'path3']
 
     def test_axis_name_2d(self):
         path = self.get_image_path('im2d', shape=(5, 6))
         image = tio.ScalarImage(path)
         height_idx = image.axis_name_to_index('t')
         width_idx = image.axis_name_to_index('l')
-        self.assertEqual(image.height, image.shape[height_idx])
-        self.assertEqual(image.width, image.shape[width_idx])
+        assert image.height == image.shape[height_idx]
+        assert image.width == image.shape[width_idx]
 
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot(self):
@@ -145,12 +145,12 @@ class TestImage(TorchioTestCase):
     def test_data_type_uint16_array(self):
         tensor = np.random.rand(1, 3, 3, 3).astype(np.uint16)
         image = tio.ScalarImage(tensor=tensor)
-        self.assertEqual(image.data.dtype, torch.int32)
+        assert image.data.dtype == torch.int32
 
     def test_data_type_uint32_array(self):
         tensor = np.random.rand(1, 3, 3, 3).astype(np.uint32)
         image = tio.ScalarImage(tensor=tensor)
-        self.assertEqual(image.data.dtype, torch.int64)
+        assert image.data.dtype == torch.int64
 
     def test_save_image_with_data_type_boolean(self):
         tensor = np.random.rand(1, 3, 3, 3).astype(bool)
@@ -167,26 +167,26 @@ class TestImage(TorchioTestCase):
                 tio.ScalarImage(f.name).load()
 
     def test_pil_3d(self):
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.ScalarImage(tensor=torch.rand(1, 2, 3, 4)).as_pil()
 
     def test_pil_1(self):
         tio.ScalarImage(tensor=torch.rand(1, 2, 3, 1)).as_pil()
 
     def test_pil_2(self):
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             tio.ScalarImage(tensor=torch.rand(2, 2, 3, 1)).as_pil()
 
     def test_pil_3(self):
         tio.ScalarImage(tensor=torch.rand(3, 2, 3, 1)).as_pil()
 
     def test_set_data(self):
-        with self.assertWarns(DeprecationWarning):
-            im = self.sample_subject.t1
+        im = self.sample_subject.t1
+        with pytest.deprecated_call():
             im.data = im.data
 
     def test_no_type(self):
-        with self.assertWarns(UserWarning):
+        with pytest.warns(DeprecationWarning):
             tio.Image(tensor=torch.rand(1, 2, 3, 4))
 
     def test_custom_reader(self):
@@ -208,7 +208,7 @@ class TestImage(TorchioTestCase):
         assert_shape((4, 5, 5, 5), (4, 5, 5, 5))
 
     def test_fast_gif(self):
-        with self.assertWarns(UserWarning):
+        with pytest.warns(RuntimeWarning):
             with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
                 self.sample_subject.t1.to_gif(0, 0.0001, f.name)
 
@@ -236,7 +236,7 @@ class TestImage(TorchioTestCase):
         path2 = self.get_image_path('multi2')
         paths = path1, path2
         image = tio.ScalarImage(paths)
-        self.assertTensorEqual(image.affine, np.eye(4))
+        self.assert_tensor_equal(image.affine, np.eye(4))
 
     def test_bad_numpy_type_reader(self):
         # https://github.com/fepegar/torchio/issues/764
@@ -261,3 +261,17 @@ class TestImage(TorchioTestCase):
         image = tio.ScalarImage(tensor=tensor)
         with self.assertRaises(RuntimeError):
             image.unload()
+
+    def test_copy_no_data(self):
+        # https://github.com/fepegar/torchio/issues/974
+        path = self.get_image_path('im_copy')
+        my_image = tio.LabelMap(path)
+        assert not my_image._loaded
+        new_image = copy.copy(my_image)
+        assert not my_image._loaded
+        assert not new_image._loaded
+
+        my_image.load()
+        new_image = copy.copy(my_image)
+        assert my_image._loaded
+        assert new_image._loaded

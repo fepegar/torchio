@@ -197,7 +197,6 @@ for some further general explanations of digital image interpolation.
 .. currentmodule:: torchio.transforms.interpolation
 
 .. autoclass:: Interpolation
-    :show-inheritance:
     :members:
     :undoc-members:
 

@@ -203,7 +203,7 @@ class Subject(dict):
         return inverse_transform
 
     def apply_inverse_transform(self, **kwargs) -> Subject:
-        """Try to apply the inverse of all applied transforms, in reverse order.
+        """Apply the inverse of all applied transforms, in reverse order.
 
         Args:
             **kwargs: Keyword arguments passed on to

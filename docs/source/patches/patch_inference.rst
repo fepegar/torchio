@@ -41,7 +41,6 @@ Grid sampler
 
 .. autoclass:: GridSampler
     :members:
-    :show-inheritance:
 
 
 Grid aggregator

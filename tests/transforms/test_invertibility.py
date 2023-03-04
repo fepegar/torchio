@@ -24,11 +24,8 @@ class TestInvertibility(TorchioTestCase):
             transformed = transform(self.sample_subject)
             inverting_transform = transformed.get_inverse_transform()
             transformed_back = inverting_transform(transformed)
-        self.assertEqual(
-            transformed.t1.shape,
-            transformed_back.t1.shape,
-        )
-        self.assertTensorEqual(
+        assert transformed.t1.shape == transformed_back.t1.shape
+        self.assert_tensor_equal(
             transformed.label.affine,
             transformed_back.label.affine,
         )

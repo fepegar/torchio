@@ -23,6 +23,7 @@ from ..constants import INTENSITY
 from ..constants import LABEL
 from ..constants import PATH
 from ..constants import STEM
+from ..constants import TENSOR
 from ..constants import TYPE
 from ..typing import TypeData
 from ..typing import TypeDataAffine
@@ -128,7 +129,7 @@ class Image(dict):
     def __init__(
             self,
             path: Union[TypePath, Sequence[TypePath], None] = None,
-            type: str = None,  # noqa: A002
+            type: Optional[str] = None,  # noqa: A002
             tensor: Optional[TypeData] = None,
             affine: Optional[TypeData] = None,
             check_nans: bool = False,  # removed by ITK by default
@@ -143,6 +144,8 @@ class Image(dict):
                 'Not specifying the image type is deprecated and will be'
                 ' mandatory in the future. You can probably use'
                 ' tio.ScalarImage or tio.LabelMap instead',
+                DeprecationWarning,
+                stacklevel=2,
             )
             type = INTENSITY  # noqa: A001
 
@@ -166,7 +169,7 @@ class Image(dict):
                 ' https://github.com/fepegar/torchio/pull/685 and will be'
                 ' removed in the future'
             )
-            warnings.warn(message, DeprecationWarning)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
 
         super().__init__(**kwargs)
         self.path = self._parse_path(path)
@@ -204,11 +207,12 @@ class Image(dict):
 
     def __copy__(self):
         kwargs = {
-            'tensor': self.data,
-            'affine': self.affine,
-            'type': self.type,
-            'path': self.path,
+            TYPE: self.type,
+            PATH: self.path,
         }
+        if self._loaded:
+            kwargs[TENSOR] = self.data
+            kwargs[AFFINE] = self.affine
         for key, value in self.items():
             if key in PROTECTED_KEYS:
                 continue
@@ -478,7 +482,7 @@ class Image(dict):
         if tensor.dtype == torch.bool:
             tensor = tensor.to(torch.uint8)
         if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn('NaNs found in tensor', RuntimeWarning)
+            warnings.warn('NaNs found in tensor', RuntimeWarning, stacklevel=2)
         return tensor
 
     @staticmethod
@@ -548,7 +552,7 @@ class Image(dict):
                     f'\nMatrix of {path}:'
                     f'\n{new_affine}'
                 )
-                warnings.warn(message, RuntimeWarning)
+                warnings.warn(message, RuntimeWarning, stacklevel=2)
             if not tensor.shape[1:] == new_tensor.shape[1:]:
                 message = (
                     f'Files shape do not match, found {tensor.shape}'
@@ -589,7 +593,11 @@ class Image(dict):
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
         if self.check_nans and torch.isnan(tensor).any():
-            warnings.warn(f'NaNs found in file "{path}"', RuntimeWarning)
+            warnings.warn(
+                f'NaNs found in file "{path}"',
+                RuntimeWarning,
+                stacklevel=2,
+            )
         return tensor, affine
 
     def save(self, path: TypePath, squeeze: Optional[bool] = None) -> None:
