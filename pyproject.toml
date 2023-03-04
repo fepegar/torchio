@@ -8,4 +8,3 @@ build-backend = "setuptools.build_meta"
 preview = true
 skip-string-normalization = 1
 target-version = ['py311']
-line-length = 79
