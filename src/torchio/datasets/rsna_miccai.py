@@ -88,7 +88,10 @@ class RSNAMICCAI(SubjectsDataset):
                         for row in reader
                     }
             except FileNotFoundError:
-                warnings.warn('Labels CSV not found. Ignoring MGMT labels')
+                warnings.warn(
+                    'Labels CSV not found. Ignoring MGMT labels',
+                    stacklevel=2,
+                )
                 labels_dict = {}
             subjects_dir = root_dir / 'train'
         else:

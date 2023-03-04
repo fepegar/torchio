@@ -268,7 +268,7 @@ class ElasticDeformation(SpatialTransform):
                 ' occur. Choose fewer control points or a smaller'
                 ' maximum displacement'
             )
-            warnings.warn(message, RuntimeWarning)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
 
     def apply_transform(self, subject: Subject) -> Subject:
         no_displacement = not any(self.max_displacement)

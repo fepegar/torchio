@@ -87,6 +87,7 @@ class RandomAnisotropy(RandomTransform):
             warnings.warn(
                 f'Input image is 2D, but "2" is in axes: {self.axes}',
                 RuntimeWarning,
+                stacklevel=2,
             )
             self.axes = list(self.axes)
             self.axes.remove(2)

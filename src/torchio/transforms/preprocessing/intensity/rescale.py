@@ -95,7 +95,7 @@ class RescaleIntensity(NormalizationTransform):
                 f'Rescaling image "{image_name}" not possible'
                 ' because the mask to compute the statistics is empty'
             )
-            warnings.warn(message, RuntimeWarning)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
             return tensor
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
@@ -111,7 +111,7 @@ class RescaleIntensity(NormalizationTransform):
                 f'Rescaling image "{image_name}" not possible'
                 ' because all the intensity values are the same'
             )
-            warnings.warn(message, RuntimeWarning)
+            warnings.warn(message, RuntimeWarning, stacklevel=2)
             return tensor
         out_range = self.out_max - self.out_min
         if self.invert_transform:
