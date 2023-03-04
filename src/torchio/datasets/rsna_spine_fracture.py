@@ -26,7 +26,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
     instantiating this class.
 
     .. _RSNA 2022 Cervical Spine Fracture Detection: https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection/overview/evaluation
-    """  # noqa: E501
+    """  # noqa: B950
 
     UID = 'StudyInstanceUID'
 

@@ -62,7 +62,7 @@ class SubjectsDataset(Dataset):
 
     .. tip:: To quickly iterate over the subjects without loading the images,
         use :meth:`dry_iter()`.
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
             self,

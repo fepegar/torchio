@@ -125,7 +125,7 @@ class Image(dict):
     .. _FSL docs: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained
     .. _SimpleITK docs: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html
     .. _Graham Wideman's website: http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(
             self,
             path: Union[TypePath, Sequence[TypePath], None] = None,
@@ -453,7 +453,7 @@ class Image(dict):
             # https://github.com/fepegar/torchio/pull/838
             raise TypeError('The path argument cannot be a dictionary')
         elif self._is_paths_sequence(path):
-            return [self._parse_single_path(p) for p in path]  # type: ignore[union-attr]  # noqa: E501
+            return [self._parse_single_path(p) for p in path]  # type: ignore[union-attr]  # noqa: B950
         else:
             return self._parse_single_path(path)  # type: ignore[arg-type]
 
@@ -641,7 +641,7 @@ class Image(dict):
             >>> sitk_image = sitk.Image((224, 224), sitk.sitkVectorFloat32, 3)
             >>> tio.ScalarImage.from_sitk(sitk_image)
             ScalarImage(shape: (3, 224, 224, 1); spacing: (1.00, 1.00, 1.00); orientation: LPS+; memory: 588.0 KiB; dtype: torch.FloatTensor)
-        """  # noqa: E501
+        """  # noqa: B950
         tensor, affine = sitk_to_nib(sitk_image)
         return cls(tensor=tensor, affine=affine)
 
@@ -698,7 +698,7 @@ class Image(dict):
                 eliminating unused colors. This is only useful if the palette
                 can be compressed to the next smaller power of 2 elements.
             reverse: Reverse the temporal order of frames.
-        """  # noqa: E501
+        """  # noqa: B950
         from ..visualization import make_gif  # avoid circular import
         make_gif(
             self.data,

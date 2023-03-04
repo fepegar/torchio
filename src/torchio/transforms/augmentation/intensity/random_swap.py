@@ -143,7 +143,7 @@ class Swap(IntensityTransform):
             if self.invert_transform:
                 assert isinstance(locations, list)
                 locations.reverse()
-            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: E501
+            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: B950
             image.set_data(swapped)
         return subject
 

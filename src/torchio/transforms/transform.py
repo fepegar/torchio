@@ -428,9 +428,9 @@ class Transform(ABC):
         if bounds_parameters is None:
             return None
         try:
-            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: E501
+            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: B950
         except TypeError:
-            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: E501
+            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: B950
 
         # Check that numbers are integers
         for number in bounds_parameters:  # type: ignore[union-attr]
@@ -440,7 +440,7 @@ class Transform(ABC):
                     f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
-        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: E501
+        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: B950
         bounds_parameters_length = len(bounds_parameters_tuple)
         if bounds_parameters_length == 6:
             return bounds_parameters_tuple  # type: ignore[return-value]
@@ -490,7 +490,7 @@ class Transform(ABC):
                     possible_axis, tensor,
                 )
         elif type(masking_method) in (tuple, list, int):
-            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: E501
+            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: B950
         first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
         message = (
             'Masking method must be one of:\n'

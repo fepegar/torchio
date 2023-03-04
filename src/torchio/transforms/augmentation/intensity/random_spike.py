@@ -51,7 +51,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
         self.intensity_range = self._parse_range(
             intensity, 'intensity_range',
         )
-        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: E501
+        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: B950
             num_spikes, 'num_spikes', min_constraint=0, type_constraint=int,
         )
 

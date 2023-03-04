@@ -77,7 +77,7 @@ class Resample(SpatialTransform):
         subject.add_image(t1_resampled, 'Downsampled')
         subject.plot()
 
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(
             self,
             target: Union[TypeSpacing, str, Path, Image, None] = 1,

@@ -58,7 +58,7 @@ try:
         raise RuntimeError(
             'Imported due lacks .cite. DueCredit is now disabled',
         )
-except Exception as e:
+except Exception as e:  # noqa: B902
     if not isinstance(e, ImportError):
         import logging
         logging.getLogger('duecredit').error(

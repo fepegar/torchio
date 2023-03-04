@@ -38,7 +38,7 @@ class Pad(BoundsTransform):
         :class:`~torchio.transforms.CropOrPad` instead.
 
     .. _NumPy docs: https://numpy.org/doc/stable/reference/generated/numpy.pad.html
-    """  # noqa: E501
+    """  # noqa: B950
 
     PADDING_MODES = (
         'empty',
@@ -94,7 +94,7 @@ class Pad(BoundsTransform):
                 kwargs = {'mode': self.padding_mode}
             pad_params = self.bounds_parameters
             paddings = (0, 0), pad_params[:2], pad_params[2:4], pad_params[4:]
-            padded = np.pad(image.data, paddings, **kwargs)  # type: ignore[call-overload]  # noqa: E501
+            padded = np.pad(image.data, paddings, **kwargs)  # type: ignore[call-overload]  # noqa: B950
             image.set_data(torch.as_tensor(padded))
             image.affine = new_affine
         return subject

@@ -126,7 +126,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
 
     .. seealso:: :class:`~torchio.transforms.preprocessing.label.remap_labels.RemapLabels`.
 
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(
             self,
             label_key: Optional[str] = None,
@@ -142,8 +142,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     ):
         super().__init__(**kwargs)
         self.label_key = _parse_label_key(label_key)
-        self.used_labels = _parse_used_labels(used_labels)  # type: ignore[arg-type]  # noqa: E501
-        self.mean, self.std = self.parse_mean_and_std(mean, std)  # type: ignore[arg-type,assignment]  # noqa: E501
+        self.used_labels = _parse_used_labels(used_labels)  # type: ignore[arg-type]  # noqa: B950
+        self.mean, self.std = self.parse_mean_and_std(mean, std)  # type: ignore[arg-type,assignment]  # noqa: B950
         self.default_mean = self.parse_gaussian_parameter(
             default_mean, 'default_mean',
         )
@@ -255,7 +255,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             labels = range(label_map.shape[0])
 
         # Raise error if mean and std are not defined for every label
-        _check_mean_and_std_length(labels, self.mean, self.std)  # type: ignore[arg-type]  # noqa: E501
+        _check_mean_and_std_length(labels, self.mean, self.std)  # type: ignore[arg-type]  # noqa: B950
 
         for label in labels:
             mean, std = self.get_params(label)

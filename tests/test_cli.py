@@ -37,4 +37,4 @@ class TestCLI(TorchioTestCase):
         args = [image]
         result = runner.invoke(print_info.app, args)
         assert result.exit_code == 0
-        assert result.output == 'ScalarImage(shape: (1, 10, 20, 30); spacing: (1.00, 1.00, 1.00); orientation: RAS+; dtype: torch.DoubleTensor; memory: 46.9 KiB)\n'  # noqa: E501
+        assert result.output == 'ScalarImage(shape: (1, 10, 20, 30); spacing: (1.00, 1.00, 1.00); orientation: RAS+; dtype: torch.DoubleTensor; memory: 46.9 KiB)\n'  # noqa: B950

@@ -58,7 +58,7 @@ class Colin27(SubjectMNI):
         >>> colin_2008.t1
         ScalarImage(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
 
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(self, version=1998):
         if version not in (1998, 2008):
             raise ValueError(f'Version must be 1998 or 2008, not "{version}"')

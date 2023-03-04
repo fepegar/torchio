@@ -97,8 +97,8 @@ class Noise(IntensityTransform):
         mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: E501
-                mean, std, seed = values  # type: ignore[assignment]  # noqa: E501
+                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: B950
+                mean, std, seed = values  # type: ignore[assignment]  # noqa: B950
             with self._use_seed(seed):
                 assert isinstance(mean, float)
                 assert isinstance(std, float)

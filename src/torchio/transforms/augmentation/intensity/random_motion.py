@@ -143,7 +143,7 @@ class Motion(IntensityTransform, FourierTransform):
             degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
             translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
             times: Union[Sequence[float], Dict[str, Sequence[float]]],
-            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],  # noqa: E501
+            image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],  # noqa: B950
             **kwargs
     ):
         super().__init__(**kwargs)

@@ -50,7 +50,7 @@ class Subject(dict):
         ... }
         >>> subject = tio.Subject(subject_dict)
 
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(self, *args, **kwargs: Dict[str, Any]):
         if args:
@@ -254,7 +254,7 @@ class Subject(dict):
             attribute of two images being compared,
             :math:`t_{abs}` is the ``absolute_tolerance`` and
             :math:`t_{rel}` is the ``relative_tolerance``.
-        """  # noqa: E501
+        """  # noqa: B950
         message = (
             f'More than one value for "{attribute}" found in subject images:'
             '\n{}'
@@ -315,7 +315,7 @@ class Subject(dict):
                 'As described above, some images in the subject are not in the'
                 ' same space. You probably can use the transforms ToCanonical'
                 ' and Resample to fix this, as explained at'
-                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'  # noqa: E501
+                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'  # noqa: B950
             )
             raise RuntimeError(message) from e
 

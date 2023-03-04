@@ -61,7 +61,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(subject)
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(
             self,
             log_gamma: TypeRangeFloat = (-0.3, 0.3),
@@ -120,7 +120,7 @@ class Gamma(IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.Gamma(0.8)
         >>> transformed = transform(subject)
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(
             self,
             gamma: float,

@@ -49,7 +49,7 @@ def plot_gif(image):
     )
 
 
-# Source: https://thehigherlearning.wordpress.com/2014/06/25/watching-a-cell-divide-under-an-electron-microscope-is-mesmerizing-gif/  # noqa: E501
+# Source: https://thehigherlearning.wordpress.com/2014/06/25/watching-a-cell-divide-under-an-electron-microscope-is-mesmerizing-gif/  # noqa: B950
 array, delay = read_clip('nBTu3oi.gif')
 plt.imshow(array[..., 0].transpose(1, 2, 0))
 plt.plot()

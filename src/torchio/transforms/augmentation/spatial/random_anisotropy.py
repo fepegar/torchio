@@ -44,7 +44,7 @@ class RandomAnisotropy(RandomTransform):
         ... )   # Multiply spacing of one of the 3 axes by a factor randomly chosen in [2, 5]
         >>> colin = tio.datasets.Colin27()
         >>> transformed = transform(colin)
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
             self,

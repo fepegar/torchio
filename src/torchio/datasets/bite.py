@@ -56,7 +56,7 @@ class BITE3(BITE):
         transform: An instance of
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
-    """  # noqa: E501
+    """  # noqa: B950
     dirname = 'group3'
 
     def _download(self, root: Path):

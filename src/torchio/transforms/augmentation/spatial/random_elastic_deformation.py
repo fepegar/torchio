@@ -118,7 +118,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         .. [#] Technically, :math:`2 \epsilon` should be added to the
             image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
             source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
-    """  # noqa: E501
+    """  # noqa: B950
 
     def __init__(
             self,
@@ -132,9 +132,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
-        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: E501
+        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: B950
         self.max_displacement = to_tuple(max_displacement, length=3)
-        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: E501
+        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: B950
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
             raise ValueError('locked_borders must be 0, 1, or 2')

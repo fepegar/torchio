@@ -58,7 +58,7 @@ def main(
 
     Example:
     $ tiotr input.nrrd RandomMotion output.nii "degrees=(-5,15) num_transforms=3" -v
-    """  # noqa: E501
+    """  # noqa: B950
     # Imports are placed here so that the tool loads faster if not being run
     import torch
     import torchio.transforms as transforms

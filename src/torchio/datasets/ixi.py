@@ -12,7 +12,7 @@ MRA images and Diffusion-weighted images (15 directions)".
     `the IXI website <https://brain-development.org/ixi-dataset/>`_.
 
 .. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/
-"""  # noqa: E501
+"""  # noqa: B950
 # Adapted from
 # https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 import shutil
@@ -63,9 +63,9 @@ class IXI(SubjectsDataset):
         >>> print('Keys in subject:', tuple(sample_subject.keys()))  # ('T1', 'T2')
         >>> print('Shape of T1 data:', sample_subject['T1'].shape)  # [1, 180, 268, 268]
         >>> print('Shape of T2 data:', sample_subject['T2'].shape)  # [1, 241, 257, 188]
-    """  # noqa: E501
+    """  # noqa: B950
 
-    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003,E501
+    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003,B950
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
         'T2': 'e3140d78730ecdd32ba92da48c0a9aaa',
@@ -180,7 +180,7 @@ class IXITiny(SubjectsDataset):
         download: If set to ``True``, will download the data into :attr:`root`.
 
     .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
-    """  # noqa: E501
+    """  # noqa: B950
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 

@@ -40,7 +40,7 @@ class EPISURG(SubjectsDataset):
         to be downloaded if it is not already present.
     """
 
-    data_url = 'https://s3-eu-west-1.amazonaws.com/pstorage-ucl-2748466690/26153588/EPISURG.zip'  # noqa: E501
+    data_url = 'https://s3-eu-west-1.amazonaws.com/pstorage-ucl-2748466690/26153588/EPISURG.zip'  # noqa: B950
     md5 = '5ec5831a2c6fbfdc8489ba2910a6504b'
 
     def __init__(

@@ -33,7 +33,7 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
         >>> icbm
         ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
 
-    """  # noqa: E501
+    """  # noqa: B950
     def __init__(self, load_4d_tissues: bool = True):
         self.name = 'mni_icbm152_nlin_sym_09c_nifti'
         self.url_base = 'http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/'

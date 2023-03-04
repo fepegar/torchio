@@ -108,7 +108,7 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 # further. For a list of options available for each theme, see the
 # documentation.
 #
-url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: E501
+url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: B950
 text = 'CMPB'
 html_href = f'<a href="{url}">{text}</a>'
 message = (
@@ -215,7 +215,7 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # CopyButton configuration
-copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '  # noqa: E501,FS003
+copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '  # noqa: B950,FS003
 copybutton_prompt_is_regexp = True
 
 # def setup(app):

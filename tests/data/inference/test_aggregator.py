@@ -118,7 +118,7 @@ class TestAggregator(TorchioTestCase):
         self.run_patch_crop_issue(padding_mode='constant')
 
     def test_bad_aggregator_shape(self):
-        # https://github.com/microsoft/InnerEye-DeepLearning/pull/677/checks?check_run_id=5395915817  # noqa: E501
+        # https://github.com/microsoft/InnerEye-DeepLearning/pull/677/checks?check_run_id=5395915817  # noqa: B950
         tensor = torch.ones(1, 40, 40, 40)
         image_name = 'img'
         subject = tio.Subject({image_name: tio.ScalarImage(tensor=tensor)})

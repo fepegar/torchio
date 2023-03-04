@@ -50,7 +50,7 @@ class RSNAMICCAI(SubjectsDataset):
 
 
     .. _RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge: https://www.kaggle.com/c/rsna-miccai-brain-tumor-radiogenomic-classification
-    """  # noqa: E501
+    """  # noqa: B950
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'
     bad_subjects = '00109', '00123', '00709'
