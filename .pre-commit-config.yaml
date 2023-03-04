@@ -33,7 +33,6 @@ repos:
           flake8-blind-except,      # check for blind, catch-all "except:" statements
           flake8-bugbear,           # find likely bugs and design problems
           flake8-builtins,          # check for python builtins being used as variables or parameters
-          flake8-class-newline,     # lint for newline after class definitions
           flake8-fixme,             # check for FIXME, TODO and other temporary developer notes
           flake8-logging-format,    # validate (lack of) logging format strings
           flake8-markdown,          # lint Python code blocks in Markdown files using flake8
