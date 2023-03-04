@@ -130,3 +130,11 @@ class TestSubject(TorchioTestCase):
         sub_deep_copy = copy.deepcopy(dummy_sub)
         assert isinstance(sub_deep_copy, tio.data.Subject)
         assert isinstance(sub_deep_copy, DummySubjectSubClass)
+
+    def test_load_unload(self):
+        self.sample_subject.load()
+        for image in self.sample_subject.get_images(intensity_only=False):
+            assert image._loaded
+        self.sample_subject.unload()
+        for image in self.sample_subject.get_images(intensity_only=False):
+            assert not image._loaded
