@@ -13,6 +13,7 @@ from ..utils import TorchioTestCase
 
 class TestIO(TorchioTestCase):
     """Tests for `io` module."""
+
     def setUp(self):
         super().setUp()
         self.nii_path = self.get_image_path('read_image')
@@ -152,14 +153,14 @@ def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
     save_function(tensor, affine, path)
     loaded_tensor, loaded_affine = load_function(path)
     TorchioTestCase.assert_tensor_equal(
-        tensor.squeeze(), loaded_tensor.squeeze(),
+        tensor.squeeze(),
+        loaded_tensor.squeeze(),
         msg=f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}',
     )
     TorchioTestCase.assert_tensor_equal(affine, loaded_affine)
 
 
 class TestNibabelToSimpleITK(TorchioTestCase):
-
     def setUp(self):
         super().setUp()
         self.affine = np.eye(4)

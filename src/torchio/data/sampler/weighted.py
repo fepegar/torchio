@@ -49,23 +49,25 @@ class WeightedSampler(RandomSampler):
         size 1 or 2 along that axis).
 
     """  # noqa: B950
+
     def __init__(
-            self,
-            patch_size: TypeSpatialShape,
-            probability_map: Optional[str],
+        self,
+        patch_size: TypeSpatialShape,
+        probability_map: Optional[str],
     ):
         super().__init__(patch_size)
         self.probability_map_name = probability_map
         self.cdf = None
 
     def _generate_patches(
-            self,
-            subject: Subject,
-            num_patches: Optional[int] = None,
+        self,
+        subject: Subject,
+        num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         probability_map = self.get_probability_map(subject)
         probability_map_array = self.process_probability_map(
-            probability_map, subject,
+            probability_map,
+            subject,
         )
         cdf = self.get_cumulative_distribution_function(probability_map_array)
 
@@ -81,8 +83,7 @@ class WeightedSampler(RandomSampler):
             return subject[self.probability_map_name]
         else:
             message = (
-                f'Image "{self.probability_map_name}"'
-                f' not found in subject: {subject}'
+                f'Image "{self.probability_map_name}" not found in subject: {subject}'
             )
             raise KeyError(message)
 
@@ -97,9 +98,9 @@ class WeightedSampler(RandomSampler):
         return data
 
     def process_probability_map(
-            self,
-            probability_map: torch.Tensor,
-            subject: Subject,
+        self,
+        probability_map: torch.Tensor,
+        subject: Subject,
     ) -> np.ndarray:
         # Using float32 can create cdf with maximum very far from 1, e.g. 0.92!
         data = probability_map[0].numpy().astype(np.float64)
@@ -122,8 +123,8 @@ class WeightedSampler(RandomSampler):
 
     @staticmethod
     def clear_probability_borders(
-            probability_map: np.ndarray,
-            patch_size: np.ndarray,
+        probability_map: np.ndarray,
+        patch_size: np.ndarray,
     ) -> None:
         # Set probability to 0 on voxels that wouldn't possibly be sampled
         # given the current patch size
@@ -166,7 +167,7 @@ class WeightedSampler(RandomSampler):
 
     @staticmethod
     def get_cumulative_distribution_function(
-            probability_map: np.ndarray,
+        probability_map: np.ndarray,
     ) -> np.ndarray:
         """Return the cumulative distribution function of a probability map."""
         flat_map = probability_map.flatten()
@@ -175,10 +176,10 @@ class WeightedSampler(RandomSampler):
         return cdf
 
     def extract_patch(  # type: ignore[override]
-            self,
-            subject: Subject,
-            probability_map: np.ndarray,
-            cdf: np.ndarray,
+        self,
+        subject: Subject,
+        probability_map: np.ndarray,
+        cdf: np.ndarray,
     ) -> Subject:
         i, j, k = self.get_random_index_ini(probability_map, cdf)
         index_ini = i, j, k
@@ -192,9 +193,9 @@ class WeightedSampler(RandomSampler):
         return cropped_subject
 
     def get_random_index_ini(
-            self,
-            probability_map: np.ndarray,
-            cdf: np.ndarray,
+        self,
+        probability_map: np.ndarray,
+        cdf: np.ndarray,
     ) -> np.ndarray:
         center = self.sample_probability_map(probability_map, cdf)
         assert np.all(center >= 0)
@@ -205,9 +206,9 @@ class WeightedSampler(RandomSampler):
 
     @classmethod
     def sample_probability_map(
-            cls,
-            probability_map: np.ndarray,
-            cdf: np.ndarray,
+        cls,
+        probability_map: np.ndarray,
+        cdf: np.ndarray,
     ) -> np.ndarray:
         """Inverse transform sampling.
 

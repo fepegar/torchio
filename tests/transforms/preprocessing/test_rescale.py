@@ -9,7 +9,6 @@ from ...utils import TorchioTestCase
 
 
 class TestRescaleIntensity(TorchioTestCase):
-
     def test_rescale_to_same_intentisy(self):
         min_t1 = float(self.sample_subject.t1.data.min())
         max_t1 = float(self.sample_subject.t1.data.max())
@@ -44,7 +43,9 @@ class TestRescaleIntensity(TorchioTestCase):
 
     def test_masking_using_label(self):
         transform = tio.RescaleIntensity(
-            out_min_max=(0, 1), percentiles=(5, 95), masking_method='label',
+            out_min_max=(0, 1),
+            percentiles=(5, 95),
+            masking_method='label',
         )
         transformed = transform(self.sample_subject)
         mask = self.sample_subject.label.data > 0

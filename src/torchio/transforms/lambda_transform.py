@@ -31,10 +31,10 @@ class Lambda(Transform):
     """  # noqa: B950
 
     def __init__(
-            self,
-            function: TypeCallable,
-            types_to_apply: Optional[Sequence[str]] = None,
-            **kwargs
+        self,
+        function: TypeCallable,
+        types_to_apply: Optional[Sequence[str]] = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.function = function

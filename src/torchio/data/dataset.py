@@ -65,10 +65,10 @@ class SubjectsDataset(Dataset):
     """  # noqa: B950
 
     def __init__(
-            self,
-            subjects: Sequence[Subject],
-            transform: Optional[Callable] = None,
-            load_getitem: bool = True,
+        self,
+        subjects: Sequence[Subject],
+        transform: Optional[Callable] = None,
+        load_getitem: bool = True,
     ):
         self._parse_subjects_list(subjects)
         self._subjects = subjects
@@ -141,9 +141,7 @@ class SubjectsDataset(Dataset):
         try:
             iter(subjects_list)
         except TypeError as e:
-            message = (
-                f'Subject list must be an iterable, not {type(subjects_list)}'
-            )
+            message = f'Subject list must be an iterable, not {type(subjects_list)}'
             raise TypeError(message) from e
 
         # Check that it's not empty

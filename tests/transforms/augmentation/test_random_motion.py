@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomMotion(TorchioTestCase):
     """Tests for `RandomMotion`."""
+
     def test_bad_num_transforms_value(self):
         with pytest.raises(ValueError):
             RandomMotion(num_transforms=0)

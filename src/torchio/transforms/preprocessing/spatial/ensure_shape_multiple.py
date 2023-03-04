@@ -113,12 +113,13 @@ class EnsureShapeMultiple(SpatialTransform):
         >>> transformed.shape
         torch.Size([1, 176, 216, 1])
     """  # noqa: B950
+
     def __init__(
-            self,
-            target_multiple: Union[int, TypeTripletInt],
-            *,
-            method: str = 'pad',
-            **kwargs
+        self,
+        target_multiple: Union[int, TypeTripletInt],
+        *,
+        method: str = 'pad',
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.target_multiple = np.array(to_tuple(target_multiple, 3))

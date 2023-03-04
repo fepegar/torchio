@@ -29,10 +29,10 @@ TypeTransformInput = Union[
 
 class DataParser:
     def __init__(
-            self,
-            data: TypeTransformInput,
-            keys: Optional[Sequence[str]] = None,
-            label_keys: Optional[Sequence[str]] = None,
+        self,
+        data: TypeTransformInput,
+        keys: Optional[Sequence[str]] = None,
+        label_keys: Optional[Sequence[str]] = None,
     ):
         self.data = data
         self.keys = keys
@@ -131,9 +131,9 @@ class DataParser:
 
     @staticmethod
     def _get_subject_from_dict(
-            data: dict,
-            image_keys: Sequence[str],
-            label_keys: Optional[Sequence[str]] = None,
+        data: dict,
+        image_keys: Sequence[str],
+        label_keys: Optional[Sequence[str]] = None,
     ) -> Subject:
         subject_dict = {}
         label_keys = [] if label_keys is None else label_keys

@@ -6,7 +6,6 @@ from ...utils import TorchioTestCase
 
 
 class TestRandomBiasField(TorchioTestCase):
-
     def test_no_bias(self):
         transform = tio.RandomBiasField(coefficients=0)
         transformed = transform(self.sample_subject)

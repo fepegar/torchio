@@ -112,6 +112,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
             else:
                 name = path.name.replace('.gz', '').replace('.nii', '')
                 return target == name
+
         found = list(filter(_filter, iterable))
         if found:
             assert len(found) == 1
@@ -140,6 +141,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
 def get_pandas() -> ModuleType:
     try:
         import pandas
+
         return pandas
     except ImportError as e:
         message = (

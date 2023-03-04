@@ -6,7 +6,6 @@ from ...utils import TorchioTestCase
 
 
 class TestToCanonical(TorchioTestCase):
-
     def test_no_changes(self):
         transform = tio.ToCanonical()
         transformed = transform(self.sample_subject)

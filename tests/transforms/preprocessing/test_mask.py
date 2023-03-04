@@ -6,7 +6,6 @@ from ...utils import TorchioTestCase
 
 
 class TestMask(TorchioTestCase):
-
     def test_single_mask(self):
         negated_mask = self.sample_subject.label.data.logical_not()
         masked_voxel_indices = negated_mask.nonzero(as_tuple=True)
@@ -25,10 +24,7 @@ class TestMask(TorchioTestCase):
         )
         transformed = transform(self.sample_subject)
 
-        assert (
-            transformed.t1.data[masked_voxel_indices]
-            == background_value
-        ).all()
+        assert (transformed.t1.data[masked_voxel_indices] == background_value).all()
 
     def test_mask_specified_label(self):
         mask_label = [1]
@@ -41,7 +37,6 @@ class TestMask(TorchioTestCase):
         assert (transformed.t1.data[masked_voxel_indices] == 0).all()
 
     def test_mask_specified_label_small(self):
-
         def to_image(*numbers):
             return torch.as_tensor(numbers).reshape(1, 1, 1, len(numbers))
 

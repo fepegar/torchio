@@ -55,10 +55,10 @@ class Pad(BoundsTransform):
     )
 
     def __init__(
-            self,
-            padding: TypeBounds,
-            padding_mode: Union[str, float] = 0,
-            **kwargs
+        self,
+        padding: TypeBounds,
+        padding_mode: Union[str, float] = 0,
+        **kwargs,
     ):
         super().__init__(padding, **kwargs)
         self.padding = padding
@@ -101,4 +101,5 @@ class Pad(BoundsTransform):
 
     def inverse(self):
         from .crop import Crop
+
         return Crop(self.padding)

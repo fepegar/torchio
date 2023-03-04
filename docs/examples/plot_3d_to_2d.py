@@ -18,11 +18,13 @@ subject.remove_image('head')
 
 subjects = 50 * [subject]
 max_side = max(subject.shape)
-transform = tio.Compose((
-    tio.CropOrPad(max_side),
-    tio.RandomFlip(),
-    tio.RandomAffine(degrees=360),
-))
+transform = tio.Compose(
+    (
+        tio.CropOrPad(max_side),
+        tio.RandomFlip(),
+        tio.RandomAffine(degrees=360),
+    )
+)
 dataset = tio.SubjectsDataset(subjects, transform=transform)
 patch_size = (max_side, max_side, 1)  # 2D slices
 

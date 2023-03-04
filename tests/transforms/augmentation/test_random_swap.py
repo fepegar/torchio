@@ -5,7 +5,6 @@ from ...utils import TorchioTestCase
 
 
 class TestRandomSwap(TorchioTestCase):
-
     def test_no_swap(self):
         transform = tio.RandomSwap(patch_size=5, num_iterations=0)
         transformed = transform(self.sample_subject)

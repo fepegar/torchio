@@ -15,10 +15,8 @@ class RandomTransform(Transform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(
-            self,
-            **kwargs
-    ):
+
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def add_include_exclude(self, kwargs):
@@ -27,14 +25,14 @@ class RandomTransform(Transform):
         return kwargs
 
     def parse_degrees(
-            self,
-            degrees: TypeRangeFloat,
+        self,
+        degrees: TypeRangeFloat,
     ) -> Tuple[float, float]:
         return self._parse_range(degrees, 'degrees')
 
     def parse_translation(
-            self,
-            translation: TypeRangeFloat,
+        self,
+        translation: TypeRangeFloat,
     ) -> Tuple[float, float]:
         return self._parse_range(translation, 'translation')
 
@@ -53,6 +51,6 @@ class RandomTransform(Transform):
 
     def sample_uniform_sextet(self, params):
         results = []
-        for (a, b) in zip(params[::2], params[1::2]):
+        for a, b in zip(params[::2], params[1::2]):
             results.append(self.sample_uniform(a, b))
         return torch.Tensor(results)

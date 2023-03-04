@@ -39,10 +39,10 @@ class RandomFlip(RandomTransform, SpatialTransform):
     """
 
     def __init__(
-            self,
-            axes: Union[int, Tuple[int, ...]] = 0,
-            flip_probability: float = 0.5,
-            **kwargs
+        self,
+        axes: Union[int, Tuple[int, ...]] = 0,
+        flip_probability: float = 0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.axes = _parse_axes(axes)
@@ -54,7 +54,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
         for i in range(3):
             if i not in potential_axes:
                 axes_to_flip_hot[i] = False
-        axes, = np.where(axes_to_flip_hot)
+        (axes,) = np.where(axes_to_flip_hot)
         axes = axes.tolist()
         if not axes:
             return subject
@@ -112,8 +112,7 @@ def _parse_axes(axes: Union[int, Tuple[int, ...]]):
         valid_number = is_int and axis in (0, 1, 2)
         if not is_string and not valid_number:
             message = (
-                f'All axes must be 0, 1 or 2, but found "{axis}"'
-                f' with type {type(axis)}'
+                f'All axes must be 0, 1 or 2, but found "{axis}" with type {type(axis)}'
             )
             raise ValueError(message)
     return axes_tuple

@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomBlur(TorchioTestCase):
     """Tests for `RandomBlur`."""
+
     def test_no_blurring(self):
         transform = RandomBlur(std=0)
         transformed = transform(self.sample_subject)
@@ -37,6 +38,7 @@ class TestRandomBlur(TorchioTestCase):
     def test_parse_stds(self):
         def do_assert(transform):
             assert transform.std_ranges == 3 * (0, 1)
+
         do_assert(RandomBlur(std=1))
         do_assert(RandomBlur(std=(0, 1)))
         do_assert(RandomBlur(std=3 * (1,)))

@@ -13,6 +13,7 @@ import os
 import sys
 from datetime import date
 from typing import List
+
 sys.path.insert(0, os.path.abspath('../../src'))
 import torchio  # noqa: E402
 
@@ -111,9 +112,7 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'  # noqa: B950
 text = 'CMPB'
 html_href = f'<a href="{url}">{text}</a>'
-message = (
-    f'TorchIO becomes one of the most downloaded articles from {html_href}!'
-)
+message = f'TorchIO becomes one of the most downloaded articles from {html_href}!'
 html_theme_options = {
     'announcement': message,
 }
@@ -146,15 +145,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -165,8 +161,11 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (
-        master_doc, 'TorchIO.tex', 'TorchIO Documentation',
-        'Fernando Pérez-García', 'manual',
+        master_doc,
+        'TorchIO.tex',
+        'TorchIO Documentation',
+        'Fernando Pérez-García',
+        'manual',
     ),
 ]
 
@@ -177,8 +176,11 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (
-        master_doc, 'torchio', 'TorchIO Documentation',
-        [author], 1,
+        master_doc,
+        'torchio',
+        'TorchIO Documentation',
+        [author],
+        1,
     ),
 ]
 
@@ -190,8 +192,12 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc, 'TorchIO', 'TorchIO Documentation',
-        author, 'TorchIO', 'One line description of project.',
+        master_doc,
+        'TorchIO',
+        'TorchIO Documentation',
+        author,
+        'TorchIO',
+        'One line description of project.',
         'Miscellaneous',
     ),
 ]
@@ -215,7 +221,9 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # CopyButton configuration
-copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '  # noqa: B950,FS003
+copybutton_prompt_text = (
+    r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '  # noqa: B950,FS003
+)
 copybutton_prompt_is_regexp = True
 
 # def setup(app):
@@ -225,7 +233,7 @@ copybutton_prompt_is_regexp = True
 # -- Extension configuration -------------------------------------------------
 
 sphinx_gallery_conf = {
-    'examples_dirs': '../examples',   # example scripts
+    'examples_dirs': '../examples',  # example scripts
     'gallery_dirs': 'auto_examples',  # where to save gallery generated output
     'matplotlib_animations': True,
 }

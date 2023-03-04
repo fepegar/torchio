@@ -26,6 +26,7 @@ class Compose(Transform):
             keyword arguments.
 
     """
+
     def __init__(self, transforms: Sequence[Transform], **kwargs):
         super().__init__(parse_input=False, **kwargs)
         for transform in transforms:
@@ -101,11 +102,8 @@ class OneOf(RandomTransform):
         >>> transformed = transform(colin)
 
     """
-    def __init__(
-            self,
-            transforms: TypeTransformsDict,
-            **kwargs
-    ):
+
+    def __init__(self, transforms: TypeTransformsDict, **kwargs):
         super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
@@ -118,8 +116,8 @@ class OneOf(RandomTransform):
         return transformed  # type: ignore[return-value]
 
     def _get_transforms_dict(
-            self,
-            transforms: TypeTransformsDict,
+        self,
+        transforms: TypeTransformsDict,
     ) -> Dict[Transform, float]:
         if isinstance(transforms, dict):
             transforms_dict = dict(transforms)
@@ -145,13 +143,12 @@ class OneOf(RandomTransform):
 
     @staticmethod
     def _normalize_probabilities(
-            transforms_dict: Dict[Transform, float],
+        transforms_dict: Dict[Transform, float],
     ) -> None:
         probabilities = np.array(list(transforms_dict.values()), dtype=float)
         if np.any(probabilities < 0):
             message = (
-                'Probabilities must be greater or equal to zero,'
-                f' not "{probabilities}"'
+                f'Probabilities must be greater or equal to zero, not "{probabilities}"'
             )
             raise ValueError(message)
         if np.all(probabilities == 0):

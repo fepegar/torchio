@@ -47,12 +47,13 @@ class Mask(IntensityTransform):
         subject.plot()
 
     """  # noqa: B950
+
     def __init__(
-            self,
-            masking_method: TypeMaskingMethod,
-            outside_value: float = 0,
-            labels: Optional[Sequence[int]] = None,
-            **kwargs,
+        self,
+        masking_method: TypeMaskingMethod,
+        outside_value: float = 0,
+        labels: Optional[Sequence[int]] = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.masking_method = masking_method
@@ -72,18 +73,18 @@ class Mask(IntensityTransform):
         return subject
 
     def apply_masking(
-            self,
-            image: ScalarImage,
-            mask_data: torch.Tensor,
+        self,
+        image: ScalarImage,
+        mask_data: torch.Tensor,
     ) -> None:
         masked = mask(image.data, mask_data, self.outside_value)
         image.set_data(masked)
 
 
 def mask(
-        tensor: torch.Tensor,
-        mask: torch.Tensor,
-        outside_value: float,
+    tensor: torch.Tensor,
+    mask: torch.Tensor,
+    outside_value: float,
 ) -> torch.Tensor:
     array = tensor.clone()
     num_channels_array = array.shape[0]

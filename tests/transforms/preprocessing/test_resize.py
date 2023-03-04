@@ -8,6 +8,7 @@ from ...utils import TorchioTestCase
 
 class TestResize(TorchioTestCase):
     """Tests for `Resize`."""
+
     def test_one_dim(self):
         target_shape = 5
         transform = tio.Resize(target_shape)

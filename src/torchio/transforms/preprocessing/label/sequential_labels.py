@@ -41,11 +41,8 @@ class SequentialLabels(LabelTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(
-            self,
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
-    ):
+
+    def __init__(self, masking_method: TypeMaskingMethod = None, **kwargs):
         super().__init__(**kwargs)
         self.masking_method = masking_method
 
@@ -53,8 +50,7 @@ class SequentialLabels(LabelTransform):
         for name, image in self.get_images_dict(subject).items():
             unique_labels = torch.unique(image.data)
             remapping = {
-                unique_labels[i].item(): i
-                for i in range(0, len(unique_labels))
+                unique_labels[i].item(): i for i in range(0, len(unique_labels))
             }
             transform = RemapLabels(
                 remapping=remapping,

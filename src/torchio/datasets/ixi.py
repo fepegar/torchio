@@ -75,12 +75,12 @@ class IXI(SubjectsDataset):
     }
 
     def __init__(
-            self,
-            root: TypePath,
-            transform: Optional[Transform] = None,
-            download: bool = False,
-            modalities: Sequence[str] = ('T1', 'T2'),
-            **kwargs,
+        self,
+        root: TypePath,
+        transform: Optional[Transform] = None,
+        download: bool = False,
+        modalities: Sequence[str] = ('T1', 'T2'),
+        **kwargs,
     ):
         root = Path(root)
         for modality in modalities:
@@ -93,10 +93,7 @@ class IXI(SubjectsDataset):
         if download:
             self._download(root, modalities)
         if not self._check_exists(root, modalities):
-            message = (
-                'Dataset not found.'
-                ' You can use download=True to download it'
-            )
+            message = 'Dataset not found. You can use download=True to download it'
             raise RuntimeError(message)
         subjects_list = self._get_subjects_list(root, modalities)
         super().__init__(subjects_list, transform=transform, **kwargs)
@@ -127,7 +124,8 @@ class IXI(SubjectsDataset):
             images_dict[one_modality] = ScalarImage(filepath)
             for modality in modalities[1:]:
                 globbed = sglob(
-                    root / modality, f'{subject_id}-{modality}.nii.gz',
+                    root / modality,
+                    f'{subject_id}-{modality}.nii.gz',
                 )
                 if globbed:
                     assert len(globbed) == 1
@@ -185,20 +183,17 @@ class IXITiny(SubjectsDataset):
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
     def __init__(
-            self,
-            root: TypePath,
-            transform: Optional[Transform] = None,
-            download: bool = False,
-            **kwargs,
+        self,
+        root: TypePath,
+        transform: Optional[Transform] = None,
+        download: bool = False,
+        **kwargs,
     ):
         root = Path(root)
         if download:
             self._download(root)
         if not root.is_dir():
-            message = (
-                'Dataset not found.'
-                ' You can use download=True to download it'
-            )
+            message = 'Dataset not found. You can use download=True to download it'
             raise RuntimeError(message)
         subjects_list = self._get_subjects_list(root)
         super().__init__(subjects_list, transform=transform, **kwargs)
@@ -209,8 +204,7 @@ class IXITiny(SubjectsDataset):
         label_paths = sglob(root / 'label', '*.nii.gz')
         if not (image_paths and label_paths):
             message = (
-                f'Images not found. Remove the root directory ({root})'
-                ' and try again'
+                f'Images not found. Remove the root directory ({root}) and try again'
             )
             raise FileNotFoundError(message)
 

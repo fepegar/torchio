@@ -22,10 +22,7 @@ TITLE = (
     ' augmentation and patch-based sampling of medical images in deep learning'
 )
 
-DESCRIPTION = (
-    'Tools for loading, augmenting and writing 3D medical images'
-    ' on PyTorch'
-)
+DESCRIPTION = 'Tools for loading, augmenting and writing 3D medical images on PyTorch'
 
 due.cite(
     BibTeX(BIBTEX),

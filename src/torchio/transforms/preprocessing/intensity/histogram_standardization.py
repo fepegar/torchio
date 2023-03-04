@@ -51,11 +51,12 @@ class HistogramStandardization(NormalizationTransform):
         >>> torch.save(landmarks, 'path_to_landmarks.pth')
         >>> transform = tio.HistogramStandardization('path_to_landmarks.pth')
     """  # noqa: B950
+
     def __init__(
-            self,
-            landmarks: TypeLandmarks,
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
+        self,
+        landmarks: TypeLandmarks,
+        masking_method: TypeMaskingMethod = None,
+        **kwargs,
     ):
         super().__init__(masking_method=masking_method, **kwargs)
         self.landmarks = landmarks
@@ -81,10 +82,10 @@ class HistogramStandardization(NormalizationTransform):
         return landmarks_dict
 
     def apply_normalization(
-            self,
-            subject: Subject,
-            image_name: str,
-            mask: torch.Tensor,
+        self,
+        subject: Subject,
+        image_name: str,
+        mask: torch.Tensor,
     ) -> None:
         if image_name not in self.landmarks_dict:
             keys = tuple(self.landmarks_dict.keys())
@@ -100,12 +101,12 @@ class HistogramStandardization(NormalizationTransform):
 
     @classmethod
     def train(
-            cls,
-            images_paths: Sequence[TypePath],
-            cutoff: Optional[Tuple[float, float]] = None,
-            mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
-            masking_function: Optional[Callable] = None,
-            output_path: Optional[TypePath] = None,
+        cls,
+        images_paths: Sequence[TypePath],
+        cutoff: Optional[Tuple[float, float]] = None,
+        mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
+        masking_function: Optional[Callable] = None,
+        output_path: Optional[TypePath] = None,
     ) -> np.ndarray:
         """Extract average histogram landmarks from images used for training.
 
@@ -245,11 +246,11 @@ def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
 
 
 def _normalize(
-        tensor: torch.Tensor,
-        landmarks: np.ndarray,
-        mask: Optional[np.ndarray],
-        cutoff: Optional[Tuple[float, float]] = None,
-        epsilon: float = 1e-5,
+    tensor: torch.Tensor,
+    landmarks: np.ndarray,
+    mask: Optional[np.ndarray],
+    cutoff: Optional[Tuple[float, float]] = None,
+    epsilon: float = 1e-5,
 ) -> torch.Tensor:
     cutoff_ = DEFAULT_CUTOFF if cutoff is None else cutoff
     array = tensor.numpy()

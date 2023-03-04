@@ -29,18 +29,18 @@ def rotate(image, radiological=True, n=-1):
 
 
 def plot_volume(
-        image: Image,
-        radiological=True,
-        channel=-1,  # default to foreground for binary maps
-        axes=None,
-        cmap=None,
-        output_path=None,
-        show=True,
-        xlabels=True,
-        percentiles=(0.5, 99.5),
-        figsize=None,
-        reorient=True,
-        indices=None,
+    image: Image,
+    radiological=True,
+    channel=-1,  # default to foreground for binary maps
+    axes=None,
+    cmap=None,
+    output_path=None,
+    show=True,
+    xlabels=True,
+    percentiles=(0.5, 99.5),
+    figsize=None,
+    reorient=True,
+    indices=None,
 ):
     _, plt = import_mpl_plt()
     fig = None
@@ -110,13 +110,13 @@ def plot_volume(
 
 
 def plot_subject(
-        subject: Subject,
-        cmap_dict=None,
-        show=True,
-        output_path=None,
-        figsize=None,
-        clear_axes=True,
-        **kwargs,
+    subject: Subject,
+    cmap_dict=None,
+    show=True,
+    output_path=None,
+    figsize=None,
+    clear_axes=True,
+    **kwargs,
 ):
     _, plt = import_mpl_plt()
     num_images = len(subject)
@@ -204,22 +204,19 @@ def color_labels(arrays, cmap_dict):
 
 
 def make_gif(
-        tensor: torch.Tensor,
-        axis: int,
-        duration: float,  # of full gif
-        output_path: TypePath,
-        loop: int = 0,
-        optimize: bool = True,
-        rescale: bool = True,
-        reverse: bool = False,
+    tensor: torch.Tensor,
+    axis: int,
+    duration: float,  # of full gif
+    output_path: TypePath,
+    loop: int = 0,
+    optimize: bool = True,
+    rescale: bool = True,
+    reverse: bool = False,
 ) -> None:
     try:
         from PIL import Image as ImagePIL
     except ModuleNotFoundError as e:
-        message = (
-            'Please install Pillow to use Image.to_gif():'
-            ' pip install Pillow'
-        )
+        message = 'Please install Pillow to use Image.to_gif(): pip install Pillow'
         raise RuntimeError(message) from e
     transform = RescaleIntensity((0, 255))
     tensor = transform(tensor) if rescale else tensor  # type: ignore[assignment]  # noqa: B950

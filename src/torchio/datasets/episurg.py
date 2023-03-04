@@ -44,11 +44,11 @@ class EPISURG(SubjectsDataset):
     md5 = '5ec5831a2c6fbfdc8489ba2910a6504b'
 
     def __init__(
-            self,
-            root: TypePath,
-            transform: Optional[Transform] = None,
-            download: bool = False,
-            **kwargs,
+        self,
+        root: TypePath,
+        transform: Optional[Transform] = None,
+        download: bool = False,
+        **kwargs,
     ):
         root = Path(root).expanduser().absolute()
         if download:
@@ -139,10 +139,7 @@ class EPISURG(SubjectsDataset):
 
     def get_unlabeled(self) -> SubjectsDataset:
         """Get dataset from subjects without manual annotations."""
-        subjects = [
-            s for s in self._subjects
-            if s not in self._get_labeled_subjects()
-        ]
+        subjects = [s for s in self._subjects if s not in self._get_labeled_subjects()]
         return self._get_subset(subjects)
 
     def get_paired(self) -> SubjectsDataset:

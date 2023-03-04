@@ -5,7 +5,6 @@ from ...utils import TorchioTestCase
 
 
 class TestRandomSampler(TorchioTestCase):
-
     def test_not_implemented(self):
         sampler = tio.data.sampler.RandomSampler(1)
         with pytest.raises(NotImplementedError):

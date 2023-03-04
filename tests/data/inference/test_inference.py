@@ -9,6 +9,7 @@ from ...utils import TorchioTestCase
 
 class TestInference(TorchioTestCase):
     """Tests for `inference` module."""
+
     def test_inference_no_padding(self):
         self.try_inference(None)
 

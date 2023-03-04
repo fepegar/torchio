@@ -18,17 +18,20 @@ def main(
     ),
     plot: bool = typer.Option(  # noqa: B008
         False,
-        '--plot/--no-plot', '-p/-P',
+        '--plot/--no-plot',
+        '-p/-P',
         help='Plot the image using Matplotlib or Pillow.',
     ),
     show: bool = typer.Option(  # noqa: B008
         False,
-        '--show/--no-show', '-s/-S',
+        '--show/--no-show',
+        '-s/-S',
         help='Show the image using specialized visualisation software.',
     ),
     label: bool = typer.Option(  # noqa: B008
         False,
-        '--label/--scalar', '-l/-s',
+        '--label/--scalar',
+        '-l/-s',
         help='Use torchio.LabelMap to instantiate the image.',
     ),
 ):
@@ -39,6 +42,7 @@ def main(
     """
     # Imports are placed here so that the tool loads faster if not being run
     import torchio as tio
+
     class_ = tio.LabelMap if label else tio.ScalarImage
     image = class_(input_path)
     image.load()

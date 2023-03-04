@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomLabelsToImage(TorchioTestCase):
     """Tests for `RandomLabelsToImage`."""
+
     def test_random_simulation(self):
         """The transform runs without error and an 'image_from_labels' key is
         present in the transformed subject."""
@@ -217,7 +218,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
 
     def test_mean_and_used_labels_len_not_matching(self):
         """The transform raises an error if mean and used_labels
-         length don't match."""
+        length don't match."""
         with pytest.raises(AssertionError):
             RandomLabelsToImage(
                 label_key='label',
@@ -227,7 +228,7 @@ class TestRandomLabelsToImage(TorchioTestCase):
 
     def test_std_and_used_labels_len_not_matching(self):
         """The transform raises an error if std and used_labels
-         length don't match."""
+        length don't match."""
         with pytest.raises(AssertionError):
             RandomLabelsToImage(label_key='label', std=[0], used_labels=[0, 1])
 

@@ -56,12 +56,13 @@ class GridSampler(PatchSampler):
         :attr:`patch_overlap` is twice :attr:`border` in NiftyNet
         tutorial.
     """
+
     def __init__(
-            self,
-            subject: Subject,
-            patch_size: TypeSpatialShape,
-            patch_overlap: TypeSpatialShape = (0, 0, 0),
-            padding_mode: Union[str, float, None] = None,
+        self,
+        subject: Subject,
+        patch_size: TypeSpatialShape,
+        patch_overlap: TypeSpatialShape = (0, 0, 0),
+        padding_mode: Union[str, float, None] = None,
     ):
         super().__init__(patch_size)
         self.patch_overlap = np.array(to_tuple(patch_overlap, length=3))
@@ -80,9 +81,9 @@ class GridSampler(PatchSampler):
         return cropped_subject
 
     def __call__(
-            self,
-            subject: Optional[Subject] = None,
-            num_patches: Optional[int] = None,
+        self,
+        subject: Optional[Subject] = None,
+        num_patches: Optional[int] = None,
     ) -> Generator[Subject, None, None]:
         subject = self.subject if subject is None else subject
         return super().__call__(subject, num_patches=num_patches)
@@ -90,6 +91,7 @@ class GridSampler(PatchSampler):
     def _pad(self, subject: Subject) -> Subject:
         if self.padding_mode is not None:
             from ...transforms import Pad
+
             border = self.patch_overlap // 2
             padding = border.repeat(2)
             pad = Pad(padding, padding_mode=self.padding_mode)  # type: ignore[arg-type]  # noqa: B950
@@ -102,8 +104,8 @@ class GridSampler(PatchSampler):
         return self._get_patches_locations(*sizes)  # type: ignore[arg-type]
 
     def _generate_patches(  # type: ignore[override]
-            self,
-            subject: Subject,
+        self,
+        subject: Subject,
     ) -> Generator[Subject, None, None]:
         subject = self._pad(subject)
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
@@ -115,9 +117,9 @@ class GridSampler(PatchSampler):
 
     @staticmethod
     def _parse_sizes(
-            image_size: TypeTripletInt,
-            patch_size: TypeTripletInt,
-            patch_overlap: TypeTripletInt,
+        image_size: TypeTripletInt,
+        patch_size: TypeTripletInt,
+        patch_overlap: TypeTripletInt,
     ) -> None:
         image_size_array = np.array(image_size)
         patch_size_array = np.array(patch_size)
@@ -143,9 +145,9 @@ class GridSampler(PatchSampler):
 
     @staticmethod
     def _get_patches_locations(
-            image_size: TypeTripletInt,
-            patch_size: TypeTripletInt,
-            patch_overlap: TypeTripletInt,
+        image_size: TypeTripletInt,
+        patch_size: TypeTripletInt,
+        patch_overlap: TypeTripletInt,
     ) -> np.ndarray:
         # Example with image_size 10, patch_size 5, overlap 2:
         # [0 1 2 3 4 5 6 7 8 9]

@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomNoise(TorchioTestCase):
     """Tests for `RandomNoise`."""
+
     def test_no_noise(self):
         transform = RandomNoise(mean=0, std=0)
         transformed = transform(self.sample_subject)

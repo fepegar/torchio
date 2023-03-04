@@ -33,11 +33,8 @@ class RandomBlur(RandomTransform, IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
-    def __init__(
-            self,
-            std: Union[float, Tuple[float, float]] = (0, 2),
-            **kwargs
-    ):
+
+    def __init__(self, std: Union[float, Tuple[float, float]] = (0, 2), **kwargs):
         super().__init__(**kwargs)
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
@@ -66,10 +63,11 @@ class Blur(IntensityTransform):
         **kwargs: See :class:`~torchio.transforms.Transform` for additional
             keyword arguments.
     """
+
     def __init__(
-            self,
-            std: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
-            **kwargs
+        self,
+        std: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.std = std
@@ -97,9 +95,9 @@ class Blur(IntensityTransform):
 
 
 def blur(
-        data: TypeData,
-        spacing: TypeTripletFloat,
-        std_physical: TypeTripletFloat,
+    data: TypeData,
+    spacing: TypeTripletFloat,
+    std_physical: TypeTripletFloat,
 ) -> torch.Tensor:
     assert data.ndim == 3
     # For example, if the standard deviation of the kernel is 2 mm and the

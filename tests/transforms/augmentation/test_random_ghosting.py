@@ -6,6 +6,7 @@ from ...utils import TorchioTestCase
 
 class TestRandomGhosting(TorchioTestCase):
     """Tests for `RandomGhosting`."""
+
     def test_with_zero_intensity(self):
         transform = RandomGhosting(intensity=0)
         transformed = transform(self.sample_subject)

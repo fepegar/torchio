@@ -182,18 +182,19 @@ class Queue(Dataset):
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
     """  # noqa: B950
+
     def __init__(
-            self,
-            subjects_dataset: SubjectsDataset,
-            max_length: int,
-            samples_per_volume: int,
-            sampler: PatchSampler,
-            subject_sampler: Optional[Sampler] = None,
-            num_workers: int = 0,
-            shuffle_subjects: bool = True,
-            shuffle_patches: bool = True,
-            start_background: bool = True,
-            verbose: bool = False,
+        self,
+        subjects_dataset: SubjectsDataset,
+        max_length: int,
+        samples_per_volume: int,
+        sampler: PatchSampler,
+        subject_sampler: Optional[Sampler] = None,
+        num_workers: int = 0,
+        shuffle_subjects: bool = True,
+        shuffle_patches: bool = True,
+        start_background: bool = True,
+        verbose: bool = False,
     ):
         self.subjects_dataset = subjects_dataset
         self.max_length = max_length
@@ -214,8 +215,10 @@ class Queue(Dataset):
 
         if self.shuffle_subjects and self.subject_sampler is not None:
             raise ValueError(
-                'The flag shuffle_subjects cannot be set'
-                ' when a subject sampler is passed',
+                (
+                    'The flag shuffle_subjects cannot be set'
+                    ' when a subject sampler is passed'
+                ),
             )
 
     def __len__(self):

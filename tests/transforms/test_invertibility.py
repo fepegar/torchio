@@ -8,7 +8,6 @@ from ..utils import TorchioTestCase
 
 
 class TestInvertibility(TorchioTestCase):
-
     def test_all_random_transforms(self):
         transform = self.get_large_composed_transform()
         # Remove RandomLabelsToImage as it will add a new image to the subject

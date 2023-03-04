@@ -61,12 +61,11 @@ class CopyAffine(SpatialTransform):
         * https://github.com/fepegar/torchio/issues/382
         * https://github.com/fepegar/torchio/pull/592
     """  # noqa: B950
+
     def __init__(self, target: str, **kwargs):
         super().__init__(**kwargs)
         if not isinstance(target, str):
-            message = (
-                f'The target must be a string, but "{type(target)}" was found'
-            )
+            message = f'The target must be a string, but "{type(target)}" was found'
             raise ValueError(message)
         self.target = target
         self.args_names = ['target']

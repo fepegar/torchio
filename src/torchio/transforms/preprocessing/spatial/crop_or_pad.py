@@ -70,13 +70,14 @@ class CropOrPad(SpatialTransform):
         subject = tio.Subject(t1=t1, crop_pad=t1_pad_crop)
         subject.plot()
     """  # noqa: B950
+
     def __init__(
-            self,
-            target_shape: Union[int, TypeTripletInt, None] = None,
-            padding_mode: Union[str, float] = 0,
-            mask_name: Optional[str] = None,
-            labels: Optional[Sequence[int]] = None,
-            **kwargs
+        self,
+        target_shape: Union[int, TypeTripletInt, None] = None,
+        padding_mode: Union[str, float] = 0,
+        mask_name: Optional[str] = None,
+        labels: Optional[Sequence[int]] = None,
+        **kwargs,
     ):
         if target_shape is None and mask_name is None:
             message = 'If mask_name is None, a target shape must be passed'
@@ -89,8 +90,7 @@ class CropOrPad(SpatialTransform):
         self.padding_mode = padding_mode
         if mask_name is not None and not isinstance(mask_name, str):
             message = (
-                'If mask_name is not None, it must be a string,'
-                f' not {type(mask_name)}'
+                f'If mask_name is not None, it must be a string, not {type(mask_name)}'
             )
             raise ValueError(message)
         if mask_name is None:
@@ -133,7 +133,7 @@ class CropOrPad(SpatialTransform):
 
     @staticmethod
     def _get_six_bounds_parameters(
-            parameters: np.ndarray,
+        parameters: np.ndarray,
     ) -> TypeSixBounds:
         r"""Compute bounds parameters for ITK filters.
 
@@ -160,8 +160,8 @@ class CropOrPad(SpatialTransform):
         return i1, i2, j1, j2, k1, k2
 
     def _compute_cropping_padding_from_shapes(
-            self,
-            source_shape: TypeTripletInt,
+        self,
+        source_shape: TypeTripletInt,
     ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         diff_shape = np.array(self.target_shape) - source_shape
 
@@ -180,8 +180,8 @@ class CropOrPad(SpatialTransform):
         return padding_params, cropping_params
 
     def _compute_center_crop_or_pad(
-            self,
-            subject: Subject,
+        self,
+        subject: Subject,
     ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = subject.spatial_shape
         parameters = self._compute_cropping_padding_from_shapes(source_shape)
@@ -189,8 +189,8 @@ class CropOrPad(SpatialTransform):
         return padding_params, cropping_params
 
     def _compute_mask_center_crop_or_pad(
-            self,
-            subject: Subject,
+        self,
+        subject: Subject,
     ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         if self.mask_name not in subject:
             message = (

@@ -126,24 +126,27 @@ class Image(dict):
     .. _SimpleITK docs: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html
     .. _Graham Wideman's website: http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm
     """  # noqa: B950
+
     def __init__(
-            self,
-            path: Union[TypePath, Sequence[TypePath], None] = None,
-            type: Optional[str] = None,  # noqa: A002
-            tensor: Optional[TypeData] = None,
-            affine: Optional[TypeData] = None,
-            check_nans: bool = False,  # removed by ITK by default
-            reader: Callable = read_image,
-            **kwargs: Dict[str, Any],
+        self,
+        path: Union[TypePath, Sequence[TypePath], None] = None,
+        type: Optional[str] = None,  # noqa: A002
+        tensor: Optional[TypeData] = None,
+        affine: Optional[TypeData] = None,
+        check_nans: bool = False,  # removed by ITK by default
+        reader: Callable = read_image,
+        **kwargs: Dict[str, Any],
     ):
         self.check_nans = check_nans
         self.reader = reader
 
         if type is None:
             warnings.warn(
-                'Not specifying the image type is deprecated and will be'
-                ' mandatory in the future. You can probably use'
-                ' tio.ScalarImage or tio.LabelMap instead',
+                (
+                    'Not specifying the image type is deprecated and will be'
+                    ' mandatory in the future. You can probably use'
+                    ' tio.ScalarImage or tio.LabelMap instead'
+                ),
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -180,11 +183,13 @@ class Image(dict):
 
     def __repr__(self):
         properties = []
-        properties.extend([
-            f'shape: {self.shape}',
-            f'spacing: {self.get_spacing_string()}',
-            f'orientation: {"".join(self.orientation)}+',
-        ])
+        properties.extend(
+            [
+                f'shape: {self.shape}',
+                f'spacing: {self.get_spacing_string()}',
+                f'orientation: {"".join(self.orientation)}+',
+            ]
+        )
         if self._loaded:
             properties.append(f'dtype: {self.data.type()}')
             natural = humanize.naturalsize(self.memory, binary=True)
@@ -309,7 +314,8 @@ class Image(dict):
     @property
     def direction(self) -> TypeDirection3D:
         _, _, direction = get_sitk_metadata_from_ras_affine(
-            self.affine, lps=False,
+            self.affine,
+            lps=False,
         )
         return direction  # type: ignore[return-value]
 
@@ -423,7 +429,7 @@ class Image(dict):
 
     @staticmethod
     def _parse_single_path(
-            path: TypePath,
+        path: TypePath,
     ) -> Path:
         try:
             path = Path(path).expanduser()
@@ -434,18 +440,16 @@ class Image(dict):
             )
             raise TypeError(message)
         except RuntimeError:
-            message = (
-                f'Conversion to path not possible for variable: {path}'
-            )
+            message = f'Conversion to path not possible for variable: {path}'
             raise RuntimeError(message)
 
-        if not (path.is_file() or path.is_dir()):   # might be a dir with DICOM
+        if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
             raise FileNotFoundError(f'File not found: "{path}"')
         return path
 
     def _parse_path(
-            self,
-            path: Optional[Union[TypePath, Sequence[TypePath]]],
+        self,
+        path: Optional[Union[TypePath, Sequence[TypePath]]],
     ) -> Optional[Union[Path, List[Path]]]:
         if path is None:
             return None
@@ -458,9 +462,9 @@ class Image(dict):
             return self._parse_single_path(path)  # type: ignore[arg-type]
 
     def _parse_tensor(
-            self,
-            tensor: Optional[TypeData],
-            none_ok: bool = True,
+        self,
+        tensor: Optional[TypeData],
+        none_ok: bool = True,
     ) -> Optional[torch.Tensor]:
         if tensor is None:
             if none_ok:
@@ -655,10 +659,7 @@ class Image(dict):
         try:
             from PIL import Image as ImagePIL
         except ModuleNotFoundError as e:
-            message = (
-                'Please install Pillow to use Image.as_pil():'
-                ' pip install Pillow'
-            )
+            message = 'Please install Pillow to use Image.as_pil(): pip install Pillow'
             raise RuntimeError(message) from e
 
         self.check_is_2d()
@@ -675,14 +676,14 @@ class Image(dict):
         return ImagePIL.fromarray(array.astype(np.uint8))
 
     def to_gif(
-            self,
-            axis: int,
-            duration: float,  # of full gif
-            output_path: TypePath,
-            loop: int = 0,
-            rescale: bool = True,
-            optimize: bool = True,
-            reverse: bool = False,
+        self,
+        axis: int,
+        duration: float,  # of full gif
+        output_path: TypePath,
+        loop: int = 0,
+        rescale: bool = True,
+        optimize: bool = True,
+        reverse: bool = False,
     ) -> None:
         """Save an animated GIF of the image.
 
@@ -700,6 +701,7 @@ class Image(dict):
             reverse: Reverse the temporal order of frames.
         """  # noqa: B950
         from ..visualization import make_gif  # avoid circular import
+
         make_gif(
             self.data,
             axis,
@@ -736,6 +738,7 @@ class Image(dict):
             self.as_pil().show()
         else:
             from ..visualization import plot_volume  # avoid circular import
+
             plot_volume(self, **kwargs)
 
     def show(self, viewer_path: Optional[TypePath] = None) -> None:
@@ -796,6 +799,7 @@ class ScalarImage(Image):
 
     See :class:`~torchio.Image` for more information.
     """
+
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != INTENSITY:
             raise ValueError('Type of ScalarImage is always torchio.INTENSITY')
@@ -805,6 +809,7 @@ class ScalarImage(Image):
     def hist(self, **kwargs) -> None:
         """Plot histogram."""
         from ..visualization import plot_histogram
+
         x = self.data.flatten().numpy()
         plot_histogram(x, **kwargs)
 
@@ -831,6 +836,7 @@ class LabelMap(Image):
 
     See :class:`~torchio.Image` for more information.
     """
+
     def __init__(self, *args, **kwargs):
         if 'type' in kwargs and kwargs['type'] != LABEL:
             raise ValueError('Type of LabelMap is always torchio.LABEL')

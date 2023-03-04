@@ -36,11 +36,8 @@ class NormalizationTransform(IntensityTransform):
         >>> transformed = transform(subject)  # use values above the image mean
 
     """  # noqa: B950
-    def __init__(
-            self,
-            masking_method: TypeMaskingMethod = None,
-            **kwargs
-    ):
+
+    def __init__(self, masking_method: TypeMaskingMethod = None, **kwargs):
         super().__init__(**kwargs)
         self.masking_method = masking_method
 
@@ -55,10 +52,10 @@ class NormalizationTransform(IntensityTransform):
         return subject
 
     def apply_normalization(
-            self,
-            subject: Subject,
-            image_name: str,
-            mask: torch.Tensor,
+        self,
+        subject: Subject,
+        image_name: str,
+        mask: torch.Tensor,
     ) -> None:
         # There must be a nicer way of doing this
         raise NotImplementedError
