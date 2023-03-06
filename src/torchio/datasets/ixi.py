@@ -160,11 +160,10 @@ class IXI(SubjectsDataset):
 
 
 class IXITiny(SubjectsDataset):
-    r"""
-    This is the dataset used in the main `notebook`_.
-    It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR
-    images and their corresponding brain segmentations,
-    all with size :math:`83 \times 44 \times 55`.
+    r"""This is the dataset used in the main `notebook`_. It is a tiny version
+    of IXI, containing 566 :math:`T_1`-weighted brain MR images and their
+    corresponding brain segmentations, all with size :math:`83 \times 44 \times
+    55`.
 
     It can be used as a medical image MNIST.
 

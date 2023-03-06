@@ -13,7 +13,8 @@ from ....utils import to_tuple
 
 
 class RandomGamma(RandomTransform, IntensityTransform):
-    r"""Randomly change contrast of an image by raising its values to the power :math:`\gamma`.
+    r"""Randomly change contrast of an image by raising its values to the power
+    :math:`\gamma`.
 
     Args:
         log_gamma: Tuple :math:`(a, b)` to compute the exponent

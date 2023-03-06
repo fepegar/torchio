@@ -5,8 +5,8 @@ from ...utils import get_torchio_cache_dir
 class SubjectMNI(_RawSubjectCopySubject):
     """Atlases from the Montreal Neurological Institute (MNI).
 
-    See `the website <http://nist.mni.mcgill.ca/?page_id=714>`_ for more
-    information.
+    See `the website
+    <http://nist.mni.mcgill.ca/?page_id=714>`_ for moreinformation.
     """
 
     url_base = 'http://packages.bic.mni.mcgill.ca/mni-models/'

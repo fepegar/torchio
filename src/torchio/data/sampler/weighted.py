@@ -47,7 +47,6 @@ class WeightedSampler(RandomSampler):
     .. note:: Values of the probability map near the border will be set to 0 as
         the center of the patch cannot be at the border (unless the patch has
         size 1 or 2 along that axis).
-
     """  # noqa: B950
 
     def __init__(
