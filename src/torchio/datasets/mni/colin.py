@@ -57,7 +57,6 @@ class Colin27(SubjectMNI):
         >>> colin_2008.load()
         >>> colin_2008.t1
         ScalarImage(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)
-
     """  # noqa: B950
 
     def __init__(self, version=1998):

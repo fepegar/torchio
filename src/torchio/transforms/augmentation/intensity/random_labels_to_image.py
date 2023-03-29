@@ -125,7 +125,6 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         >>> transformed = transform(subject)  # subject's key 't1' has been replaced with the simulated image
 
     .. seealso:: :class:`~torchio.transforms.preprocessing.label.remap_labels.RemapLabels`.
-
     """  # noqa: B950
 
     def __init__(

@@ -57,7 +57,6 @@ class LabelSampler(WeightedSampler):
         >>> generator = sampler(subject, num_patches=10)
         >>> for patch in iterator:
         ...     print(patch.shape)
-
     """
 
     def __init__(

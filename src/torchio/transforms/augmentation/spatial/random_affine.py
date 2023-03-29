@@ -107,7 +107,6 @@ class RandomAffine(RandomTransform, SpatialTransform):
         ct_transformed = transform(ct)
         subject.add_image(ct_transformed, 'Transformed')
         subject.plot()
-
     """  # noqa: B950
 
     def __init__(

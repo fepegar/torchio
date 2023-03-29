@@ -10,7 +10,6 @@ from ..utils import get_torchio_cache_dir
 
 
 class FPG(_RawSubjectCopySubject):
-
     """3T :math:`T_1`-weighted brain MRI and corresponding parcellation.
 
     Args:

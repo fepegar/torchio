@@ -32,7 +32,6 @@ class ICBM2009CNonlinearSymmetric(SubjectMNI):
         >>> icbm = tio.datasets.ICBM2009CNonlinearSymmetric(load_4d_tissues=False)
         >>> icbm
         ICBM2009CNonlinearSymmetric(Keys: ('t1', 'eyes', 'face', 'brain', 't2', 'pd', 'gm', 'wm', 'csf'); images: 9)
-
     """  # noqa: B950
 
     def __init__(self, load_4d_tissues: bool = True):
