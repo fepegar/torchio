@@ -392,6 +392,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/nicoloesch"><img src="https://avatars.githubusercontent.com/u/70891565?v=4?s=100" width="100px;" alt="nicoloesch"/><br /><sub><b>nicoloesch</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=nicoloesch" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/vedal"><img src="https://avatars.githubusercontent.com/u/22004000?v=4?s=100" width="100px;" alt="Amund Vedal"/><br /><sub><b>Amund Vedal</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=vedal" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/alabamagan"><img src="https://avatars.githubusercontent.com/u/11690091?v=4?s=100" width="100px;" alt="Alabamagan"/><br /><sub><b>Alabamagan</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Aalabamagan" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sbdoherty"><img src="https://avatars.githubusercontent.com/u/46537211?v=4?s=100" width="100px;" alt="sbdoherty"/><br /><sub><b>sbdoherty</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=sbdoherty" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
