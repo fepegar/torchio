@@ -704,6 +704,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "sbdoherty",
+      "name": "sbdoherty",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46537211?v=4",
+      "profile": "https://github.com/sbdoherty",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
