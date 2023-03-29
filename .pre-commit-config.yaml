@@ -72,6 +72,6 @@ repos:
     - id: doc8
 
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
+    rev: v1.4
     hooks:
     - id: docformatter
