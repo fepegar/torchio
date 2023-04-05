@@ -8,6 +8,7 @@ import nibabel as nib
 import numpy as np
 import SimpleITK as sitk
 import torch
+from nibabel.spatialimages import SpatialImage
 
 from ..constants import REPO_URL
 from ..typing import TypeData
@@ -49,7 +50,7 @@ def read_image(path: TypePath) -> TypeDataAffine:
 
 
 def _read_nibabel(path: TypePath) -> TypeDataAffine:
-    img = nib.load(str(path), mmap=False)
+    img: SpatialImage = nib.load(str(path), mmap=False)  # type: ignore[assignment]
     data = img.get_fdata(dtype=np.float32)
     if data.ndim == 5:
         data = data[..., 0, :]
