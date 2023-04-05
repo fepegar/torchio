@@ -35,3 +35,7 @@ class TestPad(TorchioTestCase):
 
         with self.assertRaises(KeyError):
             tio.Pad(0, padding_mode='abc')
+
+    def test_padding_mean_label_map(self):
+        with self.assertWarns(RuntimeWarning):
+            tio.Pad(1, padding_mode='mean')(self.sample_subject.label)

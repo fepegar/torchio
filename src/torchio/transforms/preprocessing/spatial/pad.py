@@ -1,3 +1,4 @@
+import warnings
 from numbers import Number
 from typing import Dict
 from typing import Union
@@ -6,6 +7,7 @@ import nibabel as nib
 import numpy as np
 import torch
 
+from ....data.image import LabelMap
 from ....data.subject import Subject
 from .bounds_transform import BoundsTransform
 from .bounds_transform import TypeBounds
@@ -81,6 +83,11 @@ class Pad(BoundsTransform):
         assert self.bounds_parameters is not None
         low = self.bounds_parameters[::2]
         for image in self.get_images(subject):
+            if isinstance(image, LabelMap) and self.padding_mode == 'mean':
+                message = (
+                    'Padding mode "mean" might create non-integer values in label maps'
+                )
+                warnings.warn(message, RuntimeWarning, stacklevel=2)
             new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
             new_affine = image.affine.copy()
             new_affine[:3, 3] = new_origin
