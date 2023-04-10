@@ -139,7 +139,6 @@ class IXI(SubjectsDataset):
 
     def _download(self, root, modalities):
         """Download the IXI data if it does not exist already."""
-
         for modality in modalities:
             modality_dir = root / modality
             if modality_dir.is_dir():
