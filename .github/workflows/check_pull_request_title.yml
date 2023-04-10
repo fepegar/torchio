@@ -8,8 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       ${{ github.event.pull_request.user.login != 'allcontributors[bot]' &&
-      github.event.pull_request.user.login != 'pre-commit-ci[bot]' }}
+      github.event.pull_request.user.login != 'pre-commit-ci' }}
     steps:
+      # Echo the user's login
+      - name: Echo user login
+        run: echo ${{ github.event.pull_request.user.login }}
       - uses: naveenk1223/action-pr-title@master
         with:
           # Valid titles: "Do something"
