@@ -75,3 +75,7 @@ repos:
     rev: v1.6.0
     hooks:
     - id: docformatter
+
+
+ci:
+  autoupdate_commit_msg: Autoupdate pre-commit hooks

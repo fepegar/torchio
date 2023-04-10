@@ -6,7 +6,7 @@ on:
 jobs:
   pr-title-check:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.user.login != 'allcontributors[bot]' && github.event.pull_request.user.login != 'pre-commit-ci[bot]' }}
+    if: ${{ github.event.pull_request.user.login != 'allcontributors[bot]' }}
     steps:
       # Echo the user's login
       - name: Echo user login
