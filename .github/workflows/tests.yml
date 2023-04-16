@@ -53,13 +53,17 @@ jobs:
           fetch-depth: 0
 
       - name: Install tox
-        run: pip install tox codecov
+        run: pip install tox
 
       - name: Run unit tests
         run: tox -e py
 
-      - name: Upload coverage
-        run: codecov
+      - name: Upload coverage reports to Codecov
+        run: |
+          OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
+          curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
+          chmod +x codecov
+          ./codecov
 
   cli:
     name: CLI smoke tests
