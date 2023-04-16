@@ -60,7 +60,8 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
+          curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
           chmod +x codecov
           ./codecov
 
