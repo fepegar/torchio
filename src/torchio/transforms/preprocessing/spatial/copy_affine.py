@@ -74,7 +74,13 @@ class CopyAffine(SpatialTransform):
         if self.target not in subject:
             message = f'Target image "{self.target}" not found in subject'
             raise RuntimeError(message)
-        affine = subject[self.target].affine
+        reference = subject[self.target]
+        affine = copy.deepcopy(reference.affine)
         for image in self.get_images(subject):
-            image.affine = copy.deepcopy(affine)
+            if image is reference:
+                continue
+            # We load the image to avoid complications
+            # https://github.com/fepegar/torchio/issues/1071#issuecomment-1511814720
+            image.load()
+            image.affine = affine
         return subject
