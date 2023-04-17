@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import torch
 import torchio as tio
@@ -21,6 +22,18 @@ class TestCopyAffine(TorchioTestCase):
         image = tio.ScalarImage(tensor=torch.rand(2, 2, 2, 2))
         mask = tio.LabelMap(tensor=torch.rand(2, 2, 2, 2))
         mask.affine *= 1.1
+        subject = tio.Subject(t1=image, mask=mask)
+        transform = tio.CopyAffine('t1')
+        transformed = transform(subject)
+        self.assert_tensor_equal(
+            transformed['t1'].affine,
+            transformed['mask'].affine,
+        )
+
+    def test_before_loading(self):
+        affine = 2 * np.eye(4)
+        image = tio.ScalarImage(tensor=torch.rand(2, 2, 2, 2), affine=affine)
+        mask = tio.LabelMap(self.get_image_path('mask'))
         subject = tio.Subject(t1=image, mask=mask)
         transform = tio.CopyAffine('t1')
         transformed = transform(subject)
