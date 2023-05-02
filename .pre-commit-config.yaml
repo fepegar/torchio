@@ -55,7 +55,7 @@ repos:
       - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
+    rev: v3.3.2
     hooks:
       - id: pyupgrade
         args: ['--py37-plus', '--keep-runtime-typing']
@@ -72,7 +72,7 @@ repos:
     - id: doc8
 
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.6.3
+    rev: v1.6.4
     hooks:
     - id: docformatter
 
