@@ -12,9 +12,8 @@ from ..typing import TypePath
 
 
 class EPISURG(SubjectsDataset):
-    """
-    `EPISURG <https://doi.org/10.5522/04/9996158.v1>`_ is a clinical dataset of
-    :math:`T_1`-weighted MRI from 430 epileptic patients who underwent
+    """`EPISURG <https://doi.org/10.5522/04/9996158.v1>`_ is a clinical dataset
+    of :math:`T_1`-weighted MRI from 430 epileptic patients who underwent
     resective brain surgery at the National Hospital of Neurology and
     Neurosurgery (Queen Square, London, United Kingdom) between 1990 and 2018.
 

@@ -1,9 +1,7 @@
-"""
-Resample only one axis
-======================
+"""Resample only one axis ======================
 
-In this example, we create a custom preprocessing transfom that changes the
-image spacing across one axis only.
+In this example, we create a custom preprocessing transfom that changes
+the image spacing across one axis only.
 
 Inspired by
 `this discussion <https://github.com/fepegar/torchio/discussions/885>`_.

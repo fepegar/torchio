@@ -1,9 +1,7 @@
-"""
-Sample slices from volumes
-==========================
+"""Sample slices from volumes ==========================
 
-In this example, volumes are padded, scaled, rotated and sometimes flipped.
-Then, 2D slices are extracted.
+In this example, volumes are padded, scaled, rotated and sometimes
+flipped. Then, 2D slices are extracted.
 """
 import matplotlib.pyplot as plt
 import torch
