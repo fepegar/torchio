@@ -1,6 +1,4 @@
-"""
-Transform video
-===============
+"""Transform video ===============
 
 In this example, we use ``torchio.Resample((2, 2, 1))`` to divide the spatial
 size of the clip (height and width) by two and
