@@ -1,25 +1,18 @@
-# emacs: at the end of the file
-# ex: set sts=4 ts=4 sw=4 et:
-# noqa: E800
-# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 """Stub file for a guaranteed safe import of duecredit constructs:  if
 duecredit is not available.
 
-To use it, place it into your project codebase to be imported, e.g. copy
-as
+To use it, place it into your project codebase to be imported, e.g., copy as::
 
-cp stub.py /path/tomodule/module/due.py
+    cp stub.py /path/tomodule/module/due.py
 
 Note that it might be better to avoid naming it duecredit.py to avoid
 shadowing installed duecredit.
 
-Then use in your code as
+Then use in your code as::
 
-from .due import due, Doi, BibTeX, Text
+    from .due import due, Doi, BibTeX, Text
 
-See
-https://github.com/duecredit/duecredit/blob/master/README.md
-for examples.
+See https://github.com/duecredit/duecredit/blob/master/README.md for examples.
 
 Origin:     Originally a part of the duecredit
 Copyright:  2015-2019  DueCredit developers
@@ -71,11 +64,3 @@ except Exception as e:  # noqa: B902
     # Initiate due stub
     due = InactiveDueCreditCollector()
     BibTeX = Doi = Url = Text = _donothing_func
-
-# Emacs mode definitions
-# Local Variables:
-# mode: python
-# py-indent-offset: 4
-# tab-width: 4
-# indent-tabs-mode: nil
-# End:
