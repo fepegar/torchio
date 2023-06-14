@@ -222,7 +222,13 @@ class Image(dict):
             if key in PROTECTED_KEYS:
                 continue
             kwargs[key] = value  # should I copy? deepcopy?
-        return type(self)(**kwargs)
+        new_image_class = type(self)
+        new_image = new_image_class(
+            check_nans=self.check_nans,
+            reader=self.reader,
+            **kwargs,
+        )
+        return new_image
 
     @property
     def data(self) -> torch.Tensor:
@@ -252,7 +258,10 @@ class Image(dict):
         """Affine matrix to transform voxel indices into world coordinates."""
         # If path is a dir (probably DICOM), just load the data
         # Same if it's a list of paths (used to create a 4D image)
-        if self._loaded or self._is_dir() or self._is_multipath():
+        # Finally, if we use a custom reader, SimpleITK probably won't be able
+        # to read the metadata, so we resort to loading everything into memory
+        is_custom_reader = self.reader is not read_image
+        if self._loaded or self._is_dir() or self._is_multipath() or is_custom_reader:
             affine = self[AFFINE]
         else:
             assert self.path is not None
