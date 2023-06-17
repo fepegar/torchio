@@ -2,9 +2,9 @@ name: Smokeshow
 
 on:
   push:  # temp
-  workflow_run:
-    workflows: [Tests]
-    types: [completed]
+  # workflow_run:
+  #   workflows: [Tests]
+  #   types: [completed]
 
 permissions:
   statuses: write
