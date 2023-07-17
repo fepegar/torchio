@@ -142,11 +142,9 @@ class Image(dict):
 
         if type is None:
             warnings.warn(
-                (
-                    'Not specifying the image type is deprecated and will be'
-                    ' mandatory in the future. You can probably use'
-                    ' tio.ScalarImage or tio.LabelMap instead'
-                ),
+                'Not specifying the image type is deprecated and will be'
+                ' mandatory in the future. You can probably use'
+                ' tio.ScalarImage or tio.LabelMap instead',
                 DeprecationWarning,
                 stacklevel=2,
             )

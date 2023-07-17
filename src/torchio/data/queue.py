@@ -215,10 +215,8 @@ class Queue(Dataset):
 
         if self.shuffle_subjects and self.subject_sampler is not None:
             raise ValueError(
-                (
-                    'The flag shuffle_subjects cannot be set'
-                    ' when a subject sampler is passed'
-                ),
+                'The flag shuffle_subjects cannot be set'
+                ' when a subject sampler is passed',
             )
 
     def __len__(self):

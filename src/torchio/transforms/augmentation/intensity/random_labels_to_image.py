@@ -205,10 +205,8 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         min_value, max_value = nums_range
         if min_value > max_value:
             raise ValueError(
-                (
-                    f'If {name} is a sequence, the second value must be'
-                    f' equal or greater than the first, not {nums_range}'
-                ),
+                f'If {name} is a sequence, the second value must be'
+                f' equal or greater than the first, not {nums_range}',
             )
         return min_value, max_value
 
