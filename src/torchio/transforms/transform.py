@@ -281,32 +281,24 @@ class Transform(ABC):
         if isinstance(nums_range, numbers.Number):  # single number given
             if nums_range < 0:
                 raise ValueError(
-                    (
-                        f'If {name} is a single number,'
-                        f' it must be positive, not {nums_range}'
-                    ),
+                    f'If {name} is a single number,'
+                    f' it must be positive, not {nums_range}',
                 )
             if min_constraint is not None and nums_range < min_constraint:
                 raise ValueError(
-                    (
-                        f'If {name} is a single number, it must be greater'
-                        f' than {min_constraint}, not {nums_range}'
-                    ),
+                    f'If {name} is a single number, it must be greater'
+                    f' than {min_constraint}, not {nums_range}',
                 )
             if max_constraint is not None and nums_range > max_constraint:
                 raise ValueError(
-                    (
-                        f'If {name} is a single number, it must be smaller'
-                        f' than {max_constraint}, not {nums_range}'
-                    ),
+                    f'If {name} is a single number, it must be smaller'
+                    f' than {max_constraint}, not {nums_range}',
                 )
             if type_constraint is not None:
                 if not isinstance(nums_range, type_constraint):
                     raise ValueError(
-                        (
-                            f'If {name} is a single number, it must be of'
-                            f' type {type_constraint}, not {nums_range}'
-                        ),
+                        f'If {name} is a single number, it must be of'
+                        f' type {type_constraint}, not {nums_range}',
                     )
             min_range = -nums_range if min_constraint is None else nums_range
             return (min_range, nums_range)
@@ -315,10 +307,8 @@ class Transform(ABC):
             min_value, max_value = nums_range  # type: ignore[misc]
         except (TypeError, ValueError):
             raise ValueError(
-                (
-                    f'If {name} is not a single number, it must be'
-                    f' a sequence of len 2, not {nums_range}'
-                ),
+                f'If {name} is not a single number, it must be'
+                f' a sequence of len 2, not {nums_range}',
             )
 
         min_is_number = isinstance(min_value, numbers.Number)
@@ -329,26 +319,20 @@ class Transform(ABC):
 
         if min_value > max_value:
             raise ValueError(
-                (
-                    f'If {name} is a sequence, the second value must be'
-                    f' equal or greater than the first, but it is {nums_range}'
-                ),
+                f'If {name} is a sequence, the second value must be'
+                f' equal or greater than the first, but it is {nums_range}',
             )
 
         if min_constraint is not None and min_value < min_constraint:
             raise ValueError(
-                (
-                    f'If {name} is a sequence, the first value must be greater'
-                    f' than {min_constraint}, but it is {min_value}'
-                ),
+                f'If {name} is a sequence, the first value must be greater'
+                f' than {min_constraint}, but it is {min_value}',
             )
 
         if max_constraint is not None and max_value > max_constraint:
             raise ValueError(
-                (
-                    f'If {name} is a sequence, the second value must be'
-                    f' smaller than {max_constraint}, but it is {max_value}'
-                ),
+                f'If {name} is a sequence, the second value must be'
+                f' smaller than {max_constraint}, but it is {max_value}',
             )
 
         if type_constraint is not None:
@@ -356,10 +340,8 @@ class Transform(ABC):
             max_type_ok = isinstance(max_value, type_constraint)
             if not min_type_ok or not max_type_ok:
                 raise ValueError(
-                    (
-                        f'If "{name}" is a sequence, its values must be of'
-                        f' type "{type_constraint}", not "{type(nums_range)}"'
-                    ),
+                    f'If "{name}" is a sequence, its values must be of'
+                    f' type "{type_constraint}", not "{type(nums_range)}"',
                 )
         return nums_range  # type: ignore[return-value]
 
