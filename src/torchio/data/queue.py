@@ -328,6 +328,7 @@ class Queue(Dataset):
                     ' patches from the queue should be 0. Is it?'
                 )
                 raise RuntimeError(message) from exception
+            raise exception
         return subject
 
     @staticmethod
