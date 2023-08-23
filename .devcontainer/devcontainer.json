@@ -1,0 +1,25 @@
+{
+  // "image": "mcr.microsoft.com/devcontainers/python:3",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  // "postCreateCommand": "pip install -r .devcontainer/requirements-pinned.txt && pip install -e .",
+  "postCreateCommand": "pip install -e .",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint",
+        "ms-python.black-formatter",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  }
+}
