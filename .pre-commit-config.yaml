@@ -76,6 +76,11 @@ repos:
     hooks:
     - id: docformatter
 
+  - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
+    rev: v0.1.0
+    hooks:
+    - id: dockerfilelint
+      stages: [commit]
 
 ci:
   autoupdate_commit_msg: Autoupdate pre-commit hooks
