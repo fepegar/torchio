@@ -110,3 +110,4 @@ ENV/
 *DS_Store
 .pylintrc
 auto_examples
+.docker
