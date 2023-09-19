@@ -722,6 +722,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "blakedewey",
+      "name": "Blake Dewey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4713571?v=4",
+      "profile": "https://github.com/blakedewey",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
