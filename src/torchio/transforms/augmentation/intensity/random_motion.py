@@ -52,8 +52,8 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
 
     def __init__(
         self,
-        degrees: Union[float, Tuple[float, float] = 10,
-        translation: Union[float, Tuple[float, float] = 10,  # in mm
+        degrees: Union[float, Tuple[float, float]] = 10,
+        translation: Union[float, Tuple[float, float]] = 10,  # in mm
         num_transforms: int = 2,
         image_interpolation: str = 'linear',
         **kwargs,
