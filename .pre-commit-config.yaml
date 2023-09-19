@@ -21,7 +21,7 @@ repos:
         exclude: setup.cfg
 
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.9.1
     hooks:
     - id: black
 
@@ -55,7 +55,7 @@ repos:
       - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.10.1
+    rev: v3.11.0
     hooks:
       - id: pyupgrade
         args: ['--py38-plus', '--keep-runtime-typing']
