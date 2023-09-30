@@ -4,6 +4,10 @@ name: Publish
 
 on: push
 
+# https://github.com/fepegar/torchio/actions/runs/6076955855/job/17283217522?pr=1103
+permissions:
+  id-token: write
+
 jobs:
   Build-and-publish:
     name: Build and publish if needed
