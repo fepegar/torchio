@@ -10,6 +10,7 @@ images, MRA images and Diffusion-weighted images (15 directions)".
 
 .. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/
 """  # noqa: B950
+
 # Adapted from
 # https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 import shutil
@@ -174,6 +175,7 @@ class IXITiny(SubjectsDataset):
 
     .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
     """  # noqa: B950
+
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 
