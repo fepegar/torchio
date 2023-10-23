@@ -21,7 +21,7 @@ repos:
         exclude: setup.cfg
 
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 23.10.0
     hooks:
     - id: black
 
