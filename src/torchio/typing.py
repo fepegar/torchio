@@ -21,6 +21,7 @@ TypeTripletInt = Tuple[int, int, int]
 TypeQuartetInt = Tuple[int, int, int, int]
 TypeSextetInt = Tuple[int, int, int, int, int, int]
 
+TypeDoubleFloat = Tuple[float, float]
 TypeTripletFloat = Tuple[float, float, float]
 TypeSextetFloat = Tuple[float, float, float, float, float, float]
 
