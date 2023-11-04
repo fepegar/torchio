@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from ....data.subject import Subject
-from ....typing import TypeRangeFloat
+from ....typing import TypeDoubleFloat
 from .normalization_transform import NormalizationTransform
 from .normalization_transform import TypeMaskingMethod
 
@@ -45,10 +45,10 @@ class RescaleIntensity(NormalizationTransform):
 
     def __init__(
         self,
-        out_min_max: TypeRangeFloat = (0, 1),
-        percentiles: TypeRangeFloat = (0, 100),
+        out_min_max: TypeDoubleFloat = (0, 1),
+        percentiles: TypeDoubleFloat = (0, 100),
         masking_method: TypeMaskingMethod = None,
-        in_min_max: Optional[TypeRangeFloat] = None,
+        in_min_max: Optional[TypeDoubleFloat] = None,
         **kwargs,
     ):
         super().__init__(masking_method=masking_method, **kwargs)
@@ -65,16 +65,11 @@ class RescaleIntensity(NormalizationTransform):
             max_constraint=100,
         )
 
-        self.in_min: Optional[float]
-        self.in_max: Optional[float]
         if self.in_min_max is not None:
-            self.in_min, self.in_max = self._parse_range(
+            self.in_min_max = self._parse_range(
                 self.in_min_max,
                 'in_min_max',
             )
-        else:
-            self.in_min = None
-            self.in_max = None
 
         self.args_names = [
             'out_min_max',
@@ -82,7 +77,6 @@ class RescaleIntensity(NormalizationTransform):
             'masking_method',
             'in_min_max',
         ]
-        self.invert_transform = False
 
     def apply_normalization(
         self,
@@ -109,18 +103,16 @@ class RescaleIntensity(NormalizationTransform):
             )
             warnings.warn(message, RuntimeWarning, stacklevel=2)
             return tensor
+
         values = array[mask]
         cutoff = np.percentile(values, self.percentiles)
         np.clip(array, *cutoff, out=array)  # type: ignore[call-overload]
+
         if self.in_min_max is None:
-            self.in_min_max = self._parse_range(
-                (array.min(), array.max()),
-                'in_min_max',
-            )
-            self.in_min, self.in_max = self.in_min_max
-        assert self.in_min is not None
-        assert self.in_max is not None
-        in_range = self.in_max - self.in_min
+            in_min, in_max = array.min(), array.max()
+        else:
+            in_min, in_max = self.in_min_max
+        in_range = in_max - in_min
         if in_range == 0:  # should this be compared using a tolerance?
             message = (
                 f'Rescaling image "{image_name}" not possible'
@@ -128,15 +120,11 @@ class RescaleIntensity(NormalizationTransform):
             )
             warnings.warn(message, RuntimeWarning, stacklevel=2)
             return tensor
+
         out_range = self.out_max - self.out_min
-        if self.invert_transform:
-            array -= self.out_min
-            array /= out_range
-            array *= in_range
-            array += self.in_min
-        else:
-            array -= self.in_min
-            array /= in_range
-            array *= out_range
-            array += self.out_min
+
+        array -= in_min
+        array /= in_range
+        array *= out_range
+        array += self.out_min
         return torch.as_tensor(array)
