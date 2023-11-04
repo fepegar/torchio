@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from ....data.subject import Subject
-from ....typing import TypeRangeFloat
+from ....typing import TypeDoubleFloat
 from .normalization_transform import NormalizationTransform
 from .normalization_transform import TypeMaskingMethod
 
@@ -45,10 +45,10 @@ class RescaleIntensity(NormalizationTransform):
 
     def __init__(
         self,
-        out_min_max: TypeRangeFloat = (0, 1),
-        percentiles: TypeRangeFloat = (0, 100),
+        out_min_max: TypeDoubleFloat = (0, 1),
+        percentiles: TypeDoubleFloat = (0, 100),
         masking_method: TypeMaskingMethod = None,
-        in_min_max: Optional[TypeRangeFloat] = None,
+        in_min_max: Optional[TypeDoubleFloat] = None,
         **kwargs,
     ):
         super().__init__(masking_method=masking_method, **kwargs)
@@ -77,7 +77,6 @@ class RescaleIntensity(NormalizationTransform):
             'masking_method',
             'in_min_max',
         ]
-        self.invert_transform = False
 
     def apply_normalization(
         self,
@@ -124,14 +123,8 @@ class RescaleIntensity(NormalizationTransform):
 
         out_range = self.out_max - self.out_min
 
-        if self.invert_transform:
-            array -= self.out_min
-            array /= out_range
-            array *= in_range
-            array += in_min
-        else:
-            array -= in_min
-            array /= in_range
-            array *= out_range
-            array += self.out_min
+        array -= in_min
+        array /= in_range
+        array *= out_range
+        array += self.out_min
         return torch.as_tensor(array)
