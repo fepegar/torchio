@@ -46,12 +46,10 @@ class TestTransforms(TorchioTestCase):
             tio.HistogramStandardization(landmarks_dict),
             elastic,
             tio.RandomAffine(),
-            tio.OneOf(
-                {
-                    tio.RandomAffine(): 3,
-                    elastic: 1,
-                }
-            ),
+            tio.OneOf({
+                tio.RandomAffine(): 3,
+                elastic: 1,
+            }),
             tio.RemapLabels(remapping=remapping, masking_method='Left'),
             tio.RemoveLabels([1, 3]),
             tio.SequentialLabels(),
@@ -283,13 +281,11 @@ class TestTransform(TorchioTestCase):
     def test_batch_history(self):
         # https://github.com/fepegar/torchio/discussions/743
         subject = self.sample_subject
-        transform = tio.Compose(
-            [
-                tio.RandomAffine(),
-                tio.CropOrPad(5),
-                tio.OneHot(),
-            ]
-        )
+        transform = tio.Compose([
+            tio.RandomAffine(),
+            tio.CropOrPad(5),
+            tio.OneHot(),
+        ])
         dataset = tio.SubjectsDataset([subject], transform=transform)
         loader = torch.utils.data.DataLoader(
             dataset,
