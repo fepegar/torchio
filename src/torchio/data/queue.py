@@ -257,6 +257,8 @@ class Queue(Dataset):
 
     @property
     def num_subjects(self) -> int:
+        if self.subject_sampler is not None:
+            return len(self.subject_sampler)
         return len(self.subjects_dataset)
 
     @property
@@ -265,9 +267,14 @@ class Queue(Dataset):
 
     @property
     def iterations_per_epoch(self) -> int:
+        if self.subject_sampler is not None:
+            subjects_dataset = [self.subjects_dataset.dry_iter()[i] for i in self.subject_sampler]
+        else:
+            subjects_dataset = self.subjects_dataset.dry_iter()
+
         total_num_patches = sum(
             self._get_subject_num_samples(subject)
-            for subject in self.subjects_dataset.dry_iter()
+            for subject in subjects_dataset
         )
         return total_num_patches
 
