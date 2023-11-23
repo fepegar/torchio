@@ -258,7 +258,7 @@ class Queue(Dataset):
     @property
     def num_subjects(self) -> int:
         if self.subject_sampler is not None:
-            return len(self.subject_sampler)
+            return self.subject_sampler.__len__()
         return len(self.subjects_dataset)
 
     @property
