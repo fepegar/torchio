@@ -263,7 +263,7 @@ class Queue(Dataset):
                     'The subject sampler passed to the queue must have a'
                     ' __len__ method',
                 )
-            num_subjects = len(self.subject_sampler)
+            num_subjects = len(self.subject_sampler)  # type: ignore[arg-type]
         else:
             num_subjects = len(self.subjects_dataset)
         return num_subjects
