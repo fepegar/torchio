@@ -258,7 +258,12 @@ class Queue(Dataset):
     @property
     def num_subjects(self) -> int:
         if self.subject_sampler is not None:
-            num_subjects = self.subject_sampler.num_samples
+            if not hasattr(self.subject_sampler, '__len__'):
+                raise ValueError(
+                    'The subject sampler passed to the queue must have a'
+                    ' __len__ method',
+                )
+            num_subjects = len(self.subject_sampler)
         else:
             num_subjects = len(self.subjects_dataset)
         return num_subjects
