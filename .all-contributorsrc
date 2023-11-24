@@ -734,6 +734,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "haughty-yeon",
+      "name": "Doyeon Kim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84639487?v=4",
+      "profile": "https://github.com/haughty-yeon",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
