@@ -21,15 +21,13 @@ subject = tio.datasets.FPG()
 subject.remove_image('seg')
 subjects = 4 * [subject]
 
-transform = tio.Compose(
-    (
-        tio.ToCanonical(),
-        tio.RandomGamma(p=0.75),
-        tio.RandomBlur(p=0.5),
-        tio.RandomFlip(),
-        tio.RescaleIntensity(out_min_max=(-1, 1)),
-    )
-)
+transform = tio.Compose((
+    tio.ToCanonical(),
+    tio.RandomGamma(p=0.75),
+    tio.RandomBlur(p=0.5),
+    tio.RandomFlip(),
+    tio.RescaleIntensity(out_min_max=(-1, 1)),
+))
 
 dataset = tio.SubjectsDataset(subjects, transform=transform)
 
