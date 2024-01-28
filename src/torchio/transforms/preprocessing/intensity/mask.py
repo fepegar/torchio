@@ -58,6 +58,7 @@ class Mask(IntensityTransform):
         self.masking_method = masking_method
         self.masking_labels = labels
         self.outside_value = outside_value
+        self.args_names = ['masking_method']
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in self.get_images(subject):
