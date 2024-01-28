@@ -63,10 +63,11 @@ class TestQueue(TorchioTestCase):
             max_length=max_length,
             samples_per_volume=3,  # should be ignored
             sampler=sampler,
+            shuffle_patches=False,
         )
         batch_loader = DataLoader(queue_dataset, batch_size=6)
-        batches = [batch['im'][tio.DATA] for batch in batch_loader]
-        all_numbers = torch.stack(batches).flatten().tolist()
+        tensors = [batch['im'][tio.DATA] for batch in batch_loader]
+        all_numbers = torch.stack(tensors).flatten().tolist()
         assert all_numbers.count(10) == 10
         assert all_numbers.count(2) == 2
 
