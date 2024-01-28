@@ -399,6 +399,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/blakedewey"><img src="https://avatars.githubusercontent.com/u/4713571?v=4?s=100" width="100px;" alt="Blake Dewey"/><br /><sub><b>Blake Dewey</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=blakedewey" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/haughty-yeon"><img src="https://avatars.githubusercontent.com/u/84639487?v=4?s=100" width="100px;" alt="Doyeon Kim"/><br /><sub><b>Doyeon Kim</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ahaughty-yeon" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/KonoMaxi"><img src="https://avatars.githubusercontent.com/u/13138999?v=4?s=100" width="100px;" alt="KonoMaxi"/><br /><sub><b>KonoMaxi</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AKonoMaxi" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.etsmtl.ca"><img src="https://avatars.githubusercontent.com/u/1707237?v=4?s=100" width="100px;" alt="Laurent Chauvin"/><br /><sub><b>Laurent Chauvin</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Alchauvin" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
