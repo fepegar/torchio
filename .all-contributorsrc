@@ -752,6 +752,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "lchauvin",
+      "name": "Laurent Chauvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1707237?v=4",
+      "profile": "http://www.etsmtl.ca",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
