@@ -70,6 +70,8 @@ class Slicer(_RawSubjectCopySubject):
                 download_root,
                 filename=filename,
             )
-        super().__init__({
-            stem: ScalarImage(download_root / filename),  # use last filename
-        })
+        super().__init__(
+            {
+                stem: ScalarImage(download_root / filename),  # use last filename
+            }
+        )
