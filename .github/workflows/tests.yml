@@ -15,15 +15,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        exclude:
+        exclude:  # run only latest Python on Windows and macOS
           - os: macos-latest
             python-version: '3.8'
           - os: macos-latest
             python-version: '3.9'
           - os: macos-latest
-            python-version: '3.11'
+            python-version: '3.10'
           - os: macos-latest
-            python-version: '3.12'
+            python-version: '3.11'
 
           - os: windows-latest
             python-version: '3.8'
@@ -33,8 +33,6 @@ jobs:
             python-version: '3.10'
           - os: windows-latest
             python-version: '3.11'
-          - os: windows-latest
-            python-version: '3.12'
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -68,12 +66,14 @@ jobs:
   cli:
     name: CLI smoke tests
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: '3.12'
 
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Checkout repository
         uses: actions/checkout@v4
