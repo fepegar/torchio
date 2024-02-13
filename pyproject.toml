@@ -5,6 +5,6 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-preview = true
-skip-string-normalization = 1
+preview = false
+skip-string-normalization = true
 target-version = ['py311']
