@@ -1,15 +1,15 @@
-"""The `Information eXtraction from Images (IXI)`_ dataset contains "nearly 600
-MR images from normal, healthy subjects", including "T1, T2 and PD-weighted
-images, MRA images and Diffusion-weighted images (15 directions)".
+"""The `Information eXtraction from Images (IXI) <https://brain-development.org/ixi-dataset/>`_
+dataset contains "nearly 600 MR images from normal, healthy subjects",
+including "T1, T2 and PD-weighted images, MRA images and Diffusion-weighted
+images (15 directions)".
 
 .. note ::
     This data is made available under the
     Creative Commons CC BY-SA 3.0 license.
     If you use it please acknowledge the source of the IXI data, e.g.
     `the IXI website <https://brain-development.org/ixi-dataset/>`_.
+"""
 
-.. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/
-"""  # noqa: B950
 # Adapted from
 # https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 import shutil
@@ -174,6 +174,7 @@ class IXITiny(SubjectsDataset):
 
     .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
     """  # noqa: B950
+
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'
 

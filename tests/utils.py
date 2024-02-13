@@ -23,14 +23,12 @@ class TorchioTestCase(unittest.TestCase):
         random.seed(42)
         np.random.seed(42)
 
-        registration_matrix = np.array(
-            [
-                [1, 0, 0, 10],
-                [0, 1, 0, 0],
-                [0, 0, 1.2, 0],
-                [0, 0, 0, 1],
-            ]
-        )
+        registration_matrix = np.array([
+            [1, 0, 0, 10],
+            [0, 1, 0, 0],
+            [0, 0, 1.2, 0],
+            [0, 0, 0, 1],
+        ])
 
         subject_a = tio.Subject(
             t1=tio.ScalarImage(self.get_image_path('t1_a')),

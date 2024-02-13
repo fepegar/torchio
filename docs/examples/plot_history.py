@@ -7,6 +7,7 @@ during training. This can be done in TorchIO using
 :func:`torchio.utils.history_collate` for the data loader. The transforms
 history can be saved during training to check what was applied.
 """
+
 import pprint
 
 import matplotlib.pyplot as plt
@@ -20,15 +21,13 @@ subject = tio.datasets.FPG()
 subject.remove_image('seg')
 subjects = 4 * [subject]
 
-transform = tio.Compose(
-    (
-        tio.ToCanonical(),
-        tio.RandomGamma(p=0.75),
-        tio.RandomBlur(p=0.5),
-        tio.RandomFlip(),
-        tio.RescaleIntensity(out_min_max=(-1, 1)),
-    )
-)
+transform = tio.Compose((
+    tio.ToCanonical(),
+    tio.RandomGamma(p=0.75),
+    tio.RandomBlur(p=0.5),
+    tio.RandomFlip(),
+    tio.RescaleIntensity(out_min_max=(-1, 1)),
+))
 
 dataset = tio.SubjectsDataset(subjects, transform=transform)
 

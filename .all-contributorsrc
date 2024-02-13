@@ -24,7 +24,8 @@
         "ideas",
         "review",
         "code",
-        "question"
+        "question",
+        "bug"
       ]
     },
     {
@@ -647,7 +648,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/56117447?v=4",
       "profile": "https://github.com/mueller-franzes",
       "contributions": [
-        "code"
+        "code",
+        "bug"
       ]
     },
     {
@@ -684,7 +686,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/70891565?v=4",
       "profile": "https://github.com/nicoloesch",
       "contributions": [
-        "code"
+        "code",
+        "bug"
       ]
     },
     {
@@ -730,6 +733,33 @@
       "profile": "https://github.com/blakedewey",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "haughty-yeon",
+      "name": "Doyeon Kim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84639487?v=4",
+      "profile": "https://github.com/haughty-yeon",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "KonoMaxi",
+      "name": "KonoMaxi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13138999?v=4",
+      "profile": "https://github.com/KonoMaxi",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "lchauvin",
+      "name": "Laurent Chauvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1707237?v=4",
+      "profile": "http://www.etsmtl.ca",
+      "contributions": [
+        "bug"
       ]
     }
   ],

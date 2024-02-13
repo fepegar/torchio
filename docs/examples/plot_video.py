@@ -7,6 +7,7 @@ size of the clip (height and width) by two and
 ``RandomAffine(degrees=(0, 0, 20))`` to rotate a maximum of 20 degrees around
 the time axis.
 """
+
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
@@ -55,12 +56,10 @@ plt.plot()
 image = tio.ScalarImage(tensor=array, delay=delay)
 original_animation = plot_gif(image)
 
-transform = tio.Compose(
-    (
-        tio.Resample((2, 2, 1)),
-        tio.RandomAffine(degrees=(0, 0, 20)),
-    )
-)
+transform = tio.Compose((
+    tio.Resample((2, 2, 1)),
+    tio.RandomAffine(degrees=(0, 0, 20)),
+))
 
 torch.manual_seed(0)
 transformed = transform(image)
