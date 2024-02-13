@@ -273,10 +273,12 @@ class Subject(dict):
                 )
                 if not all_close:
                     message = message.format(
-                        pprint.pformat({
-                            first_image: first_attribute,
-                            image_name: current_attribute,
-                        }),
+                        pprint.pformat(
+                            {
+                                first_image: first_attribute,
+                                image_name: current_attribute,
+                            }
+                        ),
                     )
                     raise RuntimeError(message)
         except TypeError:

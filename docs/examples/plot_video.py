@@ -56,10 +56,12 @@ plt.plot()
 image = tio.ScalarImage(tensor=array, delay=delay)
 original_animation = plot_gif(image)
 
-transform = tio.Compose((
-    tio.Resample((2, 2, 1)),
-    tio.RandomAffine(degrees=(0, 0, 20)),
-))
+transform = tio.Compose(
+    (
+        tio.Resample((2, 2, 1)),
+        tio.RandomAffine(degrees=(0, 0, 20)),
+    )
+)
 
 torch.manual_seed(0)
 transformed = transform(image)
