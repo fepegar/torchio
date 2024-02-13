@@ -181,11 +181,13 @@ class Image(dict):
 
     def __repr__(self):
         properties = []
-        properties.extend([
-            f'shape: {self.shape}',
-            f'spacing: {self.get_spacing_string()}',
-            f'orientation: {"".join(self.orientation)}+',
-        ])
+        properties.extend(
+            [
+                f'shape: {self.shape}',
+                f'spacing: {self.get_spacing_string()}',
+                f'orientation: {"".join(self.orientation)}+',
+            ]
+        )
         if self._loaded:
             properties.append(f'dtype: {self.data.type()}')
             natural = humanize.naturalsize(self.memory, binary=True)
