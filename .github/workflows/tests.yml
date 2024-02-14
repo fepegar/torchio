@@ -59,6 +59,7 @@ jobs:
             tox -e py
           else
             tox -e py -- -m "no slow"
+          fi
 
       - name: Upload coverage reports to Codecov
         run: |
