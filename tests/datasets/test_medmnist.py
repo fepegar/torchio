@@ -20,6 +20,7 @@ classes = (
 )
 
 
+@pytest.mark.slow
 @pytest.mark.skipif('CI' in os.environ, reason='Unstable on GitHub Actions')
 @pytest.mark.parametrize('class_', classes)
 @pytest.mark.parametrize('split', ('train', 'val', 'test'))
