@@ -59,7 +59,7 @@ jobs:
           if [ "${{ github.event_name }}" == "schedule" ]; then
             tox -e py
           else
-            tox -e py -- -m "no slow"
+            tox -e py -- -m "not slow"
           fi
         shell: bash  # so it doesn't fail on Windows
 
