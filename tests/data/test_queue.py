@@ -1,6 +1,9 @@
-from parameterized import parameterized
+import sys
+
+import pytest
 import torch
 import torchio as tio
+from parameterized import parameterized
 from torch.utils.data import DataLoader
 from torchio.data import UniformSampler
 from torchio.utils import create_dummy_dataset
@@ -43,6 +46,7 @@ class TestQueue(TorchioTestCase):
     def test_queue(self):
         self.run_queue(num_workers=0)
 
+    @pytest.mark.skipif(sys.platform == 'darwin', reason='Takes too long on macOS')
     def test_queue_multiprocessing(self):
         self.run_queue(num_workers=2)
 

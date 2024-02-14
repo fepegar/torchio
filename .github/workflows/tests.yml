@@ -54,7 +54,11 @@ jobs:
         run: pip install tox
 
       - name: Run unit tests
-        run: tox -e py
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            tox -e py
+          else
+            tox -e py -- -m "no slow"
 
       - name: Upload coverage reports to Codecov
         run: |
