@@ -57,6 +57,7 @@ jobs:
         run: tox -e py
 
       - name: Upload coverage reports to Codecov
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' }}
         run: |
           OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
           curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
