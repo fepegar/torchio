@@ -53,6 +53,7 @@ jobs:
       - name: Install tox
         run: pip install tox
 
+      # Run all tests on schedule, but only non-slow tests on push
       - name: Run unit tests
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
@@ -60,6 +61,7 @@ jobs:
           else
             tox -e py -- -m "no slow"
           fi
+        shell: bash  # so it doesn't fail on Windows
 
       - name: Upload coverage reports to Codecov
         run: |
