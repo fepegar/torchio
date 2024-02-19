@@ -55,7 +55,7 @@ class SequentialLabels(LabelTransform):
             transform = RemapLabels(
                 remapping=remapping,
                 masking_method=self.masking_method,
-                include=name,
+                include=[name],
             )
             subject = transform(subject)
         return subject
