@@ -516,7 +516,7 @@ class Image(dict):
         return affine.astype(np.float64)
 
     @staticmethod
-    def _is_paths_sequence(path: Union[TypePath, Sequence[TypePath]]) -> bool:
+    def _is_paths_sequence(path: Union[TypePath, Sequence[TypePath], None]) -> bool:
         is_not_string = not isinstance(path, str)
         return is_not_string and is_iterable(path)
 
@@ -530,6 +530,7 @@ class Image(dict):
         elif self.path is None:
             return False
         else:
+            assert isinstance(self.path, Path)
             return self.path.is_dir()
 
     def load(self) -> None:
