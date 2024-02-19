@@ -34,6 +34,7 @@ from ..typing import TypeTripletFloat
 from ..typing import TypeTripletInt
 from ..utils import get_stem
 from ..utils import guess_external_viewer
+from ..utils import is_iterable
 from .io import check_uint_to_int
 from .io import ensure_4d
 from .io import get_rotation_and_spacing_from_affine
@@ -515,18 +516,14 @@ class Image(dict):
         return affine.astype(np.float64)
 
     @staticmethod
-    def _is_paths_sequence(path):
-        is_string = isinstance(path, str)
-        try:
-            is_iterable = iter(path)
-        except TypeError:
-            is_iterable = False
-        return is_iterable and not is_string
+    def _is_paths_sequence(path: Union[TypePath, Sequence[TypePath]]) -> bool:
+        is_not_string = not isinstance(path, str)
+        return is_not_string and is_iterable(path)
 
-    def _is_multipath(self):
+    def _is_multipath(self) -> bool:
         return self._is_paths_sequence(self.path)
 
-    def _is_dir(self):
+    def _is_dir(self) -> bool:
         is_sequence = self._is_multipath()
         if is_sequence:
             return False

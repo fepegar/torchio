@@ -375,3 +375,8 @@ class TestTransform(TorchioTestCase):
         tensor = torch.rand(1, 2, 3)
         with pytest.raises(ValueError, match='must be a 4D tensor'):
             tio.RandomAffine()(tensor)
+
+    def test_bad_keys_type(self):
+        # From https://github.com/fepegar/torchio/issues/923
+        with self.assertRaises(ValueError):
+            tio.RandomAffine(include='t1')
