@@ -674,8 +674,8 @@ class Image(dict):
         tensor = self.data
         if len(tensor) == 1:
             tensor = torch.cat(3 * [tensor])
-        if len(tensor) != 3:
-            raise RuntimeError('The image must have 1 or 3 channels')
+        if not (len(tensor) == 3 or len(tensor) == 4):
+            raise RuntimeError('The image must have 1, 3 or 4 channels')
         if transpose:
             tensor = tensor.permute(3, 2, 1, 0)
         else:
