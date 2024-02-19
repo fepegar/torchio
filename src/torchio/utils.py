@@ -404,9 +404,9 @@ def normalize_path(path: TypePath):
     return Path(path).expanduser().resolve()
 
 
-def is_iterable(obj: object) -> bool:
+def is_iterable(object: Any) -> bool:
     try:
-        iter(obj)
+        iter(object)
         return True
     except TypeError:
         return False
