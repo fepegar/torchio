@@ -686,7 +686,7 @@ class Image(dict):
     def to_gif(
         self,
         axis: int,
-        duration: float,  # of full gif
+        duration: float,  # of full gif 
         output_path: TypePath,
         loop: int = 0,
         rescale: bool = True,
