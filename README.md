@@ -401,6 +401,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/KonoMaxi"><img src="https://avatars.githubusercontent.com/u/13138999?v=4?s=100" width="100px;" alt="KonoMaxi"/><br /><sub><b>KonoMaxi</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AKonoMaxi" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.etsmtl.ca"><img src="https://avatars.githubusercontent.com/u/1707237?v=4?s=100" width="100px;" alt="Laurent Chauvin"/><br /><sub><b>Laurent Chauvin</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Alchauvin" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://christianhinge.com"><img src="https://avatars.githubusercontent.com/u/17361630?v=4?s=100" width="100px;" alt="Christian Hinge"/><br /><sub><b>Christian Hinge</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3AChristianHinge" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zzz123xyz"><img src="https://avatars.githubusercontent.com/u/2671968?v=4?s=100" width="100px;" alt="zzz123xyz"/><br /><sub><b>zzz123xyz</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Azzz123xyz" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
