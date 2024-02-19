@@ -672,10 +672,12 @@ class Image(dict):
 
         self.check_is_2d()
         tensor = self.data
+        if len(tensor) not in (1, 3, 4):
+            raise NotImplementedError(
+                'Only 1, 3 or 4 channels are supported for conversion to Pillow image'
+            )
         if len(tensor) == 1:
             tensor = torch.cat(3 * [tensor])
-        if len(tensor) != 3:
-            raise RuntimeError('The image must have 1 or 3 channels')
         if transpose:
             tensor = tensor.permute(3, 2, 1, 0)
         else:
