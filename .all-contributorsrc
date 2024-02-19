@@ -761,6 +761,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "ChristianHinge",
+      "name": "Christian Hinge",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17361630?v=4",
+      "profile": "http://christianhinge.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
