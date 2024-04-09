@@ -70,6 +70,10 @@ class RandomAffine(RandomTransform, SpatialTransform):
             10 mm to the back, 20 mm downwards, and 30 mm to the right.
         isotropic: If ``True``, the scaling factor along all dimensions is the
             same, i.e. :math:`s_1 = s_2 = s_3`.
+            If one value provided in :attr:`scales`, the scaling factor will be 
+            :math:`s_i \sim \mathcal{U}(1 - x, 1 + x)`.
+            If two values provided in :attr:`scales`, the scaling factor will be 
+            :math:`s_i \sim \mathcal{U}(x_1, x_2)`.
         center: If ``'image'``, rotations and scaling will be performed around
             the image center. If ``'origin'``, rotations and scaling will be
             performed around the origin in world coordinates.
@@ -442,7 +446,9 @@ def _parse_scales_isotropic(scales, isotropic):
     if isotropic and len(scales) in (3, 6):
         message = (
             'If "isotropic" is True, the value for "scales" must have'
-            f' length 1 or 2, but "{scales}" was passed'
+            f' length 1 or 2, but "{scales}" was passed.'
+            ' If you want to set isotropic scaling, use a single value or two values as a range for scaling factor.'
+            ' Refer to the documentation for more information.'
         )
         raise ValueError(message)
 
