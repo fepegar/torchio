@@ -68,12 +68,12 @@ class RandomAffine(RandomTransform, SpatialTransform):
             10 mm to the right, 20 mm to the front, and 30 mm upwards.
             If the image was in, e.g., PIR+ orientation, the sample will move
             10 mm to the back, 20 mm downwards, and 30 mm to the right.
-        isotropic: If ``True``, the scaling factor along all dimensions is the
-            same, i.e. :math:`s_1 = s_2 = s_3`.
-            If one value provided in :attr:`scales`, the scaling factor will be
-            :math:`s_i \sim \mathcal{U}(1 - x, 1 + x)`.
-            If two values provided in :attr:`scales`, the scaling factor will be
-            :math:`s_i \sim \mathcal{U}(x_1, x_2)`.
+        isotropic: If ``True``, only one scaling factor will be sampled for all dimensions,
+            i.e. :math:`s_1 = s_2 = s_3`.
+            If one value :math:`x` is provided in :attr:`scales`, the scaling factor along all
+            dimensions will be :math:`s \sim \mathcal{U}(1 - x, 1 + x)`.
+            If two values provided :math:`(a, b)` in :attr:`scales`, the scaling factor along all
+            dimensions will be :math:`s \sim \mathcal{U}(a, b)`.
         center: If ``'image'``, rotations and scaling will be performed around
             the image center. If ``'origin'``, rotations and scaling will be
             performed around the origin in world coordinates.
