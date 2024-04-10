@@ -448,7 +448,7 @@ def _parse_scales_isotropic(scales, isotropic):
             'If "isotropic" is True, the value for "scales" must have'
             f' length 1 or 2, but "{scales}" was passed.'
             ' If you want to set isotropic scaling, use a single value or two values as a range'
-            ' for scaling factor. Refer to the documentation for more information.'
+            ' for the scaling factor. Refer to the documentation for more information.'
         )
         raise ValueError(message)
 
