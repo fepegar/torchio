@@ -26,6 +26,7 @@ from ..typing import TypeKeys
 from ..typing import TypeNumber
 from ..typing import TypeTripletInt
 from ..utils import to_tuple
+from ..utils import is_iterable
 from .data_parser import DataParser
 from .data_parser import TypeTransformInput
 from .interpolation import get_sitk_interpolator
@@ -100,7 +101,7 @@ class Transform(ABC):
         keys: TypeKeys = None,
         keep: Optional[Dict[str, str]] = None,
         parse_input: bool = True,
-        label_keys: Optional[Sequence[str]] = None,
+        label_keys: TypeKeys = None,
     ):
         self.probability = self.parse_probability(p)
         self.copy = copy
@@ -111,9 +112,10 @@ class Transform(ABC):
             )
             warnings.warn(message, DeprecationWarning, stacklevel=2)
             include = keys
-        self.include, self.exclude = self.parse_include_and_exclude(
+        self.include, self.exclude = self.parse_include_and_exclude_keys(
             include,
             exclude,
+            label_keys,
         )
         self.keep = keep
         self.parse_input = parse_input
@@ -371,13 +373,29 @@ class Transform(ABC):
         return probability
 
     @staticmethod
-    def parse_include_and_exclude(
-        include: TypeKeys = None,
-        exclude: TypeKeys = None,
+    def parse_include_and_exclude_keys(
+        include: TypeKeys,
+        exclude: TypeKeys,
+        label_keys: TypeKeys,
     ) -> Tuple[TypeKeys, TypeKeys]:
         if include is not None and exclude is not None:
             raise ValueError('Include and exclude cannot both be specified')
+        Transform.validate_keys_sequence(include, 'include')
+        Transform.validate_keys_sequence(exclude, 'exclude')
+        Transform.validate_keys_sequence(label_keys, 'label_keys')
         return include, exclude
+
+    @staticmethod
+    def validate_keys_sequence(keys: TypeKeys, name: str) -> None:
+        """Ensure that the input is not a string but a sequence of strings."""
+        if keys is None:
+            return
+        if isinstance(keys, str):
+            message = f'"{name}" must be a sequence of strings, not a string "{keys}"'
+            raise ValueError(message)
+        if not is_iterable(keys):
+            message = f'"{name}" must be a sequence of strings, not {type(keys)}'
+            raise ValueError(message)
 
     @staticmethod
     def nib_to_sitk(data: TypeData, affine: TypeData) -> sitk.Image:

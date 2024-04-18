@@ -16,8 +16,8 @@ subject = tio.datasets.Pediatric(years=(4.5, 8.5))
 subject.plot()
 transform = tio.Compose(
     [
-        tio.RandomAffine(degrees=(20, 30), exclude='t1'),
-        tio.RandomBlur(std=(3, 4), include='t2'),
+        tio.RandomAffine(degrees=(20, 30), exclude=['t1']),
+        tio.RandomBlur(std=(3, 4), include=['t2']),
     ]
 )
 transformed = transform(subject)

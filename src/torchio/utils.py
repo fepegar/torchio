@@ -402,3 +402,11 @@ def parse_spatial_shape(shape):
 
 def normalize_path(path: TypePath):
     return Path(path).expanduser().resolve()
+
+
+def is_iterable(object: Any) -> bool:
+    try:
+        iter(object)
+        return True
+    except TypeError:
+        return False
