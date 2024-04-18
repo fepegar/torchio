@@ -68,8 +68,12 @@ class RandomAffine(RandomTransform, SpatialTransform):
             10 mm to the right, 20 mm to the front, and 30 mm upwards.
             If the image was in, e.g., PIR+ orientation, the sample will move
             10 mm to the back, 20 mm downwards, and 30 mm to the right.
-        isotropic: If ``True``, the scaling factor along all dimensions is the
-            same, i.e. :math:`s_1 = s_2 = s_3`.
+        isotropic: If ``True``, only one scaling factor will be sampled for all dimensions,
+            i.e. :math:`s_1 = s_2 = s_3`.
+            If one value :math:`x` is provided in :attr:`scales`, the scaling factor along all
+            dimensions will be :math:`s \sim \mathcal{U}(1 - x, 1 + x)`.
+            If two values provided :math:`(a, b)` in :attr:`scales`, the scaling factor along all
+            dimensions will be :math:`s \sim \mathcal{U}(a, b)`.
         center: If ``'image'``, rotations and scaling will be performed around
             the image center. If ``'origin'``, rotations and scaling will be
             performed around the origin in world coordinates.
@@ -442,7 +446,9 @@ def _parse_scales_isotropic(scales, isotropic):
     if isotropic and len(scales) in (3, 6):
         message = (
             'If "isotropic" is True, the value for "scales" must have'
-            f' length 1 or 2, but "{scales}" was passed'
+            f' length 1 or 2, but "{scales}" was passed.'
+            ' If you want to set isotropic scaling, use a single value or two values as a range'
+            ' for the scaling factor. Refer to the documentation for more information.'
         )
         raise ValueError(message)
 
