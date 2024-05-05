@@ -15,6 +15,7 @@ TypeNumber = Union[int, float]
 TypeKeys = Optional[Sequence[str]]
 TypeData = Union[torch.Tensor, np.ndarray]
 TypeDataAffine = Tuple[torch.Tensor, np.ndarray]
+TypeSlice = Union[int, slice]
 
 TypeDoubletInt = Tuple[int, int]
 TypeTripletInt = Tuple[int, int, int]

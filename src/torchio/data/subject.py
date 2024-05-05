@@ -77,6 +77,23 @@ class Subject(dict):
     def __len__(self):
         return len(self.get_images(intensity_only=False))
 
+    def __getitem__(self, item):
+        if isinstance(item, (slice, int, tuple)):
+            try:
+                self.check_consistent_spatial_shape()
+            except RuntimeError as e:
+                message = (
+                    'To use indexing, all images in the subject must have the'
+                    ' same spatial shape'
+                )
+                raise RuntimeError(message) from e
+            copied = copy.deepcopy(self)
+            for image_name, image in copied.items():
+                copied[image_name] = image[item]
+            return copied
+        else:
+            return super().__getitem__(item)
+
     @staticmethod
     def _parse_images(images: List[Image]) -> None:
         # Check that it's not empty
