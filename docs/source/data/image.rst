@@ -22,6 +22,10 @@ instantiation time.
 Instead, the data is only loaded when needed for an operation
 (e.g., if a transform is applied to the image).
 
+Images can be sliced using the standard NumPy / PyTorch slicing syntax.
+This operation updates the coordinates origin in the affine matrix
+correspondingly.
+
 The figure below shows two instances of :class:`Image`.
 The instance of :class:`ScalarImage` contains a 4D tensor representing a
 diffusion MRI, which contains four 3D volumes (one per gradient direction),
