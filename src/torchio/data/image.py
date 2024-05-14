@@ -804,11 +804,12 @@ class Image(dict):
                 message = 'Ellipsis slicing is not supported yet'
                 raise NotImplementedError(message)
             elif isinstance(slice_, int):
-                slice_ = slice(slice_, slice_ + 1)
+                slice_ = slice(slice_, slice_ + 1)  # type: ignore[assignment]
             else:
                 message = f'Slice type not understood: "{type(slice_)}"'
                 raise TypeError(message)
             shape_dim = self.spatial_shape[dim]
+            assert isinstance(slice_, slice)
             start, stop, step = slice_.indices(shape_dim)
             if step != 1:
                 message = (
