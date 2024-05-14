@@ -404,6 +404,9 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zzz123xyz"><img src="https://avatars.githubusercontent.com/u/2671968?v=4?s=100" width="100px;" alt="zzz123xyz"/><br /><sub><b>zzz123xyz</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Azzz123xyz" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://aminalam.info"><img src="https://avatars.githubusercontent.com/u/50844047?v=4?s=100" width="100px;" alt="Amin Alam"/><br /><sub><b>Amin Alam</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=AminAlam" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/marius-sm"><img src="https://avatars.githubusercontent.com/u/40166021?v=4?s=100" width="100px;" alt="marius-sm"/><br /><sub><b>marius-sm</b></sub></a><br /><a href="#ideas-marius-sm" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
   </tbody>
 </table>
 
