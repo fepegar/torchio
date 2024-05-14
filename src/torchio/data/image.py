@@ -790,18 +790,24 @@ class Image(dict):
             image_viewer.Execute(sitk_image)
 
     def _crop_from_slices(
-        self, slices: Union[TypeSlice, Tuple[TypeSlice, ...]]
+        self,
+        slices: Union[TypeSlice, Tuple[TypeSlice, ...]],
     ) -> 'Image':
         from ..transforms import Crop
 
-        slices = to_tuple(slices)
+        slices_tuple = to_tuple(slices)  # type: ignore[assignment]
         cropping: List[int] = []
-        for dim, slice_ in enumerate(slices):
-            if slice_ is Ellipsis:
+        for dim, slice_ in enumerate(slices_tuple):
+            if isinstance(slice_, slice):
+                pass
+            elif slice_ is Ellipsis:
                 message = 'Ellipsis slicing is not supported yet'
                 raise NotImplementedError(message)
-            if isinstance(slice_, int):
+            elif isinstance(slice_, int):
                 slice_ = slice(slice_, slice_ + 1)
+            else:
+                message = f'Slice type not understood: "{type(slice_)}"'
+                raise TypeError(message)
             shape_dim = self.spatial_shape[dim]
             start, stop, step = slice_.indices(shape_dim)
             if step != 1:
@@ -816,7 +822,9 @@ class Image(dict):
         while dim < 2:
             cropping.extend([0, 0])
             dim += 1
-        return Crop(cropping)(self)
+        w_ini, w_fin, h_ini, h_fin, d_ini, d_fin = cropping
+        cropping_arg = w_ini, w_fin, h_ini, h_fin, d_ini, d_fin  # making mypy happy
+        return Crop(cropping_arg)(self)  # type: ignore[return-value]
 
 
 class ScalarImage(Image):

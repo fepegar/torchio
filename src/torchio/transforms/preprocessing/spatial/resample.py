@@ -158,14 +158,17 @@ class Resample(SpatialTransform):
             self.check_affine_key_presence(self.pre_affine_name, subject)
 
         for image in self.get_images(subject):
-            # Do not resample the reference image if it is in the subject
+            # If the current image is the reference, don't resample it
             if self.target is image:
                 continue
+
+            # If the target is not a string, or is not an image in the subject,
+            # do nothing
             try:
                 target_image = subject[self.target]
                 if target_image is image:
                     continue
-            except (KeyError, TypeError):
+            except (KeyError, TypeError, RuntimeError):
                 pass
 
             # Choose interpolation
