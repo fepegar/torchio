@@ -283,3 +283,27 @@ class TestImage(TorchioTestCase):
         new_image = copy.copy(my_image)
         assert my_image._loaded
         assert new_image._loaded
+
+    def test_slicing(self):
+        path = self.get_image_path('im_slicing')
+        image = tio.ScalarImage(path)
+
+        assert image.shape == (1, 10, 20, 30)
+
+        cropped = image[0]
+        assert cropped.shape == (1, 1, 20, 30)
+
+        cropped = image[:, 2:-3]
+        assert cropped.shape == (1, 10, 15, 30)
+
+        cropped = image[-5:, 5:]
+        assert cropped.shape == (1, 5, 15, 30)
+
+        with pytest.raises(NotImplementedError):
+            image[..., 5]
+
+        with pytest.raises(ValueError):
+            image[0:8:-1]
+
+        with pytest.raises(ValueError):
+            image[3::-1]

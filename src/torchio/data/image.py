@@ -30,9 +30,11 @@ from ..typing import TypeDataAffine
 from ..typing import TypeDirection3D
 from ..typing import TypePath
 from ..typing import TypeQuartetInt
+from ..typing import TypeSlice
 from ..typing import TypeTripletFloat
 from ..typing import TypeTripletInt
 from ..utils import get_stem
+from ..utils import to_tuple
 from ..utils import guess_external_viewer
 from ..utils import is_iterable
 from .io import check_uint_to_int
@@ -201,6 +203,9 @@ class Image(dict):
         return string
 
     def __getitem__(self, item):
+        if isinstance(item, (slice, int, tuple)):
+            return self._crop_from_slices(item)
+
         if item in (DATA, AFFINE):
             if item not in self:
                 self.load()
@@ -783,6 +788,44 @@ class Image(dict):
                 raise RuntimeError(message) from e
             image_viewer.SetApplication(str(viewer_path))
             image_viewer.Execute(sitk_image)
+
+    def _crop_from_slices(
+        self,
+        slices: Union[TypeSlice, Tuple[TypeSlice, ...]],
+    ) -> 'Image':
+        from ..transforms import Crop
+
+        slices_tuple = to_tuple(slices)  # type: ignore[assignment]
+        cropping: List[int] = []
+        for dim, slice_ in enumerate(slices_tuple):
+            if isinstance(slice_, slice):
+                pass
+            elif slice_ is Ellipsis:
+                message = 'Ellipsis slicing is not supported yet'
+                raise NotImplementedError(message)
+            elif isinstance(slice_, int):
+                slice_ = slice(slice_, slice_ + 1)  # type: ignore[assignment]
+            else:
+                message = f'Slice type not understood: "{type(slice_)}"'
+                raise TypeError(message)
+            shape_dim = self.spatial_shape[dim]
+            assert isinstance(slice_, slice)
+            start, stop, step = slice_.indices(shape_dim)
+            if step != 1:
+                message = (
+                    'Slicing with steps different from 1 is not supported yet.'
+                    ' Use the Crop transform instead'
+                )
+                raise ValueError(message)
+            crop_ini = start
+            crop_fin = shape_dim - stop
+            cropping.extend([crop_ini, crop_fin])
+        while dim < 2:
+            cropping.extend([0, 0])
+            dim += 1
+        w_ini, w_fin, h_ini, h_fin, d_ini, d_fin = cropping
+        cropping_arg = w_ini, w_fin, h_ini, h_fin, d_ini, d_fin  # making mypy happy
+        return Crop(cropping_arg)(self)  # type: ignore[return-value]
 
 
 class ScalarImage(Image):
