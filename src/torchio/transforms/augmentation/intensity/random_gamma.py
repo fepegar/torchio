@@ -38,7 +38,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         :class:`~torchio.transforms.RescaleIntensity`
         transform may be used to ensure that all values are positive. This is
         generally not problematic, but it is recommended to visualize results
-        on image with negative values. More information can be found on
+        on images with negative values. More information can be found on
         `this StackExchange question`_.
 
         .. _this StackExchange question: https://math.stackexchange.com/questions/317528/how-do-you-compute-negative-numbers-to-fractional-powers

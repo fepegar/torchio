@@ -5,6 +5,12 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-preview = true
-skip-string-normalization = 1
+preview = false
+skip-string-normalization = true
 target-version = ['py311']
+
+[tool.pytest.ini_options]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "serial",
+]

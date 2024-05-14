@@ -4,6 +4,7 @@ be missing for some of the subjects, as in.
 Dorent et al. 2019, Hetero-Modal Variational Encoder-Decoder for Joint
 Modality Completion and Segmentation
 """
+
 import logging
 
 import torch.nn as nn

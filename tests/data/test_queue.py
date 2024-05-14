@@ -1,6 +1,9 @@
-from parameterized import parameterized
+import sys
+
+import pytest
 import torch
 import torchio as tio
+from parameterized import parameterized
 from torch.utils.data import DataLoader
 from torchio.data import UniformSampler
 from torchio.utils import create_dummy_dataset
@@ -43,6 +46,7 @@ class TestQueue(TorchioTestCase):
     def test_queue(self):
         self.run_queue(num_workers=0)
 
+    @pytest.mark.skipif(sys.platform == 'darwin', reason='Takes too long on macOS')
     def test_queue_multiprocessing(self):
         self.run_queue(num_workers=2)
 
@@ -63,10 +67,11 @@ class TestQueue(TorchioTestCase):
             max_length=max_length,
             samples_per_volume=3,  # should be ignored
             sampler=sampler,
+            shuffle_patches=False,
         )
         batch_loader = DataLoader(queue_dataset, batch_size=6)
-        batches = [batch['im'][tio.DATA] for batch in batch_loader]
-        all_numbers = torch.stack(batches).flatten().tolist()
+        tensors = [batch['im'][tio.DATA] for batch in batch_loader]
+        all_numbers = torch.stack(tensors).flatten().tolist()
         assert all_numbers.count(10) == 10
         assert all_numbers.count(2) == 2
 

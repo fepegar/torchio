@@ -52,6 +52,7 @@ class TestSubject(TorchioTestCase):
         with pytest.raises(RuntimeError):
             subject.spatial_shape
 
+    @pytest.mark.slow
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot(self):
         self.sample_subject.plot(
@@ -63,6 +64,7 @@ class TestSubject(TorchioTestCase):
             },
         )
 
+    @pytest.mark.slow
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot_one_image(self):
         path = self.get_image_path('t1_plot')

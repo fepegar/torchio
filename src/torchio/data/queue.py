@@ -215,10 +215,8 @@ class Queue(Dataset):
 
         if self.shuffle_subjects and self.subject_sampler is not None:
             raise ValueError(
-                (
-                    'The flag shuffle_subjects cannot be set'
-                    ' when a subject sampler is passed'
-                ),
+                'The flag shuffle_subjects cannot be set'
+                ' when a subject sampler is passed',
             )
 
     def __len__(self):
@@ -259,7 +257,16 @@ class Queue(Dataset):
 
     @property
     def num_subjects(self) -> int:
-        return len(self.subjects_dataset)
+        if self.subject_sampler is not None:
+            if not hasattr(self.subject_sampler, '__len__'):
+                raise ValueError(
+                    'The subject sampler passed to the queue must have a'
+                    ' __len__ method',
+                )
+            num_subjects = len(self.subject_sampler)  # type: ignore[arg-type]
+        else:
+            num_subjects = len(self.subjects_dataset)
+        return num_subjects
 
     @property
     def num_patches(self) -> int:
@@ -267,9 +274,17 @@ class Queue(Dataset):
 
     @property
     def iterations_per_epoch(self) -> int:
+        all_subjects_list = self.subjects_dataset.dry_iter()
+        if self.subject_sampler is not None:
+            subjects_list = []
+            for subject_index in self.subject_sampler:
+                subject = all_subjects_list[subject_index]
+                subjects_list.append(subject)
+        else:
+            subjects_list = all_subjects_list
+
         total_num_patches = sum(
-            self._get_subject_num_samples(subject)
-            for subject in self.subjects_dataset.dry_iter()
+            self._get_subject_num_samples(subject) for subject in subjects_list
         )
         return total_num_patches
 
@@ -330,6 +345,7 @@ class Queue(Dataset):
                     ' patches from the queue should be 0. Is it?'
                 )
                 raise RuntimeError(message) from exception
+            raise exception
         return subject
 
     @staticmethod

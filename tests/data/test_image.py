@@ -137,6 +137,7 @@ class TestImage(TorchioTestCase):
         assert image.height == image.shape[height_idx]
         assert image.width == image.shape[width_idx]
 
+    @pytest.mark.slow
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
     def test_plot(self):
         image = self.sample_subject.t1
@@ -216,6 +217,7 @@ class TestImage(TorchioTestCase):
         with tempfile.NamedTemporaryFile(suffix='.gif', delete=False) as f:
             tio.ScalarImage(tensor=torch.rand(3, 4, 5, 6)).to_gif(0, 1, f.name)
 
+    @pytest.mark.slow
     def test_hist(self):
         self.sample_subject.t1.hist(density=False, show=False)
         self.sample_subject.t1.hist(density=True, show=False)

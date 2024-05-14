@@ -30,7 +30,7 @@ class TestGridSampler(TorchioTestCase):
         assert locations == fixture
 
     def test_generate_patches(self):
-        patch_size = 1, 2, 3
+        patch_size = 5, 15, 15
         sampler = tio.GridSampler(self.sample_subject, patch_size)
         for patch in sampler():
             assert patch.spatial_shape == patch_size

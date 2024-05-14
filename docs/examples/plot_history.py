@@ -7,6 +7,7 @@ during training. This can be done in TorchIO using
 :func:`torchio.utils.history_collate` for the data loader. The transforms
 history can be saved during training to check what was applied.
 """
+
 import pprint
 
 import matplotlib.pyplot as plt
