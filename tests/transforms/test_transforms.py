@@ -17,6 +17,9 @@ class TestTransforms(TorchioTestCase):
         landmarks_dict = {channel: np.linspace(0, 100, 13) for channel in channels}
         disp = 1 if is_3d else (1, 1, 0.01)
         elastic = tio.RandomElasticDeformation(max_displacement=disp)
+        affine_elastic = tio.RandomCombinedAffineElasticDeformation(
+            elastic_kwargs={'max_displacement': disp}
+        )
         cp_args = (9, 21, 30) if is_3d else (21, 30, 1)
         resize_args = (10, 20, 30) if is_3d else (10, 20, 1)
         flip_axes = axes_downsample = (0, 1, 2) if is_3d else (0, 1)
@@ -46,6 +49,7 @@ class TestTransforms(TorchioTestCase):
             tio.HistogramStandardization(landmarks_dict),
             elastic,
             tio.RandomAffine(),
+            affine_elastic,
             tio.OneOf(
                 {
                     tio.RandomAffine(): 3,
