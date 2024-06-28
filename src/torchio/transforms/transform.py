@@ -9,6 +9,7 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
+from typing import TypeVar
 from typing import Union
 
 import numpy as np
@@ -48,6 +49,8 @@ ANATOMICAL_AXES = (
     'Inferior',
     'Superior',
 )
+
+InputType = TypeVar('InputType', bound=TypeTransformInput)
 
 
 class Transform(ABC):
@@ -127,8 +130,8 @@ class Transform(ABC):
 
     def __call__(
         self,
-        data: TypeTransformInput,
-    ) -> TypeTransformInput:
+        data: InputType,
+    ) -> InputType:
         """Transform data and return a result of the same type.
 
         Args:
