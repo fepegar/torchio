@@ -389,6 +389,37 @@ class Transform(ABC):
         return include, exclude
 
     @staticmethod
+    def parse_axes(
+        axes: Union[int, Tuple[int, ...], str, Tuple[str, ...]],
+    ) -> Union[Tuple[int, ...], Tuple[str, ...]]:
+        axes_tuple = to_tuple(axes)
+        for axis in axes_tuple:
+            valid_number = isinstance(axis, int) and axis in (0, 1, 2)
+            valid_str = isinstance(axis, str) and axis[0].upper() in 'LRAPSITB'
+            if not valid_str and not valid_number:
+                message = (
+                    f'All axes must be 0, 1 or 2 or axis strings, '
+                    f'but found "{axis}" with type {type(axis)}'
+                )
+                raise ValueError(message)
+        return tuple(sorted(set(axes_tuple)))
+
+    @staticmethod
+    def ensure_axes_indices(
+        subject: Subject,
+        axes: Union[Tuple[int, ...], Tuple[str, ...]],
+    ) -> Tuple[int, ...]:
+        image = subject.get_first_image()
+        if any(isinstance(n, str) for n in axes):
+            subject.check_consistent_orientation()
+            axes = tuple(sorted({3 + image.axis_name_to_index(n) for n in axes}))
+        if image.is_2d() and 2 in axes:
+            axes = list(axes)
+            axes.remove(2)
+            axes = tuple(axes)
+        return axes
+
+    @staticmethod
     def validate_keys_sequence(keys: TypeKeys, name: str) -> None:
         """Ensure that the input is not a string but a sequence of strings."""
         if keys is None:
