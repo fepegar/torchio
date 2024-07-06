@@ -166,6 +166,7 @@ class Motion(IntensityTransform, FourierTransform):
         self.times = times
         self.image_interpolation = image_interpolation
         self.args_names = [
+            'axis',
             'degrees',
             'translation',
             'times',
