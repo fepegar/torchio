@@ -52,6 +52,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
 
     def __init__(
         self,
+        axes: Union[int, Tuple[int, ...], str, Tuple[str, ...]] = (0, 1, 2),
         degrees: Union[float, Tuple[float, float]] = 10,
         translation: Union[float, Tuple[float, float]] = 10,  # in mm
         num_transforms: int = 2,
@@ -59,6 +60,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        self.axes = self.parse_axes(axes)
         self.degrees_range = self.parse_degrees(degrees)
         self.translation_range = self.parse_translation(translation)
         if num_transforms < 1 or not isinstance(num_transforms, int):
@@ -75,16 +77,18 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
     def apply_transform(self, subject: Subject) -> Subject:
         arguments: Dict[str, dict] = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
-            params = self.get_params(
+            axes = self.ensure_axes_indices(subject, self.axes)
+            axis, times, degrees, translation = self.get_params(
+                axes,
                 self.degrees_range,
                 self.translation_range,
                 self.num_transforms,
                 is_2d=image.is_2d(),
             )
-            times_params, degrees_params, translation_params = params
-            arguments['times'][name] = times_params
-            arguments['degrees'][name] = degrees_params
-            arguments['translation'][name] = translation_params
+            arguments['axis'][name] = axis
+            arguments['times'][name] = times
+            arguments['degrees'][name] = degrees
+            arguments['translation'][name] = translation
             arguments['image_interpolation'][name] = self.image_interpolation
         transform = Motion(**self.add_include_exclude(arguments))
         transformed = transform(subject)
@@ -93,12 +97,14 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
 
     def get_params(
         self,
+        axes: Tuple[int, ...],
         degrees_range: Tuple[float, float],
         translation_range: Tuple[float, float],
         num_transforms: int,
         perturbation: float = 0.3,
         is_2d: bool = False,
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[int, np.ndarray, np.ndarray, np.ndarray]:
+        axis = axes[torch.randint(0, len(axes), (1,))]
         # If perturbation is 0, time intervals between movements are constant
         degrees_params = self.get_params_array(
             degrees_range,
@@ -117,7 +123,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         noise.uniform_(-step * perturbation, step * perturbation)
         times += noise
         times_params = times.numpy()
-        return times_params, degrees_params, translation_params
+        return axis, times_params, degrees_params, translation_params
 
     @staticmethod
     def get_params_array(nums_range: Tuple[float, float], num_transforms: int):
@@ -144,6 +150,7 @@ class Motion(IntensityTransform, FourierTransform):
 
     def __init__(
         self,
+        axis: Union[int, Dict[str, int]],
         degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
         translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
         times: Union[Sequence[float], Dict[str, Sequence[float]]],
@@ -153,6 +160,7 @@ class Motion(IntensityTransform, FourierTransform):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        self.axis = axis
         self.degrees = degrees
         self.translation = translation
         self.times = times
@@ -165,16 +173,19 @@ class Motion(IntensityTransform, FourierTransform):
         ]
 
     def apply_transform(self, subject: Subject) -> Subject:
+        axis = self.axis
         degrees = self.degrees
         translation = self.translation
         times = self.times
         image_interpolation = self.image_interpolation
         for image_name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
+                assert isinstance(self.axis, dict)
                 assert isinstance(self.degrees, dict)
                 assert isinstance(self.translation, dict)
                 assert isinstance(self.times, dict)
                 assert isinstance(self.image_interpolation, dict)
+                axis = self.axis[image_name]
                 degrees = self.degrees[image_name]
                 translation = self.translation[image_name]
                 times = self.times[image_name]
@@ -196,6 +207,7 @@ class Motion(IntensityTransform, FourierTransform):
                     sitk_image,
                     transforms,
                     np.asarray(times),
+                    axis,
                     image_interpolation,
                 )
                 result_arrays.append(transformed_channel)
@@ -277,6 +289,7 @@ class Motion(IntensityTransform, FourierTransform):
         image: sitk.Image,
         transforms: Sequence[sitk.Euler3DTransform],
         times: np.ndarray,
+        axis: int,
         interpolation: str,
     ):
         images = self.resample_images(image, transforms, interpolation)
@@ -291,8 +304,10 @@ class Motion(IntensityTransform, FourierTransform):
         indices = (last_index * times).astype(int).tolist()
         indices.append(last_index)
         ini = 0
+        slices = [slice(None)] * len(result_spectrum.shape)
         for spectrum, fin in zip(spectra, indices):
-            result_spectrum[..., ini:fin] = spectrum[..., ini:fin]
+            slices[axis] = slice(ini, fin)
+            result_spectrum[slices] = spectrum[slices]
             ini = fin
         result_image = self.inv_fourier_transform(result_spectrum).real.float()
         return result_image
