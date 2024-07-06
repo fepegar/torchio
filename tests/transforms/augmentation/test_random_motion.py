@@ -58,3 +58,15 @@ class TestRandomMotion(TorchioTestCase):
     def test_wrong_image_interpolation_value(self):
         with pytest.raises(ValueError):
             RandomMotion(image_interpolation='wrong')
+
+    def test_out_of_range_axis(self):
+        with pytest.raises(ValueError):
+            RandomMotion(axes=3)
+
+    def test_out_of_range_axis_in_tuple(self):
+        with pytest.raises(ValueError):
+            RandomMotion(axes=(0, -1, 2))
+
+    def test_wrong_axes_type(self):
+        with pytest.raises(ValueError):
+            RandomMotion(axes=None)
