@@ -75,9 +75,9 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         )
 
     def apply_transform(self, subject: Subject) -> Subject:
+        axes = self.ensure_axes_indices(subject, self.axes)
         arguments: Dict[str, dict] = defaultdict(dict)
         for name, image in self.get_images_dict(subject).items():
-            axes = self.ensure_axes_indices(subject, self.axes)
             axis, times, degrees, translation = self.get_params(
                 axes,
                 self.degrees_range,
