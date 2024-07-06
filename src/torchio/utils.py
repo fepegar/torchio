@@ -385,7 +385,7 @@ def guess_external_viewer() -> Optional[Path]:
 def parse_spatial_shape(shape):
     result = to_tuple(shape, length=3)
     for n in result:
-        if n < 1 or n % 1:
+        if isinstance(n, (str, bytes)) or n < 1 or n % 1:
             message = (
                 'All elements in a spatial shape must be positive integers,'
                 f' but the following shape was passed: {shape}'

@@ -226,6 +226,12 @@ class Transform(ABC):
 
     def parse_params(self, params, around, name, make_ranges=True, **kwargs):
         params = to_tuple(params)
+        if make_ranges and any(isinstance(p, (str, bytes)) for p in params):
+            message = (
+                f'"{name}" must be a number or a sequence of numbers for'
+                f' make_ranges=True, not {params}'
+            )
+            raise ValueError(message)
         # d or (a, b)
         if len(params) == 1 or (len(params) == 2 and make_ranges):
             params *= 3  # (d, d, d) or (a, b, a, b, a, b)
