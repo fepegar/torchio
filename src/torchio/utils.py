@@ -7,6 +7,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from collections import abc
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -51,10 +52,9 @@ def to_tuple(
         >>> to_tuple([1, 2], length=3)
         (1, 2)
     """
-    try:
-        iter(value)
+    if isinstance(value, abc.Iterable) and not isinstance(value, (str, bytes)):
         value = tuple(value)
-    except TypeError:
+    else:
         value = length * (value,)
     return value
 
