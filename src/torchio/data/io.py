@@ -14,11 +14,9 @@ from ..constants import REPO_URL
 from ..typing import TypeData
 from ..typing import TypeDataAffine
 from ..typing import TypeDirection
-from ..typing import TypeDoubletInt
 from ..typing import TypePath
 from ..typing import TypeQuartetInt
 from ..typing import TypeTripletFloat
-from ..typing import TypeTripletInt
 
 
 # Matrices used to switch between LPS and RAS
@@ -87,26 +85,43 @@ def _read_dicom(directory: TypePath):
 
 
 def read_shape(path: TypePath) -> TypeQuartetInt:
-    reader = sitk.ImageFileReader()
-    reader.SetFileName(str(path))
-    reader.ReadImageInformation()
-    num_channels = reader.GetNumberOfComponents()
-    num_dimensions = reader.GetDimension()
+    try:
+        reader = sitk.ImageFileReader()
+        reader.SetFileName(str(path))
+        reader.ReadImageInformation()
+        num_channels = reader.GetNumberOfComponents()
+        num_dimensions = reader.GetDimension()
+        shape = reader.GetSize()
+    except RuntimeError as e:  # try with NiBabel
+        message = f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
+        warnings.warn(message, stacklevel=2)
+        try:
+            obj = nib.load(str(path))
+        except nib.loadsave.ImageFileError as e:
+            message = (
+                f'File "{path}" not understood.'
+                ' Check supported formats by at'
+                ' https://simpleitk.readthedocs.io/en/master/IO.html#images'
+                ' and https://nipy.org/nibabel/api.html#file-formats'
+            )
+            raise RuntimeError(message) from e
+        num_dimensions = obj.header.get('dim')[0]
+        shape = obj.header.get('dim')[1 : 1 + num_dimensions]
+        num_channels = 1 if num_dimensions < 4 else shape[-1]
     assert 2 <= num_dimensions <= 4
     if num_dimensions == 2:
-        spatial_shape_2d: TypeDoubletInt = reader.GetSize()
-        assert len(spatial_shape_2d) == 2
-        si, sj = spatial_shape_2d
+        assert len(shape) == 2
+        si, sj = shape
         sk = 1
     elif num_dimensions == 4:
         # We assume bad NIfTI file (channels encoded as spatial dimension)
-        spatial_shape_4d: TypeQuartetInt = reader.GetSize()
-        assert len(spatial_shape_4d) == 4
-        si, sj, sk, num_channels = spatial_shape_4d
+        assert len(shape) == 4
+        si, sj, sk, num_channels = shape
     elif num_dimensions == 3:
-        spatial_shape_3d: TypeTripletInt = reader.GetSize()
-        assert len(spatial_shape_3d) == 3
-        si, sj, sk = spatial_shape_3d
+        assert len(shape) == 3
+        si, sj, sk = shape
+    else:
+        raise ValueError(f'Unsupported number of dimensions: {num_dimensions}')
     shape = num_channels, si, sj, sk
     return shape
 
