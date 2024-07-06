@@ -31,6 +31,14 @@ class TestRandomGhosting(TorchioTestCase):
             transformed.t1.data,
         )
 
+    def test_anatomical_axis(self):
+        transform = RandomGhosting(axes=['a'])
+        transformed = transform(self.sample_subject)
+        self.assert_tensor_not_equal(
+            self.sample_subject.t1.data,
+            transformed.t1.data,
+        )
+
     def test_intensity_range_with_negative_min(self):
         with pytest.raises(ValueError):
             RandomGhosting(intensity=(-0.5, 4))
@@ -74,3 +82,7 @@ class TestRandomGhosting(TorchioTestCase):
     def test_wrong_restore_type(self):
         with pytest.raises(TypeError):
             RandomGhosting(restore='wrong')
+
+    def test_wrong_anatomical_axis(self):
+        with pytest.raises(ValueError):
+            RandomGhosting(axes=('v',))
