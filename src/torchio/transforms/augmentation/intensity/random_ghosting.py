@@ -1,6 +1,5 @@
 from collections import defaultdict
 from typing import Dict
-from typing import Iterable
 from typing import Tuple
 from typing import Union
 
@@ -60,16 +59,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        if not isinstance(axes, tuple):
-            try:
-                axes = tuple(axes)  # type: ignore[arg-type]
-            except TypeError:
-                axes = (axes,)  # type: ignore[assignment]
-        assert isinstance(axes, Iterable)
-        for axis in axes:
-            if not isinstance(axis, str) and axis not in (0, 1, 2):
-                raise ValueError(f'Axes must be in (0, 1, 2), not "{axes}"')
-        self.axes = axes
+        self.axes = self.parse_axes(axes)
         self.num_ghosts_range = self._parse_range(
             num_ghosts,
             'num_ghosts',
@@ -84,16 +74,13 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         self.restore = _parse_restore(restore)
 
     def apply_transform(self, subject: Subject) -> Subject:
+        axes = self.ensure_axes_indices(subject, self.axes)
         arguments: Dict[str, dict] = defaultdict(dict)
-        if any(isinstance(n, str) for n in self.axes):
-            subject.check_consistent_orientation()
-        for name, image in self.get_images_dict(subject).items():
-            is_2d = image.is_2d()
-            axes = [a for a in self.axes if a != 2] if is_2d else self.axes
+        for name, _ in self.get_images_dict(subject).items():
             min_ghosts, max_ghosts = self.num_ghosts_range
             params = self.get_params(
+                axes,
                 (int(min_ghosts), int(max_ghosts)),
-                axes,  # type: ignore[arg-type]
                 self.intensity_range,
             )
             num_ghosts_param, axis_param, intensity_param = params
@@ -108,8 +95,8 @@ class RandomGhosting(RandomTransform, IntensityTransform):
 
     def get_params(
         self,
-        num_ghosts_range: Tuple[int, int],
         axes: Tuple[int, ...],
+        num_ghosts_range: Tuple[int, int],
         intensity_range: Tuple[float, float],
     ) -> Tuple:
         ng_min, ng_max = num_ghosts_range
@@ -117,6 +104,17 @@ class RandomGhosting(RandomTransform, IntensityTransform):
         axis = axes[torch.randint(0, len(axes), (1,))]
         intensity = self.sample_uniform(*intensity_range)
         return num_ghosts, axis, intensity
+
+    @staticmethod
+    def parse_restore(restore):
+        try:
+            restore = float(restore)
+        except ValueError as e:
+            raise TypeError(f'Restore must be a float, not "{restore}"') from e
+        if not 0 <= restore <= 1:
+            message = f'Restore must be a number between 0 and 1, not {restore}'
+            raise ValueError(message)
+        return restore
 
 
 class Ghosting(IntensityTransform, FourierTransform):
