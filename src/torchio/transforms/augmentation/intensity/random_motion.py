@@ -26,6 +26,8 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
     simulate motion artifacts for data augmentation.
 
     Args:
+        axes: Tuple of integers or strings representing the axes along which
+            the simulated movements will occur.
         degrees: Tuple :math:`(a, b)` defining the rotation range in degrees of
             the simulated movements. The rotation angles around each axis are
             :math:`(\theta_1, \theta_2, \theta_3)`,
@@ -140,6 +142,7 @@ class Motion(IntensityTransform, FourierTransform):
     simulate motion artifacts for data augmentation.
 
     Args:
+        axis: Integer representing the axis along which the simulated movements
         degrees: Sequence of rotations :math:`(\theta_1, \theta_2, \theta_3)`.
         translation: Sequence of translations :math:`(t_1, t_2, t_3)` in mm.
         times: Sequence of times from 0 to 1 at which the motions happen.
