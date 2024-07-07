@@ -89,7 +89,7 @@ class Flip(SpatialTransform):
     ):
         super().__init__(**kwargs)
         self.axes = self.parse_axes(axes)
-        self.args_names = ('axes',)
+        self.args_names = ['axes']
 
     def apply_transform(self, subject: Subject) -> Subject:
         axes = self.ensure_axes_indices(subject, self.axes)

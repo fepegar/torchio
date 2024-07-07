@@ -96,7 +96,7 @@ def read_shape(path: TypePath) -> TypeQuartetInt:
         message = f'Error loading image with SimpleITK:\n{e}\n\nTrying NiBabel...'
         warnings.warn(message, stacklevel=2)
         try:
-            obj = nib.load(str(path))
+            obj: SpatialImage = nib.load(str(path))  # type: ignore[assignment]
         except nib.loadsave.ImageFileError as e:
             message = (
                 f'File "{path}" not understood.'
@@ -105,8 +105,8 @@ def read_shape(path: TypePath) -> TypeQuartetInt:
                 ' and https://nipy.org/nibabel/api.html#file-formats'
             )
             raise RuntimeError(message) from e
-        num_dimensions = obj.header.get('dim')[0]
-        shape = obj.header.get('dim')[1 : 1 + num_dimensions]
+        num_dimensions = obj.ndim
+        shape = obj.shape
         num_channels = 1 if num_dimensions < 4 else shape[-1]
     assert 2 <= num_dimensions <= 4
     if num_dimensions == 2:

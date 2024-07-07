@@ -206,6 +206,7 @@ class Motion(IntensityTransform, FourierTransform):
                     np.asarray(translation),
                     sitk_image,
                 )
+                assert isinstance(axis, int)
                 assert isinstance(image_interpolation, str)
                 transformed_channel = self.add_artifact(
                     sitk_image,

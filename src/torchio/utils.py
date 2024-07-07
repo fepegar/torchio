@@ -25,14 +25,13 @@ from torch.utils.data._utils.collate import default_collate
 from tqdm.auto import trange
 
 from . import constants
-from .typing import TypeNumber
 from .typing import TypePath
 
 
 def to_tuple(
-    value: Any,
+    value: Union[Any, Iterable[Any]],
     length: int = 1,
-) -> Tuple[TypeNumber, ...]:
+) -> Tuple[Any, ...]:
     """Convert variable to tuple of length n.
 
     Example:

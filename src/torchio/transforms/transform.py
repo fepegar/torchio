@@ -396,7 +396,7 @@ class Transform(ABC):
 
     @staticmethod
     def parse_axes(
-        axes: Union[int, Tuple[int, ...], str, Tuple[str, ...]],
+        axes: Union[int, str, Tuple[int, ...], Tuple[str, ...]],
     ) -> Union[Tuple[int, ...], Tuple[str, ...]]:
         axes_tuple = to_tuple(axes)
         for axis in axes_tuple:
@@ -416,14 +416,19 @@ class Transform(ABC):
         axes: Union[Tuple[int, ...], Tuple[str, ...]],
     ) -> Tuple[int, ...]:
         image = subject.get_first_image()
-        if any(isinstance(n, str) for n in axes):
+        if any(isinstance(n, str) for n in axes):  # axis strings
             subject.check_consistent_orientation()
-            axes = tuple(sorted({3 + image.axis_name_to_index(n) for n in axes}))
-        if image.is_2d() and 2 in axes:
-            axes = list(axes)
-            axes.remove(2)
-            axes = tuple(axes)
-        return axes
+        int_axes = tuple(
+            {
+                (3 + image.axis_name_to_index(n)) if isinstance(n, str) else int(n)
+                for n in axes
+            }
+        )
+        if image.is_2d() and 2 in int_axes:
+            list_axes = list(int_axes)
+            list_axes.remove(2)
+            int_axes = tuple(list_axes)
+        return int_axes
 
     @staticmethod
     def validate_keys_sequence(keys: TypeKeys, name: str) -> None:
