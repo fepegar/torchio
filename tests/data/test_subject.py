@@ -159,9 +159,12 @@ class TestSubject(TorchioTestCase):
 
     def test_copy_subclass(self):
         class DummySubjectSubClass(tio.data.Subject):
-            pass
+            def __init__(self, attr_1, attr_2):
+                super().__init__(attr_1=attr_1, attr_2=attr_2)
 
-        dummy_sub = DummySubjectSubClass(self.sample_subject)
+        dummy_sub = DummySubjectSubClass(
+            attr_1='abcd', attr_2=tio.ScalarImage(tensor=torch.zeros(1, 1, 1, 1))
+        )
         sub_copy = copy.copy(dummy_sub)
         assert isinstance(sub_copy, tio.data.Subject)
         assert isinstance(sub_copy, DummySubjectSubClass)
