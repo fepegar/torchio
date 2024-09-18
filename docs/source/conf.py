@@ -55,8 +55,8 @@ extensions = [
 # https://github.com/pytorch/fairseq/blob/adb5b9c71f7ef4fe2f258e0da102d819ab9920ef/docs/conf.py#L131
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'torch': ('https://pytorch.org/docs/master/', None),
-    'torchvision': ('https://pytorch.org/docs/master/', None),
+    'torch': ('https://pytorch.org/docs/main/', None),
+    'torchvision': ('https://pytorch.org/vision/main/', None),
     'nibabel': ('https://nipy.org/nibabel/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
 }
