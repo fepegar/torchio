@@ -159,8 +159,8 @@ class TestSubject(TorchioTestCase):
 
     def test_copy_subclass(self):
         class DummySubjectSubClass(tio.data.Subject):
-            def __init__(self, attr_1, attr_2):
-                super().__init__(attr_1=attr_1, attr_2=attr_2)
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
 
         dummy_sub = DummySubjectSubClass(
             attr_1='abcd', attr_2=tio.ScalarImage(tensor=torch.zeros(1, 1, 1, 1))
