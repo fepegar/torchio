@@ -163,7 +163,7 @@ class TestSubject(TorchioTestCase):
                 super().__init__(**kwargs)
 
         dummy_sub = DummySubjectSubClass(
-            attr_1='abcd',
+            attr_1="abcd",
             attr_2=tio.ScalarImage(tensor=torch.zeros(1, 1, 1, 1)),
         )
         sub_copy = copy.copy(dummy_sub)
