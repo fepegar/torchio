@@ -1,5 +1,4 @@
 import torchio as tio
-from torch.utils.data import DataLoader
 
 from ..utils import TorchioTestCase
 
@@ -28,11 +27,11 @@ class TestCollate(TorchioTestCase):
         return Dataset(data)
 
     def test_collate(self):
-        loader = DataLoader(self.get_heterogeneous_dataset(), batch_size=2)
+        loader = tio.SubjectsLoader(self.get_heterogeneous_dataset(), batch_size=2)
         tio.utils.get_first_item(loader)
 
     def test_history_collate(self):
-        loader = DataLoader(
+        loader = tio.SubjectsLoader(
             self.get_heterogeneous_dataset(),
             batch_size=4,
             collate_fn=tio.utils.history_collate,

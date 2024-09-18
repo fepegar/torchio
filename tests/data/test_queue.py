@@ -4,7 +4,6 @@ import pytest
 import torch
 import torchio as tio
 from parameterized import parameterized
-from torch.utils.data import DataLoader
 from torchio.data import UniformSampler
 from torchio.utils import create_dummy_dataset
 
@@ -37,7 +36,7 @@ class TestQueue(TorchioTestCase):
             **kwargs,
         )
         _ = str(queue_dataset)
-        batch_loader = DataLoader(queue_dataset, batch_size=4)
+        batch_loader = tio.SubjectsLoader(queue_dataset, batch_size=4)
         for batch in batch_loader:
             _ = batch['one_modality'][tio.DATA]
             _ = batch['segmentation'][tio.DATA]
@@ -69,7 +68,7 @@ class TestQueue(TorchioTestCase):
             sampler=sampler,
             shuffle_patches=False,
         )
-        batch_loader = DataLoader(queue_dataset, batch_size=6)
+        batch_loader = tio.SubjectsLoader(queue_dataset, batch_size=6)
         tensors = [batch['im'][tio.DATA] for batch in batch_loader]
         all_numbers = torch.stack(tensors).flatten().tolist()
         assert all_numbers.count(10) == 10
