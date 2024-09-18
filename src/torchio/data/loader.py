@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import List
 
 import numpy as np
 import torch
@@ -22,7 +23,7 @@ class SubjectsLoader(DataLoader):
         )
 
     @staticmethod
-    def _collate(subjects: list[Subject]) -> Dict[str, Any]:
+    def _collate(subjects: List[Subject]) -> Dict[str, Any]:
         first_subject = subjects[0]
         batch_dict = {}
         for key in first_subject.keys():
