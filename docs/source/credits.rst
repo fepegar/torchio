@@ -19,7 +19,7 @@ BibTeX:
 .. code-block:: latex
 
    @article{perez-garcia_torchio_2021,
-      title = {TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
+      title = {{TorchIO}: a {Python} library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning},
       journal = {Computer Methods and Programs in Biomedicine},
       pages = {106236},
       year = {2021},
