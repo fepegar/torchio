@@ -1,6 +1,9 @@
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import TypeVar
 
 import numpy as np
 import torch
@@ -10,15 +13,21 @@ from torch.utils.data import DataLoader
 from .subject import Subject
 
 
+T = TypeVar('T')
+
+
 class SubjectsLoader(DataLoader):
     def __init__(
         self,
         dataset: Dataset,
+        collate_fn: Optional[Callable[[List[T]], Any]] = None,
         **kwargs,
     ):
+        if collate_fn is None:
+            collate_fn = self._collate
         super().__init__(
             dataset=dataset,
-            collate_fn=self._collate,
+            collate_fn=collate_fn,
             **kwargs,
         )
 
