@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 import torch
 
+from ....data.image import Image
 from ....data.subject import Subject
 from ....typing import TypeDoubleFloat
 from .normalization_transform import NormalizationTransform
@@ -84,7 +85,7 @@ class RescaleIntensity(NormalizationTransform):
         image_name: str,
         mask: torch.Tensor,
     ) -> None:
-        image = subject[image_name]
+        image: Image = subject[image_name]
         image.set_data(self.rescale(image.data, mask, image_name))
 
     def rescale(
@@ -95,8 +96,8 @@ class RescaleIntensity(NormalizationTransform):
     ) -> torch.Tensor:
         # The tensor is cloned as in-place operations will be used
         array = tensor.clone().float().numpy()
-        mask = mask.numpy()
-        if not mask.any():
+        mask_array = mask.numpy()
+        if not mask_array.any():
             message = (
                 f'Rescaling image "{image_name}" not possible'
                 ' because the mask to compute the statistics is empty'
@@ -104,7 +105,7 @@ class RescaleIntensity(NormalizationTransform):
             warnings.warn(message, RuntimeWarning, stacklevel=2)
             return tensor
 
-        values = array[mask]
+        values = array[mask_array]
         cutoff = np.percentile(values, self.percentiles)
         np.clip(array, *cutoff, out=array)  # type: ignore[call-overload]
 

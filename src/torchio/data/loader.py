@@ -24,7 +24,7 @@ class SubjectsLoader(DataLoader):
         **kwargs,
     ):
         if collate_fn is None:
-            collate_fn = self._collate
+            collate_fn = self._collate  # type: ignore[assignment]
         super().__init__(
             dataset=dataset,
             collate_fn=collate_fn,
