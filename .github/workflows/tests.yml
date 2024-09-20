@@ -25,9 +25,6 @@ jobs:
           '3.11',
           '3.12',
         ]
-        tox-env: [
-          pytest,
-        ]
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -57,16 +54,13 @@ jobs:
       - name: Install tox
         run: uv pip install tox-uv
 
-      - name: Install self and all dependencies
-        run: uv pip install .[all]
-
       # Run all tests on schedule, but only non-slow tests on push
-      - name: Run tox env ${{ matrix.tox-env }}
+      - name: Run pytest
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
-            uv run tox -e py
+            uv run tox -e pytest
           else
-            uv run tox -e py -- -m "not slow"
+            uv run tox -e pytest -- -m "not slow"
           fi
         shell: bash  # so it doesn't fail on Windows
 
