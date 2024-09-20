@@ -56,7 +56,21 @@ jobs:
         shell: powershell
 
       - name: Setup test suite
+        run: C:\Users\runneradmin\.local\bin\tox --help
+        shell: powershell
+
+      - name: Setup test suite
+        run: C:\Users\runneradmin\.local\bin\tox --help
+        shell: bash
+
+      - name: Add local bin to PATH on Windows
+        if: runner.os == 'Windows'
+        run: $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
+        shell: powershell
+
+      - name: Setup test suite
         run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
+        shell: powershell
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
