@@ -44,7 +44,7 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install tox
-        run: uv tool install --python-preference only-managed --python 3.13 tox-uv
+        run: uv tool install --python-preference only-managed --python 3.13 tox --with tox-uv
 
       - name: Install Python
         if: startsWith(matrix.python, '3.') && matrix.python != '3.13'
