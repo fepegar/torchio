@@ -80,6 +80,12 @@ doc = [
 plot = [
     "matplotlib",
 ]
+all = [
+    "torchio[doc]",
+    "torchio[plot]",
+    "torchio[csv]",
+    "torchio[dev]",
+]
 
 [project.scripts]
 tiohd = "torchio.cli.print_info:app"
