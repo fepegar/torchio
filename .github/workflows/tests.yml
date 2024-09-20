@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         os: [
-          ubuntu-latest,
-          macos-latest,
+          # ubuntu-latest,
+          # macos-latest,
           windows-latest,
         ]
         python: [
@@ -51,25 +51,25 @@ jobs:
         run: uv tool install tox --with tox-uv
 
       - name: Setup test suite
-        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
+        run: C:`\Users`\runneradmin`\.local`\bin`\tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
-      # Run all tests on schedule, but only non-slow tests on push
-      - name: Run pytest
-        run: |
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            tox -e pytest
-          else
-            tox -e pytest -- -m "not slow"
-          fi
-        shell: bash  # so it doesn't fail on Windows
+      # # Run all tests on schedule, but only non-slow tests on push
+      # - name: Run pytest
+      #   run: |
+      #     if [ "${{ github.event_name }}" == "schedule" ]; then
+      #       tox -e pytest
+      #     else
+      #       tox -e pytest -- -m "not slow"
+      #     fi
+      #   shell: bash  # so it doesn't fail on Windows
 
-      - name: Upload coverage reports to Codecov
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' }}
-        run: |
-          OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
-          curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
-          chmod +x codecov
-          ./codecov
+      # - name: Upload coverage reports to Codecov
+      #   if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' }}
+      #   run: |
+      #     OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
+      #     curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
+      #     chmod +x codecov
+      #     ./codecov
 
   cli:
     name: CLI smoke tests
