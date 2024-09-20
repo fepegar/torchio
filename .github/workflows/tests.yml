@@ -1,4 +1,4 @@
-name: Tests
+name: Checks
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   pytest:
-    name: Run unit tests
+    name: Unit tests
     strategy:
       matrix:
         os: [
@@ -43,7 +43,11 @@ jobs:
           enable-cache: true
 
       - name: Set up Python
-        run: uv python install ${{ matrix.python-version }}
+        run: |
+          uv python install ${{ matrix.python-version }}
+          uv venv
+          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Create and activate virtual environment and
         run: |
@@ -53,6 +57,9 @@ jobs:
 
       - name: Install tox
         run: uv pip install tox-uv
+
+      - name: Install torchio
+        run: uv pip install .[all]
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
@@ -79,18 +86,20 @@ jobs:
       PYTHON_VERSION: '3.12'
 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Set up Python
+        run: |
+          uv python install ${{ env.PYTHON_VERSION }}
+          uv venv
+          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install project
-        run: pip install .
+        run: uv pip install .
 
       - name: Test transforms CLI tool
         run: tiotr --help
