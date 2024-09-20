@@ -52,8 +52,7 @@ jobs:
 
       - name: Add local bin to PATH on Windows
         if: runner.os == 'Windows'
-        run: |
-          echo "C:\Users\runneradmin\.local\bin" >> $env:PATH
+        run: $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
         shell: powershell
 
       - name: Setup test suite
