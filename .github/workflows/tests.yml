@@ -52,21 +52,10 @@ jobs:
 
       - name: Add local bin to PATH on Windows
         if: runner.os == 'Windows'
-        run: $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
-        shell: powershell
+        run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
+        shell: bash
 
-      - name: Setup test suite
-        run: C:\Users\runneradmin\.local\bin\tox --help
-
-      - name: Setup test suite
-        run: |
-          $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
-          tox --help
-
-      - name: Add local bin to PATH on Windows
-        if: runner.os == 'Windows'
-        run: $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
-        shell: powershell
+      - run: tox --help
 
       - name: Setup test suite
         run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
