@@ -50,14 +50,14 @@ jobs:
       - name: Install tox
         run: uv tool install tox --with tox-uv
 
-      - name: Setup test suite
-        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
-
       - name: Add local bin to PATH on Windows
-        if: matrix.os == 'windows-latest'
+        if: runner.os == 'Windows'
         run: |
           echo "C:\Users\runneradmin\.local\bin" >> $env:PATH
         shell: powershell
+
+      - name: Setup test suite
+        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
