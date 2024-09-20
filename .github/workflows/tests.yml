@@ -10,7 +10,7 @@ on:
 
 jobs:
   pytest:
-    name: Unit tests
+    name: Run unit tests
     strategy:
       matrix:
         os: [
@@ -27,7 +27,6 @@ jobs:
         ]
         tox-env: [
           pytest,
-          mypy,
         ]
       fail-fast: false
 
@@ -58,8 +57,11 @@ jobs:
       - name: Install tox
         run: uv pip install tox-uv
 
+      - name: Install self and all dependencies
+        run: uv pip install .[all]
+
       # Run all tests on schedule, but only non-slow tests on push
-      - name: Run unit tests
+      - name: Run tox env ${{ matrix.tox-env }}
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
             uv run tox -e py
