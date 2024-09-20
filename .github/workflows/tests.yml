@@ -16,14 +16,14 @@ jobs:
         os: [
           ubuntu-latest,
           macos-latest,
-          windows-latest,
         ]
-        python-version: [
+        python: [
           '3.8',
           '3.9',
           '3.10',
           '3.11',
           '3.12',
+          '3.13',
         ]
       fail-fast: false
 
@@ -37,23 +37,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v2
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-
-      - name: Set up Python
-        run: |
-          uv python install ${{ matrix.python-version }}
-          uv venv
-          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
-          echo "$PWD/.venv/bin" >> $GITHUB_PATH
-
+          cache-dependency-glob: "pyproject.toml"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install tox
-        run: uv pip install tox-uv
+        run: uv tool install --python-preference only-managed --python 3.13 tox --with tox-uv
+      - name: Install Python
+        if: startsWith(matrix.python, '3.') && matrix.python != '3.13'
+        run: uv python install --python-preference only-managed ${{ matrix.python }}
 
       - name: Install torchio
         run: uv pip install .[all]
+
+      - name: Setup test suite
+        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
