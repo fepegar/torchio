@@ -408,6 +408,7 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/marius-sm"><img src="https://avatars.githubusercontent.com/u/40166021?v=4?s=100" width="100px;" alt="marius-sm"/><br /><sub><b>marius-sm</b></sub></a><br /><a href="#ideas-marius-sm" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/haarisr"><img src="https://avatars.githubusercontent.com/u/122410226?v=4?s=100" width="100px;" alt="haarisr"/><br /><sub><b>haarisr</b></sub></a><br /><a href="https://github.com/fepegar/torchio/commits?author=haarisr" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/c-winder"><img src="https://avatars.githubusercontent.com/u/50587864?v=4?s=100" width="100px;" alt="Chris Winder"/><br /><sub><b>Chris Winder</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Ac-winder" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/ricky-walsh/"><img src="https://avatars.githubusercontent.com/u/70853488?v=4?s=100" width="100px;" alt="Ricky Walsh"/><br /><sub><b>Ricky Walsh</b></sub></a><br /><a href="https://github.com/fepegar/torchio/issues?q=author%3Arickymwalsh" title="Bug reports">🐛</a> <a href="https://github.com/fepegar/torchio/commits?author=rickymwalsh" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
