@@ -1,13 +1,119 @@
 [build-system]
-requires = [
-  "setuptools>=42",
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "torchio"
+version = "0.20.0"
+description = "Tools for medical image processing with PyTorch"
+readme = {file = "README.md", content-type = "text/markdown"}
+authors = [
+    {name = "TorchIO contributors"}
 ]
-build-backend = "setuptools.build_meta"
+maintainers = [
+    {name = "Fernando Perez-Garcia", email = "fepegar@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Typing :: Typed"
+]
+keywords = ["medical", "image processing", "pytorch", "augmentation", "mri"]
+requires-python = ">=3.8,<3.13"
+dependencies = [
+    "deprecated",
+    "humanize",
+    "nibabel",
+    "numpy>=1.15",
+    "scipy",
+    "simpleitk!=2.0.*,!=2.1.1.1",
+    "torch>=1.1",
+    "tqdm",
+    "typer",
+]
+
+[project.optional-dependencies]
+csv = [
+    "pandas",
+]
+dev = [
+    "black",
+    "bump2version",
+    "coverage",
+    "flake8",
+    "mypy",
+    "parameterized",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "tox",
+    "types-Deprecated",
+]
+doc = [
+    "einops",
+    "furo",
+    "matplotlib",
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-gallery",
+    "sphinxext-opengraph",
+]
+plot = [
+    "matplotlib",
+]
+
+[project.scripts]
+tiohd = "torchio.cli.print_info:app"
+tiotr = "torchio.cli.apply_transform:app"
+torchio-transform = "torchio.cli.apply_transform:app"
+
+[project.urls]
+Homepage = "http://torchio.rtfd.io"
+Source = "https://github.com/fepegar/torchio"
+"Issue tracker" = "https://github.com/fepegar/torchio/issues"
+Documentation = "http://torchio.rtfd.io"
+"Release notes" = "https://github.com/fepegar/torchio/releases"
 
 [tool.black]
 preview = false
 skip-string-normalization = true
 target-version = ['py311']
+
+[tool.mypy]
+pretty = true
+
+[[tool.mypy.overrides]]
+module = "duecredit.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "nibabel.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "scipy.*"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 markers = [
