@@ -23,7 +23,6 @@ jobs:
           '3.10',
           '3.11',
           '3.12',
-          '3.13',
         ]
       fail-fast: false
 
@@ -43,12 +42,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install tox
-        run: uv tool install --python-preference only-managed --python 3.13 tox --with tox-uv
 
       - name: Install Python
-        if: startsWith(matrix.python, '3.') && matrix.python != '3.13'
-        run: uv python install --python-preference only-managed ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Install tox
+        run: uv tool install tox --with tox-uv
 
       - name: Setup test suite
         run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
