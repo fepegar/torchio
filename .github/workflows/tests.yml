@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         os: [
-          # ubuntu-latest,
-          # macos-latest,
+          ubuntu-latest,
+          macos-latest,
           windows-latest,
         ]
         python: [
@@ -50,7 +50,7 @@ jobs:
       - name: Install tox
         run: uv tool install tox --with tox-uv
 
-      - name: Add local bin to PATH on Windows
+      - name: Add local bin to path on Windows
         if: runner.os == 'Windows'
         run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
         shell: bash
