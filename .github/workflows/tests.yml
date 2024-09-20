@@ -57,11 +57,11 @@ jobs:
 
       - name: Setup test suite
         run: C:\Users\runneradmin\.local\bin\tox --help
-        shell: powershell
 
       - name: Setup test suite
-        run: C:\Users\runneradmin\.local\bin\tox --help
-        shell: bash
+        run: |
+          $env:PATH = "C:\Users\runneradmin\.local\bin;$env:PATH"
+          tox --help
 
       - name: Add local bin to PATH on Windows
         if: runner.os == 'Windows'
