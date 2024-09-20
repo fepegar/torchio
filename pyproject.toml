@@ -60,8 +60,10 @@ dev = [
     "mypy",
     "parameterized",
     "pre-commit",
+    "Pillow",
     "pytest",
     "pytest-cov",
+    "pytest-sugar",
     "tox",
     "types-Deprecated",
 ]
