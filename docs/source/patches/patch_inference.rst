@@ -17,7 +17,7 @@ inference across a 3D image using patches::
     ...     patch_size,
     ...     patch_overlap,
     ... )
-    >>> patch_loader = torch.utils.data.DataLoader(grid_sampler, batch_size=4)
+    >>> patch_loader = tio.SubjectsLoader(grid_sampler, batch_size=4)
     >>> aggregator = tio.inference.GridAggregator(grid_sampler)
     >>> model = nn.Identity().eval()
     >>> with torch.no_grad():

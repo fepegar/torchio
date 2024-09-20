@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 import torch
 import torchio as tio
-from torch.utils.data import DataLoader
 
 from ..utils import TorchioTestCase
 
@@ -183,6 +182,6 @@ class TestSubject(TorchioTestCase):
 
     def test_subjects_batch(self):
         subjects = tio.SubjectsDataset(10 * [self.sample_subject])
-        loader = DataLoader(subjects, batch_size=4)
+        loader = tio.SubjectsLoader(subjects, batch_size=4)
         batch = next(iter(loader))
         assert batch.__class__ is dict

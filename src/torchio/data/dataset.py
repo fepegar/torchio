@@ -17,8 +17,8 @@ class SubjectsDataset(Dataset):
     """Base TorchIO dataset.
 
     Reader of 3D medical images that directly inherits from the PyTorch
-    :class:`~torch.utils.data.Dataset`. It can be used with a PyTorch
-    :class:`~torch.utils.data.DataLoader` for efficient loading and
+    :class:`~torch.utils.data.Dataset`. It can be used with a
+    :class:`~tio.SubjectsLoader` for efficient loading and
     augmentation. It receives a list of instances of :class:`~torchio.Subject`
     and an optional transform applied to the volumes after loading.
 

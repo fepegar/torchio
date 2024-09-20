@@ -43,7 +43,7 @@ print(
 )  # noqa: T201, B950
 print(transformed.get_inverse_transform(ignore_intensity=False))  # noqa: T201
 
-loader = torch.utils.data.DataLoader(
+loader = tio.SubjectsLoader(
     dataset,
     batch_size=batch_size,
     collate_fn=tio.utils.history_collate,

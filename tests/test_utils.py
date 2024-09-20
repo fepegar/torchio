@@ -43,7 +43,7 @@ class TestUtils(TorchioTestCase):
 
     def test_subjects_from_batch(self):
         dataset = tio.SubjectsDataset(4 * [self.sample_subject])
-        loader = torch.utils.data.DataLoader(dataset, batch_size=4)
+        loader = tio.SubjectsLoader(dataset, batch_size=4)
         batch = tio.utils.get_first_item(loader)
         subjects = tio.utils.get_subjects_from_batch(batch)
         assert isinstance(subjects[0], tio.Subject)
@@ -55,7 +55,7 @@ class TestUtils(TorchioTestCase):
         )
 
         dataset = tio.SubjectsDataset(4 * [subject_c_with_string_metadata])
-        loader = torch.utils.data.DataLoader(dataset, batch_size=4)
+        loader = tio.SubjectsLoader(dataset, batch_size=4)
         batch = tio.utils.get_first_item(loader)
         subjects = tio.utils.get_subjects_from_batch(batch)
         assert isinstance(subjects[0], tio.Subject)
@@ -68,7 +68,7 @@ class TestUtils(TorchioTestCase):
             label=tio.LabelMap(self.get_image_path('label_c', binary=True)),
         )
         dataset = tio.SubjectsDataset(4 * [subject_c_with_int_metadata])
-        loader = torch.utils.data.DataLoader(dataset, batch_size=4)
+        loader = tio.SubjectsLoader(dataset, batch_size=4)
         batch = tio.utils.get_first_item(loader)
         subjects = tio.utils.get_subjects_from_batch(batch)
         assert isinstance(subjects[0], tio.Subject)

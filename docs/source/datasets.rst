@@ -206,7 +206,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.OrganMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'
@@ -224,7 +224,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.NoduleMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'
@@ -242,7 +242,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.AdrenalMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'
@@ -260,7 +260,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.FractureMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'
@@ -278,7 +278,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.VesselMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'
@@ -296,7 +296,7 @@ MedMNIST
     from einops import rearrange
     rows, cols = 16, 28
     dataset = tio.datasets.SynapseMNIST3D('train')
-    loader = torch.utils.data.DataLoader(dataset, batch_size=rows * cols)
+    loader = tio.SubjectsLoader(dataset, batch_size=rows * cols)
     batch = tio.utils.get_first_item(loader)
     tensor = batch['image'][tio.DATA]
     pattern = '(b1 b2) c x y z -> c x (b1 y) (b2 z)'

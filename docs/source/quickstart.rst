@@ -37,13 +37,12 @@ Hello, World!
 
 This example shows the basic usage of TorchIO, where an instance of
 :class:`~torchio.SubjectsDataset` is passed to
-a PyTorch :class:`~torch.utils.data.DataLoader` to generate training batches
+a PyTorch :class:`~torch.SubjectsLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented on the fly,
 in parallel::
 
     import torch
     import torchio as tio
-    from torch.utils.data import DataLoader
 
     # Each instance of tio.Subject is passed arbitrary keyword arguments.
     # Typically, these arguments will be instances of tio.Image
@@ -91,8 +90,14 @@ in parallel::
     # SubjectsDataset is a subclass of torch.data.utils.Dataset
     subjects_dataset = tio.SubjectsDataset(subjects_list, transform=transform)
 
-    # Images are processed in parallel thanks to a PyTorch DataLoader
-    training_loader = DataLoader(subjects_dataset, batch_size=4, num_workers=4)
+    # Images are processed in parallel thanks to a SubjectsLoader
+    # (which inherits from torch.utils.data.DataLoader)
+    training_loader = tio.SubjectsLoader(
+        subjects_dataset,
+        batch_size=4,
+        num_workers=4,
+        shuffle=True,
+    )
 
     # Training epoch
     for subjects_batch in training_loader:

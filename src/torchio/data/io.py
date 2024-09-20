@@ -181,18 +181,19 @@ def _write_sitk(
 ) -> None:
     assert tensor.ndim == 4
     path = Path(path)
+    array = tensor.numpy()
     if path.suffix in ('.png', '.jpg', '.jpeg', '.bmp'):
         warnings.warn(
             f'Casting to uint 8 before saving to {path}',
             RuntimeWarning,
             stacklevel=2,
         )
-        tensor = tensor.numpy().astype(np.uint8)
+        array = array.astype(np.uint8)
     if squeeze is None:
         force_3d = path.suffix not in IMAGE_2D_FORMATS
     else:
         force_3d = not squeeze
-    image = nib_to_sitk(tensor, affine, force_3d=force_3d)
+    image = nib_to_sitk(array, affine, force_3d=force_3d)
     sitk.WriteImage(image, str(path), use_compression)
 
 

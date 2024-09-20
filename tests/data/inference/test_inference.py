@@ -1,4 +1,4 @@
-from torch.utils.data import DataLoader
+import torchio as tio
 from torchio import DATA
 from torchio import LOCATION
 from torchio.data.inference import GridAggregator
@@ -29,7 +29,7 @@ class TestInference(TorchioTestCase):
                 padding_mode=padding_mode,
             )
             aggregator = GridAggregator(grid_sampler)
-            patch_loader = DataLoader(grid_sampler, batch_size=batch_size)
+            patch_loader = tio.SubjectsLoader(grid_sampler, batch_size=batch_size)
             for patches_batch in patch_loader:
                 input_tensor = patches_batch['t1'][DATA]
                 locations = patches_batch[LOCATION]
