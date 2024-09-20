@@ -49,12 +49,6 @@ jobs:
           echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
-      - name: Create and activate virtual environment and
-        run: |
-          uv venv
-          echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
-          echo "$PWD/.venv/bin" >> $GITHUB_PATH
-
       - name: Install tox
         run: uv pip install tox-uv
 
