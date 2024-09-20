@@ -54,7 +54,7 @@ jobs:
         run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
       - name: Add local bin to PATH on Windows
-        if: runner.os == 'Windows'
+        if: matrix.os == 'windows-latest'
         run: |
           echo "C:\Users\runneradmin\.local\bin" >> $env:PATH
         shell: powershell
