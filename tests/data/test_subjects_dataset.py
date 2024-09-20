@@ -1,7 +1,6 @@
 import pytest
 import torch
 import torchio as tio
-from torch.utils.data import DataLoader
 
 from ..utils import TorchioTestCase
 
@@ -57,7 +56,7 @@ class TestSubjectsDataset(TorchioTestCase):
 
     def test_from_batch(self):
         dataset = tio.SubjectsDataset([self.sample_subject])
-        loader = DataLoader(dataset)
+        loader = tio.SubjectsLoader(dataset)
         batch = tio.utils.get_first_item(loader)
         new_dataset = tio.SubjectsDataset.from_batch(batch)
         self.assert_tensor_equal(

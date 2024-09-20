@@ -815,6 +815,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "rickymwalsh",
+      "name": "Ricky Walsh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70853488?v=4",
+      "profile": "https://www.linkedin.com/in/ricky-walsh/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

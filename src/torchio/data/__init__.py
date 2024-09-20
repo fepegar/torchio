@@ -3,6 +3,7 @@ from .image import Image
 from .image import LabelMap
 from .image import ScalarImage
 from .inference import GridAggregator
+from .loader import SubjectsLoader
 from .queue import Queue
 from .sampler import GridSampler
 from .sampler import LabelSampler
@@ -16,6 +17,7 @@ __all__ = [
     'Queue',
     'Subject',
     'SubjectsDataset',
+    'SubjectsLoader',
     'Image',
     'ScalarImage',
     'LabelMap',

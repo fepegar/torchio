@@ -139,8 +139,8 @@ class GridAggregator:
                 extracted using ``batch[torchio.LOCATION]``.
         """
         batch = batch_tensor.cpu()
-        locations = locations.cpu().numpy()
-        patch_sizes = locations[:, 3:] - locations[:, :3]
+        locations_array = locations.cpu().numpy()
+        patch_sizes = locations_array[:, 3:] - locations_array[:, :3]
         # There should be only one patch size
         assert len(np.unique(patch_sizes, axis=0)) == 1
         input_spatial_shape = tuple(batch.shape[-3:])
@@ -155,7 +155,7 @@ class GridAggregator:
         self._initialize_output_tensor(batch)
         assert isinstance(self._output_tensor, torch.Tensor)
         if self.overlap_mode == 'crop':
-            for patch, location in zip(batch, locations):
+            for patch, location in zip(batch, locations_array):
                 cropped_patch, new_location = self._crop_patch(
                     patch,
                     location,
