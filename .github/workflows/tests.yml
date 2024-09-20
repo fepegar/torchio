@@ -65,9 +65,9 @@ jobs:
       - name: Run pytest
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
-            uv run tox -e pytest
+            tox -e pytest
           else
-            uv run tox -e pytest -- -m "not slow"
+            tox -e pytest -- -m "not slow"
           fi
         shell: bash  # so it doesn't fail on Windows
 
@@ -86,6 +86,11 @@ jobs:
       PYTHON_VERSION: '3.12'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install uv
         uses: astral-sh/setup-uv@v2
         with:
