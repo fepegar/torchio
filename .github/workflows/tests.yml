@@ -58,7 +58,7 @@ jobs:
       - run: tox --help
 
       - name: Setup test suite
-        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.python }}
+        run: tox run -v --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
@@ -68,9 +68,10 @@ jobs:
           else
             tox -e pytest -- -m "not slow"
           fi
+        shell: bash  # this wouldn't work on Powershell
 
       - name: Upload coverage reports to Codecov
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python == '3.12' }}
         run: |
           OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
           curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
