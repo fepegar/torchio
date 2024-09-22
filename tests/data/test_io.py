@@ -52,8 +52,10 @@ class TestIO(TorchioTestCase):
     def test_dicom_dir_no_files(self):
         empty = self.dir / 'empty'
         empty.mkdir()
+        sitk.ProcessObject_SetGlobalWarningDisplay(False)
         with pytest.raises(FileNotFoundError):
             io._read_dicom(empty)
+        sitk.ProcessObject_SetGlobalWarningDisplay(True)
 
     def write_read_matrix(self, suffix):
         out_path = self.dir / f'matrix{suffix}'
