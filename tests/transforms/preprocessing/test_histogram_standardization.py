@@ -36,12 +36,14 @@ class TestHistogramStandardization(TorchioTestCase):
             paths,
             masking_function=HistogramStandardization.mean,
             output_path=(self.dir / 'landmarks.txt'),
+            progress=False,
         )
         # Use a file to mask
         HistogramStandardization.train(
             paths,
             mask_path=self.dataset[0].label.path,
             output_path=(self.dir / 'landmarks.npy'),
+            progress=False,
         )
         # Use files to mask
         masks = [subject.label.path for subject in self.dataset]
@@ -49,6 +51,7 @@ class TestHistogramStandardization(TorchioTestCase):
             paths,
             mask_path=masks,
             output_path=(self.dir / 'landmarks_masks.npy'),
+            progress=False,
         )
 
     def test_bad_paths_lengths(self):
@@ -74,8 +77,9 @@ class TestHistogramStandardization(TorchioTestCase):
     def test_with_saved_dict(self):
         landmarks = np.linspace(0, 100, 13)
         landmarks_dict = {'image': landmarks}
-        torch.save(landmarks_dict, self.dir / 'landmarks_dict.pth')
-        landmarks_dict = torch.load(self.dir / 'landmarks_dict.pth')
+        landmarks_path = self.dir / 'landmarks_dict.pth'
+        torch.save(landmarks_dict, landmarks_path)
+        landmarks_dict = torch.load(landmarks_path, weights_only=False)
         transform = HistogramStandardization(landmarks_dict)
         transform(self.dataset[0])
 

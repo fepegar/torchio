@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Callable
 from typing import Dict
+from typing import Iterable
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -107,6 +108,8 @@ class HistogramStandardization(NormalizationTransform):
         mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
         masking_function: Optional[Callable] = None,
         output_path: Optional[TypePath] = None,
+        *,
+        progress: bool = True,
     ) -> np.ndarray:
         """Extract average histogram landmarks from images used for training.
 
@@ -171,7 +174,9 @@ class HistogramStandardization(NormalizationTransform):
         percentiles_database = []
         a, b = percentiles_cutoff  # for mypy
         percentiles = _get_percentiles((a, b))
-        for i, image_file_path in enumerate(tqdm(images_paths)):
+        iterable: Iterable[TypePath]
+        iterable = tqdm(images_paths) if progress else images_paths  # type: ignore[assignment]
+        for i, image_file_path in enumerate(iterable):
             tensor, _ = read_image(image_file_path)
             if masking_function is not None:
                 mask = masking_function(tensor)

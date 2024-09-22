@@ -220,15 +220,17 @@ def write_matrix(matrix: torch.Tensor, path: TypePath):
         _write_niftyreg_matrix(matrix, path)
 
 
-def _to_itk_convention(matrix):
+def _to_itk_convention(matrix: TypeData) -> np.ndarray:
     """RAS to LPS."""
+    if isinstance(matrix, torch.Tensor):
+        matrix = matrix.numpy()
     matrix = np.dot(FLIPXY_44, matrix)
     matrix = np.dot(matrix, FLIPXY_44)
     matrix = np.linalg.inv(matrix)
     return matrix
 
 
-def _from_itk_convention(matrix):
+def _from_itk_convention(matrix: TypeData) -> np.ndarray:
     """LPS to RAS."""
     matrix = np.dot(matrix, FLIPXY_44)
     matrix = np.dot(FLIPXY_44, matrix)
@@ -236,7 +238,7 @@ def _from_itk_convention(matrix):
     return matrix
 
 
-def _read_itk_matrix(path):
+def _read_itk_matrix(path: TypePath) -> torch.Tensor:
     """Read an affine transform in ITK's .tfm format."""
     transform = sitk.ReadTransform(str(path))
     parameters = transform.GetParameters()
@@ -250,13 +252,16 @@ def _read_itk_matrix(path):
     return torch.as_tensor(homogeneous_matrix_ras)
 
 
-def _write_itk_matrix(matrix, tfm_path):
+def _write_itk_matrix(matrix: TypeData, tfm_path: TypePath) -> None:
     """The tfm file contains the matrix from floating to reference."""
     transform = _matrix_to_itk_transform(matrix)
     transform.WriteTransform(str(tfm_path))
 
 
-def _matrix_to_itk_transform(matrix, dimensions=3):
+def _matrix_to_itk_transform(
+    matrix: TypeData,
+    dimensions: int = 3,
+) -> sitk.AffineTransform:
     matrix = _to_itk_convention(matrix)
     rotation = matrix[:dimensions, :dimensions].ravel().tolist()
     translation = matrix[:dimensions, 3].tolist()
@@ -264,14 +269,14 @@ def _matrix_to_itk_transform(matrix, dimensions=3):
     return transform
 
 
-def _read_niftyreg_matrix(trsf_path):
+def _read_niftyreg_matrix(trsf_path: TypePath) -> torch.Tensor:
     """Read a NiftyReg matrix and return it as a NumPy array."""
     matrix = np.loadtxt(trsf_path)
     matrix = np.linalg.inv(matrix)
     return torch.as_tensor(matrix)
 
 
-def _write_niftyreg_matrix(matrix, txt_path):
+def _write_niftyreg_matrix(matrix: TypeData, txt_path: TypePath) -> None:
     """Write an affine transform in NiftyReg's .txt format (ref -> flo)"""
     matrix = np.linalg.inv(matrix)
     np.savetxt(txt_path, matrix, fmt='%.8f')
