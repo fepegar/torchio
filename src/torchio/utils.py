@@ -205,9 +205,9 @@ def compress(
 def check_sequence(sequence: Sequence, name: str) -> None:
     try:
         iter(sequence)
-    except TypeError:
+    except TypeError as err:
         message = f'"{name}" must be a sequence, not {type(name)}'
-        raise TypeError(message)
+        raise TypeError(message) from err
 
 
 def get_major_sitk_version() -> int:

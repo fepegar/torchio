@@ -314,11 +314,12 @@ class Transform(ABC):
 
         try:
             min_value, max_value = nums_range  # type: ignore[misc]
-        except (TypeError, ValueError):
-            raise ValueError(
+        except (TypeError, ValueError) as err:
+            message = (
                 f'If {name} is not a single number, it must be'
-                f' a sequence of len 2, not {nums_range}',
+                f' a sequence of len 2, not {nums_range}'
             )
+            raise ValueError(message) from err
 
         min_is_number = isinstance(min_value, numbers.Number)
         max_is_number = isinstance(max_value, numbers.Number)
