@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 import SimpleITK as sitk
 import torch
-from torchio.data import io
-from torchio.data import ScalarImage
+
+from torchio.data import ScalarImage, io
 
 from ..utils import TorchioTestCase
 
@@ -117,12 +117,12 @@ class TestIO(TorchioTestCase):
     def test_sitk_to_affine(self):
         spacing = 1, 2, 3
         direction_lps = -1, 0, 0, 0, -1, 0, 0, 0, 1
-        origin_lps = l, p, s = -10, -20, 30
+        origin_lps = left, posterior, superior = -10, -20, 30
         image = sitk.GetImageFromArray(np.random.rand(10, 20, 30))
         image.SetDirection(direction_lps)
         image.SetSpacing(spacing)
         image.SetOrigin(origin_lps)
-        origin_ras = -l, -p, s
+        origin_ras = -left, -posterior, superior
         fixture = np.diag((*spacing, 1))
         fixture[:3, 3] = origin_ras
         affine = io.get_ras_affine_from_sitk(image)

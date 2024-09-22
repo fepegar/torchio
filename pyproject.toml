@@ -56,7 +56,6 @@ dev = [
     "black",
     "bump2version",
     "coverage",
-    "flake8",
     "mypy",
     "parameterized",
     "pre-commit",
