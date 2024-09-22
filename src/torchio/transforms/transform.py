@@ -317,7 +317,7 @@ class Transform(ABC):
         except (TypeError, ValueError) as err:
             message = (
                 f'If {name} is not a single number, it must be'
-                f' a sequence of len 2, not {nums_range}',
+                f' a sequence of len 2, not {nums_range}'
             )
             raise ValueError(message) from err
 
