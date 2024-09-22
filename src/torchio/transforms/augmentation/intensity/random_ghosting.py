@@ -7,10 +7,10 @@ from typing import Union
 import numpy as np
 import torch
 
-from .. import RandomTransform
-from ... import FourierTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
+from ...fourier import FourierTransform
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomGhosting(RandomTransform, IntensityTransform):

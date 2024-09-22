@@ -7,10 +7,10 @@ from typing import Union
 import numpy as np
 import torch
 
-from .. import RandomTransform
-from ... import FourierTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
+from ...fourier import FourierTransform
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
@@ -53,7 +53,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             intensity,
             'intensity_range',
         )
-        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]  # noqa: B950
+        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]
             num_spikes,
             'num_spikes',
             min_constraint=0,

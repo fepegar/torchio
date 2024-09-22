@@ -3,11 +3,11 @@ from pathlib import Path
 from typing import Dict
 from typing import Optional
 
-from .. import Image
-from .. import LabelMap
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import Image
+from ..data import LabelMap
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..download import download_and_extract_archive
 from ..transforms import Transform
 from ..typing import TypePath
@@ -56,7 +56,7 @@ class BITE3(BITE):
         transform: An instance of
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
-    """  # noqa: B950
+    """
 
     dirname = 'group3'
 

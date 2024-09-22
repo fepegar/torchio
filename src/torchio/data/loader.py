@@ -7,11 +7,10 @@ from typing import TypeVar
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
 
 from .subject import Subject
-
 
 T = TypeVar('T')
 

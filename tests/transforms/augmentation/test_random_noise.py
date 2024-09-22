@@ -1,4 +1,5 @@
 import pytest
+
 from torchio import RandomNoise
 
 from ...utils import TorchioTestCase

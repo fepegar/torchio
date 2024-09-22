@@ -6,7 +6,8 @@ import pytest
 import SimpleITK as sitk
 import torch
 
-from torchio.data import ScalarImage, io
+from torchio.data import ScalarImage
+from torchio.data import io
 
 from ..utils import TorchioTestCase
 

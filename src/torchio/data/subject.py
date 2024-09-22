@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import pprint
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -9,7 +10,6 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -19,7 +19,8 @@ from ..utils import get_subclasses
 from .image import Image
 
 if TYPE_CHECKING:
-    from ..transforms import Transform, Compose
+    from ..transforms import Compose
+    from ..transforms import Transform
 
 
 class Subject(dict):
@@ -49,7 +50,7 @@ class Subject(dict):
         ...     'hospital': 'Hospital Juan Negrín',
         ... }
         >>> subject = tio.Subject(subject_dict)
-    """  # noqa: B950
+    """
 
     def __init__(self, *args, **kwargs: Dict[str, Any]):
         if args:
@@ -162,8 +163,8 @@ class Subject(dict):
         ignore_intensity: bool = False,
         image_interpolation: Optional[str] = None,
     ) -> List[Transform]:
-        from ..transforms.transform import Transform
         from ..transforms.intensity_transform import IntensityTransform
+        from ..transforms.transform import Transform
 
         name_to_transform = {cls.__name__: cls for cls in get_subclasses(Transform)}
         transforms_list = []
@@ -266,7 +267,7 @@ class Subject(dict):
             attribute of two images being compared,
             :math:`t_{abs}` is the ``absolute_tolerance`` and
             :math:`t_{rel}` is the ``relative_tolerance``.
-        """  # noqa: B950
+        """
         message = (
             f'More than one value for "{attribute}" found in subject images:\n{{}}'
         )
@@ -328,7 +329,7 @@ class Subject(dict):
                 'As described above, some images in the subject are not in the'
                 ' same space. You probably can use the transforms ToCanonical'
                 ' and Resample to fix this, as explained at'
-                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'  # noqa: B950
+                ' https://github.com/fepegar/torchio/issues/647#issuecomment-913025695'
             )
             raise RuntimeError(message) from e
 

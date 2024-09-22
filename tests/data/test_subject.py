@@ -5,6 +5,7 @@ import tempfile
 import numpy as np
 import pytest
 import torch
+
 import torchio as tio
 
 from ..utils import TorchioTestCase
@@ -115,7 +116,7 @@ class TestSubject(TorchioTestCase):
                     -5.54619071e-01,
                     -1.57071802e-02,
                     2.28515778e02,
-                ],  # noqa: B950
+                ],
                 [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
             ]
         )

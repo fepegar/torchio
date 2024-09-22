@@ -2,8 +2,9 @@ import sys
 
 import pytest
 import torch
-import torchio as tio
 from parameterized import parameterized
+
+import torchio as tio
 from torchio.data import UniformSampler
 from torchio.utils import create_dummy_dataset
 

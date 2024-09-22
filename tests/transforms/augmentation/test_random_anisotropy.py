@@ -1,5 +1,6 @@
 import pytest
 import torch
+
 from torchio import RandomAnisotropy
 from torchio import ScalarImage
 

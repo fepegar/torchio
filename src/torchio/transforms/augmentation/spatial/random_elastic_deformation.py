@@ -8,15 +8,14 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 
-from .. import RandomTransform
-from ... import SpatialTransform
 from ....data.image import ScalarImage
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
 from ....typing import TypeTripletFloat
 from ....typing import TypeTripletInt
 from ....utils import to_tuple
-
+from ...spatial_transform import SpatialTransform
+from .. import RandomTransform
 
 SPLINE_ORDER = 3
 
@@ -118,7 +117,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         .. [#] Technically, :math:`2 \epsilon` should be added to the
             image bounds, where :math:`\epsilon = 2^{-3}` `according to ITK
             source code <https://github.com/InsightSoftwareConsortium/ITK/blob/633f84548311600845d54ab2463d3412194690a8/Modules/Core/Transform/include/itkBSplineTransformInitializer.hxx#L116-L138>`_.
-    """  # noqa: B950
+    """
 
     def __init__(
         self,
@@ -132,9 +131,9 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
         super().__init__(**kwargs)
         self._bspline_transformation = None
         self.num_control_points = to_tuple(num_control_points, length=3)
-        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]  # noqa: B950
+        _parse_num_control_points(self.num_control_points)  # type: ignore[arg-type]
         self.max_displacement = to_tuple(max_displacement, length=3)
-        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]  # noqa: B950
+        _parse_max_displacement(self.max_displacement)  # type: ignore[arg-type]
         self.num_locked_borders = locked_borders
         if locked_borders not in (0, 1, 2):
             raise ValueError('locked_borders must be 0, 1, or 2')

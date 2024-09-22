@@ -1,24 +1,19 @@
 import urllib.parse
 
-from .. import ScalarImage
+from ..data import ScalarImage
 from ..data.subject import _RawSubjectCopySubject
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
-
 
 SLICER_URL = 'https://github.com/Slicer/SlicerTestingData/releases/download/'
 URLS_DICT = {
     'MRHead': (
         ('MRHead.nrrd',),
-        (
-            'SHA256/cc211f0dfd9a05ca3841ce1141b292898b2dd2d3f08286affadf823a7e58df93',
-        ),  # noqa: B950
+        ('SHA256/cc211f0dfd9a05ca3841ce1141b292898b2dd2d3f08286affadf823a7e58df93',),
     ),
     'DTIBrain': (
         ('DTI-Brain.nrrd',),
-        (
-            'SHA256/5c78d00c86ae8d968caa7a49b870ef8e1c04525b1abc53845751d8bce1f0b91a',
-        ),  # noqa: B950
+        ('SHA256/5c78d00c86ae8d968caa7a49b870ef8e1c04525b1abc53845751d8bce1f0b91a',),
     ),
     'DTIVolume': (
         (
@@ -26,21 +21,17 @@ URLS_DICT = {
             'DTIVolume.nhdr',
         ),
         (
-            'SHA256/d785837276758ddd9d21d76a3694e7fd866505a05bc305793517774c117cb38d',  # noqa: B950
-            'SHA256/67564aa42c7e2eec5c3fd68afb5a910e9eab837b61da780933716a3b922e50fe',  # noqa: B950
+            'SHA256/d785837276758ddd9d21d76a3694e7fd866505a05bc305793517774c117cb38d',
+            'SHA256/67564aa42c7e2eec5c3fd68afb5a910e9eab837b61da780933716a3b922e50fe',
         ),
     ),
     'CTChest': (
         ('CT-chest.nrrd',),
-        (
-            'SHA256/4507b664690840abb6cb9af2d919377ffc4ef75b167cb6fd0f747befdb12e38e',
-        ),  # noqa: B950
+        ('SHA256/4507b664690840abb6cb9af2d919377ffc4ef75b167cb6fd0f747befdb12e38e',),
     ),
     'CTACardio': (
         ('CTA-cardio.nrrd',),
-        (
-            'SHA256/3b0d4eb1a7d8ebb0c5a89cc0504640f76a030b4e869e33ff34c564c3d3b88ad2',
-        ),  # noqa: B950
+        ('SHA256/3b0d4eb1a7d8ebb0c5a89cc0504640f76a030b4e869e33ff34c564c3d3b88ad2',),
     ),
 }
 
@@ -56,7 +47,7 @@ class Slicer(_RawSubjectCopySubject):
 
     Args:
         name: One of the keys in :attr:`torchio.datasets.slicer.URLS_DICT`.
-    """  # noqa: B950
+    """
 
     def __init__(self, name='MRHead'):
         filenames, url_files = URLS_DICT[name]

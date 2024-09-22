@@ -42,7 +42,7 @@ class RescaleIntensity(NormalizationTransform):
 
     .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py
     .. _nn-UNet paper: https://arxiv.org/abs/1809.10486
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

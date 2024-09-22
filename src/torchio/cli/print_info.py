@@ -3,7 +3,6 @@ from pathlib import Path
 
 import typer
 
-
 app = typer.Typer()
 
 

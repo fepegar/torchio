@@ -1,4 +1,3 @@
-# noqa: B950
 import enum
 
 import SimpleITK as sitk

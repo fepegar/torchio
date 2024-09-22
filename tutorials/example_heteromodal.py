@@ -8,6 +8,7 @@ Modality Completion and Segmentation
 import logging
 
 import torch.nn as nn
+
 import torchio as tio
 from torchio import LabelMap
 from torchio import Queue

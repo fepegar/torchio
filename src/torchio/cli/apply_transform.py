@@ -3,8 +3,9 @@
 from pathlib import Path
 
 import typer
-from rich.progress import Progress, SpinnerColumn, TextColumn
-
+from rich.progress import Progress
+from rich.progress import SpinnerColumn
+from rich.progress import TextColumn
 
 app = typer.Typer()
 
@@ -61,9 +62,10 @@ def main(
 
     Example:
     $ tiotr input.nrrd RandomMotion output.nii "degrees=(-5,15) num_transforms=3" -v
-    """  # noqa: B950
+    """
     # Imports are placed here so that the tool loads faster if not being run
     import torch
+
     import torchio.transforms as transforms
     from torchio.utils import apply_transform_to_file
 
@@ -79,7 +81,7 @@ def main(
         torch.manual_seed(seed)
     with Progress(
         SpinnerColumn(),
-        TextColumn('[progress.description]{task.description}'),  # noqa: FS003
+        TextColumn('[progress.description]{task.description}'),
         transient=True,
         disable=not show_progress,
     ) as progress:

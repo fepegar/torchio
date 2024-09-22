@@ -7,8 +7,8 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
-import torch
 import numpy as np
+import torch
 from tqdm.auto import tqdm
 
 from ....data.io import read_image
@@ -51,7 +51,7 @@ class HistogramStandardization(NormalizationTransform):
         >>> transform = tio.HistogramStandardization(landmarks)
         >>> torch.save(landmarks, 'path_to_landmarks.pth')
         >>> transform = tio.HistogramStandardization('path_to_landmarks.pth')
-    """  # noqa: B950
+    """
 
     def __init__(
         self,
@@ -161,12 +161,12 @@ class HistogramStandardization(NormalizationTransform):
             ... }
             >>>
             >>> transform = HistogramStandardization(landmarks_dict)
-        """  # noqa: B950
+        """
         is_masks_list = isinstance(mask_path, Sequence)
-        if is_masks_list and len(mask_path) != len(images_paths):  # type: ignore[arg-type]  # noqa: B950
+        if is_masks_list and len(mask_path) != len(images_paths):  # type: ignore[arg-type]
             message = (
-                f'Different number of images ({len(images_paths)})'  # type: ignore[arg-type]  # noqa: B950
-                f' and mask ({len(mask_path)}) paths found'  # type: ignore[arg-type]  # noqa: B950
+                f'Different number of images ({len(images_paths)})'  # type: ignore[arg-type]
+                f' and mask ({len(mask_path)}) paths found'  # type: ignore[arg-type]
             )
             raise ValueError(message)
         quantiles_cutoff = DEFAULT_CUTOFF if cutoff is None else cutoff

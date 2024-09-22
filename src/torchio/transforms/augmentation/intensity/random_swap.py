@@ -11,13 +11,12 @@ from typing import Union
 import numpy as np
 import torch
 
-from .. import RandomTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
 from ....typing import TypeTripletInt
 from ....typing import TypeTuple
 from ....utils import to_tuple
-
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 TypeLocations = Sequence[Tuple[TypeTripletInt, TypeTripletInt]]
 TensorArray = TypeVar('TensorArray', np.ndarray, torch.Tensor)
@@ -143,7 +142,7 @@ class Swap(IntensityTransform):
             if self.invert_transform:
                 assert isinstance(locations, list)
                 locations.reverse()
-            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]  # noqa: B950
+            swapped = _swap(image.data, patch_size, locations)  # type: ignore[arg-type]
             image.set_data(swapped)
         return subject
 

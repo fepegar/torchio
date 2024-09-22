@@ -4,10 +4,10 @@ from typing import Sequence
 
 import torch
 
-from ... import IntensityTransform
 from ....data.image import ScalarImage
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
+from ...intensity_transform import IntensityTransform
 
 
 class Mask(IntensityTransform):
@@ -45,7 +45,7 @@ class Mask(IntensityTransform):
         masked = mask(subject)
         subject.add_image(masked.t1, 'Masked')
         subject.plot()
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

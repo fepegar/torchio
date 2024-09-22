@@ -21,7 +21,7 @@ repos:
     rev: v0.6.7
     hooks:
       - id: ruff
-      # - id: ruff-format
+      - id: ruff-format
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0

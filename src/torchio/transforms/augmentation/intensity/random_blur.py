@@ -7,12 +7,12 @@ import numpy as np
 import scipy.ndimage as ndi
 import torch
 
-from .. import RandomTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
 from ....typing import TypeData
 from ....typing import TypeSextetFloat
 from ....typing import TypeTripletFloat
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomBlur(RandomTransform, IntensityTransform):

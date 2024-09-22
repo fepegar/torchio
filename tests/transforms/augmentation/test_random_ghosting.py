@@ -1,4 +1,5 @@
 import pytest
+
 from torchio import RandomGhosting
 
 from ...utils import TorchioTestCase

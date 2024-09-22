@@ -1,6 +1,7 @@
 import pytest
-import torchio as tio
 import torch
+
+import torchio as tio
 
 from ...utils import TorchioTestCase
 

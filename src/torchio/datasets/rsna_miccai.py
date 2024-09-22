@@ -6,9 +6,9 @@ from typing import List
 from typing import Sequence
 from typing import Union
 
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..typing import TypePath
 
 
@@ -50,7 +50,7 @@ class RSNAMICCAI(SubjectsDataset):
 
 
     .. _RSNA-MICCAI Brain Tumor Radiogenomic Classification challenge: https://www.kaggle.com/c/rsna-miccai-brain-tumor-radiogenomic-classification
-    """  # noqa: B950
+    """
 
     id_key = 'BraTS21ID'
     label_key = 'MGMT_value'

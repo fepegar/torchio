@@ -1,5 +1,5 @@
-from ... import SpatialTransform
 from ....transforms.transform import TypeBounds
+from ...spatial_transform import SpatialTransform
 
 
 class BoundsTransform(SpatialTransform):

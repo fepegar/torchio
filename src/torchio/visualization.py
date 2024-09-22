@@ -169,7 +169,7 @@ def get_num_bins(x: np.ndarray) -> int:
 
     Args:
         x: Input values.
-    """  # noqa: B950
+    """
     # Freedman–Diaconis number of bins
     q25, q75 = np.percentile(x, [25, 75])
     bin_width = 2 * (q75 - q25) * len(x) ** (-1 / 3)
@@ -219,7 +219,7 @@ def make_gif(
         message = 'Please install Pillow to use Image.to_gif(): pip install Pillow'
         raise RuntimeError(message) from e
     transform = RescaleIntensity((0, 255))
-    tensor = transform(tensor) if rescale else tensor  # type: ignore[assignment]  # noqa: B950
+    tensor = transform(tensor) if rescale else tensor  # type: ignore[assignment]
     single_channel = len(tensor) == 1
 
     # Move channels dimension to the end and bring selected axis to 0

@@ -15,7 +15,7 @@ BIBTEX = r"""@article{perez-garcia_torchio_2021,
     url = {https://www.sciencedirect.com/science/article/pii/S0169260721003102},
     author = {P{\'e}rez-Garc{\'i}a, Fernando and Sparks, Rachel and Ourselin, S{\'e}bastien},
     keywords = {Medical image computing, Deep learning, Data augmentation, Preprocessing},
-} """  # noqa: B950
+} """
 
 TITLE = (
     'TorchIO: a Python library for efficient loading, preprocessing,'

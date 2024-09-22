@@ -17,7 +17,6 @@ from .random_spike import Spike
 from .random_swap import RandomSwap
 from .random_swap import Swap
 
-
 __all__ = [
     'RandomSwap',
     'Swap',

@@ -1,18 +1,17 @@
 from pathlib import Path
+from types import ModuleType
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
-from types import ModuleType
 
-from .. import LabelMap
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import LabelMap
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..typing import TypePath
 from ..utils import normalize_path
-
 
 TypeBoxes = List[Dict[str, Union[str, float, int]]]
 
@@ -26,7 +25,7 @@ class RSNACervicalSpineFracture(SubjectsDataset):
     instantiating this class.
 
     .. _RSNA 2022 Cervical Spine Fracture Detection: https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection/overview/evaluation
-    """  # noqa: B950
+    """
 
     UID = 'StudyInstanceUID'
 

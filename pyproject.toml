@@ -53,7 +53,6 @@ csv = [
     "pandas",
 ]
 dev = [
-    "black",
     "bump2version",
     "coverage",
     "mypy",
@@ -98,11 +97,6 @@ Source = "https://github.com/fepegar/torchio"
 Documentation = "http://torchio.rtfd.io"
 "Release notes" = "https://github.com/fepegar/torchio/releases"
 
-[tool.black]
-preview = false
-skip-string-normalization = true
-target-version = ['py311']
-
 [tool.mypy]
 pretty = true
 
@@ -127,7 +121,6 @@ markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "serial",
 ]
-
 filterwarnings = [
     # Ignore SimpleITK Swig warnings
     "ignore:builtin type .* has no __module__ attribute",
@@ -135,3 +128,10 @@ filterwarnings = [
     # Raised by SimpleITK on CI
     "ignore:invalid escape sequence",
 ]
+
+[tool.ruff]
+format.quote-style = 'single'
+lint.select = ["F", "I"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
