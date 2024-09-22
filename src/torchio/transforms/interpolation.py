@@ -15,37 +15,37 @@ class Interpolation(enum.Enum):
     """
 
     #: Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.
-    NEAREST: str = 'sitkNearestNeighbor'
+    NEAREST = 'sitkNearestNeighbor'
 
     #: Linearly interpolates image intensity at a non-integer pixel position.
-    LINEAR: str = 'sitkLinear'
+    LINEAR = 'sitkLinear'
 
     #: B-Spline of order 3 (cubic) interpolation.
-    BSPLINE: str = 'sitkBSpline'
+    BSPLINE = 'sitkBSpline'
 
     #: Same as ``nearest``.
-    CUBIC: str = 'sitkBSpline'
+    CUBIC = 'sitkBSpline'
 
     #: Gaussian interpolation. Sigma is set to 0.8 input pixels and alpha is 4
-    GAUSSIAN: str = 'sitkGaussian'
+    GAUSSIAN = 'sitkGaussian'
 
     #: Smoothly interpolate multi-label images. Sigma is set to 1 input pixel and alpha is 1
-    LABEL_GAUSSIAN: str = 'sitkLabelGaussian'
+    LABEL_GAUSSIAN = 'sitkLabelGaussian'
 
     #: Hamming windowed sinc kernel.
-    HAMMING: str = 'sitkHammingWindowedSinc'
+    HAMMING = 'sitkHammingWindowedSinc'
 
     #: Cosine windowed sinc kernel.
-    COSINE: str = 'sitkCosineWindowedSinc'
+    COSINE = 'sitkCosineWindowedSinc'
 
     #: Welch windowed sinc kernel.
-    WELCH: str = 'sitkWelchWindowedSinc'
+    WELCH = 'sitkWelchWindowedSinc'
 
     #: Lanczos windowed sinc kernel.
-    LANCZOS: str = 'sitkLanczosWindowedSinc'
+    LANCZOS = 'sitkLanczosWindowedSinc'
 
     #: Blackman windowed sinc kernel.
-    BLACKMAN: str = 'sitkBlackmanWindowedSinc'
+    BLACKMAN = 'sitkBlackmanWindowedSinc'
 
 
 def get_sitk_interpolator(interpolation: str) -> int:
