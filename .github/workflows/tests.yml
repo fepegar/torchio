@@ -72,11 +72,9 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python == '3.12' }}
-        run: |
-          OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
-          curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
-          chmod +x codecov
-          ./codecov
+        uses: codecov/codecov-action@v4.2.0
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   cli:
     name: CLI smoke tests
