@@ -40,27 +40,6 @@ jobs:
       - name: Run check for tox env "${{ matrix.tox_env }}"
         run: tox -e ${{ matrix.tox_env }}
 
-  black:
-    name: Code formatting
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install black
-        run: pip install black
-
-      - name: Run black
-        run: black --check --diff .
-
   docs:
     name: Documentation
     runs-on: ubuntu-latest

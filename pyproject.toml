@@ -53,7 +53,6 @@ csv = [
     "pandas",
 ]
 dev = [
-    "black",
     "bump2version",
     "coverage",
     "mypy",
@@ -97,11 +96,6 @@ Source = "https://github.com/fepegar/torchio"
 "Issue tracker" = "https://github.com/fepegar/torchio/issues"
 Documentation = "http://torchio.rtfd.io"
 "Release notes" = "https://github.com/fepegar/torchio/releases"
-
-[tool.black]
-preview = false
-skip-string-normalization = true
-target-version = ['py311']
 
 [tool.mypy]
 pretty = true
