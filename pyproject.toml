@@ -131,7 +131,20 @@ filterwarnings = [
 
 [tool.ruff]
 format.quote-style = 'single'
-lint.select = ["F", "I"]
+lint.select = [
+    "B",
+    "C",
+    "E",
+    "F",
+    "I",
+    "W",
+]
+ignore = [
+    "E203",
+    "E501",
+    "N813",
+]
+
 
 [tool.ruff.lint.isort]
 force-single-line = true
