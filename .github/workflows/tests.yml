@@ -9,74 +9,74 @@ on:
     - cron: "0 4 * * *"
 
 jobs:
-  # pytest:
-  #   name: Unit tests
-  #   strategy:
-  #     matrix:
-  #       os: [
-  #         ubuntu-latest,
-  #         macos-latest,
-  #         windows-latest,
-  #       ]
-  #       python: [
-  #         '3.8',
-  #         '3.9',
-  #         '3.10',
-  #         '3.11',
-  #         '3.12',
-  #       ]
-  #     fail-fast: false
+  pytest:
+    name: Unit tests
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+          macos-latest,
+          windows-latest,
+        ]
+        python: [
+          '3.8',
+          '3.9',
+          '3.10',
+          '3.11',
+          '3.12',
+        ]
+      fail-fast: false
 
-  #   runs-on: ${{ matrix.os }}
-  #   env:
-  #     OS: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      OS: ${{ matrix.os }}
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  #     - name: Install the latest version of uv
-  #       uses: astral-sh/setup-uv@v3
-  #       with:
-  #         enable-cache: true
-  #         cache-dependency-glob: "pyproject.toml"
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Install Python
-  #       run: uv python install ${{ matrix.python }}
+      - name: Install Python
+        run: uv python install ${{ matrix.python }}
 
-  #     - name: Install tox
-  #       run: uv tool install tox --with tox-uv
+      - name: Install tox
+        run: uv tool install tox --with tox-uv
 
-  #     - name: Add local bin to path on Windows
-  #       if: runner.os == 'Windows'
-  #       run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
-  #       shell: bash
+      - name: Add local bin to path on Windows
+        if: runner.os == 'Windows'
+        run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
+        shell: bash
 
-  #     - run: tox --help
+      - run: tox --help
 
-  #     - name: Setup test suite
-  #       run: tox run -v --notest --skip-missing-interpreters false -e ${{ matrix.python }}
+      - name: Setup test suite
+        run: tox run -v --notest --skip-missing-interpreters false -e ${{ matrix.python }}
 
-  #     # Run all tests on schedule, but only non-slow tests on push
-  #     - name: Run pytest
-  #       run: |
-  #         if [ "${{ github.event_name }}" == "schedule" ]; then
-  #           tox -e pytest
-  #         else
-  #           tox -e pytest -- -m "not slow"
-  #         fi
-  #       shell: bash  # this wouldn't work on Powershell
+      # Run all tests on schedule, but only non-slow tests on push
+      - name: Run pytest
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            tox -e pytest
+          else
+            tox -e pytest -- -m "not slow"
+          fi
+        shell: bash  # this wouldn't work on Powershell
 
-  #     - name: Upload coverage reports to Codecov
-  #       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python == '3.12' }}
-  #       run: |
-  #         OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
-  #         curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
-  #         chmod +x codecov
-  #         ./codecov
+      - name: Upload coverage reports to Codecov
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python == '3.12' }}
+        run: |
+          OS_LOWERCASE=$(echo $RUNNER_OS | tr '[:upper:]' '[:lower:]')
+          curl -Os https://uploader.codecov.io/latest/${OS_LOWERCASE}/codecov
+          chmod +x codecov
+          ./codecov
 
   cli:
     name: CLI smoke tests
