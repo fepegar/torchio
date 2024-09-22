@@ -18,9 +18,6 @@ jobs:
       matrix:
         tox_env:
           - types
-          # - lint
-          # - format
-          # - docs
 
     steps:
       - name: Checkout repository
@@ -42,88 +39,65 @@ jobs:
         run: tox -e ${{ matrix.tox_env }}
 
 
-# jobs:
+  flake8:
+    name: Code style
+    runs-on: ubuntu-latest
 
-#   mypy:
-#     name: Type checks
-#     runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-#     steps:
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.12"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
+      - name: Install pre-commit
+        run: pip install pre-commit
 
-#       - name: Install tox
-#         run: pip install tox
+      - name: Run flake8 hooks
+        run: pre-commit run --all-files flake8
 
-#       - name: Run mypy
-#         run: tox -e mypy
+  black:
+    name: Code formatting
+    runs-on: ubuntu-latest
 
-#   flake8:
-#     name: Code style
-#     runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-#     steps:
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.12"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
+      - name: Install black
+        run: pip install black
 
-#       - name: Install pre-commit
-#         run: pip install pre-commit
+      - name: Run black
+        run: black --check --diff .
 
-#       - name: Run flake8 hooks
-#         run: pre-commit run --all-files flake8
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
 
-#   black:
-#     name: Code formatting
-#     runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-#     steps:
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.12"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
+      - name: Install pre-commit
+        run: pip install pre-commit
 
-#       - name: Install black
-#         run: pip install black
-
-#       - name: Run black
-#         run: black --check --diff .
-
-#   docs:
-#     name: Documentation
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.12"
-
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-
-#       - name: Install pre-commit
-#         run: pip install pre-commit
-
-#       - name: Run doc8 hook
-#         run: pre-commit run --all-files doc8
+      - name: Run doc8 hook
+        run: pre-commit run --all-files doc8
