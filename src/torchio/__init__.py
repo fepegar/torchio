@@ -2,7 +2,7 @@
 
 __author__ = """Fernando Perez-Garcia"""
 __email__ = 'fepegar@gmail.com'
-__version__ = '0.19.8'
+__version__ = '0.20.0'
 
 
 from . import utils
@@ -13,6 +13,7 @@ from .data import (
     sampler,
     inference,
     SubjectsDataset,
+    SubjectsLoader,
     Image,
     ScalarImage,
     LabelMap,
@@ -34,6 +35,7 @@ __all__ = [
     'sampler',
     'inference',
     'SubjectsDataset',
+    'SubjectsLoader',
     'Image',
     'ScalarImage',
     'LabelMap',

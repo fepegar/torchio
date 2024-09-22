@@ -115,7 +115,6 @@ class Queue(Dataset):
 
     >>> import torch
     >>> import torchio as tio
-    >>> from torch.utils.data import DataLoader
     >>> patch_size = 96
     >>> queue_length = 300
     >>> samples_per_volume = 10
@@ -129,7 +128,7 @@ class Queue(Dataset):
     ...     sampler,
     ...     num_workers=4,
     ... )
-    >>> patches_loader = DataLoader(
+    >>> patches_loader = tio.SubjectsLoader(
     ...     patches_queue,
     ...     batch_size=16,
     ...     num_workers=0,  # this must be 0
@@ -168,7 +167,7 @@ class Queue(Dataset):
     ...     num_workers=4,
     ...     subject_sampler=subject_sampler,
     ... )
-    >>> patches_loader = DataLoader(
+    >>> patches_loader = tio.SubjectsLoader(
     ...     patches_queue,
     ...     batch_size=16,
     ...     num_workers=0,  # this must be 0

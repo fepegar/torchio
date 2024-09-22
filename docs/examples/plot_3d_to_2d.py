@@ -32,7 +32,7 @@ patch_size = (max_side, max_side, 1)  # 2D slices
 
 def plot_batch(sampler):
     queue = tio.Queue(dataset, max_queue_length, patches_per_volume, sampler)
-    loader = torch.utils.data.DataLoader(queue, batch_size=16)
+    loader = tio.SubjectsLoader(queue, batch_size=16)
     batch = tio.utils.get_first_item(loader)
 
     fig, axes = plt.subplots(4, 4, figsize=(12, 10))

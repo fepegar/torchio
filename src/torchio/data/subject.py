@@ -442,7 +442,7 @@ def _subject_copy_helper(
             value = copy.deepcopy(value)
         result_dict[key] = value
 
-    new = new_subj_cls(result_dict)
+    new = new_subj_cls(**result_dict)  # type: ignore[call-arg]
     new.applied_transforms = old_obj.applied_transforms[:]
     return new
 

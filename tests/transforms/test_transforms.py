@@ -291,7 +291,7 @@ class TestTransform(TorchioTestCase):
             ]
         )
         dataset = tio.SubjectsDataset([subject], transform=transform)
-        loader = torch.utils.data.DataLoader(
+        loader = tio.SubjectsLoader(
             dataset,
             collate_fn=tio.utils.history_collate,
         )

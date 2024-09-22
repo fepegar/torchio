@@ -21,12 +21,12 @@ repos:
         exclude: setup.cfg
 
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.8.0
     hooks:
     - id: black
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.1
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -54,7 +54,7 @@ repos:
       - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.16.0
+    rev: v3.17.0
     hooks:
       - id: pyupgrade
         args: ['--py38-plus', '--keep-runtime-typing']
@@ -66,7 +66,7 @@ repos:
       args: ['--include-version-classifiers']
 
   - repo: https://github.com/PyCQA/doc8
-    rev: v1.1.1
+    rev: v1.1.2
     hooks:
     - id: doc8
 

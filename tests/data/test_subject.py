@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 import torch
 import torchio as tio
-from torch.utils.data import DataLoader
 
 from ..utils import TorchioTestCase
 
@@ -159,9 +158,13 @@ class TestSubject(TorchioTestCase):
 
     def test_copy_subclass(self):
         class DummySubjectSubClass(tio.data.Subject):
-            pass
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
 
-        dummy_sub = DummySubjectSubClass(self.sample_subject)
+        dummy_sub = DummySubjectSubClass(
+            attr_1='abcd',
+            attr_2=tio.ScalarImage(tensor=torch.zeros(1, 1, 1, 1)),
+        )
         sub_copy = copy.copy(dummy_sub)
         assert isinstance(sub_copy, tio.data.Subject)
         assert isinstance(sub_copy, DummySubjectSubClass)
@@ -179,6 +182,6 @@ class TestSubject(TorchioTestCase):
 
     def test_subjects_batch(self):
         subjects = tio.SubjectsDataset(10 * [self.sample_subject])
-        loader = DataLoader(subjects, batch_size=4)
+        loader = tio.SubjectsLoader(subjects, batch_size=4)
         batch = next(iter(loader))
         assert batch.__class__ is dict
