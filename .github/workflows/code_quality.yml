@@ -17,6 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         tox_env:
+          - lint
           - types
 
     steps:
@@ -37,28 +38,6 @@ jobs:
 
       - name: Run check for tox env "${{ matrix.tox_env }}"
         run: tox -e ${{ matrix.tox_env }}
-
-
-  flake8:
-    name: Code style
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install pre-commit
-        run: pip install pre-commit
-
-      - name: Run flake8 hooks
-        run: pre-commit run --all-files flake8
 
   black:
     name: Code formatting
