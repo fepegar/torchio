@@ -1,8 +1,8 @@
 import torch
 
-from ... import IntensityTransform
 from ....data.subject import Subject
 from ....transforms.transform import TypeMaskingMethod
+from ...intensity_transform import IntensityTransform
 
 
 class NormalizationTransform(IntensityTransform):
@@ -34,7 +34,7 @@ class NormalizationTransform(IntensityTransform):
         >>> transformed = transform(subject)  # use only values within the brain
         >>> transform = tio.ZNormalization(masking_method=lambda x: x > x.mean())
         >>> transformed = transform(subject)  # use values above the image mean
-    """  # noqa: B950
+    """
 
     def __init__(self, masking_method: TypeMaskingMethod = None, **kwargs):
         super().__init__(**kwargs)

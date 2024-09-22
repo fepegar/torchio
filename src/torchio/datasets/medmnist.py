@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
 

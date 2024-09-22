@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 import torch
+
 from torchio import LabelMap
 from torchio import ScalarImage
 from torchio import Subject

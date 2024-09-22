@@ -1,11 +1,10 @@
 import urllib.parse
 
-from ... import LabelMap
-from ... import ScalarImage
+from ...data import LabelMap
+from ...data import ScalarImage
 from ...download import download_and_extract_archive
 from ...utils import compress
 from .mni import SubjectMNI
-
 
 SUPPORTED_YEARS = (
     (4.5, 18.5),
@@ -41,7 +40,7 @@ class Pediatric(SubjectMNI):
             ``(13, 18.5)``.
         symmetric: If ``True``, the left-right symmetric templates will be
             used. Else, the asymmetric (natural) templates will be used.
-    """  # noqa: B950
+    """
 
     def __init__(self, years, symmetric=False):
         self.url_dir = 'http://www.bic.mni.mcgill.ca/~vfonov/nihpd/obj1/'

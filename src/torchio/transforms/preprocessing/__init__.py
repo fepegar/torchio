@@ -18,7 +18,6 @@ from .spatial.resample import Resample
 from .spatial.resize import Resize
 from .spatial.to_canonical import ToCanonical
 
-
 __all__ = [
     'Pad',
     'Crop',

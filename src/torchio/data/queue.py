@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from torch.utils.data import Sampler
 
-from .. import NUM_SAMPLES
+from ..constants import NUM_SAMPLES
 from .dataset import SubjectsDataset
 from .sampler import PatchSampler
 from .subject import Subject
@@ -180,7 +180,7 @@ class Queue(Dataset):
     ...         inputs = patches_batch['t1'][tio.DATA]  # key 't1' is in subject
     ...         targets = patches_batch['brain'][tio.DATA]  # key 'brain' is in subject
     ...         logits = model(inputs)  # model being an instance of torch.nn.Module
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

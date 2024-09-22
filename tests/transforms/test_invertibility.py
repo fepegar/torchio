@@ -2,6 +2,7 @@ import copy
 import warnings
 
 import torch
+
 import torchio as tio
 
 from ..utils import TorchioTestCase

@@ -28,7 +28,7 @@ class Lambda(Transform):
         >>> def double(x):
         ...     return 2 * x
         >>> double_transform = tio.Lambda(double)
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

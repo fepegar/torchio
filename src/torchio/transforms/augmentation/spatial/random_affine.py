@@ -8,8 +8,6 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 
-from .. import RandomTransform
-from ... import SpatialTransform
 from ....constants import INTENSITY
 from ....constants import TYPE
 from ....data.io import nib_to_sitk
@@ -19,7 +17,8 @@ from ....typing import TypeSextetFloat
 from ....typing import TypeTripletFloat
 from ....utils import get_major_sitk_version
 from ....utils import to_tuple
-
+from ...spatial_transform import SpatialTransform
+from .. import RandomTransform
 
 TypeOneToSixFloat = Union[TypeRangeFloat, TypeTripletFloat, TypeSextetFloat]
 
@@ -111,7 +110,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         ct_transformed = transform(ct)
         subject.add_image(ct_transformed, 'Transformed')
         subject.plot()
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

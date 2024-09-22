@@ -5,10 +5,10 @@ from typing import Union
 
 import numpy as np
 
-from ... import SpatialTransform
 from ....data.subject import Subject
 from ....typing import TypeTripletInt
 from ....utils import to_tuple
+from ...spatial_transform import SpatialTransform
 from .crop_or_pad import CropOrPad
 
 
@@ -112,7 +112,7 @@ class EnsureShapeMultiple(SpatialTransform):
         >>> transformed = transform(image_2d)
         >>> transformed.shape
         torch.Size([1, 176, 216, 1])
-    """  # noqa: B950
+    """
 
     def __init__(
         self,
@@ -129,7 +129,7 @@ class EnsureShapeMultiple(SpatialTransform):
 
     def apply_transform(self, subject: Subject) -> Subject:
         source_shape = np.array(subject.spatial_shape, np.uint16)
-        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]  # noqa: B950
+        function: Callable = np.floor if self.method == 'crop' else np.ceil  # type: ignore[assignment]
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
         target_shape = np.maximum(target_shape, 1)

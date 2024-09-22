@@ -20,7 +20,6 @@ from ..typing import TypeQuartetInt
 from ..typing import TypeTripletFloat
 from ..typing import TypeTripletInt
 
-
 # Matrices used to switch between LPS and RAS
 FLIPXY_33 = np.diag([-1, -1, 1])
 FLIPXY_44 = np.diag([-1, -1, 1, 1])

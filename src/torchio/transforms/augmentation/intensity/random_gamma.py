@@ -5,11 +5,11 @@ from typing import Tuple
 import numpy as np
 import torch
 
-from .. import RandomTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
 from ....typing import TypeRangeFloat
 from ....utils import to_tuple
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomGamma(RandomTransform, IntensityTransform):
@@ -62,7 +62,7 @@ class RandomGamma(RandomTransform, IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.RandomGamma(log_gamma=(-0.3, 0.3))  # gamma between 0.74 and 1.34
         >>> transformed = transform(subject)
-    """  # noqa: B950
+    """
 
     def __init__(self, log_gamma: TypeRangeFloat = (-0.3, 0.3), **kwargs):
         super().__init__(**kwargs)
@@ -115,7 +115,7 @@ class Gamma(IntensityTransform):
         >>> subject = tio.datasets.FPG()
         >>> transform = tio.Gamma(0.8)
         >>> transformed = transform(subject)
-    """  # noqa: B950
+    """
 
     def __init__(self, gamma: float, **kwargs):
         super().__init__(**kwargs)

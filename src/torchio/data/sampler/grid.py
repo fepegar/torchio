@@ -94,7 +94,7 @@ class GridSampler(PatchSampler):
 
             border = self.patch_overlap // 2
             padding = border.repeat(2)
-            pad = Pad(padding, padding_mode=self.padding_mode)  # type: ignore[arg-type]  # noqa: B950
+            pad = Pad(padding, padding_mode=self.padding_mode)  # type: ignore[arg-type]
             subject = pad(subject)  # type: ignore[assignment]
         return subject
 
@@ -110,7 +110,7 @@ class GridSampler(PatchSampler):
         subject = self._pad(subject)
         sizes = subject.spatial_shape, self.patch_size, self.patch_overlap
         self._parse_sizes(*sizes)  # type: ignore[arg-type]
-        locations = self._get_patches_locations(*sizes)  # type: ignore[arg-type]  # noqa: B950
+        locations = self._get_patches_locations(*sizes)  # type: ignore[arg-type]
         for location in locations:
             index_ini = location[:3]
             yield self.extract_patch(subject, index_ini)

@@ -6,9 +6,9 @@ from typing import Union
 
 import torch
 
-from .. import RandomTransform
-from ... import IntensityTransform
 from ....data.subject import Subject
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomNoise(RandomTransform, IntensityTransform):
@@ -99,8 +99,8 @@ class Noise(IntensityTransform):
         mean, std, seed = args = self.mean, self.std, self.seed
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
-                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]  # noqa: B950
-                mean, std, seed = values  # type: ignore[assignment]  # noqa: B950
+                values = (arg[name] for arg in args)  # type: ignore[index,call-overload]
+                mean, std, seed = values  # type: ignore[assignment]
             with self._use_seed(seed):
                 assert isinstance(mean, float)
                 assert isinstance(std, float)

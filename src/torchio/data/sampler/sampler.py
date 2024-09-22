@@ -40,7 +40,7 @@ class PatchSampler:
         subject: Subject,
         index_ini: TypeTripletInt,
     ) -> Subject:
-        cropped_subject = self.crop(subject, index_ini, self.patch_size)  # type: ignore[arg-type]  # noqa: B950
+        cropped_subject = self.crop(subject, index_ini, self.patch_size)  # type: ignore[arg-type]
         return cropped_subject
 
     def crop(

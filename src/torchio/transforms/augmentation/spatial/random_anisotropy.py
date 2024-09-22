@@ -4,11 +4,11 @@ from typing import Union
 
 import torch
 
-from .. import RandomTransform
 from ....data.subject import Subject
 from ....typing import TypeRangeFloat
 from ....utils import to_tuple
 from ...preprocessing import Resample
+from .. import RandomTransform
 
 
 class RandomAnisotropy(RandomTransform):
@@ -44,7 +44,7 @@ class RandomAnisotropy(RandomTransform):
         ... )   # Multiply spacing of one of the 3 axes by a factor randomly chosen in [2, 5]
         >>> colin = tio.datasets.Colin27()
         >>> transformed = transform(colin)
-    """  # noqa: B950
+    """
 
     def __init__(
         self,

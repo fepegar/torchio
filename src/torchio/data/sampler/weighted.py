@@ -47,7 +47,7 @@ class WeightedSampler(RandomSampler):
     .. note:: Values of the probability map near the border will be set to 0 as
         the center of the patch cannot be at the border (unless the patch has
         size 1 or 2 along that axis).
-    """  # noqa: B950
+    """
 
     def __init__(
         self,
@@ -225,7 +225,7 @@ class WeightedSampler(RandomSampler):
             >>> histogram  # doctest:+SKIP
             array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
-        """  # noqa: B950
+        """
         # Get first value larger than random number ensuring the random number
         # is not exactly 0 (see https://github.com/fepegar/torchio/issues/510)
         random_number = max(MIN_FLOAT_32, torch.rand(1).item()) * cdf[-1]
@@ -242,7 +242,7 @@ class WeightedSampler(RandomSampler):
             message = (
                 'Error retrieving probability in weighted sampler.'
                 ' Please report this issue at'
-                ' https://github.com/fepegar/torchio/issues/new?labels=bug&template=bug_report.md'  # noqa: B950
+                ' https://github.com/fepegar/torchio/issues/new?labels=bug&template=bug_report.md'
             )
             raise RuntimeError(message)
 

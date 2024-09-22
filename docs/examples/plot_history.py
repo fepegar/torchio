@@ -12,6 +12,7 @@ import pprint
 
 import matplotlib.pyplot as plt
 import torch
+
 import torchio as tio
 
 torch.manual_seed(0)
@@ -38,9 +39,7 @@ print('Applied transforms:')  # noqa: T201
 pprint.pprint(transformed.history)  # noqa: T203
 print('\nComposed transform to reproduce history:')  # noqa: T201
 print(transformed.get_composed_history())  # noqa: T201
-print(
-    '\nComposed transform to invert applied transforms when possible:'
-)  # noqa: T201, B950
+print('\nComposed transform to invert applied transforms when possible:')
 print(transformed.get_inverse_transform(ignore_intensity=False))  # noqa: T201
 
 loader = tio.SubjectsLoader(

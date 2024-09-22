@@ -2,10 +2,10 @@ import csv
 from pathlib import Path
 from typing import Optional
 
-from .. import LabelMap
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import LabelMap
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..download import download_and_extract_archive
 from ..transforms import Transform
 from ..typing import TypePath
@@ -40,7 +40,7 @@ class EPISURG(SubjectsDataset):
         to be downloaded if it is not already present.
     """
 
-    data_url = 'https://s3-eu-west-1.amazonaws.com/pstorage-ucl-2748466690/26153588/EPISURG.zip'  # noqa: B950
+    data_url = 'https://s3-eu-west-1.amazonaws.com/pstorage-ucl-2748466690/26153588/EPISURG.zip'
     md5 = '5ec5831a2c6fbfdc8489ba2910a6504b'
 
     def __init__(

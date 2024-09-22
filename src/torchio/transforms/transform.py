@@ -26,12 +26,12 @@ from ..typing import TypeDataAffine
 from ..typing import TypeKeys
 from ..typing import TypeNumber
 from ..typing import TypeTripletInt
-from ..utils import to_tuple
 from ..utils import is_iterable
+from ..utils import to_tuple
 from .data_parser import DataParser
 from .data_parser import TypeTransformInput
-from .interpolation import get_sitk_interpolator
 from .interpolation import Interpolation
+from .interpolation import get_sitk_interpolator
 
 TypeSixBounds = Tuple[int, int, int, int, int, int]
 TypeBounds = Union[
@@ -201,9 +201,13 @@ class Transform(ABC):
         raise NotImplementedError
 
     def add_transform_to_subject_history(self, subject):
+        from . import Compose
+        from . import CropOrPad
+        from . import EnsureShapeMultiple
+        from . import OneOf
         from .augmentation import RandomTransform
-        from . import Compose, OneOf, CropOrPad, EnsureShapeMultiple
-        from .preprocessing import SequentialLabels, Resize
+        from .preprocessing import Resize
+        from .preprocessing import SequentialLabels
 
         call_others = (
             RandomTransform,
@@ -448,9 +452,9 @@ class Transform(ABC):
         if bounds_parameters is None:
             return None
         try:
-            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]  # noqa: B950
+            bounds_parameters = tuple(bounds_parameters)  # type: ignore[assignment,arg-type]
         except TypeError:
-            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]  # noqa: B950
+            bounds_parameters = (bounds_parameters,)  # type: ignore[assignment]
 
         # Check that numbers are integers
         for number in bounds_parameters:  # type: ignore[union-attr]
@@ -460,7 +464,7 @@ class Transform(ABC):
                     f' not "{bounds_parameters}" of type {type(number)}'
                 )
                 raise ValueError(message)
-        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]  # noqa: B950
+        bounds_parameters_tuple = tuple(int(n) for n in bounds_parameters)  # type: ignore[assignment,union-attr]
         bounds_parameters_length = len(bounds_parameters_tuple)
         if bounds_parameters_length == 6:
             return bounds_parameters_tuple  # type: ignore[return-value]
@@ -511,7 +515,7 @@ class Transform(ABC):
                     tensor,
                 )
         elif type(masking_method) in (tuple, list, int):
-            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]  # noqa: B950
+            return self.get_mask_from_bounds(masking_method, tensor)  # type: ignore[arg-type]
         first_anat_axes = tuple(s[0] for s in ANATOMICAL_AXES)
         message = (
             'Masking method must be one of:\n'

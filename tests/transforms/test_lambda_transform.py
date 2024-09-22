@@ -1,5 +1,6 @@
 import pytest
 import torch
+
 from torchio import LABEL
 from torchio.transforms import Lambda
 

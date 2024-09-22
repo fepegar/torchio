@@ -4,8 +4,8 @@ from typing import Tuple
 
 import torch
 
-from .. import Transform
 from ...typing import TypeRangeFloat
+from ..transform import Transform
 
 
 class RandomTransform(Transform):

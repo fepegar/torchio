@@ -12,7 +12,6 @@ from .sampler import UniformSampler
 from .sampler import WeightedSampler
 from .subject import Subject
 
-
 __all__ = [
     'Queue',
     'Subject',

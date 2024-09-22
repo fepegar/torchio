@@ -1,7 +1,7 @@
 import copy
 
-from ... import SpatialTransform
 from ....data.subject import Subject
+from ...spatial_transform import SpatialTransform
 
 
 class CopyAffine(SpatialTransform):
@@ -60,7 +60,7 @@ class CopyAffine(SpatialTransform):
         * https://github.com/fepegar/torchio/issues/430
         * https://github.com/fepegar/torchio/issues/382
         * https://github.com/fepegar/torchio/pull/592
-    """  # noqa: B950
+    """
 
     def __init__(self, target: str, **kwargs):
         super().__init__(**kwargs)

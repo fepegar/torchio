@@ -8,10 +8,9 @@ from typing import Union
 import numpy as np
 import torch
 
-from . import RandomTransform
-from .. import Transform
 from ...data.subject import Subject
-
+from ..transform import Transform
+from . import RandomTransform
 
 TypeTransformsDict = Union[Dict[Transform, float], Sequence[Transform]]
 

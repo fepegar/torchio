@@ -18,10 +18,10 @@ from tempfile import NamedTemporaryFile
 from typing import Optional
 from typing import Sequence
 
-from .. import LabelMap
-from .. import ScalarImage
-from .. import Subject
-from .. import SubjectsDataset
+from ..data import LabelMap
+from ..data import ScalarImage
+from ..data import Subject
+from ..data import SubjectsDataset
 from ..download import download_and_extract_archive
 from ..transforms import Transform
 from ..typing import TypePath
@@ -60,9 +60,9 @@ class IXI(SubjectsDataset):
         >>> print('Keys in subject:', tuple(sample_subject.keys()))  # ('T1', 'T2')
         >>> print('Shape of T1 data:', sample_subject['T1'].shape)  # [1, 180, 268, 268]
         >>> print('Shape of T2 data:', sample_subject['T2'].shape)  # [1, 241, 257, 188]
-    """  # noqa: B950
+    """
 
-    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'  # noqa: FS003,B950
+    base_url = 'http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-{modality}.tar'
     md5_dict = {
         'T1': '34901a0593b41dd19c1a1f746eac2d58',
         'T2': 'e3140d78730ecdd32ba92da48c0a9aaa',
@@ -173,7 +173,7 @@ class IXITiny(SubjectsDataset):
         download: If set to ``True``, will download the data into :attr:`root`.
 
     .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
-    """  # noqa: B950
+    """
 
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'
     md5 = 'bfb60f4074283d78622760230bfa1f98'

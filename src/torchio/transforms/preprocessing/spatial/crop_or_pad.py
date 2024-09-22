@@ -6,9 +6,9 @@ from typing import Union
 
 import numpy as np
 
-from ... import SpatialTransform
 from ....data.subject import Subject
 from ....utils import parse_spatial_shape
+from ...spatial_transform import SpatialTransform
 from ...transform import TypeSixBounds
 from ...transform import TypeTripletInt
 from .crop import Crop
@@ -69,7 +69,7 @@ class CropOrPad(SpatialTransform):
         t1_pad_crop = crop_pad(t1)
         subject = tio.Subject(t1=t1, crop_pad=t1_pad_crop)
         subject.plot()
-    """  # noqa: B950
+    """
 
     def __init__(
         self,
@@ -120,7 +120,7 @@ class CropOrPad(SpatialTransform):
 
         Args:
             mask_volume: 3D NumPy array.
-        """  # noqa: B950
+        """
         i_any = np.any(mask_volume, axis=(1, 2))
         j_any = np.any(mask_volume, axis=(0, 2))
         k_any = np.any(mask_volume, axis=(0, 1))
@@ -150,7 +150,7 @@ class CropOrPad(SpatialTransform):
             >>> p = np.array((4, 0, 7))
             >>> CropOrPad._get_six_bounds_parameters(p)
             (2, 2, 0, 0, 4, 3)
-        """  # noqa: B950
+        """
         parameters = parameters / 2
         result = []
         for number in parameters:

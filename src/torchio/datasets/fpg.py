@@ -1,8 +1,8 @@
 import urllib.parse
 
-from .. import DATA_REPO
-from .. import LabelMap
-from .. import ScalarImage
+from ..constants import DATA_REPO
+from ..data import LabelMap
+from ..data import ScalarImage
 from ..data.io import read_matrix
 from ..data.subject import _RawSubjectCopySubject
 from ..download import download_url

@@ -8,7 +8,6 @@ from typing import Union
 import numpy as np
 import torch
 
-
 # For typing hints
 TypePath = Union[str, Path]
 TypeNumber = Union[int, float]

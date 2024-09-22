@@ -2,8 +2,8 @@ import nibabel as nib
 import numpy as np
 import torch
 
-from ... import SpatialTransform
 from ....data.subject import Subject
+from ...spatial_transform import SpatialTransform
 
 
 class ToCanonical(SpatialTransform):
@@ -26,7 +26,7 @@ class ToCanonical(SpatialTransform):
         :meth:`nibabel.as_closest_canonical`.
 
     .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html
-    """  # noqa: B950
+    """
 
     def apply_transform(self, subject: Subject) -> Subject:
         for image in subject.get_images(intensity_only=False):

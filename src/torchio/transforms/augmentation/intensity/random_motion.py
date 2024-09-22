@@ -9,12 +9,12 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 
-from .. import RandomTransform
-from ... import FourierTransform
-from ... import IntensityTransform
 from ....data.io import nib_to_sitk
 from ....data.subject import Subject
 from ....typing import TypeTripletFloat
+from ...fourier import FourierTransform
+from ...intensity_transform import IntensityTransform
+from .. import RandomTransform
 
 
 class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
@@ -147,9 +147,7 @@ class Motion(IntensityTransform, FourierTransform):
         degrees: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
         translation: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
         times: Union[Sequence[float], Dict[str, Sequence[float]]],
-        image_interpolation: Union[
-            Sequence[str], Dict[str, Sequence[str]]
-        ],  # noqa: B950
+        image_interpolation: Union[Sequence[str], Dict[str, Sequence[str]]],
         **kwargs,
     ):
         super().__init__(**kwargs)

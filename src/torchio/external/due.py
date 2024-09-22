@@ -48,7 +48,11 @@ def _donothing_func(*args, **kwargs):
 
 
 try:
-    from duecredit import due, BibTeX, Doi, Url, Text
+    from duecredit import BibTeX
+    from duecredit import Doi
+    from duecredit import Text
+    from duecredit import Url
+    from duecredit import due
 
     if 'due' in locals() and not hasattr(due, 'cite'):
         raise RuntimeError(

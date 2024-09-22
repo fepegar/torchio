@@ -127,7 +127,6 @@ markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "serial",
 ]
-
 filterwarnings = [
     # Ignore SimpleITK Swig warnings
     "ignore:builtin type .* has no __module__ attribute",
@@ -135,3 +134,10 @@ filterwarnings = [
     # Raised by SimpleITK on CI
     "ignore:invalid escape sequence",
 ]
+
+[tool.ruff]
+format.quote-style = 'single'
+lint.select = ["F", "I"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
