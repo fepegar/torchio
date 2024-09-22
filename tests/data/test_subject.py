@@ -41,9 +41,9 @@ class TestSubject(TorchioTestCase):
             a=tio.ScalarImage(tensor=torch.rand(1, 2, 3, 4)),
             b=tio.ScalarImage(tensor=torch.rand(2, 2, 3, 4)),
         )
-        subject.spatial_shape
+        _ = subject.spatial_shape
         with pytest.raises(RuntimeError):
-            subject.shape
+            _ = subject.shape
 
     def test_inconsistent_spatial_shape(self):
         subject = tio.Subject(
@@ -51,7 +51,7 @@ class TestSubject(TorchioTestCase):
             b=tio.ScalarImage(tensor=torch.rand(2, 2, 3, 4)),
         )
         with pytest.raises(RuntimeError):
-            subject.spatial_shape
+            _ = subject.spatial_shape
 
     @pytest.mark.slow
     @pytest.mark.skipif(sys.platform == 'win32', reason='Unstable on Windows')
@@ -133,7 +133,7 @@ class TestSubject(TorchioTestCase):
         with pytest.raises(KeyError):
             subject['t1']
         with pytest.raises(AttributeError):
-            subject.t1
+            _ = subject.t1
 
     def test_2d(self):
         subject = self.make_2d(self.sample_subject)

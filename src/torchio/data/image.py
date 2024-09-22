@@ -16,6 +16,7 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 from deprecated import deprecated
+from nibabel.affines import apply_affine
 
 from ..constants import AFFINE
 from ..constants import DATA
@@ -359,8 +360,8 @@ class Image(dict):
         """Position of centers of voxels in smallest and largest indices."""
         ini = 0, 0, 0
         fin = np.array(self.spatial_shape) - 1
-        point_ini = nib.affines.apply_affine(self.affine, ini)
-        point_fin = nib.affines.apply_affine(self.affine, fin)
+        point_ini = apply_affine(self.affine, ini)
+        point_fin = apply_affine(self.affine, fin)
         return np.array((point_ini, point_fin))
 
     @property
@@ -415,7 +416,7 @@ class Image(dict):
         labels = 'LRPAISTBDV'
         first = labels[::2]
         last = labels[1::2]
-        flip_dict = {a: b for a, b in zip(first + last, last + first)}
+        flip_dict = dict(zip(first + last, last + first))
         axis = axis[0].upper()
         flipped_axis = flip_dict.get(axis)
         if flipped_axis is None:
@@ -433,8 +434,8 @@ class Image(dict):
         """Get minimum and maximum world coordinates occupied by the image."""
         first_index = 3 * (-0.5,)
         last_index = np.array(self.spatial_shape) - 0.5
-        first_point = nib.affines.apply_affine(self.affine, first_index)
-        last_point = nib.affines.apply_affine(self.affine, last_index)
+        first_point = apply_affine(self.affine, first_index)
+        last_point = apply_affine(self.affine, last_index)
         array = np.array((first_point, last_point))
         bounds_x, bounds_y, bounds_z = array.T.tolist()
         return bounds_x, bounds_y, bounds_z
@@ -445,15 +446,15 @@ class Image(dict):
     ) -> Path:
         try:
             path = Path(path).expanduser()
-        except TypeError:
+        except TypeError as err:
             message = (
                 f'Expected type str or Path but found {path} with type'
                 f' {type(path)} instead'
             )
-            raise TypeError(message)
-        except RuntimeError:
+            raise TypeError(message) from err
+        except RuntimeError as err:
             message = f'Conversion to path not possible for variable: {path}'
-            raise RuntimeError(message)
+            raise RuntimeError(message) from err
 
         if not (path.is_file() or path.is_dir()):  # might be a dir with DICOM
             raise FileNotFoundError(f'File not found: "{path}"')
@@ -735,7 +736,7 @@ class Image(dict):
         """
         size = np.array(self.spatial_shape)
         center_index = (size - 1) / 2
-        r, a, s = nib.affines.apply_affine(self.affine, center_index)
+        r, a, s = apply_affine(self.affine, center_index)
         if lps:
             return (-r, -a, s)
         else:

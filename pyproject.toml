@@ -129,11 +129,12 @@ filterwarnings = [
     "ignore:invalid escape sequence",
 ]
 
-[tool.ruff]
-format.quote-style = 'single'
-lint.select = [
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.ruff.lint]
+select = [
     "B",
-    "C",
     "E",
     "F",
     "I",

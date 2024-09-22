@@ -1,10 +1,10 @@
 import copy
 
-import nibabel as nib
 import numpy as np
 import pytest
 import SimpleITK as sitk
 import torch
+from nibabel.nifti1 import Nifti1Image
 
 import torchio as tio
 
@@ -360,17 +360,17 @@ class TestTransform(TorchioTestCase):
 
     def test_nibabel_input(self):
         image = self.sample_subject.t1
-        image_nib = nib.Nifti1Image(image.data[0].numpy(), image.affine)
+        image_nib = Nifti1Image(image.data[0].numpy(), image.affine)
         transformed = tio.RandomAffine()(image_nib)
         transformed.get_fdata()
-        transformed.affine
+        _ = transformed.affine
 
         image = self.subject_4d.t1
         tensor_5d = image.data[np.newaxis].permute(2, 3, 4, 0, 1)
-        image_nib = nib.Nifti1Image(tensor_5d.numpy(), image.affine)
+        image_nib = Nifti1Image(tensor_5d.numpy(), image.affine)
         transformed = tio.RandomAffine()(image_nib)
         transformed.get_fdata()
-        transformed.affine
+        _ = transformed.affine
 
     def test_bad_shape(self):
         tensor = torch.rand(1, 2, 3)

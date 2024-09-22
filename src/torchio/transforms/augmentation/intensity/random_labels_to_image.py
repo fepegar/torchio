@@ -210,7 +210,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             )
         return min_value, max_value
 
-    def apply_transform(self, subject: Subject) -> Subject:
+    def _guess_label_key(self, subject: Subject) -> None:
         if self.label_key is None:
             iterable = subject.get_images_dict(intensity_only=False).items()
             for name, image in iterable:
@@ -220,6 +220,9 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             else:
                 message = f'No label maps found in subject: {subject}'
                 raise RuntimeError(message)
+
+    def apply_transform(self, subject: Subject) -> Subject:
+        self._guess_label_key(subject)
 
         arguments = {
             'label_key': self.label_key,
