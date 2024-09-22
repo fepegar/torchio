@@ -221,11 +221,8 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # CopyButton configuration
-copybutton_prompt_text = (r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: ',)
+copybutton_prompt_text = r'>>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: '
 copybutton_prompt_is_regexp = True
-
-# def setup(app):
-#     app.add_js_file('copybutton.js')
 
 
 # -- Extension configuration -------------------------------------------------
