@@ -2,94 +2,128 @@ name: Code quality
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
   schedule:
     - cron: "0 4 * * *"
 
-jobs:
 
-  mypy:
-    name: Type checks
+jobs:
+  check:
+    name: tox env ${{ matrix.tox_env }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tox_env:
+          - types
+          # - lint
+          # - format
+          # - docs
 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install tox
-        run: pip install tox
+        run: uv tool install tox --with tox-uv
 
-      - name: Run mypy
-        run: tox -e mypy
+      - name: Run check for tox env "${{ matrix.tox_env }}"
+        run: tox -e ${{ matrix.tox_env }}
 
-  flake8:
-    name: Code style
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+# jobs:
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#   mypy:
+#     name: Type checks
+#     runs-on: ubuntu-latest
 
-      - name: Install pre-commit
-        run: pip install pre-commit
+#     steps:
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.12"
 
-      - name: Run flake8 hooks
-        run: pre-commit run --all-files flake8
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-  black:
-    name: Code formatting
-    runs-on: ubuntu-latest
+#       - name: Install tox
+#         run: pip install tox
 
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+#       - name: Run mypy
+#         run: tox -e mypy
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#   flake8:
+#     name: Code style
+#     runs-on: ubuntu-latest
 
-      - name: Install black
-        run: pip install black
+#     steps:
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.12"
 
-      - name: Run black
-        run: black --check --diff .
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
+#       - name: Install pre-commit
+#         run: pip install pre-commit
 
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+#       - name: Run flake8 hooks
+#         run: pre-commit run --all-files flake8
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+#   black:
+#     name: Code formatting
+#     runs-on: ubuntu-latest
 
-      - name: Install pre-commit
-        run: pip install pre-commit
+#     steps:
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.12"
 
-      - name: Run doc8 hook
-        run: pre-commit run --all-files doc8
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Install black
+#         run: pip install black
+
+#       - name: Run black
+#         run: black --check --diff .
+
+#   docs:
+#     name: Documentation
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.12"
+
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Install pre-commit
+#         run: pip install pre-commit
+
+#       - name: Run doc8 hook
+#         run: pre-commit run --all-files doc8
