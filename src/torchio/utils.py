@@ -7,6 +7,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from collections import abc
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -25,14 +26,13 @@ from torch.utils.data._utils.collate import default_collate
 from tqdm.auto import trange
 
 from . import constants
-from .typing import TypeNumber
 from .typing import TypePath
 
 
 def to_tuple(
-    value: Any,
+    value: Union[Any, Iterable[Any]],
     length: int = 1,
-) -> Tuple[TypeNumber, ...]:
+) -> Tuple[Any, ...]:
     """Convert variable to tuple of length n.
 
     Example:
@@ -52,10 +52,9 @@ def to_tuple(
         >>> to_tuple([1, 2], length=3)
         (1, 2)
     """
-    try:
-        iter(value)
+    if isinstance(value, abc.Iterable) and not isinstance(value, (str, bytes)):
         value = tuple(value)
-    except TypeError:
+    else:
         value = length * (value,)
     return value
 
@@ -386,7 +385,7 @@ def guess_external_viewer() -> Optional[Path]:
 def parse_spatial_shape(shape):
     result = to_tuple(shape, length=3)
     for n in result:
-        if n < 1 or n % 1:
+        if isinstance(n, (str, bytes)) or n < 1 or n % 1:
             message = (
                 'All elements in a spatial shape must be positive integers,'
                 f' but the following shape was passed: {shape}'

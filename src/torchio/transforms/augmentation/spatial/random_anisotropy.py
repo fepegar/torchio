@@ -1,4 +1,3 @@
-import warnings
 from typing import Tuple
 from typing import Union
 
@@ -7,7 +6,6 @@ import torch
 from .. import RandomTransform
 from ....data.subject import Subject
 from ....typing import TypeRangeFloat
-from ....utils import to_tuple
 from ...preprocessing import Resample
 
 
@@ -48,7 +46,7 @@ class RandomAnisotropy(RandomTransform):
 
     def __init__(
         self,
-        axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
+        axes: Union[int, Tuple[int, ...], str, Tuple[str, ...]] = (0, 1, 2),
         downsampling: TypeRangeFloat = (1.5, 5),
         image_interpolation: str = 'linear',
         scalars_only: bool = True,
@@ -74,27 +72,10 @@ class RandomAnisotropy(RandomTransform):
         downsampling = self.sample_uniform(*downsampling_range)
         return axis, downsampling
 
-    @staticmethod
-    def parse_axes(axes: Union[int, Tuple[int, ...]]):
-        axes_tuple = to_tuple(axes)
-        for axis in axes_tuple:
-            is_int = isinstance(axis, int)
-            if not is_int or axis not in (0, 1, 2):
-                raise ValueError('All axes must be 0, 1 or 2')
-        return axes_tuple
-
     def apply_transform(self, subject: Subject) -> Subject:
-        is_2d = subject.get_first_image().is_2d()
-        if is_2d and 2 in self.axes:
-            warnings.warn(
-                f'Input image is 2D, but "2" is in axes: {self.axes}',
-                RuntimeWarning,
-                stacklevel=2,
-            )
-            self.axes = list(self.axes)
-            self.axes.remove(2)
+        axes = self.ensure_axes_indices(subject, self.axes)
         axis, downsampling = self.get_params(
-            self.axes,
+            axes,
             self.downsampling_range,
         )
         target_spacing = list(subject.spacing)

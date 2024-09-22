@@ -52,6 +52,16 @@ from .io import write_image
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
 TypeBound = Tuple[float, float]
 TypeBounds = Tuple[TypeBound, TypeBound, TypeBound]
+FLIP_AXIS = {
+    'L': 'R',
+    'R': 'L',
+    'A': 'P',
+    'P': 'A',
+    'I': 'S',
+    'S': 'I',
+    'T': 'B',
+    'B': 'T',
+}
 
 deprecation_message = (
     'Setting the image data with the property setter is deprecated. Use the'
@@ -378,7 +388,7 @@ class Image(dict):
                 versions and first letters are also valid, as only the first
                 letter will be used.
 
-        .. note:: If you are working with animals, you should probably use
+        .. note:: If you are working with animals, you should use
             ``'Superior'``, ``'Inferior'``, ``'Anterior'`` and ``'Posterior'``
             for ``'Dorsal'``, ``'Ventral'``, ``'Rostral'`` and ``'Caudal'``,
             respectively.
@@ -392,6 +402,15 @@ class Image(dict):
         if not isinstance(axis, str):
             raise ValueError('Axis must be a string')
         axis = axis[0].upper()
+        if axis not in 'LRPAISTB':
+            message = (
+                'Incorrect axis naming. Please use one of: "Left", "Right", '
+                '"Anterior", "Posterior", "Inferior", "Superior". '
+                'Lower-case versions and first letters are also valid '
+                '(i.e., "L", "r", etc). For 2D images, use "Top" and "Bottom" '
+                'to refer to the vertical (2nd) axis.'
+            )
+            raise ValueError(message)
 
         # Generally, TorchIO tensors are (C, W, H, D)
         if axis in 'TB':  # Top, Bottom
@@ -400,30 +419,11 @@ class Image(dict):
             try:
                 index = self.orientation.index(axis)
             except ValueError:
-                index = self.orientation.index(self.flip_axis(axis))
+                index = self.orientation.index(FLIP_AXIS[axis])
             # Return negative indices so that it does not matter whether we
             # refer to spatial dimensions or not
             index = -3 + index
             return index
-
-    @staticmethod
-    def flip_axis(axis: str) -> str:
-        """Return the opposite axis label. For example, ``'L'`` -> ``'R'``.
-
-        Args:
-            axis: Axis label, such as ``'L'`` or ``'left'``.
-        """
-        labels = 'LRPAISTBDV'
-        first = labels[::2]
-        last = labels[1::2]
-        flip_dict = {a: b for a, b in zip(first + last, last + first)}
-        axis = axis[0].upper()
-        flipped_axis = flip_dict.get(axis)
-        if flipped_axis is None:
-            values = ', '.join(labels)
-            message = f'Axis not understood. Please use one of: {values}'
-            raise ValueError(message)
-        return flipped_axis
 
     def get_spacing_string(self) -> str:
         strings = [f'{n:.2f}' for n in self.spacing]

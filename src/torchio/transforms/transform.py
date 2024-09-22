@@ -226,6 +226,12 @@ class Transform(ABC):
 
     def parse_params(self, params, around, name, make_ranges=True, **kwargs):
         params = to_tuple(params)
+        if make_ranges and any(isinstance(p, (str, bytes)) for p in params):
+            message = (
+                f'"{name}" must be a number or a sequence of numbers for'
+                f' make_ranges=True, not {params}'
+            )
+            raise ValueError(message)
         # d or (a, b)
         if len(params) == 1 or (len(params) == 2 and make_ranges):
             params *= 3  # (d, d, d) or (a, b, a, b, a, b)
@@ -387,6 +393,42 @@ class Transform(ABC):
         Transform.validate_keys_sequence(exclude, 'exclude')
         Transform.validate_keys_sequence(label_keys, 'label_keys')
         return include, exclude
+
+    @staticmethod
+    def parse_axes(
+        axes: Union[int, str, Tuple[int, ...], Tuple[str, ...]],
+    ) -> Union[Tuple[int, ...], Tuple[str, ...]]:
+        axes_tuple = to_tuple(axes)
+        for axis in axes_tuple:
+            valid_number = isinstance(axis, int) and axis in (0, 1, 2)
+            valid_str = isinstance(axis, str) and axis[0].upper() in 'LRAPSITB'
+            if not valid_str and not valid_number:
+                message = (
+                    f'All axes must be 0, 1 or 2 or axis strings, '
+                    f'but found "{axis}" with type {type(axis)}'
+                )
+                raise ValueError(message)
+        return tuple(sorted(set(axes_tuple)))
+
+    @staticmethod
+    def ensure_axes_indices(
+        subject: Subject,
+        axes: Union[Tuple[int, ...], Tuple[str, ...]],
+    ) -> Tuple[int, ...]:
+        image = subject.get_first_image()
+        if any(isinstance(n, str) for n in axes):  # axis strings
+            subject.check_consistent_orientation()
+        int_axes = tuple(
+            {
+                (3 + image.axis_name_to_index(n)) if isinstance(n, str) else int(n)
+                for n in axes
+            }
+        )
+        if image.is_2d() and 2 in int_axes:
+            list_axes = list(int_axes)
+            list_axes.remove(2)
+            int_axes = tuple(list_axes)
+        return int_axes
 
     @staticmethod
     def validate_keys_sequence(keys: TypeKeys, name: str) -> None:

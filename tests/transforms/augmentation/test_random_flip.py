@@ -31,6 +31,10 @@ class TestRandomFlip(TorchioTestCase):
         with pytest.raises(ValueError):
             tio.RandomFlip(flip_probability='wrong')
 
+    def test_wrong_anatomical_axis(self):
+        with pytest.raises(ValueError):
+            tio.RandomFlip(axes=('g',))
+
     def test_anatomical_axis(self):
         transform = tio.RandomFlip(axes=['i'], flip_probability=1)
         tensor = torch.rand(1, 2, 3, 4)
