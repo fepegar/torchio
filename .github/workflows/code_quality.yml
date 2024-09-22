@@ -2,34 +2,42 @@ name: Code quality
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
   schedule:
     - cron: "0 4 * * *"
 
-jobs:
 
-  mypy:
-    name: Type checks
+jobs:
+  check:
+    name: tox env ${{ matrix.tox_env }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tox_env:
+          - types
 
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install tox
-        run: pip install tox
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run mypy
-        run: tox -e mypy
+      - name: Install tox
+        run: uv tool install tox --with tox-uv
+
+      - name: Run check for tox env "${{ matrix.tox_env }}"
+        run: tox -e ${{ matrix.tox_env }}
+
 
   flake8:
     name: Code style

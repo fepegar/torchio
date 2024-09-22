@@ -1,10 +1,10 @@
-name: Checks
+name: Tests
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
   schedule:
     - cron: "0 4 * * *"
 
@@ -54,8 +54,6 @@ jobs:
         if: runner.os == 'Windows'
         run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
         shell: bash
-
-      - run: tox --help
 
       - name: Setup test suite
         run: tox run -v --notest --skip-missing-interpreters false -e ${{ matrix.python }}
