@@ -10,7 +10,6 @@ on:
 
 env:
   FORCE_COLOR: 1
-  PY_COLORS: 1
 
 jobs:
   check:
