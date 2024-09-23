@@ -49,7 +49,7 @@ class BITE3(BITE):
     Please check the `BITE website`_ for more information and
     acknowledgments instructions.
 
-    .. _BITE website: http://nist.mni.mcgill.ca/bite-brain-images-of-tumors-for-evaluation-database/
+    .. _BITE website: https://nist.mni.mcgill.ca/bite-brain-images-of-tumors-for-evaluation-database/
 
     Args:
         root: Root directory to which the dataset will be downloaded.

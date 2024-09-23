@@ -94,7 +94,7 @@ If you found a bug or have a feature request, please open an issue:
    :alt: Code style: Ruff
 
 .. |Coverage-codecov| image:: https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg
-   :target: https://codecov.io/github/fepegar/torchio
+   :target: https://app.codecov.io/github/fepegar/torchio
    :alt: Coverage status
 
 .. |Code-Quality| image:: https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer
@@ -118,7 +118,7 @@ If you found a bug or have a feature request, please open an issue:
    :alt: Twitter commits
 
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
-   :target: https://codeclimate.com/github/fepegar/torchio/maintainability
+   :target: https://codeclimate.com/github/fepegar/torchio
    :alt: Maintainability
 
 .. |pre-commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
