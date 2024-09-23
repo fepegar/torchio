@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "0 4 * * *"
 
+env:
+  FORCE_COLOR: 1
+  PY_COLORS: 1
+
 jobs:
   pytest:
     name: Unit tests
