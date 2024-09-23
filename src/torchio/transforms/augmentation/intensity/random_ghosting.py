@@ -182,6 +182,10 @@ class Ghosting(IntensityTransform, FourierTransform):
         self.args_names = ['num_ghosts', 'axis', 'intensity', 'restore']
 
     def apply_transform(self, subject: Subject) -> Subject:
+        axis: Union[int, Dict[str, int]]
+        num_ghosts: Union[int, Dict[str, int]]
+        intensity: Union[float, Dict[str, float]]
+        restore: Union[Optional[float], Dict[str, Optional[float]]]
         for name, image in self.get_images_dict(subject).items():
             if self.arguments_are_dict():
                 assert isinstance(self.axis, dict)
@@ -253,8 +257,8 @@ class Ghosting(IntensityTransform, FourierTransform):
     ) -> torch.Tensor:
         slices = [slice(None)] * spectrum.ndim
         slices[axis] = slice(None, None, num_ghosts)
-        slices = tuple(slices)
-        return spectrum[slices]
+        slices_tuple = tuple(slices)
+        return spectrum[slices_tuple]
 
     @staticmethod
     def _get_slices_to_restore(
@@ -271,6 +275,6 @@ class Ghosting(IntensityTransform, FourierTransform):
             size_restore = int(np.round(restore_center * dim_shape))
             slice_ = slice(mid_idx - size_restore // 2, mid_idx + size_restore // 2)
         slices[axis] = slice_
-        slices = tuple(slices)
-        restore_tensor = spectrum[slices]
-        return restore_tensor, slices
+        slices_tuple = tuple(slices)
+        restore_tensor = spectrum[slices_tuple]
+        return restore_tensor, slices_tuple
