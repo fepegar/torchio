@@ -57,7 +57,7 @@ dev = [
     "coverage",
     "mypy",
     "parameterized",
-    "pre-commit",
+    "pre-commit-uv",
     "Pillow",
     "pytest",
     "pytest-cov",
