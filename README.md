@@ -42,7 +42,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://torchio.rtfd.io/?badge=latest">
                 <img src="https://img.shields.io/readthedocs/torchio?label=Docs&logo=Read%20the%20Docs" alt="Documentation status">
             </a>
-            <a href="https://codecov.io/github/fepegar/torchio">
+            <a href="https://app.codecov.io/github/fepegar/torchio">
                 <img src="https://codecov.io/gh/fepegar/torchio/branch/main/graphs/badge.svg" alt="Coverage status">
             </a>
         </td>
@@ -58,7 +58,7 @@ at [OpenAI](https://openai.com/) ([link](https://jack-clark.net/2020/03/17/)).
             <a href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main">
                 <img src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&logo=scrutinizer" alt="Code quality">
             </a>
-            <a href="https://codeclimate.com/github/fepegar/torchio/maintainability">
+            <a href="https://codeclimate.com/github/fepegar/torchio">
                 <img src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" alt="Code maintainability">
             </a>
             <a href="https://github.com/pre-commit/pre-commit">

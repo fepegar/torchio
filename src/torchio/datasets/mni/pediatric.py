@@ -25,10 +25,10 @@ def format_age(n):
 class Pediatric(SubjectMNI):
     """MNI pediatric atlases.
 
-    See `the MNI website <http://nist.mni.mcgill.ca/pediatric-atlases-4-5-18-5y/>`_
+    See `the MNI website <https://nist.mni.mcgill.ca/pediatric-atlases-4-5-18-5y/>`_
     for more information.
 
-    .. image:: http://nist.mni.mcgill.ca/wp-content/uploads/2016/04/nihpd_asym_all_sm.jpg
+    .. image:: https://nist.mni.mcgill.ca/wp-content/uploads/2016/04/nihpd_asym_all_sm.jpg
         :alt: Pediatric MNI template
 
     Arguments:
