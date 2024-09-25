@@ -36,6 +36,7 @@ from ..typing import TypeTripletFloat
 from ..typing import TypeTripletInt
 from ..utils import get_stem
 from ..utils import guess_external_viewer
+from ..utils import in_torch_loader
 from ..utils import is_iterable
 from ..utils import to_tuple
 from .io import check_uint_to_int
@@ -176,6 +177,15 @@ class Image(dict):
             warnings.warn(message, DeprecationWarning, stacklevel=2)
 
         super().__init__(**kwargs)
+        if torch.__version__ >= '2.3' and in_torch_loader():
+            message = (
+                'Using TorchIO images without a SubjectsLoader in PyTorch >='
+                ' 2.3 might have unexpected consequences. Please replace your'
+                ' PyTorch DataLoader with a SubjectsLoader. See'
+                ' https://github.com/fepegar/torchio/issues/1179 for more'
+                ' context about this problem'
+            )
+            warnings.warn(message, stacklevel=1)
         self.path = self._parse_path(path)
 
         self[PATH] = '' if self.path is None else str(self.path)
