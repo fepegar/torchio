@@ -177,15 +177,7 @@ class Image(dict):
             warnings.warn(message, DeprecationWarning, stacklevel=2)
 
         super().__init__(**kwargs)
-        if torch.__version__ >= '2.3' and in_torch_loader():
-            message = (
-                'Using TorchIO images without a SubjectsLoader in PyTorch >='
-                ' 2.3 might have unexpected consequences. Please replace your'
-                ' PyTorch DataLoader with a SubjectsLoader. See'
-                ' https://github.com/fepegar/torchio/issues/1179 for more'
-                ' context about this problem'
-            )
-            warnings.warn(message, stacklevel=1)
+        self._check_data_loader()
         self.path = self._parse_path(path)
 
         self[PATH] = '' if self.path is None else str(self.path)
@@ -243,6 +235,20 @@ class Image(dict):
             **kwargs,
         )
         return new_image
+
+    @staticmethod
+    def _check_data_loader() -> None:
+        if torch.__version__ >= '2.3' and in_torch_loader():
+            message = (
+                'Using TorchIO images without a torchio.SubjectsLoader in PyTorch >='
+                ' 2.3 might have unexpected consequences, e.g., the collated batches'
+                ' will be instances of torchio.Subject with 5D images. Replace'
+                ' your PyTorch DataLoader with a torchio.SubjectsLoader so that'
+                ' the collated batch becomes a dictionary, as expected. See'
+                ' https://github.com/fepegar/torchio/issues/1179 for more'
+                ' context about this issue.'
+            )
+            warnings.warn(message, stacklevel=1)
 
     @property
     def data(self) -> torch.Tensor:
