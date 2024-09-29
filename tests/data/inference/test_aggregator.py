@@ -2,6 +2,7 @@ import pytest
 import torch
 
 import torchio as tio
+from torch.utils.data import DataLoader
 
 from ...utils import TorchioTestCase
 
@@ -132,7 +133,7 @@ class TestAggregator(TorchioTestCase):
             padding_mode='edge',
         )
         aggregator = tio.data.GridAggregator(sampler)
-        loader = tio.SubjectsLoader(sampler, batch_size=3)
+        loader = DataLoader(sampler, batch_size=3)
         for batch in loader:
             input_batch = batch[image_name][tio.DATA]
             crop = tio.CropOrPad(12)

@@ -89,8 +89,8 @@ class Pad(BoundsTransform):
                 )
                 warnings.warn(message, RuntimeWarning, stacklevel=2)
             new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
-            new_affine = image.affine.copy()
-            new_affine[:3, 3] = new_origin
+            new_affine = image.affine.clone()
+            new_affine[:3, 3] = torch.from_numpy(new_origin)
             kwargs: Dict[str, Union[str, float]]
             if isinstance(self.padding_mode, Number):
                 kwargs = {

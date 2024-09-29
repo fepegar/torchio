@@ -1,5 +1,6 @@
 import nibabel as nib
 import numpy as np
+import torch
 
 from ....data.subject import Subject
 from .bounds_transform import BoundsTransform
@@ -44,8 +45,8 @@ class Crop(BoundsTransform):
         index_fin = np.array(sample.spatial_shape) - high
         for image in self.get_images(sample):
             new_origin = nib.affines.apply_affine(image.affine, index_ini)
-            new_affine = image.affine.copy()
-            new_affine[:3, 3] = new_origin
+            new_affine = image.affine.clone()
+            new_affine[:3, 3] = torch.from_numpy(new_origin)
             i0, j0, k0 = index_ini
             i1, j1, k1 = index_fin
             image.set_data(image.data[:, i0:i1, j0:j1, k0:k1].clone())

@@ -106,7 +106,7 @@ class TestImage(TorchioTestCase):
         for sequence in (paths_tuple, paths_list):
             image = tio.ScalarImage(path=sequence)
             assert image.shape == (2, 5, 5, 5)
-            assert image[tio.STEM] == ['path1', 'path2']
+            assert (image[tio.STEM] == ['path1', 'path2']).all()
 
     def test_with_a_list_of_images_with_different_shapes(self):
         path1 = self.get_image_path('path1', shape=(5, 5, 5))
@@ -129,7 +129,7 @@ class TestImage(TorchioTestCase):
         path3 = self.get_image_path('path3', shape=shape, suffix='.hdr')
         image = tio.ScalarImage(path=[path1, path2, path3])
         assert image.shape == (3, 5, 6, 1)
-        assert image[tio.STEM] == ['path1', 'path2', 'path3']
+        assert (image[tio.STEM] == ['path1', 'path2', 'path3']).all()
 
     def test_axis_name_2d(self):
         path = self.get_image_path('im2d', shape=(5, 6))
@@ -240,7 +240,7 @@ class TestImage(TorchioTestCase):
         path2 = self.get_image_path('multi2')
         paths = path1, path2
         image = tio.ScalarImage(paths)
-        self.assert_tensor_equal(image.affine, np.eye(4))
+        self.assert_tensor_equal(image.affine, torch.eye(4))
 
     def test_bad_numpy_type_reader(self):
         # https://github.com/fepegar/torchio/issues/764

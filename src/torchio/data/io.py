@@ -2,6 +2,7 @@ import warnings
 from pathlib import Path
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 from typing import Union
 
 import nibabel as nib
@@ -19,6 +20,8 @@ from ..typing import TypePath
 from ..typing import TypeQuartetInt
 from ..typing import TypeTripletFloat
 from ..typing import TypeTripletInt
+
+T = TypeVar([torch.Tensor, np.ndarray])
 
 # Matrices used to switch between LPS and RAS
 FLIPXY_33 = np.diag([-1, -1, 1])
@@ -110,10 +113,10 @@ def read_shape(path: TypePath) -> TypeQuartetInt:
     return shape
 
 
-def read_affine(path: TypePath) -> np.ndarray:
+def read_affine(path: TypePath) -> torch.Tensor:
     reader = get_reader(path)
     affine = get_ras_affine_from_sitk(reader)
-    return affine
+    return torch.from_numpy(affine)
 
 
 def get_reader(path: TypePath, read: bool = True) -> sitk.ImageFileReader:
@@ -281,12 +284,13 @@ def _write_niftyreg_matrix(matrix: TypeData, txt_path: TypePath) -> None:
     np.savetxt(txt_path, matrix, fmt='%.8f')
 
 
-def get_rotation_and_spacing_from_affine(
-    affine: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+def get_rotation_and_spacing_from_affine(affine: T) -> Tuple[T, T]:
     # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
     rotation_zoom = affine[:3, :3]
-    spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
+    if isinstance(affine, torch.Tensor):
+        spacing = torch.sqrt(torch.sum(rotation_zoom * rotation_zoom, dim=0))
+    else:
+        spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
     rotation = rotation_zoom / spacing
     return rotation, spacing
 
@@ -388,10 +392,12 @@ def get_ras_affine_from_sitk(
 
 
 def get_sitk_metadata_from_ras_affine(
-    affine: np.ndarray,
+    affine: TypeData,
     is_2d: bool = False,
     lps: bool = True,
 ) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
+    if isinstance(affine, torch.Tensor):
+        affine = affine.numpy()
     direction_ras, spacing_array = get_rotation_and_spacing_from_affine(affine)
     origin_ras = affine[:3, 3]
     origin_lps = np.dot(FLIPXY_33, origin_ras)

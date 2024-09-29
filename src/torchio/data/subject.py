@@ -16,6 +16,7 @@ import numpy as np
 from ..constants import INTENSITY
 from ..constants import TYPE
 from ..utils import get_subclasses
+from .base import BaseContainer
 from .image import Image
 
 if TYPE_CHECKING:
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
     from ..transforms import Transform
 
 
-class Subject(dict):
+class Subject(BaseContainer):
     """Class to store information about the images corresponding to a subject.
 
     Args:
@@ -94,6 +95,9 @@ class Subject(dict):
             return copied
         else:
             return super().__getitem__(item)
+
+    def __iter__(self):
+        return iter(self.keys())
 
     @staticmethod
     def _parse_images(images: List[Image]) -> None:

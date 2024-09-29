@@ -39,6 +39,7 @@ from ..utils import guess_external_viewer
 from ..utils import in_torch_loader
 from ..utils import is_iterable
 from ..utils import to_tuple
+from .base import BaseContainer
 from .io import check_uint_to_int
 from .io import ensure_4d
 from .io import get_rotation_and_spacing_from_affine
@@ -60,7 +61,7 @@ deprecation_message = (
 )
 
 
-class Image(dict):
+class Image(BaseContainer):
     r"""TorchIO image.
 
     For information about medical image orientation, check out `NiBabel docs`_,
@@ -160,10 +161,7 @@ class Image(dict):
 
         tensor = self._parse_tensor(tensor)
         affine = self._parse_affine(affine)
-        if tensor is not None:
-            self.set_data(tensor)
-            self.affine = affine
-            self._loaded = True
+
         for key in PROTECTED_KEYS:
             if key in kwargs:
                 message = f'Key "{key}" is reserved. Use a different one'
@@ -177,6 +175,12 @@ class Image(dict):
             warnings.warn(message, DeprecationWarning, stacklevel=2)
 
         super().__init__(**kwargs)
+
+        if tensor is not None:
+            self.set_data(tensor)
+            self.affine = affine
+            self._loaded = True
+
         self._check_data_loader()
         self.path = self._parse_path(path)
 
@@ -274,7 +278,7 @@ class Image(dict):
         return self.data
 
     @property
-    def affine(self) -> np.ndarray:
+    def affine(self) -> torch.Tensor:
         """Affine matrix to transform voxel indices into world coordinates."""
         # If path is a dir (probably DICOM), just load the data
         # Same if it's a list of paths (used to create a 4D image)
@@ -523,18 +527,18 @@ class Image(dict):
         return ensure_4d(tensor)
 
     @staticmethod
-    def _parse_affine(affine: Optional[TypeData]) -> np.ndarray:
+    def _parse_affine(affine: Optional[TypeData]) -> torch.Tensor:
         if affine is None:
-            return np.eye(4)
-        if isinstance(affine, torch.Tensor):
-            affine = affine.numpy()
-        if not isinstance(affine, np.ndarray):
+            return torch.eye(4)
+        if isinstance(affine, np.ndarray):
+            affine = torch.from_numpy(affine)
+        if not isinstance(affine, torch.Tensor):
             bad_type = type(affine)
             raise TypeError(f'Affine must be a NumPy array, not {bad_type}')
         if affine.shape != (4, 4):
             bad_shape = affine.shape
             raise ValueError(f'Affine shape must be (4, 4), not {bad_shape}')
-        return affine.astype(np.float64)
+        return affine.double()
 
     @staticmethod
     def _is_paths_sequence(path: Union[TypePath, Sequence[TypePath], None]) -> bool:
