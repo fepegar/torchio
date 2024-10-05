@@ -15,7 +15,6 @@ repos:
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # Trims trailing whitespace
-        exclude: setup.cfg
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.8
