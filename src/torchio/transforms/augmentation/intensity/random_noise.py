@@ -44,8 +44,12 @@ class RandomNoise(RandomTransform, IntensityTransform):
         self.std_range = self._parse_range(std, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for image_name in self.get_images_dict(subject):
+        for image_name in images_dict:
             mean, std, seed = self.get_params(self.mean_range, self.std_range)
             arguments['mean'][image_name] = mean
             arguments['std'][image_name] = std

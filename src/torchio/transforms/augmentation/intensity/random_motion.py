@@ -73,8 +73,12 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
         )
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for name, image in self.get_images_dict(subject).items():
+        for name, image in images_dict.items():
             params = self.get_params(
                 self.degrees_range,
                 self.translation_range,

@@ -61,8 +61,12 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
         )
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for image_name in self.get_images_dict(subject):
+        for image_name in images_dict:
             spikes_positions_param, intensity_param = self.get_params(
                 self.num_spikes_range,
                 self.intensity_range,
@@ -90,7 +94,7 @@ class Spike(IntensityTransform, FourierTransform):
     r"""Add MRI spike artifacts.
 
     Also known as `Herringbone artifact
-    <https://radiopaedia.org/articles/herringbone-artifact?lang=gb>`_,
+    <https://radiopaedia.org/articles/herringbone-artifact>`_,
     crisscross artifact or corduroy artifact, it creates stripes in different
     directions in image space due to spikes in k-space.
 
