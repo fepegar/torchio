@@ -151,12 +151,19 @@ class RandomAffine(RandomTransform, SpatialTransform):
         translation: TypeSextetFloat,
         isotropic: bool,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        scaling_params = torch.as_tensor(self.sample_uniform_sextet(scales))
+        scaling_params = torch.as_tensor(
+            self.sample_uniform_sextet(scales),
+            dtype=torch.float64,
+        )
         if isotropic:
             scaling_params.fill_(scaling_params[0])
-        rotation_params = torch.as_tensor(self.sample_uniform_sextet(degrees))
+        rotation_params = torch.as_tensor(
+            self.sample_uniform_sextet(degrees),
+            dtype=torch.float64,
+        )
         translation_params = torch.as_tensor(
             self.sample_uniform_sextet(translation),
+            dtype=torch.float64,
         )
         return scaling_params, rotation_params, translation_params
 
