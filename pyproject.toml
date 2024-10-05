@@ -133,6 +133,7 @@ filterwarnings = [
 quote-style = 'single'
 
 [tool.ruff.lint]
+preview = true
 select = [
     "B",
     "E",
