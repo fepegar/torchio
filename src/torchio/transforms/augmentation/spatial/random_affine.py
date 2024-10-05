@@ -154,8 +154,10 @@ class RandomAffine(RandomTransform, SpatialTransform):
         scaling_params = torch.as_tensor(self.sample_uniform_sextet(scales))
         if isotropic:
             scaling_params.fill_(scaling_params[0])
-        rotation_params = self.sample_uniform_sextet(degrees)
-        translation_params = self.sample_uniform_sextet(translation)
+        rotation_params = torch.as_tensor(self.sample_uniform_sextet(degrees))
+        translation_params = torch.as_tensor(
+            self.sample_uniform_sextet(translation),
+        )
         return scaling_params, rotation_params, translation_params
 
     def apply_transform(self, subject: Subject) -> Subject:

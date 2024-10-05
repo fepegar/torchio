@@ -62,7 +62,7 @@ dev = [
     "pytest",
     "pytest-cov",
     "pytest-sugar",
-    "tox",
+    "tox-uv",
     "types-Deprecated",
 ]
 doc = [
