@@ -128,10 +128,7 @@ class Transform(ABC):
         # used to invert invertible transforms
         self.args_names: List[str] = []
 
-    def __call__(
-        self,
-        data: InputType,
-    ) -> InputType:
+    def __call__(self, data: InputType) -> InputType:
         """Transform data and return a result of the same type.
 
         Args:
