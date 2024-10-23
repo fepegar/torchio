@@ -4,12 +4,12 @@ from ..constants import DATA_REPO
 from ..data import LabelMap
 from ..data import ScalarImage
 from ..data.io import read_matrix
-from ..data.subject import _RawSubjectCopySubject
+from ..data.subject import Subject
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
 
 
-class FPG(_RawSubjectCopySubject):
+class FPG(Subject):
     """3T :math:`T_1`-weighted brain MRI and corresponding parcellation.
 
     Args:

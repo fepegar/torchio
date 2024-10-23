@@ -1,7 +1,7 @@
 import urllib.parse
 
 from ..data import ScalarImage
-from ..data.subject import _RawSubjectCopySubject
+from ..data.subject import Subject
 from ..download import download_url
 from ..utils import get_torchio_cache_dir
 
@@ -36,7 +36,7 @@ URLS_DICT = {
 }
 
 
-class Slicer(_RawSubjectCopySubject):
+class Slicer(Subject):
     """Sample data provided by `3D Slicer <https://www.slicer.org/>`_.
 
     See `the Slicer wiki <https://www.slicer.org/wiki/SampleData>`_

@@ -4,7 +4,6 @@ import copy
 import pprint
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -71,9 +70,6 @@ class Subject(dict):
             f'(Keys: {tuple(self.keys())}; images: {num_images})'
         )
         return string
-
-    def __copy__(self):
-        return _subject_copy_helper(self, type(self))
 
     def __len__(self):
         return len(self.get_images(intensity_only=False))
@@ -429,25 +425,3 @@ class Subject(dict):
         from ..visualization import plot_subject  # avoid circular import
 
         plot_subject(self, **kwargs)
-
-
-def _subject_copy_helper(
-    old_obj: Subject,
-    new_subj_cls: Callable[[Dict[str, Any]], Subject],
-):
-    result_dict = {}
-    for key, value in old_obj.items():
-        if isinstance(value, Image):
-            value = copy.copy(value)
-        else:
-            value = copy.deepcopy(value)
-        result_dict[key] = value
-
-    new = new_subj_cls(**result_dict)  # type: ignore[call-arg]
-    new.applied_transforms = old_obj.applied_transforms[:]
-    return new
-
-
-class _RawSubjectCopySubject(Subject):
-    def __copy__(self):
-        return _subject_copy_helper(self, Subject)
