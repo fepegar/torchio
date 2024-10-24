@@ -47,11 +47,8 @@ class Compose(Transform):
 
     def get_init_args(self) -> Dict:
         init_args = super().get_init_args()
-        try:
-            # Remove parse_input as it is set to False in the __init__
+        if 'parse_input' in init_args:
             init_args.pop('parse_input')
-        except KeyError:
-            pass
         return init_args
 
     def apply_transform(self, subject: Subject) -> Subject:
@@ -115,11 +112,8 @@ class OneOf(RandomTransform):
 
     def get_init_args(self) -> Dict:
         init_args = super().get_init_args()
-        try:
-            # Remove parse_input as it is set to False in the __init__
+        if 'parse_input' in init_args:
             init_args.pop('parse_input')
-        except KeyError:
-            pass
         return init_args
 
     def apply_transform(self, subject: Subject) -> Subject:
