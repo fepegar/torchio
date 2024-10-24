@@ -208,8 +208,7 @@ class TestSubject(TorchioTestCase):
         # The data of both copies needs to be the same as we are using a shallow copy
         assert torch.allclose(sub_copy['t1'].data, copy_original_subj['t1'].data)
         # The data of the original subject should not be modified
+        assert not torch.allclose(sub_copy['t1'].data, self.sample_subject['t1'].data)
         assert not torch.allclose(
-            sub_copy['t1'].data, self.sample_subject['t1'].data
-        ) and not torch.allclose(
             copy_original_subj['t1'].data, self.sample_subject['t1'].data
         )
