@@ -200,6 +200,18 @@ class Transform(ABC):
             'label_keys': self.label_keys,
         }
 
+    def add_init_args(
+        self,
+        arguments,
+        overwrite_on_existing: bool = False,
+    ):
+        """Add the init args to existing arguments"""
+        for key, value in self.get_init_args().items():
+            if key in arguments and not overwrite_on_existing:
+                continue
+            arguments[key] = value
+        return arguments
+
     @property
     def name(self):
         return self.__class__.__name__

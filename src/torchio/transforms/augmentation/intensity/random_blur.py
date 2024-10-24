@@ -47,7 +47,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
         for name in images_dict:
             std = self.get_params(self.std_ranges)  # type: ignore[arg-type]
             arguments['std'][name] = std
-        transform = Blur(**arguments, **self.get_init_args())
+        transform = Blur(**self.add_init_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

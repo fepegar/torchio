@@ -60,7 +60,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
             coefficients = self.get_params(self.order, self.coefficients_range)
             arguments['coefficients'][image_name] = coefficients
             arguments['order'][image_name] = self.order
-        transform = BiasField(**arguments, **self.get_init_args())
+        transform = BiasField(**self.add_init_args(arguments))
         transformed = transform(subject)
         return transformed
 

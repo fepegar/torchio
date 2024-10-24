@@ -184,7 +184,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'label_interpolation': self.label_interpolation,
             'check_shape': self.check_shape,
         }
-        transform = Affine(**arguments, **self.get_init_args())
+        transform = Affine(**self.add_init_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

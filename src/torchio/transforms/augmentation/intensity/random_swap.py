@@ -102,7 +102,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
             )
             arguments['locations'][name] = locations
             arguments['patch_size'][name] = self.patch_size
-        transform = Swap(**arguments, **self.get_init_args())
+        transform = Swap(**self.add_init_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed
