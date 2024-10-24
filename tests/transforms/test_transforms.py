@@ -381,3 +381,27 @@ class TestTransform(TorchioTestCase):
         # From https://github.com/fepegar/torchio/issues/923
         with self.assertRaises(ValueError):
             tio.RandomAffine(include='t1')
+
+    def test_init_args(self):
+        transform = tio.Compose([tio.RandomNoise()])
+        init_args = transform.get_init_args()
+        assert 'parse_input' not in init_args
+
+        transform = tio.OneOf([tio.RandomNoise()])
+        init_args = transform.get_init_args()
+        assert 'parse_input' not in init_args
+
+        transform = tio.RandomNoise()
+        init_args = transform.get_init_args()
+        assert all(
+            arg in init_args
+            for arg in [
+                'p',
+                'copy',
+                'include',
+                'exclude',
+                'keep',
+                'parse_input',
+                'label_keys',
+            ]
+        )

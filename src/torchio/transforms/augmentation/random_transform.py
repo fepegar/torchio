@@ -21,11 +21,6 @@ class RandomTransform(Transform):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def add_include_exclude(self, kwargs):
-        kwargs['include'] = self.include
-        kwargs['exclude'] = self.exclude
-        return kwargs
-
     def parse_degrees(
         self,
         degrees: TypeRangeFloat,

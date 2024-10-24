@@ -189,6 +189,29 @@ class Transform(ABC):
         else:
             return super().__repr__()
 
+    def get_init_args(self) -> dict:
+        return {
+            'p': self.probability,
+            'copy': self.copy,
+            'include': self.include,
+            'exclude': self.exclude,
+            'keep': self.keep,
+            'parse_input': self.parse_input,
+            'label_keys': self.label_keys,
+        }
+
+    def add_init_args(
+        self,
+        arguments,
+        overwrite_on_existing: bool = False,
+    ):
+        """Add the init args to existing arguments"""
+        for key, value in self.get_init_args().items():
+            if key in arguments and not overwrite_on_existing:
+                continue
+            arguments[key] = value
+        return arguments
+
     @property
     def name(self):
         return self.__class__.__name__
