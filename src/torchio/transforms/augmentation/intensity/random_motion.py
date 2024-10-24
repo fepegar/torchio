@@ -90,7 +90,7 @@ class RandomMotion(RandomTransform, IntensityTransform, FourierTransform):
             arguments['degrees'][name] = degrees_params
             arguments['translation'][name] = translation_params
             arguments['image_interpolation'][name] = self.image_interpolation
-        transform = Motion(**self.add_include_exclude(arguments))
+        transform = Motion(**arguments, **self.get_init_args())
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

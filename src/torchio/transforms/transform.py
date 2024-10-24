@@ -189,6 +189,17 @@ class Transform(ABC):
         else:
             return super().__repr__()
 
+    def get_init_args(self) -> dict:
+        return {
+            'p': self.probability,
+            'copy': self.copy,
+            'include': self.include,
+            'exclude': self.exclude,
+            'keep': self.keep,
+            'parse_input': self.parse_input,
+            'label_keys': self.label_keys,
+        }
+
     @property
     def name(self):
         return self.__class__.__name__

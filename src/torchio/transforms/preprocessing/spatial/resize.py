@@ -61,6 +61,7 @@ class Resize(SpatialTransform):
             spacing_out,
             image_interpolation=self.image_interpolation,
             label_interpolation=self.label_interpolation,
+            **self.get_init_args(),
         )
         resampled = resample(subject)
         assert isinstance(resampled, Subject)
@@ -72,7 +73,7 @@ class Resize(SpatialTransform):
                 f' != target shape {tuple(shape_out)}. Fixing with CropOrPad'
             )
             warnings.warn(message, RuntimeWarning, stacklevel=2)
-            crop_pad = CropOrPad(shape_out)  # type: ignore[arg-type]
+            crop_pad = CropOrPad(shape_out, **self.get_init_args())  # type: ignore[arg-type]
             resampled = crop_pad(resampled)
         assert isinstance(resampled, Subject)
         return resampled

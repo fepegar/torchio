@@ -60,7 +60,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
             return subject
 
         arguments = {'axes': axes}
-        transform = Flip(**self.add_include_exclude(arguments))
+        transform = Flip(**arguments, **self.get_init_args())
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

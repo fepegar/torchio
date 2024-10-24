@@ -133,6 +133,6 @@ class EnsureShapeMultiple(SpatialTransform):
         integer_ratio = function(source_shape / self.target_multiple)
         target_shape = integer_ratio * self.target_multiple
         target_shape = np.maximum(target_shape, 1)
-        transform = CropOrPad(target_shape.astype(int))
+        transform = CropOrPad(target_shape.astype(int), **self.get_init_args())
         subject = transform(subject)  # type: ignore[assignment]
         return subject
