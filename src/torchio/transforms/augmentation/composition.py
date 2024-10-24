@@ -45,6 +45,15 @@ class Compose(Transform):
     def __repr__(self) -> str:
         return f'{self.name}({self.transforms})'
 
+    def get_init_args(self) -> Dict:
+        init_args = super().get_init_args()
+        try:
+            # Remove parse_input as it is set to False in the __init__
+            init_args.pop('parse_input')
+        except KeyError:
+            pass
+        return init_args
+
     def apply_transform(self, subject: Subject) -> Subject:
         for transform in self.transforms:
             subject = transform(subject)  # type: ignore[assignment]
@@ -103,6 +112,15 @@ class OneOf(RandomTransform):
     def __init__(self, transforms: TypeTransformsDict, **kwargs):
         super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
+
+    def get_init_args(self) -> Dict:
+        init_args = super().get_init_args()
+        try:
+            # Remove parse_input as it is set to False in the __init__
+            init_args.pop('parse_input')
+        except KeyError:
+            pass
+        return init_args
 
     def apply_transform(self, subject: Subject) -> Subject:
         weights = torch.Tensor(list(self.transforms_dict.values()))
