@@ -45,8 +45,8 @@ class Compose(Transform):
     def __repr__(self) -> str:
         return f'{self.name}({self.transforms})'
 
-    def get_init_args(self) -> Dict:
-        init_args = super().get_init_args()
+    def get_base_args(self) -> Dict:
+        init_args = super().get_base_args()
         if 'parse_input' in init_args:
             init_args.pop('parse_input')
         return init_args
@@ -73,7 +73,7 @@ class Compose(Transform):
                 message = f'Skipping {transform.name} as it is not invertible'
                 warnings.warn(message, RuntimeWarning, stacklevel=2)
         transforms.reverse()
-        result = Compose(transforms, **self.get_init_args())
+        result = Compose(transforms, **self.get_base_args())
         if not transforms and warn:
             warnings.warn(
                 'No invertible transforms found',
@@ -110,8 +110,8 @@ class OneOf(RandomTransform):
         super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
-    def get_init_args(self) -> Dict:
-        init_args = super().get_init_args()
+    def get_base_args(self) -> Dict:
+        init_args = super().get_base_args()
         if 'parse_input' in init_args:
             init_args.pop('parse_input')
         return init_args

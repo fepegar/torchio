@@ -106,7 +106,7 @@ class RandomAnisotropy(RandomTransform):
         }
 
         sx, sy, sz = target_spacing  # for mypy
-        downsample = Resample(target=(sx, sy, sz), **self.add_init_args(arguments))
+        downsample = Resample(target=(sx, sy, sz), **self.add_base_args(arguments))
         downsampled = downsample(subject)
         image = subject.get_first_image()
         target = image.spatial_shape, image.affine

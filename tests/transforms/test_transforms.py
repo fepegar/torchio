@@ -384,19 +384,18 @@ class TestTransform(TorchioTestCase):
 
     def test_init_args(self):
         transform = tio.Compose([tio.RandomNoise()])
-        init_args = transform.get_init_args()
-        assert 'parse_input' not in init_args
+        base_args = transform.get_base_args()
+        assert 'parse_input' not in base_args
 
         transform = tio.OneOf([tio.RandomNoise()])
-        init_args = transform.get_init_args()
-        assert 'parse_input' not in init_args
+        base_args = transform.get_base_args()
+        assert 'parse_input' not in base_args
 
         transform = tio.RandomNoise()
-        init_args = transform.get_init_args()
+        base_args = transform.get_base_args()
         assert all(
-            arg in init_args
+            arg in base_args
             for arg in [
-                'p',
                 'copy',
                 'include',
                 'exclude',

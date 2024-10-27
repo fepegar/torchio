@@ -189,9 +189,9 @@ class Transform(ABC):
         else:
             return super().__repr__()
 
-    def get_init_args(self) -> dict:
+    def get_base_args(self) -> dict:
         return {
-            'p': self.probability,
+            # Do not include p to prevent stacking of probabilities
             'copy': self.copy,
             'include': self.include,
             'exclude': self.exclude,
@@ -200,13 +200,13 @@ class Transform(ABC):
             'label_keys': self.label_keys,
         }
 
-    def add_init_args(
+    def add_base_args(
         self,
         arguments,
         overwrite_on_existing: bool = False,
     ):
         """Add the init args to existing arguments"""
-        for key, value in self.get_init_args().items():
+        for key, value in self.get_base_args().items():
             if key in arguments and not overwrite_on_existing:
                 continue
             arguments[key] = value

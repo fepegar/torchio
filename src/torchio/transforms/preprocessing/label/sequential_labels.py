@@ -52,7 +52,7 @@ class SequentialLabels(LabelTransform):
             remapping = {
                 unique_labels[i].item(): i for i in range(0, len(unique_labels))
             }
-            init_kwargs = self.get_init_args()
+            init_kwargs = self.get_base_args()
             init_kwargs['include'] = [name]
 
             transform = RemapLabels(

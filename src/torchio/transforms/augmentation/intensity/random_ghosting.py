@@ -106,7 +106,7 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             arguments['axis'][name] = axis_param
             arguments['intensity'][name] = intensity_param
             arguments['restore'][name] = self.restore
-        transform = Ghosting(**self.add_init_args(arguments))
+        transform = Ghosting(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

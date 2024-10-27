@@ -279,9 +279,9 @@ class CropOrPad(SpatialTransform):
         padding_params, cropping_params = self.compute_crop_or_pad(subject)
         padding_kwargs = {'padding_mode': self.padding_mode}
         if padding_params is not None:
-            pad = Pad(padding_params, **self.get_init_args(), **padding_kwargs)
+            pad = Pad(padding_params, **self.get_base_args(), **padding_kwargs)
             subject = pad(subject)  # type: ignore[assignment]
         if cropping_params is not None:
-            crop = Crop(cropping_params, **self.get_init_args())
+            crop = Crop(cropping_params, **self.get_base_args())
             subject = crop(subject)  # type: ignore[assignment]
         return subject

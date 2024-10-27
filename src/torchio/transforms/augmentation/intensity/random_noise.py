@@ -54,7 +54,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
             arguments['mean'][image_name] = mean
             arguments['std'][image_name] = std
             arguments['seed'][image_name] = seed
-        transform = Noise(**self.add_init_args(arguments))
+        transform = Noise(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

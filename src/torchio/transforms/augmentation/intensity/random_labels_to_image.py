@@ -268,7 +268,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             means.append(mean)
             stds.append(std)
 
-        transform = LabelsToImage(**self.add_init_args(arguments))
+        transform = LabelsToImage(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed
