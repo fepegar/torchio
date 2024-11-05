@@ -16,6 +16,9 @@ from .data import LabelMap
 from .data import LabelSampler
 from .data import Queue
 from .data import ScalarImage
+from .data import LazyImage
+from .data import LazyScalarImage
+from .data import LazyLabelMap
 from .data import Subject
 from .data import SubjectsDataset
 from .data import SubjectsLoader
@@ -36,6 +39,9 @@ __all__ = [
     'Image',
     'ScalarImage',
     'LabelMap',
+    'LazyImage',
+    'LazyScalarImage',
+    'LazyLabelMap',
     'Queue',
     'Subject',
     'datasets',
