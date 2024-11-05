@@ -49,7 +49,7 @@ class Crop(BoundsTransform):
             new_affine[:3, 3] = new_origin
             i0, j0, k0 = index_ini
             i1, j1, k1 = index_fin
-            if isinstance(image.data,torch.Tensor):
+            if isinstance(image.data, torch.Tensor):
                 image.set_data(image.data[:, i0:i1, j0:j1, k0:k1].clone())
             else:
                 image.set_data(torch.as_tensor(image.data[:, i0:i1, j0:j1, k0:k1]))

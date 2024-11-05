@@ -923,14 +923,12 @@ class LabelMap(Image):
 
 
 class LazyImage(Image):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def load(self):
-
         if self._is_multipath():
-            message = (f'No multiple paths for LazyImage')
+            message = f'No multiple paths for LazyImage'
             RuntimeError(message)
 
         tensor, affine = self.read_and_check(self.path)
@@ -943,7 +941,6 @@ class LazyImage(Image):
         tensor: Optional[TypeData],
         none_ok: bool = True,
     ) -> Optional[torch.Tensor]:
-
         if tensor is None:
             if none_ok:
                 return None
@@ -986,11 +983,10 @@ class LazyImage(Image):
 
 
 class LazyScalarImage(LazyImage, ScalarImage):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-class LazyLabelMap(LazyImage, LabelMap):
 
+class LazyLabelMap(LazyImage, LabelMap):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
