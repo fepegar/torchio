@@ -1,7 +1,6 @@
+from collections.abc import Sequence
 from numbers import Number
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -150,7 +149,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         degrees: TypeSextetFloat,
         translation: TypeSextetFloat,
         isotropic: bool,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         scaling_params = torch.as_tensor(
             self.sample_uniform_sextet(scales),
             dtype=torch.float64,

@@ -1,7 +1,5 @@
 from collections import defaultdict
 from numbers import Number
-from typing import Dict
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -44,8 +42,8 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
 
     def __init__(
         self,
-        num_spikes: Union[int, Tuple[int, int]] = 1,
-        intensity: Union[float, Tuple[float, float]] = (1, 3),
+        num_spikes: Union[int, tuple[int, int]] = 1,
+        intensity: Union[float, tuple[float, float]] = (1, 3),
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -53,7 +51,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
             intensity,
             'intensity_range',
         )
-        self.num_spikes_range: Tuple[int, int] = self._parse_range(  # type: ignore[assignment]
+        self.num_spikes_range: tuple[int, int] = self._parse_range(  # type: ignore[assignment]
             num_spikes,
             'num_spikes',
             min_constraint=0,
@@ -65,7 +63,7 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for image_name in images_dict:
             spikes_positions_param, intensity_param = self.get_params(
                 self.num_spikes_range,
@@ -80,9 +78,9 @@ class RandomSpike(RandomTransform, IntensityTransform, FourierTransform):
 
     def get_params(
         self,
-        num_spikes_range: Tuple[int, int],
-        intensity_range: Tuple[float, float],
-    ) -> Tuple[np.ndarray, float]:
+        num_spikes_range: tuple[int, int],
+        intensity_range: tuple[float, float],
+    ) -> tuple[np.ndarray, float]:
         ns_min, ns_max = num_spikes_range
         num_spikes_param = int(torch.randint(ns_min, ns_max + 1, (1,)).item())
         intensity_param = self.sample_uniform(*intensity_range)
@@ -111,8 +109,8 @@ class Spike(IntensityTransform, FourierTransform):
 
     def __init__(
         self,
-        spikes_positions: Union[np.ndarray, Dict[str, np.ndarray]],
-        intensity: Union[float, Dict[str, float]],
+        spikes_positions: Union[np.ndarray, dict[str, np.ndarray]],
+        intensity: Union[float, dict[str, float]],
         **kwargs,
     ):
         super().__init__(**kwargs)

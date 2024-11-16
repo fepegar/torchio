@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Dict
-from typing import Sequence
+from collections.abc import Sequence
 from typing import Union
 
 import numpy as np
@@ -12,7 +11,7 @@ from ...data.subject import Subject
 from ..transform import Transform
 from . import RandomTransform
 
-TypeTransformsDict = Union[Dict[Transform, float], Sequence[Transform]]
+TypeTransformsDict = Union[dict[Transform, float], Sequence[Transform]]
 
 
 class Compose(Transform):
@@ -115,7 +114,7 @@ class OneOf(RandomTransform):
     def _get_transforms_dict(
         self,
         transforms: TypeTransformsDict,
-    ) -> Dict[Transform, float]:
+    ) -> dict[Transform, float]:
         if isinstance(transforms, dict):
             transforms_dict = dict(transforms)
             self._normalize_probabilities(transforms_dict)
@@ -140,7 +139,7 @@ class OneOf(RandomTransform):
 
     @staticmethod
     def _normalize_probabilities(
-        transforms_dict: Dict[Transform, float],
+        transforms_dict: dict[Transform, float],
     ) -> None:
         probabilities = np.array(list(transforms_dict.values()), dtype=float)
         if np.any(probabilities < 0):

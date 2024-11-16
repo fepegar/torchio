@@ -1,6 +1,5 @@
 import warnings
 from numbers import Number
-from typing import Dict
 from typing import Union
 
 import nibabel as nib
@@ -91,7 +90,7 @@ class Pad(BoundsTransform):
             new_origin = nib.affines.apply_affine(image.affine, -np.array(low))
             new_affine = image.affine.copy()
             new_affine[:3, 3] = new_origin
-            kwargs: Dict[str, Union[str, float]]
+            kwargs: dict[str, Union[str, float]]
             if isinstance(self.padding_mode, Number):
                 kwargs = {
                     'mode': 'constant',

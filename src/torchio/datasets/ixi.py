@@ -13,10 +13,10 @@ images (15 directions)".
 # Adapted from
 # https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST
 import shutil
+from collections.abc import Sequence
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Optional
-from typing import Sequence
 
 from ..data import LabelMap
 from ..data import ScalarImage

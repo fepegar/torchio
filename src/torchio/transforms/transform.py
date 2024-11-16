@@ -3,12 +3,9 @@ import numbers
 import warnings
 from abc import ABC
 from abc import abstractmethod
+from collections.abc import Sequence
 from contextlib import contextmanager
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
@@ -33,7 +30,7 @@ from .data_parser import TypeTransformInput
 from .interpolation import Interpolation
 from .interpolation import get_sitk_interpolator
 
-TypeSixBounds = Tuple[int, int, int, int, int, int]
+TypeSixBounds = tuple[int, int, int, int, int, int]
 TypeBounds = Union[
     int,
     TypeTripletInt,
@@ -102,7 +99,7 @@ class Transform(ABC):
         include: TypeKeys = None,
         exclude: TypeKeys = None,
         keys: TypeKeys = None,
-        keep: Optional[Dict[str, str]] = None,
+        keep: Optional[dict[str, str]] = None,
         parse_input: bool = True,
         label_keys: TypeKeys = None,
     ):
@@ -126,7 +123,7 @@ class Transform(ABC):
         # args_names is the sequence of parameters from self that need to be
         # passed to a non-random version of a random transform. They are also
         # used to invert invertible transforms
-        self.args_names: List[str] = []
+        self.args_names: list[str] = []
 
     def __call__(self, data: InputType) -> InputType:
         """Transform data and return a result of the same type.
@@ -247,12 +244,12 @@ class Transform(ABC):
 
     @staticmethod
     def _parse_range(
-        nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
+        nums_range: Union[TypeNumber, tuple[TypeNumber, TypeNumber]],
         name: str,
         min_constraint: Optional[TypeNumber] = None,
         max_constraint: Optional[TypeNumber] = None,
         type_constraint: Optional[type] = None,
-    ) -> Tuple[TypeNumber, TypeNumber]:
+    ) -> tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
         Args:
@@ -382,7 +379,7 @@ class Transform(ABC):
         include: TypeKeys,
         exclude: TypeKeys,
         label_keys: TypeKeys,
-    ) -> Tuple[TypeKeys, TypeKeys]:
+    ) -> tuple[TypeKeys, TypeKeys]:
         if include is not None and exclude is not None:
             raise ValueError('Include and exclude cannot both be specified')
         Transform.validate_keys_sequence(include, 'include')

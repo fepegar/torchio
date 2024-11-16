@@ -1,6 +1,5 @@
 import abc
 from pathlib import Path
-from typing import Dict
 from typing import Optional
 
 from ..data import Image
@@ -83,7 +82,7 @@ class BITE3(BITE):
             subject_dir = subjects_dir / subject_id
             preop_path = subject_dir / f'{subject_id}_preop_mri.mnc'
             postop_path = subject_dir / f'{subject_id}_postop_mri.mnc'
-            images_dict: Dict[str, Image] = {}
+            images_dict: dict[str, Image] = {}
             images_dict['preop'] = ScalarImage(preop_path)
             images_dict['postop'] = ScalarImage(postop_path)
             for fp in subject_dir.glob('*tumor*'):

@@ -1,7 +1,4 @@
 from collections import defaultdict
-from typing import Dict
-from typing import List
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -39,7 +36,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
 
     def __init__(
         self,
-        coefficients: Union[float, Tuple[float, float]] = 0.5,
+        coefficients: Union[float, tuple[float, float]] = 0.5,
         order: int = 3,
         **kwargs,
     ):
@@ -55,7 +52,7 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for image_name in images_dict:
             coefficients = self.get_params(self.order, self.coefficients_range)
             arguments['coefficients'][image_name] = coefficients
@@ -67,8 +64,8 @@ class RandomBiasField(RandomTransform, IntensityTransform):
     def get_params(
         self,
         order: int,
-        coefficients_range: Tuple[float, float],
-    ) -> List[float]:
+        coefficients_range: tuple[float, float],
+    ) -> list[float]:
         # Sampling of the appropriate number of coefficients for the creation
         # of the bias field map
         random_coefficients = []
@@ -92,8 +89,8 @@ class BiasField(IntensityTransform):
 
     def __init__(
         self,
-        coefficients: Union[List[float], Dict[str, List[float]]],
-        order: Union[int, Dict[str, int]],
+        coefficients: Union[list[float], dict[str, list[float]]],
+        order: Union[int, dict[str, int]],
         **kwargs,
     ):
         super().__init__(**kwargs)
