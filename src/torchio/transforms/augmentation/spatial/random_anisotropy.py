@@ -1,5 +1,4 @@
 import warnings
-from typing import Tuple
 from typing import Union
 
 import torch

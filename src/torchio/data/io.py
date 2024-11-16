@@ -1,7 +1,6 @@
 import warnings
 from pathlib import Path
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 import nibabel as nib

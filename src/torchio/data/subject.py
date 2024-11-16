@@ -2,14 +2,11 @@ from __future__ import annotations
 
 import copy
 import pprint
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
-from collections.abc import Sequence
-from typing import Tuple
 
 import numpy as np
 

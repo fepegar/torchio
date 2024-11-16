@@ -1,7 +1,5 @@
-from typing import List
-from typing import Optional
 from collections.abc import Sequence
-from typing import Tuple
+from typing import Optional
 
 import torch
 

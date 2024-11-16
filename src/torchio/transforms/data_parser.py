@@ -1,5 +1,5 @@
-from typing import Optional
 from collections.abc import Sequence
+from typing import Optional
 from typing import Union
 
 import nibabel as nib

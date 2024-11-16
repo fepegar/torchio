@@ -1,6 +1,5 @@
 import warnings
 from numbers import Number
-from typing import Dict
 from typing import Union
 
 import nibabel as nib

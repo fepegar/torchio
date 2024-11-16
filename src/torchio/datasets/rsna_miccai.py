@@ -1,9 +1,7 @@
 import csv
 import warnings
-from pathlib import Path
-from typing import Dict
-from typing import List
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Union
 
 from ..data import ScalarImage

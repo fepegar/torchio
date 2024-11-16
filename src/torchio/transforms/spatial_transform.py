@@ -1,5 +1,3 @@
-from typing import List
-
 from ..data import Image
 from ..data.subject import Subject
 from .transform import Transform

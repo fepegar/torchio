@@ -1,7 +1,6 @@
 import warnings
-from typing import Optional
 from collections.abc import Sequence
-from typing import Tuple
+from typing import Optional
 from typing import Union
 
 import numpy as np

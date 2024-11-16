@@ -1,7 +1,6 @@
+from collections.abc import Sequence
 from numbers import Number
 from typing import Optional
-from collections.abc import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np

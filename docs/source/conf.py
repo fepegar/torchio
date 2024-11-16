@@ -12,7 +12,6 @@
 import os
 import sys
 from datetime import date
-from typing import List
 
 sys.path.insert(0, os.path.abspath('../../src'))
 import torchio  # noqa: E402

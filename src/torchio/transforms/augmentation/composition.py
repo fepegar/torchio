@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Dict
 from collections.abc import Sequence
 from typing import Union
 

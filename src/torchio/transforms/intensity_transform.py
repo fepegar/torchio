@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from ..data.image import Image
 from ..data.subject import Subject
 from .transform import Transform

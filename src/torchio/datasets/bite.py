@@ -1,6 +1,5 @@
 import abc
 from pathlib import Path
-from typing import Dict
 from typing import Optional
 
 from ..data import Image

@@ -7,14 +7,11 @@ import os
 import shutil
 import sys
 import tempfile
+from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
-from typing import Dict
-from collections.abc import Iterable
-from typing import List
 from typing import Optional
-from collections.abc import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np

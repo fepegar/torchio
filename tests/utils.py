@@ -4,10 +4,9 @@ import random
 import shutil
 import tempfile
 import unittest
+from collections.abc import Sequence
 from pathlib import Path
 from random import shuffle
-from collections.abc import Sequence
-from typing import Set
 
 import numpy as np
 import pytest

@@ -1,5 +1,3 @@
-from typing import Dict
-
 from ...transform import TypeMaskingMethod
 from .label_transform import LabelTransform
 

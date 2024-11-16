@@ -1,6 +1,5 @@
-from itertools import islice
 from collections.abc import Iterator
-from typing import List
+from itertools import islice
 from typing import Optional
 
 import humanize

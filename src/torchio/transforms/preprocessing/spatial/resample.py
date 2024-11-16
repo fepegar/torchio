@@ -1,9 +1,8 @@
 from collections.abc import Iterable
+from collections.abc import Sized
 from numbers import Number
 from pathlib import Path
 from typing import Optional
-from collections.abc import Sized
-from typing import Tuple
 from typing import Union
 
 import numpy as np
