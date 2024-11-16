@@ -52,10 +52,13 @@ class SequentialLabels(LabelTransform):
             remapping = {
                 unique_labels[i].item(): i for i in range(0, len(unique_labels))
             }
+            init_kwargs = self.get_base_args()
+            init_kwargs['include'] = [name]
+
             transform = RemapLabels(
                 remapping=remapping,
                 masking_method=self.masking_method,
-                include=[name],
+                **init_kwargs,
             )
             subject = transform(subject)
         return subject
