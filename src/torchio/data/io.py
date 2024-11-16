@@ -283,7 +283,7 @@ def _write_niftyreg_matrix(matrix: TypeData, txt_path: TypePath) -> None:
 
 def get_rotation_and_spacing_from_affine(
     affine: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
     rotation_zoom = affine[:3, :3]
     spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
@@ -337,7 +337,7 @@ def nib_to_sitk(
 def sitk_to_nib(
     image: sitk.Image,
     keepdim: bool = False,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     data = check_uint_to_int(data)
     num_components = image.GetNumberOfComponentsPerPixel()
@@ -391,7 +391,7 @@ def get_sitk_metadata_from_ras_affine(
     affine: np.ndarray,
     is_2d: bool = False,
     lps: bool = True,
-) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
+) -> tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
     direction_ras, spacing_array = get_rotation_and_spacing_from_affine(affine)
     origin_ras = affine[:3, 3]
     origin_lps = np.dot(FLIPXY_33, origin_ras)

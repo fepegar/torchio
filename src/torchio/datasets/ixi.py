@@ -16,7 +16,7 @@ import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 
 from ..data import LabelMap
 from ..data import ScalarImage

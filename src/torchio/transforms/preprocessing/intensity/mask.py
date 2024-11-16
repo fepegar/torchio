@@ -1,6 +1,6 @@
 import warnings
 from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 
 import torch
 

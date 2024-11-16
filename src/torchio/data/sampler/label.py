@@ -63,7 +63,7 @@ class LabelSampler(WeightedSampler):
         self,
         patch_size: TypeSpatialShape,
         label_name: Optional[str] = None,
-        label_probabilities: Optional[Dict[int, float]] = None,
+        label_probabilities: Optional[dict[int, float]] = None,
     ):
         super().__init__(patch_size, probability_map=label_name)
         self.label_probabilities_dict = label_probabilities
@@ -106,7 +106,7 @@ class LabelSampler(WeightedSampler):
     @staticmethod
     def get_probabilities_from_label_map(
         label_map: torch.Tensor,
-        label_probabilities_dict: Dict[int, float],
+        label_probabilities_dict: dict[int, float],
         patch_size: np.ndarray,
     ) -> torch.Tensor:
         """Create probability map according to label map probabilities."""

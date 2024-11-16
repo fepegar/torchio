@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Callable
 from typing import Dict
-from typing import Iterable
+from collections.abc import Iterable
 from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -19,7 +19,7 @@ from .normalization_transform import TypeMaskingMethod
 
 DEFAULT_CUTOFF = 0.01, 0.99
 STANDARD_RANGE = 0, 100
-TypeLandmarks = Union[TypePath, Dict[str, Union[TypePath, np.ndarray]]]
+TypeLandmarks = Union[TypePath, dict[str, Union[TypePath, np.ndarray]]]
 
 
 class HistogramStandardization(NormalizationTransform):
@@ -65,7 +65,7 @@ class HistogramStandardization(NormalizationTransform):
         self.args_names = ['landmarks', 'masking_method']
 
     @staticmethod
-    def _parse_landmarks(landmarks: TypeLandmarks) -> Dict[str, np.ndarray]:
+    def _parse_landmarks(landmarks: TypeLandmarks) -> dict[str, np.ndarray]:
         if isinstance(landmarks, (str, Path)):
             path = Path(landmarks)
             if path.suffix not in ('.pt', '.pth'):
@@ -104,7 +104,7 @@ class HistogramStandardization(NormalizationTransform):
     def train(
         cls,
         images_paths: Sequence[TypePath],
-        cutoff: Optional[Tuple[float, float]] = None,
+        cutoff: Optional[tuple[float, float]] = None,
         mask_path: Optional[Union[Sequence[TypePath], TypePath]] = None,
         masking_function: Optional[Callable] = None,
         output_path: Optional[TypePath] = None,
@@ -241,7 +241,7 @@ def _get_average_mapping(percentiles_database: np.ndarray) -> np.ndarray:
     return final_map
 
 
-def _get_percentiles(percentiles_cutoff: Tuple[float, float]) -> np.ndarray:
+def _get_percentiles(percentiles_cutoff: tuple[float, float]) -> np.ndarray:
     quartiles = np.arange(25, 100, 25).tolist()
     deciles = np.arange(10, 100, 10).tolist()
     all_percentiles = list(percentiles_cutoff) + quartiles + deciles
@@ -253,7 +253,7 @@ def _normalize(
     tensor: torch.Tensor,
     landmarks: np.ndarray,
     mask: Optional[np.ndarray],
-    cutoff: Optional[Tuple[float, float]] = None,
+    cutoff: Optional[tuple[float, float]] = None,
     epsilon: float = 1e-5,
 ) -> torch.Tensor:
     cutoff_ = DEFAULT_CUTOFF if cutoff is None else cutoff

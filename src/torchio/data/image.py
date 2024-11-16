@@ -6,7 +6,7 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -51,8 +51,8 @@ from .io import sitk_to_nib
 from .io import write_image
 
 PROTECTED_KEYS = DATA, AFFINE, TYPE, PATH, STEM
-TypeBound = Tuple[float, float]
-TypeBounds = Tuple[TypeBound, TypeBound, TypeBound]
+TypeBound = tuple[float, float]
+TypeBounds = tuple[TypeBound, TypeBound, TypeBound]
 
 deprecation_message = (
     'Setting the image data with the property setter is deprecated. Use the'
@@ -139,7 +139,7 @@ class Image(dict):
         affine: Optional[TypeData] = None,
         check_nans: bool = False,  # removed by ITK by default
         reader: Callable = read_image,
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ):
         self.check_nans = check_nans
         self.reader = reader
@@ -336,7 +336,7 @@ class Image(dict):
         return self.spatial_shape[0]
 
     @property
-    def orientation(self) -> Tuple[str, str, str]:
+    def orientation(self) -> tuple[str, str, str]:
         """Orientation codes."""
         return nib.aff2axcodes(self.affine)
 
@@ -349,14 +349,14 @@ class Image(dict):
         return direction  # type: ignore[return-value]
 
     @property
-    def spacing(self) -> Tuple[float, float, float]:
+    def spacing(self) -> tuple[float, float, float]:
         """Voxel spacing in mm."""
         _, spacing = get_rotation_and_spacing_from_affine(self.affine)
         sx, sy, sz = spacing
         return sx, sy, sz
 
     @property
-    def origin(self) -> Tuple[float, float, float]:
+    def origin(self) -> tuple[float, float, float]:
         """Center of first voxel in array, in mm."""
         ox, oy, oz = self.affine[:3, 3]
         return ox, oy, oz
@@ -479,7 +479,7 @@ class Image(dict):
     def _parse_path(
         self,
         path: Optional[Union[TypePath, Sequence[TypePath]]],
-    ) -> Optional[Union[Path, List[Path]]]:
+    ) -> Optional[Union[Path, list[Path]]]:
         if path is None:
             return None
         elif isinstance(path, dict):
@@ -565,7 +565,7 @@ class Image(dict):
         if self._loaded:
             return
 
-        paths: List[Path]
+        paths: list[Path]
         if self._is_multipath():
             paths = self.path  # type: ignore[assignment]
         else:
@@ -807,12 +807,12 @@ class Image(dict):
 
     def _crop_from_slices(
         self,
-        slices: Union[TypeSlice, Tuple[TypeSlice, ...]],
+        slices: Union[TypeSlice, tuple[TypeSlice, ...]],
     ) -> 'Image':
         from ..transforms import Crop
 
         slices_tuple = to_tuple(slices)  # type: ignore[assignment]
-        cropping: List[int] = []
+        cropping: list[int] = []
         for dim, slice_ in enumerate(slices_tuple):
             if isinstance(slice_, slice):
                 pass
@@ -914,7 +914,7 @@ class LabelMap(Image):
         """Get the number of voxels that are not 0."""
         return int(self.data.count_nonzero().item())
 
-    def count_labels(self) -> Dict[int, int]:
+    def count_labels(self) -> dict[int, int]:
         """Get the number of voxels in each label."""
         values_list = self.data.flatten().tolist()
         counter = Counter(values_list)

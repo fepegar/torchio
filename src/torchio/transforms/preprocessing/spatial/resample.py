@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from numbers import Number
 from pathlib import Path
 from typing import Optional
-from typing import Sized
+from collections.abc import Sized
 from typing import Tuple
 from typing import Union
 
@@ -19,7 +19,7 @@ from ....typing import TypePath
 from ....typing import TypeTripletFloat
 from ...spatial_transform import SpatialTransform
 
-TypeSpacing = Union[float, Tuple[float, float, float]]
+TypeSpacing = Union[float, tuple[float, float, float]]
 
 
 class Resample(SpatialTransform):
@@ -105,7 +105,7 @@ class Resample(SpatialTransform):
         ]
 
     @staticmethod
-    def _parse_spacing(spacing: TypeSpacing) -> Tuple[float, float, float]:
+    def _parse_spacing(spacing: TypeSpacing) -> tuple[float, float, float]:
         result: Iterable
         if isinstance(spacing, Iterable) and len(spacing) == 3:
             result = spacing

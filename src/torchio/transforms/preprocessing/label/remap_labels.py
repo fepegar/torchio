@@ -136,7 +136,7 @@ class RemapLabels(LabelTransform):
 
     def __init__(
         self,
-        remapping: Dict[int, int],
+        remapping: dict[int, int],
         masking_method: TypeMaskingMethod = None,
         **kwargs,
     ):

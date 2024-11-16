@@ -19,7 +19,7 @@ class SubjectsLoader(DataLoader):
     def __init__(
         self,
         dataset: Dataset,
-        collate_fn: Optional[Callable[[List[T]], Any]] = None,
+        collate_fn: Optional[Callable[[list[T]], Any]] = None,
         **kwargs,
     ):
         if collate_fn is None:
@@ -31,7 +31,7 @@ class SubjectsLoader(DataLoader):
         )
 
     @staticmethod
-    def _collate(subjects: List[Subject]) -> Dict[str, Any]:
+    def _collate(subjects: list[Subject]) -> dict[str, Any]:
         first_subject = subjects[0]
         batch_dict = {}
         for key in first_subject.keys():

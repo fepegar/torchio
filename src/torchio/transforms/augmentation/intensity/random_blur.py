@@ -34,7 +34,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
             keyword arguments.
     """
 
-    def __init__(self, std: Union[float, Tuple[float, float]] = (0, 2), **kwargs):
+    def __init__(self, std: Union[float, tuple[float, float]] = (0, 2), **kwargs):
         super().__init__(**kwargs)
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
@@ -43,7 +43,7 @@ class RandomBlur(RandomTransform, IntensityTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for name in images_dict:
             std = self.get_params(self.std_ranges)  # type: ignore[arg-type]
             arguments['std'][name] = std
@@ -70,7 +70,7 @@ class Blur(IntensityTransform):
 
     def __init__(
         self,
-        std: Union[TypeTripletFloat, Dict[str, TypeTripletFloat]],
+        std: Union[TypeTripletFloat, dict[str, TypeTripletFloat]],
         **kwargs,
     ):
         super().__init__(**kwargs)

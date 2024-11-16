@@ -1,6 +1,6 @@
 import warnings
 from numbers import Number
-from typing import Sequence
+from collections.abc import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -121,8 +121,8 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
 
     def __init__(
         self,
-        num_control_points: Union[int, Tuple[int, int, int]] = 7,
-        max_displacement: Union[float, Tuple[float, float, float]] = 7.5,
+        num_control_points: Union[int, tuple[int, int, int]] = 7,
+        max_displacement: Union[float, tuple[float, float, float]] = 7.5,
         locked_borders: int = 2,
         image_interpolation: str = 'linear',
         label_interpolation: str = 'nearest',
@@ -154,7 +154,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
     @staticmethod
     def get_params(
         num_control_points: TypeTripletInt,
-        max_displacement: Tuple[float, float, float],
+        max_displacement: tuple[float, float, float],
         num_locked_borders: int,
     ) -> np.ndarray:
         grid_shape = num_control_points
@@ -330,7 +330,7 @@ def _parse_num_control_points(
 
 
 def _parse_max_displacement(
-    max_displacement: Tuple[float, float, float],
+    max_displacement: tuple[float, float, float],
 ) -> None:
     for axis, number in enumerate(max_displacement):
         if not isinstance(number, Number) or number < 0:

@@ -1,5 +1,5 @@
 from itertools import islice
-from typing import Iterator
+from collections.abc import Iterator
 from typing import List
 from typing import Optional
 
@@ -210,7 +210,7 @@ class Queue(Dataset):
         self._num_sampled_subjects = 0
         if start_background:
             self._initialize_subjects_iterable()
-        self.patches_list: List[Subject] = []
+        self.patches_list: list[Subject] = []
 
         if self.shuffle_subjects and self.subject_sampler is not None:
             raise ValueError(

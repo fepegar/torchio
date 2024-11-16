@@ -8,7 +8,7 @@ from .transform import Transform
 class SpatialTransform(Transform):
     """Transform that modifies image bounds or voxels positions."""
 
-    def get_images(self, subject: Subject) -> List[Image]:
+    def get_images(self, subject: Subject) -> list[Image]:
         images = subject.get_images(
             intensity_only=False,
             include=self.include,

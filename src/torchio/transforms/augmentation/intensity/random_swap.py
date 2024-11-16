@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Dict
 from typing import List
-from typing import Sequence
+from collections.abc import Sequence
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
@@ -18,7 +18,7 @@ from ....utils import to_tuple
 from ...intensity_transform import IntensityTransform
 from .. import RandomTransform
 
-TypeLocations = Sequence[Tuple[TypeTripletInt, TypeTripletInt]]
+TypeLocations = Sequence[tuple[TypeTripletInt, TypeTripletInt]]
 TensorArray = TypeVar('TensorArray', np.ndarray, torch.Tensor)
 
 
@@ -64,7 +64,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
         tensor: torch.Tensor,
         patch_size: np.ndarray,
         num_iterations: int,
-    ) -> List[Tuple[TypeTripletInt, TypeTripletInt]]:
+    ) -> list[tuple[TypeTripletInt, TypeTripletInt]]:
         si, sj, sk = tensor.shape[-3:]
         spatial_shape = si, sj, sk  # for mypy
         locations = []
@@ -93,7 +93,7 @@ class RandomSwap(RandomTransform, IntensityTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for name, image in images_dict.items():
             locations = self.get_params(
                 image.data,
@@ -125,8 +125,8 @@ class Swap(IntensityTransform):
 
     def __init__(
         self,
-        patch_size: Union[TypeTripletInt, Dict[str, TypeTripletInt]],
-        locations: Union[TypeLocations, Dict[str, TypeLocations]],
+        patch_size: Union[TypeTripletInt, dict[str, TypeTripletInt]],
+        locations: Union[TypeLocations, dict[str, TypeLocations]],
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -154,7 +154,7 @@ class Swap(IntensityTransform):
 def _swap(
     tensor: torch.Tensor,
     patch_size: TypeTuple,
-    locations: List[Tuple[np.ndarray, np.ndarray]],
+    locations: list[tuple[np.ndarray, np.ndarray]],
 ) -> torch.Tensor:
     # Note this function modifies the input in-place
     tensor = tensor.clone()
@@ -193,7 +193,7 @@ def _crop(
 def get_random_indices_from_shape(
     spatial_shape: Sequence[int],
     patch_size: Sequence[int],
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     assert len(spatial_shape) == 3
     assert len(patch_size) in (1, 3)
     shape_array = np.array(spatial_shape)
