@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-ast                  # Simply check whether the files parse as valid python
       - id: check-case-conflict        # Check for files that would conflict in case-insensitive filesystems
@@ -15,10 +15,9 @@ repos:
       - id: end-of-file-fixer          # Ensures that a file is either empty, or ends with one newline
       - id: mixed-line-ending          # Replaces or checks mixed line ending
       - id: trailing-whitespace        # Trims trailing whitespace
-        exclude: setup.cfg
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.7
+    rev: v0.7.3
     hooks:
       - id: ruff
       - id: ruff-format
@@ -35,7 +34,7 @@ repos:
       - id: rst-inline-touching-normal        # detect mistake of inline code touching normal text in rst
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.19.0
     hooks:
       - id: pyupgrade
         args: ['--py38-plus', '--keep-runtime-typing']

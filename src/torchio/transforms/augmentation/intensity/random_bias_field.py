@@ -51,17 +51,17 @@ class RandomBiasField(RandomTransform, IntensityTransform):
         self.order = _parse_order(order)
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for image_name in self.get_images_dict(subject):
-            coefficients = self.get_params(
-                self.order,
-                self.coefficients_range,
-            )
+        for image_name in images_dict:
+            coefficients = self.get_params(self.order, self.coefficients_range)
             arguments['coefficients'][image_name] = coefficients
             arguments['order'][image_name] = self.order
         transform = BiasField(**self.add_include_exclude(arguments))
         transformed = transform(subject)
-        assert isinstance(transformed, Subject)
         return transformed
 
     def get_params(

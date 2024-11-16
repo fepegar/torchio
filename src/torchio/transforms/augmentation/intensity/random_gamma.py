@@ -69,8 +69,12 @@ class RandomGamma(RandomTransform, IntensityTransform):
         self.log_gamma_range = self._parse_range(log_gamma, 'log_gamma')
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for name, image in self.get_images_dict(subject).items():
+        for name, image in images_dict.items():
             gammas = [self.get_params(self.log_gamma_range) for _ in image.data]
             arguments['gamma'][name] = gammas
         transform = Gamma(**self.add_include_exclude(arguments))

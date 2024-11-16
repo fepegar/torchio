@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: "0 4 * * *"
 
+env:
+  FORCE_COLOR: 1
+
 jobs:
   pytest:
     name: Unit tests
@@ -70,7 +73,7 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python == '3.12' }}
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v4.6.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

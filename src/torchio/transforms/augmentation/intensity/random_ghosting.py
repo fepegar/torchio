@@ -96,10 +96,15 @@ class RandomGhosting(RandomTransform, IntensityTransform):
             )
 
     def apply_transform(self, subject: Subject) -> Subject:
-        arguments: Dict[str, dict] = defaultdict(dict)
-        if any(isinstance(n, str) for n in self.axes):
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
+        if any(isinstance(axis, str) for axis in self.axes):
             subject.check_consistent_orientation()
-        for name, image in self.get_images_dict(subject).items():
+
+        arguments: Dict[str, dict] = defaultdict(dict)
+        for name, image in images_dict.items():
             is_2d = image.is_2d()
             axes = [a for a in self.axes if a != 2] if is_2d else self.axes
             min_ghosts, max_ghosts = self.num_ghosts_range

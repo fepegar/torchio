@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import gzip
+import inspect
 import os
 import shutil
 import sys
@@ -19,6 +20,7 @@ from typing import Union
 import numpy as np
 import SimpleITK as sitk
 import torch
+import torch.utils.data.dataloader
 from nibabel.nifti1 import Nifti1Image
 from torch.utils.data import DataLoader
 from torch.utils.data._utils.collate import default_collate
@@ -415,3 +417,24 @@ def is_iterable(object: Any) -> bool:
         return True
     except TypeError:
         return False
+
+
+def in_class(classes) -> bool:
+    classes = to_tuple(classes)
+    stack = inspect.stack()
+    for frame_info in stack:
+        instance = frame_info.frame.f_locals.get('self')
+        if instance is None:
+            continue
+        if instance.__class__ in classes:
+            return True
+    else:
+        return False
+
+
+def in_torch_loader() -> bool:
+    classes = (
+        torch.utils.data.dataloader._SingleProcessDataLoaderIter,
+        torch.utils.data.dataloader._MultiProcessingDataLoaderIter,
+    )
+    return in_class(classes)

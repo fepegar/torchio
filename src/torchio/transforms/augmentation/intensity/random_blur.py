@@ -39,9 +39,13 @@ class RandomBlur(RandomTransform, IntensityTransform):
         self.std_ranges = self.parse_params(std, None, 'std', min_constraint=0)
 
     def apply_transform(self, subject: Subject) -> Subject:
+        images_dict = self.get_images_dict(subject)
+        if not images_dict:
+            return subject
+
         arguments: Dict[str, dict] = defaultdict(dict)
-        for name in self.get_images_dict(subject):
-            std = self.get_params(self.std_ranges)
+        for name in images_dict:
+            std = self.get_params(self.std_ranges)  # type: ignore[arg-type]
             arguments['std'][name] = std
         transform = Blur(**self.add_include_exclude(arguments))
         transformed = transform(subject)
@@ -49,8 +53,8 @@ class RandomBlur(RandomTransform, IntensityTransform):
         return transformed
 
     def get_params(self, std_ranges: TypeSextetFloat) -> TypeTripletFloat:
-        std = self.sample_uniform_sextet(std_ranges)
-        return std
+        sx, sy, sz = self.sample_uniform_sextet(std_ranges)
+        return sx, sy, sz
 
 
 class Blur(IntensityTransform):

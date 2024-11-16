@@ -118,7 +118,7 @@ class HistogramStandardization(NormalizationTransform):
             cutoff: Optional minimum and maximum quantile values,
                 respectively, that are used to select a range of intensity of
                 interest. Equivalent to :math:`pc_1` and :math:`pc_2` in
-                `Nyúl and Udupa's paper <http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&rep=rep1&type=pdf>`_.
+                `Nyúl and Udupa's paper <https://pubmed.ncbi.nlm.nih.gov/10571928/>`_.
             mask_path: Path (or list of paths) to a binary image that will be
                 used to select the voxels use to compute the stats during
                 histogram training. If ``None``, all voxels in the image will

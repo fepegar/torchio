@@ -5,6 +5,8 @@ from typing import Tuple
 import torch
 
 from ...typing import TypeRangeFloat
+from ...typing import TypeSextetFloat
+from ...typing import TypeTripletFloat
 from ..transform import Transform
 
 
@@ -49,8 +51,9 @@ class RandomTransform(Transform):
         """
         return int(torch.randint(0, 2**31, (1,)).item())
 
-    def sample_uniform_sextet(self, params):
+    def sample_uniform_sextet(self, params: TypeSextetFloat) -> TypeTripletFloat:
         results = []
         for a, b in zip(params[::2], params[1::2]):
             results.append(self.sample_uniform(a, b))
-        return torch.Tensor(results)
+        sx, sy, sz = results
+        return sx, sy, sz
