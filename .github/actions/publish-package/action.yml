@@ -5,26 +5,18 @@ inputs:
     description: Whether to publish to TestPyPI
     required: true
 
-# https://docs.astral.sh/uv/guides/integration/github/#using-uv-pip
-env:
-  UV_SYSTEM_PYTHON: 1
-
 runs:
   using: "composite"
   steps:
     - name: Install uv
       uses: astral-sh/setup-uv@v3
 
-    - name: Set up Python
-      run: uv python install
-      shell: bash
-
-    - name: Install PyPA's build package
-      run: uv pip install --system build
-      shell: bash
+    # - name: Set up Python
+    #   run: uv python install
+    #   shell: bash
 
     - name: Build a binary wheel and a source tarball
-      run: uv run python -m build .
+      run: uv build
       shell: bash
 
     - name: Publish package to TestPyPI
