@@ -20,7 +20,7 @@ runs:
       shell: bash
 
     - name: Install PyPA's build package
-      run: uv pip install build
+      run: uv pip install --system build
       shell: bash
 
     - name: Build a binary wheel and a source tarball
