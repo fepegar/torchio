@@ -1,0 +1,41 @@
+name: Publish package to PyPI or TestPyPI
+
+inputs:
+  test:
+    description: Whether to publish to TestPyPI
+    required: true
+
+# https://docs.astral.sh/uv/guides/integration/github/#using-uv-pip
+env:
+  UV_SYSTEM_PYTHON: 1
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python
+      run: uv python install
+
+    - name: Install PyPA's build package
+      run: uv pip install build
+
+    - name: Build a binary wheel and a source tarball
+      run: uv run python -m build .
+
+    - name: Publish package to TestPyPI
+      if: ${{ inputs.test }} == true
+      run: echo "Publishing to TestPyPI"
+      # uses: pypa/gh-action-pypi-publish@release/v1
+      # with:
+      #   repository-url: https://test.pypi.org/legacy/
+      #   verbose: true
+      #   skip-existing: true
+
+    - name: Publish package to PyPI
+      if: ${{ inputs.test }} == false
+      run: echo "Publishing to PyPI"
+      # uses: pypa/gh-action-pypi-publish@release/v1
+      # with:
+      #   verbose: true

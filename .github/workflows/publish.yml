@@ -1,10 +1,7 @@
-# Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
-
 name: Publish
 
 on: push
 
-# https://github.com/fepegar/torchio/actions/runs/6076955855/job/17283217522?pr=1103
 permissions:
   id-token: write
 
@@ -16,37 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Publish TorchIO to TestPyPI
+      uses: ./.github/actions/publish-package
       with:
-        python-version: "3.12"
-
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-
-    - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
-
-    - name: Publish package to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
-        verbose: true
-        skip-existing: true
+        test: true
 
     # Publish only tagged commits
-    - name: Publish package to PyPI, if tagged
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Publish TorchIO to PyPI if commit is tagged
+      # if: startsWith(github.ref, 'refs/tags')
+      uses: ./.github/actions/publish-package
       with:
-        verbose: true
+        test: false
