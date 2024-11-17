@@ -17,16 +17,20 @@ runs:
 
     - name: Set up Python
       run: uv python install
+      shell: bash
 
     - name: Install PyPA's build package
       run: uv pip install build
+      shell: bash
 
     - name: Build a binary wheel and a source tarball
       run: uv run python -m build .
+      shell: bash
 
     - name: Publish package to TestPyPI
       if: ${{ inputs.test }} == true
       run: echo "Publishing to TestPyPI"
+      shell: bash
       # uses: pypa/gh-action-pypi-publish@release/v1
       # with:
       #   repository-url: https://test.pypi.org/legacy/
@@ -36,6 +40,7 @@ runs:
     - name: Publish package to PyPI
       if: ${{ inputs.test }} == false
       run: echo "Publishing to PyPI"
+      shell: bash
       # uses: pypa/gh-action-pypi-publish@release/v1
       # with:
       #   verbose: true
