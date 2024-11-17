@@ -2,25 +2,45 @@ name: Publish
 
 on: push
 
-permissions:
-  id-token: write
-
 jobs:
-  Build-and-publish:
-    name: Build and publish if needed
+  build:
+    name: Build the package
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Publish TorchIO to TestPyPI
-      uses: ./.github/actions/publish-package
-      with:
-        test: true
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
 
-    # Publish only tagged commits
-    - name: Publish TorchIO to PyPI if commit is tagged
-      if: startsWith(github.ref, 'refs/tags')
-      uses: ./.github/actions/publish-package
+    - name: Build a binary wheel and a source tarball
+      run: uv build
+
+    - name: Upload dist directory
+      uses: actions/upload-artifact@v2
       with:
-        test: false
+        path: dist
+
+  publish:
+    name: Publish the package
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
+          skip-existing: true
+
+      - name: Publish TorchIO to PyPI if commit is tagged
+        # Publish only tagged commits
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
