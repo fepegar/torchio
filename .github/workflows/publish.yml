@@ -20,7 +20,7 @@ jobs:
 
     # Publish only tagged commits
     - name: Publish TorchIO to PyPI if commit is tagged
-      # if: startsWith(github.ref, 'refs/tags')
+      if: startsWith(github.ref, 'refs/tags')
       uses: ./.github/actions/publish-package
       with:
         test: false

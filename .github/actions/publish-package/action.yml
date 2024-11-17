@@ -21,7 +21,7 @@ runs:
 
     - name: Publish package to TestPyPI
       if: ${{ inputs.test }} == true
-      run: echo "Publishing to TestPyPI"
+      run: uv publish --publish-url https://test.pypi.org/legacy/
       shell: bash
       # uses: pypa/gh-action-pypi-publish@release/v1
       # with:
