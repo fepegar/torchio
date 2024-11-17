@@ -51,37 +51,8 @@ dependencies = [
 csv = [
     "pandas",
 ]
-dev = [
-    "bump2version",
-    "coverage",
-    "mypy",
-    "parameterized",
-    "pre-commit-uv",
-    "Pillow",
-    "pytest",
-    "pytest-cov",
-    "pytest-sugar",
-    "tox-uv",
-    "types-Deprecated",
-]
-doc = [
-    "einops",
-    "furo",
-    "matplotlib",
-    "sphinx",
-    "sphinx-autobuild",
-    "sphinx-copybutton",
-    "sphinx-gallery",
-    "sphinxext-opengraph",
-]
 plot = [
     "matplotlib",
-]
-all = [
-    "torchio[doc]",
-    "torchio[plot]",
-    "torchio[csv]",
-    "torchio[dev]",
 ]
 
 [project.scripts]
@@ -95,6 +66,38 @@ Source = "https://github.com/fepegar/torchio"
 "Issue tracker" = "https://github.com/fepegar/torchio/issues"
 Documentation = "http://torchio.rtfd.io"
 "Release notes" = "https://github.com/fepegar/torchio/releases"
+
+[dependency-groups]
+dev = [
+    { include-group = "doc" },
+    { include-group = "maintain" },
+    { include-group = "test" },
+]
+doc = [
+    "einops",
+    "furo",
+    "matplotlib",
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-gallery",
+    "sphinxext-opengraph",
+]
+maintain = [
+    "bump2version",
+    "pre-commit-uv",
+]
+test = [
+    "coverage",
+    "mypy",
+    "parameterized",
+    "pillow",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+    "tox-uv",
+    "types-deprecated",
+]
 
 [tool.mypy]
 pretty = true
@@ -145,7 +148,6 @@ ignore = [
     "E501",
     "N813",
 ]
-
 
 [tool.ruff.lint.isort]
 force-single-line = true
