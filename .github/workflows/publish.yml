@@ -23,6 +23,7 @@ jobs:
 
   publish:
     name: Publish the package
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       id-token: write
