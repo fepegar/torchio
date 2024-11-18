@@ -9,10 +9,10 @@ helps, and credit will always be given.
 
 You can contribute in many ways:
 
-Types of Contributions
+Types of contributions
 ----------------------
 
-Report Bugs
+Report bugs
 ~~~~~~~~~~~
 
 Report bugs
@@ -24,26 +24,26 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
+Fix bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bugs. Anything tagged with "bug" and "help
 wanted" is open to whoever wants to implement it.
 
-Implement Features
+Implement features
 ~~~~~~~~~~~~~~~~~~
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
-Write Documentation
+Write documentation
 ~~~~~~~~~~~~~~~~~~~
 
 TorchIO could always use more documentation, whether as part of the
 official TorchIO docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
-Submit Feedback
+Submit feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at https://github.com/fepegar/torchio/issues.
@@ -55,8 +55,8 @@ If you are proposing a feature:
 * Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
-Get Started!
-------------
+Getting started
+---------------
 
 Ready to contribute? Here's how to set up ``torchio`` for local development.
 
@@ -80,11 +80,9 @@ already be implemented.
 4) Install your local copy into a virtual environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you use ``conda``, this is how you can set up your fork for local development::
+``uv`` is recommended for development::
 
-    conda create --name torchioenv python --yes
-    conda activate torchioenv
-    pip install --editable ".[all]"
+    uv sync --all-extras
     pre-commit install
 
 5) Create a branch for local development using the issue number
@@ -92,7 +90,7 @@ If you use ``conda``, this is how you can set up your fork for local development
 
 For example, if the issue number is 55::
 
-    git checkout -b 55-name-of-your-bugfix-or-feature
+    git switch --create 55-name-of-your-bugfix-or-feature
 
 Now you can make your changes locally.
 
@@ -113,7 +111,7 @@ messages <https://chris.beams.io/posts/git-commit>`_, and `here's some
 more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f98891114c4>`_)::
 
     git add .
-    git commit -m "Fix nasty bug"
+    git commit --mesage "Fix nasty bug"
     git push origin 55-name-of-your-bugfix-or-feature
 
 8) Check documentation

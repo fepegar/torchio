@@ -72,6 +72,8 @@ dev = [
     { include-group = "doc" },
     { include-group = "maintain" },
     { include-group = "test" },
+    "ipykernel",
+    "ruff",
 ]
 doc = [
     "einops",
