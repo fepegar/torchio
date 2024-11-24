@@ -1,0 +1,8 @@
+.venv/
+.tox/
+dist/
+*_cache/
+*.xml
+.coverage
+.vscode/
+.github/
