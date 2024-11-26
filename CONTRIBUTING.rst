@@ -130,6 +130,11 @@ time you modify them and reload them in the browser::
 
     make livehtml
 
+If you prefer to activate your environment manually or not use ``uv``,
+add ``PREFIX=""`` to the command::
+
+    make html PREFIX=""
+
 9) Submit a pull request on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
