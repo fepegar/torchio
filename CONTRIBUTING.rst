@@ -9,10 +9,10 @@ helps, and credit will always be given.
 
 You can contribute in many ways:
 
-Types of contributions
+Types of Contributions
 ----------------------
 
-Report bugs
+Report Bugs
 ~~~~~~~~~~~
 
 Report bugs
@@ -24,26 +24,26 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix bugs
+Fix Bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bugs. Anything tagged with "bug" and "help
 wanted" is open to whoever wants to implement it.
 
-Implement features
+Implement Features
 ~~~~~~~~~~~~~~~~~~
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
-Write documentation
+Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
 TorchIO could always use more documentation, whether as part of the
 official TorchIO docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
-Submit feedback
+Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at https://github.com/fepegar/torchio/issues.
@@ -55,8 +55,8 @@ If you are proposing a feature:
 * Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
-Getting started
----------------
+Get Started!
+------------
 
 Ready to contribute? Here's how to set up ``torchio`` for local development.
 
@@ -80,9 +80,11 @@ already be implemented.
 4) Install your local copy into a virtual environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``uv`` is recommended for development::
+If you use ``conda``, this is how you can set up your fork for local development::
 
-    uv sync --all-extras
+    conda create --name torchioenv python --yes
+    conda activate torchioenv
+    pip install --editable ".[all]"
     pre-commit install
 
 5) Create a branch for local development using the issue number
@@ -90,7 +92,7 @@ already be implemented.
 
 For example, if the issue number is 55::
 
-    git switch --create 55-name-of-your-bugfix-or-feature
+    git checkout -b 55-name-of-your-bugfix-or-feature
 
 Now you can make your changes locally.
 
@@ -111,7 +113,7 @@ messages <https://chris.beams.io/posts/git-commit>`_, and `here's some
 more <https://medium.com/@joshuatauberer/write-joyous-git-commit-messages-2f98891114c4>`_)::
 
     git add .
-    git commit --mesage "Fix nasty bug"
+    git commit -m "Fix nasty bug"
     git push origin 55-name-of-your-bugfix-or-feature
 
 8) Check documentation
