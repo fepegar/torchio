@@ -19,5 +19,8 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
-  commands:
-    - pip install . --dependency-groups=doc
+  jobs:
+    install:
+      - pip install .
+      - pip install dependency-groups
+      - pip-install-dependency-groups doc
