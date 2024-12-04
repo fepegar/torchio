@@ -84,7 +84,7 @@ class TestHistogramStandardization(TorchioTestCase):
         torch.save(landmarks_dict, landmarks_path)
         kwargs = {}
         if Version(torch.__version__) >= Version('1.13'):
-            kwargs["weights_only"] = False
+            kwargs['weights_only'] = False
         landmarks_dict = torch.load(landmarks_path, **kwargs)
         transform = HistogramStandardization(landmarks_dict)
         transform(self.dataset[0])
