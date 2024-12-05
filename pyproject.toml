@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "torchio"
-version = "0.20.2"
+version = "0.20.3"
 description = "Tools for medical image processing with PyTorch"
 readme = {file = "README.md", content-type = "text/markdown"}
 authors = [
@@ -106,7 +106,7 @@ test = [
 ]
 
 [tool.bumpversion]
-current_version = "0.20.2"
+current_version = "0.20.3"
 commit = true
 tag = true
 
