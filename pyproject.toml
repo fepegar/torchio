@@ -37,23 +37,25 @@ classifiers = [
 keywords = ["medical", "image processing", "pytorch", "augmentation", "mri"]
 requires-python = ">=3.9,<3.13"
 dependencies = [
-    "deprecated",
-    "humanize",
-    "nibabel",
-    "numpy>=1.15",
-    "scipy",
-    "simpleitk!=2.0.*,!=2.1.1.1",
-    "torch>=1.1",
-    "tqdm",
-    "typer",
+    "deprecated>=1.2",
+    "humanize>=0.1",
+    "nibabel>=3",
+    "numpy>=1.20",
+    "packaging>=20",
+    "rich>=10",
+    "scipy>=1.7",
+    "simpleitk >=1.3, !=2.0.*, !=2.1.1.1",
+    "torch>=1.9",
+    "tqdm>=4.40",
+    "typer>=0.1",
 ]
 
 [project.optional-dependencies]
 csv = [
-    "pandas",
+    "pandas>=1",
 ]
 plot = [
-    "matplotlib",
+    "matplotlib>=3.4",
 ]
 
 [project.scripts]
@@ -74,7 +76,8 @@ dev = [
     { include-group = "maintain" },
     { include-group = "test" },
     "ipykernel",
-    "ruff",
+    "ruff>0.0.40",
+    "ipywidgets",
 ]
 doc = [
     "einops",
@@ -91,13 +94,13 @@ maintain = [
     "pre-commit-uv",
 ]
 test = [
-    "coverage",
-    "mypy",
-    "parameterized",
-    "pillow",
-    "pytest",
+    "coverage>=5",
+    "mypy>=0.800",
+    "parameterized>=0.7",
+    "pillow>=8",
+    "pytest>=5",
     "pytest-cov",
-    "pytest-sugar",
+    "pytest-sugar>=0.10",
     "tox-uv",
     "types-deprecated",
 ]
