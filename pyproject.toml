@@ -87,7 +87,7 @@ doc = [
     "sphinxext-opengraph",
 ]
 maintain = [
-    "bump2version",
+    "bump-my-version",
     "pre-commit-uv",
 ]
 test = [
