@@ -39,11 +39,15 @@ jobs:
           name: dist
           path: dist
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
       - name: Publish package to TestPyPI
-        run: uv publish --publish-url https://test.pypi.org/legacy/
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+      - name: Install uv
+        if: startsWith(github.ref, 'refs/tags')
+        uses: astral-sh/setup-uv@v4
 
       - name: Publish package to PyPI if commit is tagged
         # Publish only tagged commits
