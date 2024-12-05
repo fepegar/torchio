@@ -20,7 +20,7 @@ setup: install_uv
     uv run pre-commit install
 
 bump part="patch":
-    uv run bump-my-version bump {{part}}
+    uv run bump-my-version bump {{part}} --verbose
 
-bump-dry:
-    uv run bump-my-version bump --dry-run
+bump-dry part='patch':
+    uv run bump-my-version bump {{part}} --dry-run --verbose --allow-dirty
