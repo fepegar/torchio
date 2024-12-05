@@ -90,7 +90,7 @@ doc = [
     "sphinxext-opengraph",
 ]
 maintain = [
-    "bump2version",
+    "bump-my-version",
     "pre-commit-uv",
 ]
 test = [
@@ -104,6 +104,21 @@ test = [
     "tox-uv",
     "types-deprecated",
 ]
+
+[tool.bumpversion]
+current_version = "0.20.2"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "src/torchio/__init__.py"
+search = "__version__ = '{current_version}'"
+replace = "__version__ = '{new_version}'"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
 
 [tool.mypy]
 pretty = true

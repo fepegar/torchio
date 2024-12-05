@@ -18,3 +18,9 @@ clean:
 setup: install_uv
     uv sync --all-extras --all-groups
     uv run pre-commit install
+
+bump part="patch":
+    uv run bump-my-version bump {{part}} --verbose
+
+bump-dry part='patch':
+    uv run bump-my-version bump {{part}} --dry-run --verbose --allow-dirty
