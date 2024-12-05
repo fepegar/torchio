@@ -1,8 +1,7 @@
-from packaging.version import Version
-
 import numpy as np
 import pytest
 import torch
+from packaging.version import Version
 
 from torchio import LabelMap
 from torchio import ScalarImage
