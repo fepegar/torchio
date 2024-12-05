@@ -45,7 +45,7 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
-      - name: Install uv
+      - name: Install uv if commit is tagged
         if: startsWith(github.ref, 'refs/tags')
         uses: astral-sh/setup-uv@v4
 
