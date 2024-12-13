@@ -112,3 +112,6 @@ ENV/
 *DS_Store
 .pylintrc
 auto_examples
+
+# uv
+uv.lock
