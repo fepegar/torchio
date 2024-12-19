@@ -54,7 +54,7 @@ class RandomFlip(RandomTransform, SpatialTransform):
                 axes_to_flip_hot[i] = False
         (axes,) = np.where(axes_to_flip_hot)
         axes_list = axes.tolist()
-        if not axes:
+        if not axes_list:
             return subject
 
         arguments = {'axes': axes_list}
