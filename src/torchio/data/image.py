@@ -450,8 +450,8 @@ class Image(dict):
         first_point = apply_affine(self.affine, first_index)
         last_point = apply_affine(self.affine, last_index)
         array = np.array((first_point, last_point))
-        bounds_x, bounds_y, bounds_z = array.T.tolist()
-        return bounds_x, bounds_y, bounds_z
+        bounds_x, bounds_y, bounds_z = array.T.tolist()  # type: ignore[misc]
+        return bounds_x, bounds_y, bounds_z  # type: ignore[return-value]
 
     @staticmethod
     def _parse_single_path(

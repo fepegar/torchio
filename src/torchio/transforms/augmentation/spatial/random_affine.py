@@ -302,7 +302,7 @@ class Affine(SpatialTransform):
         radians = np.radians(degrees).tolist()
 
         # SimpleITK uses LPS
-        radians_lps = ras_to_lps(radians)
+        radians_lps = ras_to_lps(radians)  # type: ignore[arg-type]
         translation_lps = ras_to_lps(translation)
 
         transform.SetRotation(*radians_lps)

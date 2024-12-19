@@ -68,12 +68,12 @@ class RandomSwap(RandomTransform, IntensityTransform):
         for _ in range(num_iterations):
             first_ini, first_fin = get_random_indices_from_shape(
                 spatial_shape,
-                patch_size.tolist(),
+                patch_size.tolist(),  # type: ignore[arg-type]
             )
             while True:
                 second_ini, second_fin = get_random_indices_from_shape(
                     spatial_shape,
-                    patch_size.tolist(),
+                    patch_size.tolist(),  # type: ignore[arg-type]
                 )
                 larger_than_initial = np.all(second_ini >= first_ini)
                 less_than_final = np.all(second_fin <= first_fin)

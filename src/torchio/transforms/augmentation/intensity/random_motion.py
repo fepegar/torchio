@@ -287,7 +287,8 @@ class Motion(IntensityTransform, FourierTransform):
         self.sort_spectra(spectra, times)
         result_spectrum = torch.empty_like(spectra[0])
         last_index = result_spectrum.shape[2]
-        indices = (last_index * times).astype(int).tolist()
+        indices_array = (last_index * times).astype(int)
+        indices: list[int] = indices_array.tolist()  # type: ignore[assignment]
         indices.append(last_index)
         ini = 0
         for spectrum, fin in zip(spectra, indices):
