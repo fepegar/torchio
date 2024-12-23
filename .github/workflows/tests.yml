@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
