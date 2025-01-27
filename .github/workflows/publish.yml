@@ -1,52 +1,55 @@
-# Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
-
 name: Publish
 
 on: push
 
-# https://github.com/fepegar/torchio/actions/runs/6076955855/job/17283217522?pr=1103
-permissions:
-  id-token: write
-
 jobs:
-  Build-and-publish:
-    name: Build and publish if needed
+  build:
+    name: Build the package
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
 
     - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
+      run: uv build
 
-    - name: Publish package to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Upload dist directory
+      uses: actions/upload-artifact@v4
       with:
-        repository-url: https://test.pypi.org/legacy/
-        verbose: true
-        skip-existing: true
+        name: dist
+        path: dist
 
-    # Publish only tagged commits
-    - name: Publish package to PyPI, if tagged
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        verbose: true
+  publish:
+    name: Publish the package
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Print ref
+        run: echo ${{ github.ref }}
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+      - name: Install uv if commit is tagged
+        if: startsWith(github.ref, 'refs/tags')
+        uses: astral-sh/setup-uv@v4
+
+      - name: Publish package to PyPI if commit is tagged
+        # Publish only tagged commits
+        if: startsWith(github.ref, 'refs/tags')
+        run: uv publish --verbose

@@ -159,6 +159,7 @@ def test_write_nd_with_a_read_it_with_b(save_lib, load_lib, dims):
         tensor.squeeze(),
         loaded_tensor.squeeze(),
         msg=f'Save lib: {save_lib}; load lib: {load_lib}; dims: {dims}',
+        check_stride=False,
     )
     TorchioTestCase.assert_tensor_equal(affine, loaded_affine)
 

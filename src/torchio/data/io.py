@@ -1,13 +1,14 @@
 import warnings
 from pathlib import Path
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 import nibabel as nib
 import numpy as np
+import numpy.typing as npt
 import SimpleITK as sitk
 import torch
+from nibabel.filebasedimages import ImageFileError
 from nibabel.spatialimages import SpatialImage
 
 from ..constants import REPO_URL
@@ -37,7 +38,7 @@ def read_image(path: TypePath) -> TypeDataAffine:
         warnings.warn(message, stacklevel=2)
         try:
             result = _read_nibabel(path)
-        except nib.loadsave.ImageFileError as e:
+        except ImageFileError as e:
             message = (
                 f'File "{path}" not understood.'
                 ' Check supported formats by at'
@@ -57,6 +58,7 @@ def _read_nibabel(path: TypePath) -> TypeDataAffine:
     data = check_uint_to_int(data)
     tensor = torch.as_tensor(data)
     affine = img.affine
+    assert isinstance(affine, np.ndarray)
     return tensor, affine
 
 
@@ -156,19 +158,19 @@ def _write_nibabel(
     else:
         tensor = tensor[np.newaxis].permute(2, 3, 4, 0, 1)
     suffix = Path(str(path).replace('.gz', '')).suffix
-    img: Union[nib.Nifti1Image, nib.Nifti1Pair]
+    img: Union[nib.nifti1.Nifti1Image, nib.nifti1.Nifti1Pair]
     if '.nii' in suffix:
-        img = nib.Nifti1Image(np.asarray(tensor), affine)
+        img = nib.nifti1.Nifti1Image(np.asarray(tensor), affine)
     elif '.hdr' in suffix or '.img' in suffix:
-        img = nib.Nifti1Pair(np.asarray(tensor), affine)
+        img = nib.nifti1.Nifti1Pair(np.asarray(tensor), affine)
     else:
-        raise nib.loadsave.ImageFileError
-    assert isinstance(img.header, nib.Nifti1Header)
+        raise ImageFileError
+    assert isinstance(img.header, nib.nifti1.Nifti1Header)
     if num_components > 1:
         img.header.set_intent('vector')
     img.header['qform_code'] = 1
     img.header['sform_code'] = 0
-    nib.save(img, str(path))
+    nib.loadsave.save(img, str(path))
 
 
 def _write_sitk(
@@ -270,9 +272,9 @@ def _matrix_to_itk_transform(
 
 def _read_niftyreg_matrix(trsf_path: TypePath) -> torch.Tensor:
     """Read a NiftyReg matrix and return it as a NumPy array."""
-    matrix = np.loadtxt(trsf_path)
-    matrix = np.linalg.inv(matrix)
-    return torch.as_tensor(matrix)
+    read_matrix = np.loadtxt(trsf_path).astype(np.float64)
+    inverted = np.linalg.inv(read_matrix)
+    return torch.from_numpy(inverted)
 
 
 def _write_niftyreg_matrix(matrix: TypeData, txt_path: TypePath) -> None:
@@ -283,7 +285,7 @@ def _write_niftyreg_matrix(matrix: TypeData, txt_path: TypePath) -> None:
 
 def get_rotation_and_spacing_from_affine(
     affine: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     # From https://github.com/nipy/nibabel/blob/master/nibabel/orientations.py
     rotation_zoom = affine[:3, :3]
     spacing = np.sqrt(np.sum(rotation_zoom * rotation_zoom, axis=0))
@@ -337,7 +339,7 @@ def nib_to_sitk(
 def sitk_to_nib(
     image: sitk.Image,
     keepdim: bool = False,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     data = sitk.GetArrayFromImage(image).transpose()
     data = check_uint_to_int(data)
     num_components = image.GetNumberOfComponentsPerPixel()
@@ -362,10 +364,11 @@ def sitk_to_nib(
 def get_ras_affine_from_sitk(
     sitk_object: Union[sitk.Image, sitk.ImageFileReader],
 ) -> np.ndarray:
-    spacing = np.array(sitk_object.GetSpacing())
-    direction_lps = np.array(sitk_object.GetDirection())
-    origin_lps = np.array(sitk_object.GetOrigin())
+    spacing = np.array(sitk_object.GetSpacing(), dtype=np.float64)
+    direction_lps = np.array(sitk_object.GetDirection(), dtype=np.float64)
+    origin_lps = np.array(sitk_object.GetOrigin(), dtype=np.float64)
     direction_length = len(direction_lps)
+    rotation_lps: npt.NDArray[np.float64]
     if direction_length == 9:
         rotation_lps = direction_lps.reshape(3, 3)
     elif direction_length == 4:  # ignore last dimension if 2D (1, W, H, 1)
@@ -391,7 +394,7 @@ def get_sitk_metadata_from_ras_affine(
     affine: np.ndarray,
     is_2d: bool = False,
     lps: bool = True,
-) -> Tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
+) -> tuple[TypeTripletFloat, TypeTripletFloat, TypeDirection]:
     direction_ras, spacing_array = get_rotation_and_spacing_from_affine(affine)
     origin_ras = affine[:3, 3]
     origin_lps = np.dot(FLIPXY_33, origin_ras)

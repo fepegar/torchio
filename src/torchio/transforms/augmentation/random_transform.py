@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 import torch
 
 from ...typing import TypeRangeFloat
@@ -24,13 +22,13 @@ class RandomTransform(Transform):
     def parse_degrees(
         self,
         degrees: TypeRangeFloat,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         return self._parse_range(degrees, 'degrees')
 
     def parse_translation(
         self,
         translation: TypeRangeFloat,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         return self._parse_range(translation, 'translation')
 
     @staticmethod

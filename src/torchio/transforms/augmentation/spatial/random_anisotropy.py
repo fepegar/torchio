@@ -1,5 +1,4 @@
 import warnings
-from typing import Tuple
 from typing import Union
 
 import torch
@@ -48,7 +47,7 @@ class RandomAnisotropy(RandomTransform):
 
     def __init__(
         self,
-        axes: Union[int, Tuple[int, ...]] = (0, 1, 2),
+        axes: Union[int, tuple[int, ...]] = (0, 1, 2),
         downsampling: TypeRangeFloat = (1.5, 5),
         image_interpolation: str = 'linear',
         scalars_only: bool = True,
@@ -67,15 +66,15 @@ class RandomAnisotropy(RandomTransform):
 
     def get_params(
         self,
-        axes: Tuple[int, ...],
-        downsampling_range: Tuple[float, float],
-    ) -> Tuple[int, float]:
+        axes: tuple[int, ...],
+        downsampling_range: tuple[float, float],
+    ) -> tuple[int, float]:
         axis = axes[torch.randint(0, len(axes), (1,))]
         downsampling = self.sample_uniform(*downsampling_range)
         return axis, downsampling
 
     @staticmethod
-    def parse_axes(axes: Union[int, Tuple[int, ...]]):
+    def parse_axes(axes: Union[int, tuple[int, ...]]):
         axes_tuple = to_tuple(axes)
         for axis in axes_tuple:
             is_int = isinstance(axis, int)

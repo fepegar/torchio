@@ -1,7 +1,5 @@
 from collections import defaultdict
-from typing import Dict
-from typing import Sequence
-from typing import Tuple
+from collections.abc import Sequence
 from typing import Union
 
 import torch
@@ -35,8 +33,8 @@ class RandomNoise(RandomTransform, IntensityTransform):
 
     def __init__(
         self,
-        mean: Union[float, Tuple[float, float]] = 0,
-        std: Union[float, Tuple[float, float]] = (0, 0.25),
+        mean: Union[float, tuple[float, float]] = 0,
+        std: Union[float, tuple[float, float]] = (0, 0.25),
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -48,7 +46,7 @@ class RandomNoise(RandomTransform, IntensityTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for image_name in images_dict:
             mean, std, seed = self.get_params(self.mean_range, self.std_range)
             arguments['mean'][image_name] = mean
@@ -61,9 +59,9 @@ class RandomNoise(RandomTransform, IntensityTransform):
 
     def get_params(
         self,
-        mean_range: Tuple[float, float],
-        std_range: Tuple[float, float],
-    ) -> Tuple[float, float, int]:
+        mean_range: tuple[float, float],
+        std_range: tuple[float, float],
+    ) -> tuple[float, float, int]:
         mean = self.sample_uniform(*mean_range)
         std = self.sample_uniform(*std_range)
         seed = self._get_random_seed()
@@ -87,8 +85,8 @@ class Noise(IntensityTransform):
 
     def __init__(
         self,
-        mean: Union[float, Dict[str, float]],
-        std: Union[float, Dict[str, float]],
+        mean: Union[float, dict[str, float]],
+        std: Union[float, dict[str, float]],
         seed: Union[int, Sequence[int]],
         **kwargs,
     ):
