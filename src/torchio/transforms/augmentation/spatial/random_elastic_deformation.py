@@ -189,7 +189,7 @@ class RandomElasticDeformation(RandomTransform, SpatialTransform):
             'label_interpolation': self.label_interpolation,
         }
 
-        transform = ElasticDeformation(**self.add_include_exclude(arguments))
+        transform = ElasticDeformation(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed

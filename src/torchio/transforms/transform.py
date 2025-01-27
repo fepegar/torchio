@@ -186,6 +186,38 @@ class Transform(ABC):
         else:
             return super().__repr__()
 
+    def get_base_args(self) -> dict:
+        r"""Provides easy access to the arguments used to instantiate the base class
+        (:class:`~torchio.transforms.transform.Transform`) of any transform.
+
+        This method is particularly useful when a new transform can be represented as a variant
+        of an existing transform (e.g. all random transforms), allowing for seamless instantiation
+        of the existing transform with the same arguments as the new transform during `apply_transform`.
+
+        Note: The `p` argument (probability of applying the transform) is excluded to avoid
+        multiplying the probability of both existing and new transform.
+        """
+        return {
+            'copy': self.copy,
+            'include': self.include,
+            'exclude': self.exclude,
+            'keep': self.keep,
+            'parse_input': self.parse_input,
+            'label_keys': self.label_keys,
+        }
+
+    def add_base_args(
+        self,
+        arguments,
+        overwrite_on_existing: bool = False,
+    ):
+        """Add the init args to existing arguments"""
+        for key, value in self.get_base_args().items():
+            if key in arguments and not overwrite_on_existing:
+                continue
+            arguments[key] = value
+        return arguments
+
     @property
     def name(self):
         return self.__class__.__name__
