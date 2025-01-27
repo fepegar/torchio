@@ -35,7 +35,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 keywords = ["medical", "image processing", "pytorch", "augmentation", "mri"]
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.9"
 dependencies = [
     "deprecated>=1.2",
     "humanize>=0.1",
