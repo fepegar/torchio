@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from ..data.image import Image
 from ..data.subject import Subject
 from .transform import Transform
@@ -9,7 +6,7 @@ from .transform import Transform
 class IntensityTransform(Transform):
     """Transform that modifies voxel intensities only."""
 
-    def get_images_dict(self, subject: Subject) -> Dict[str, Image]:
+    def get_images_dict(self, subject: Subject) -> dict[str, Image]:
         images_dict = subject.get_images_dict(
             intensity_only=True,
             include=self.include,
@@ -17,7 +14,7 @@ class IntensityTransform(Transform):
         )
         return images_dict
 
-    def get_images(self, subject: Subject) -> List[Image]:
+    def get_images(self, subject: Subject) -> list[Image]:
         images = subject.get_images(
             intensity_only=True,
             include=self.include,

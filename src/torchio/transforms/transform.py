@@ -3,12 +3,9 @@ import numbers
 import warnings
 from abc import ABC
 from abc import abstractmethod
+from collections.abc import Sequence
 from contextlib import contextmanager
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
@@ -33,7 +30,7 @@ from .data_parser import TypeTransformInput
 from .interpolation import Interpolation
 from .interpolation import get_sitk_interpolator
 
-TypeSixBounds = Tuple[int, int, int, int, int, int]
+TypeSixBounds = tuple[int, int, int, int, int, int]
 TypeBounds = Union[
     int,
     TypeTripletInt,
@@ -102,7 +99,7 @@ class Transform(ABC):
         include: TypeKeys = None,
         exclude: TypeKeys = None,
         keys: TypeKeys = None,
-        keep: Optional[Dict[str, str]] = None,
+        keep: Optional[dict[str, str]] = None,
         parse_input: bool = True,
         label_keys: TypeKeys = None,
     ):
@@ -126,7 +123,7 @@ class Transform(ABC):
         # args_names is the sequence of parameters from self that need to be
         # passed to a non-random version of a random transform. They are also
         # used to invert invertible transforms
-        self.args_names: List[str] = []
+        self.args_names: list[str] = []
 
     def __call__(self, data: InputType) -> InputType:
         """Transform data and return a result of the same type.
@@ -189,6 +186,38 @@ class Transform(ABC):
         else:
             return super().__repr__()
 
+    def get_base_args(self) -> dict:
+        r"""Provides easy access to the arguments used to instantiate the base class
+        (:class:`~torchio.transforms.transform.Transform`) of any transform.
+
+        This method is particularly useful when a new transform can be represented as a variant
+        of an existing transform (e.g. all random transforms), allowing for seamless instantiation
+        of the existing transform with the same arguments as the new transform during `apply_transform`.
+
+        Note: The `p` argument (probability of applying the transform) is excluded to avoid
+        multiplying the probability of both existing and new transform.
+        """
+        return {
+            'copy': self.copy,
+            'include': self.include,
+            'exclude': self.exclude,
+            'keep': self.keep,
+            'parse_input': self.parse_input,
+            'label_keys': self.label_keys,
+        }
+
+    def add_base_args(
+        self,
+        arguments,
+        overwrite_on_existing: bool = False,
+    ):
+        """Add the init args to existing arguments"""
+        for key, value in self.get_base_args().items():
+            if key in arguments and not overwrite_on_existing:
+                continue
+            arguments[key] = value
+        return arguments
+
     @property
     def name(self):
         return self.__class__.__name__
@@ -247,12 +276,12 @@ class Transform(ABC):
 
     @staticmethod
     def _parse_range(
-        nums_range: Union[TypeNumber, Tuple[TypeNumber, TypeNumber]],
+        nums_range: Union[TypeNumber, tuple[TypeNumber, TypeNumber]],
         name: str,
         min_constraint: Optional[TypeNumber] = None,
         max_constraint: Optional[TypeNumber] = None,
         type_constraint: Optional[type] = None,
-    ) -> Tuple[TypeNumber, TypeNumber]:
+    ) -> tuple[TypeNumber, TypeNumber]:
         r"""Adapted from :class:`torchvision.transforms.RandomRotation`.
 
         Args:
@@ -382,7 +411,7 @@ class Transform(ABC):
         include: TypeKeys,
         exclude: TypeKeys,
         label_keys: TypeKeys,
-    ) -> Tuple[TypeKeys, TypeKeys]:
+    ) -> tuple[TypeKeys, TypeKeys]:
         if include is not None and exclude is not None:
             raise ValueError('Include and exclude cannot both be specified')
         Transform.validate_keys_sequence(include, 'include')

@@ -1,7 +1,5 @@
-from typing import List
+from collections.abc import Sequence
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 
 import torch
 
@@ -160,7 +158,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         self,
         mean: Sequence[TypeRangeFloat],
         std: Sequence[TypeRangeFloat],
-    ) -> Tuple[List[TypeRangeFloat], List[TypeRangeFloat]]:
+    ) -> tuple[list[TypeRangeFloat], list[TypeRangeFloat]]:
         if mean is not None:
             mean = self.parse_gaussian_parameters(mean, 'mean')
         if std is not None:
@@ -176,7 +174,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
         self,
         params: Sequence[TypeRangeFloat],
         name: str,
-    ) -> List[TypeRangeFloat]:
+    ) -> list[TypeRangeFloat]:
         check_sequence(params, name)
         params = [
             self.parse_gaussian_parameter(p, f'{name}[{i}]')
@@ -194,7 +192,7 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
     def parse_gaussian_parameter(
         nums_range: TypeRangeFloat,
         name: str,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         if isinstance(nums_range, (int, float)):
             return nums_range, nums_range
 
@@ -268,12 +266,12 @@ class RandomLabelsToImage(RandomTransform, IntensityTransform):
             means.append(mean)
             stds.append(std)
 
-        transform = LabelsToImage(**self.add_include_exclude(arguments))
+        transform = LabelsToImage(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed
 
-    def get_params(self, label: int) -> Tuple[float, float]:
+    def get_params(self, label: int) -> tuple[float, float]:
         if self.mean is None:
             mean_range = self.default_mean
         else:
