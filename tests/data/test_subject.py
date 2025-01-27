@@ -186,3 +186,29 @@ class TestSubject(TorchioTestCase):
         loader = tio.SubjectsLoader(subjects, batch_size=4)
         batch = next(iter(loader))
         assert batch.__class__ is dict
+
+    def test_deep_copy_subject(self):
+        sub_copy = copy.deepcopy(self.sample_subject)
+        assert isinstance(sub_copy, tio.data.Subject)
+
+        new_tensor = torch.ones_like(sub_copy['t1'].data)
+        sub_copy['t1'].set_data(new_tensor)
+        # The data of the original subject should not be modified
+        assert not torch.allclose(sub_copy['t1'].data, self.sample_subject['t1'].data)
+
+    def test_shallow_copy_subject(self):
+        # We are creating a deep copy of the original subject first to not modify the original subject
+        copy_original_subj = copy.deepcopy(self.sample_subject)
+        sub_copy = copy.copy(copy_original_subj)
+        assert isinstance(sub_copy, tio.data.Subject)
+
+        new_tensor = torch.ones_like(sub_copy['t1'].data)
+        sub_copy['t1'].set_data(new_tensor)
+
+        # The data of both copies needs to be the same as we are using a shallow copy
+        assert torch.allclose(sub_copy['t1'].data, copy_original_subj['t1'].data)
+        # The data of the original subject should not be modified
+        assert not torch.allclose(sub_copy['t1'].data, self.sample_subject['t1'].data)
+        assert not torch.allclose(
+            copy_original_subj['t1'].data, self.sample_subject['t1'].data
+        )

@@ -36,7 +36,7 @@ def plot_batch(sampler):
     loader = tio.SubjectsLoader(queue, batch_size=16)
     batch = tio.utils.get_first_item(loader)
 
-    fig, axes = plt.subplots(4, 4, figsize=(12, 10))
+    _, axes = plt.subplots(4, 4, figsize=(12, 10))
     for ax, im in zip(axes.flatten(), batch['t1']['data']):
         ax.imshow(im.squeeze(), cmap='gray')
     plt.suptitle(sampler.__class__.__name__)

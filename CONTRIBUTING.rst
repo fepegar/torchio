@@ -9,10 +9,10 @@ helps, and credit will always be given.
 
 You can contribute in many ways:
 
-Types of Contributions
+Types of contributions
 ----------------------
 
-Report Bugs
+Report bugs
 ~~~~~~~~~~~
 
 Report bugs
@@ -24,26 +24,26 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
+Fix bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bugs. Anything tagged with "bug" and "help
 wanted" is open to whoever wants to implement it.
 
-Implement Features
+Implement features
 ~~~~~~~~~~~~~~~~~~
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
-Write Documentation
+Write documentation
 ~~~~~~~~~~~~~~~~~~~
 
 TorchIO could always use more documentation, whether as part of the
 official TorchIO docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
-Submit Feedback
+Submit feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at https://github.com/fepegar/torchio/issues.
@@ -55,7 +55,7 @@ If you are proposing a feature:
 * Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
-Get Started!
+Get started!
 ------------
 
 Ready to contribute? Here's how to set up ``torchio`` for local development.
@@ -80,12 +80,12 @@ already be implemented.
 4) Install your local copy into a virtual environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you use ``conda``, this is how you can set up your fork for local development::
+`uv <https://docs.astral.sh/uv/>`_ is recommended for development.
+You can use `just <https://just.systems/>`_ to set up the development environment.
+This will 1) install ``uv`` if not found and 2) install ``torchio`` and all its
+dependencies::
 
-    conda create --name torchioenv python --yes
-    conda activate torchioenv
-    pip install --editable ".[all]"
-    pre-commit install
+    just setup
 
 5) Create a branch for local development using the issue number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,7 +102,7 @@ Now you can make your changes locally.
 When you're done making changes, check that your changes pass the tests
 using ``pytest``::
 
-    pytest -x
+    uv run pytest -x
 
 7) Commit your changes and push your branch to GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,6 +129,11 @@ You can also use ``livehtml`` instead, to automatically build the docs every
 time you modify them and reload them in the browser::
 
     make livehtml
+
+If you prefer to activate your environment manually or not use ``uv``,
+add ``PREFIX=""`` to the command::
+
+    make html PREFIX=""
 
 9) Submit a pull request on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,6 +1,5 @@
 import warnings
 from typing import Optional
-from typing import Tuple
 
 import numpy as np
 import torch
@@ -58,7 +57,7 @@ class GridAggregator:
         patch: torch.Tensor,
         location: np.ndarray,
         overlap: np.ndarray,
-    ) -> Tuple[torch.Tensor, np.ndarray]:
+    ) -> tuple[torch.Tensor, np.ndarray]:
         half_overlap = overlap // 2  # overlap is always even in grid sampler
         index_ini, index_fin = location[:3], location[3:]
 

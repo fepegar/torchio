@@ -1,6 +1,4 @@
 from collections import defaultdict
-from typing import Dict
-from typing import Tuple
 
 import numpy as np
 import torch
@@ -73,16 +71,16 @@ class RandomGamma(RandomTransform, IntensityTransform):
         if not images_dict:
             return subject
 
-        arguments: Dict[str, dict] = defaultdict(dict)
+        arguments: dict[str, dict] = defaultdict(dict)
         for name, image in images_dict.items():
             gammas = [self.get_params(self.log_gamma_range) for _ in image.data]
             arguments['gamma'][name] = gammas
-        transform = Gamma(**self.add_include_exclude(arguments))
+        transform = Gamma(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed
 
-    def get_params(self, log_gamma_range: Tuple[float, float]) -> float:
+    def get_params(self, log_gamma_range: tuple[float, float]) -> float:
         gamma = np.exp(self.sample_uniform(*log_gamma_range))
         return gamma
 

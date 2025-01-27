@@ -1,7 +1,6 @@
+from collections.abc import Sequence
 from numbers import Number
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -150,7 +149,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
         degrees: TypeSextetFloat,
         translation: TypeSextetFloat,
         isotropic: bool,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         scaling_params = torch.as_tensor(
             self.sample_uniform_sextet(scales),
             dtype=torch.float64,
@@ -184,7 +183,7 @@ class RandomAffine(RandomTransform, SpatialTransform):
             'label_interpolation': self.label_interpolation,
             'check_shape': self.check_shape,
         }
-        transform = Affine(**self.add_include_exclude(arguments))
+        transform = Affine(**self.add_base_args(arguments))
         transformed = transform(subject)
         assert isinstance(transformed, Subject)
         return transformed
@@ -303,7 +302,7 @@ class Affine(SpatialTransform):
         radians = np.radians(degrees).tolist()
 
         # SimpleITK uses LPS
-        radians_lps = ras_to_lps(radians)
+        radians_lps = ras_to_lps(radians)  # type: ignore[arg-type]
         translation_lps = ras_to_lps(translation)
 
         transform.SetRotation(*radians_lps)

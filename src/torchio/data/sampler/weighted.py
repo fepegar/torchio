@@ -1,4 +1,4 @@
-from typing import Generator
+from collections.abc import Generator
 from typing import Optional
 
 import numpy as np
@@ -156,7 +156,7 @@ class WeightedSampler(RandomSampler):
 
         # The call tolist() is very important. Using np.uint16 as negative
         # index will not work because e.g. -np.uint16(2) == 65534
-        crop_i, crop_j, crop_k = crop_fin.tolist()
+        crop_i, crop_j, crop_k = crop_fin.tolist()  # type: ignore[misc]
         if crop_i:
             probability_map[-crop_i:, :, :] = 0
         if crop_j:

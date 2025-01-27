@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 import torch
+from packaging.version import Version
 
 from torchio import LabelMap
 from torchio import ScalarImage
@@ -80,7 +81,10 @@ class TestHistogramStandardization(TorchioTestCase):
         landmarks_dict = {'image': landmarks}
         landmarks_path = self.dir / 'landmarks_dict.pth'
         torch.save(landmarks_dict, landmarks_path)
-        landmarks_dict = torch.load(landmarks_path, weights_only=False)
+        kwargs = {}
+        if Version(torch.__version__) >= Version('1.13'):
+            kwargs['weights_only'] = False
+        landmarks_dict = torch.load(landmarks_path, **kwargs)
         transform = HistogramStandardization(landmarks_dict)
         transform(self.dataset[0])
 

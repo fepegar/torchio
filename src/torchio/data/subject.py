@@ -2,14 +2,10 @@ from __future__ import annotations
 
 import copy
 import pprint
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 
 import numpy as np
 
@@ -52,7 +48,7 @@ class Subject(dict):
         >>> subject = tio.Subject(subject_dict)
     """
 
-    def __init__(self, *args, **kwargs: Dict[str, Any]):
+    def __init__(self, *args, **kwargs: dict[str, Any]):
         if args:
             if len(args) == 1 and isinstance(args[0], dict):
                 kwargs.update(args[0])
@@ -62,7 +58,7 @@ class Subject(dict):
         super().__init__(**kwargs)
         self._parse_images(self.get_images(intensity_only=False))
         self.update_attributes()  # this allows me to do e.g. subject.t1
-        self.applied_transforms: List[Tuple[str, dict]] = []
+        self.applied_transforms: list[tuple[str, dict]] = []
 
     def __repr__(self):
         num_images = len(self.get_images(intensity_only=False))
@@ -71,9 +67,6 @@ class Subject(dict):
             f'(Keys: {tuple(self.keys())}; images: {num_images})'
         )
         return string
-
-    def __copy__(self):
-        return _subject_copy_helper(self, type(self))
 
     def __len__(self):
         return len(self.get_images(intensity_only=False))
@@ -96,7 +89,7 @@ class Subject(dict):
             return super().__getitem__(item)
 
     @staticmethod
-    def _parse_images(images: List[Image]) -> None:
+    def _parse_images(images: list[Image]) -> None:
         # Check that it's not empty
         if not images:
             raise TypeError('A subject without images cannot be created')
@@ -162,7 +155,7 @@ class Subject(dict):
         self,
         ignore_intensity: bool = False,
         image_interpolation: Optional[str] = None,
-    ) -> List[Transform]:
+    ) -> list[Transform]:
         from ..transforms.intensity_transform import IntensityTransform
         from ..transforms.transform import Transform
 
@@ -333,7 +326,7 @@ class Subject(dict):
             )
             raise RuntimeError(message) from e
 
-    def get_images_names(self) -> List[str]:
+    def get_images_names(self) -> list[str]:
         return list(self.get_images_dict(intensity_only=False).keys())
 
     def get_images_dict(
@@ -341,7 +334,7 @@ class Subject(dict):
         intensity_only=True,
         include: Optional[Sequence[str]] = None,
         exclude: Optional[Sequence[str]] = None,
-    ) -> Dict[str, Image]:
+    ) -> dict[str, Image]:
         images = {}
         for image_name, image in self.items():
             if not isinstance(image, Image):
@@ -360,7 +353,7 @@ class Subject(dict):
         intensity_only=True,
         include: Optional[Sequence[str]] = None,
         exclude: Optional[Sequence[str]] = None,
-    ) -> List[Image]:
+    ) -> list[Image]:
         images_dict = self.get_images_dict(
             intensity_only=intensity_only,
             include=include,
@@ -429,25 +422,3 @@ class Subject(dict):
         from ..visualization import plot_subject  # avoid circular import
 
         plot_subject(self, **kwargs)
-
-
-def _subject_copy_helper(
-    old_obj: Subject,
-    new_subj_cls: Callable[[Dict[str, Any]], Subject],
-):
-    result_dict = {}
-    for key, value in old_obj.items():
-        if isinstance(value, Image):
-            value = copy.copy(value)
-        else:
-            value = copy.deepcopy(value)
-        result_dict[key] = value
-
-    new = new_subj_cls(**result_dict)  # type: ignore[call-arg]
-    new.applied_transforms = old_obj.applied_transforms[:]
-    return new
-
-
-class _RawSubjectCopySubject(Subject):
-    def __copy__(self):
-        return _subject_copy_helper(self, Subject)

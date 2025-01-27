@@ -1,7 +1,6 @@
 import warnings
+from collections.abc import Sequence
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -113,7 +112,7 @@ class CropOrPad(SpatialTransform):
         self.labels = labels
 
     @staticmethod
-    def _bbox_mask(mask_volume: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def _bbox_mask(mask_volume: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Return 6 coordinates of a 3D bounding box from a given mask.
 
         Taken from `this SO question <https://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array>`_.
@@ -162,7 +161,7 @@ class CropOrPad(SpatialTransform):
     def _compute_cropping_padding_from_shapes(
         self,
         source_shape: TypeTripletInt,
-    ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
+    ) -> tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         diff_shape = np.array(self.target_shape) - source_shape
 
         cropping = -np.minimum(diff_shape, 0)
@@ -182,7 +181,7 @@ class CropOrPad(SpatialTransform):
     def _compute_center_crop_or_pad(
         self,
         subject: Subject,
-    ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
+    ) -> tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         source_shape = subject.spatial_shape
         parameters = self._compute_cropping_padding_from_shapes(source_shape)
         padding_params, cropping_params = parameters
@@ -191,7 +190,7 @@ class CropOrPad(SpatialTransform):
     def _compute_mask_center_crop_or_pad(
         self,
         subject: Subject,
-    ) -> Tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
+    ) -> tuple[Optional[TypeSixBounds], Optional[TypeSixBounds]]:
         if self.mask_name not in subject:
             message = (
                 f'Mask name "{self.mask_name}"'
@@ -279,9 +278,9 @@ class CropOrPad(SpatialTransform):
         padding_params, cropping_params = self.compute_crop_or_pad(subject)
         padding_kwargs = {'padding_mode': self.padding_mode}
         if padding_params is not None:
-            pad = Pad(padding_params, **padding_kwargs)
+            pad = Pad(padding_params, **self.get_base_args(), **padding_kwargs)
             subject = pad(subject)  # type: ignore[assignment]
         if cropping_params is not None:
-            crop = Crop(cropping_params)
+            crop = Crop(cropping_params, **self.get_base_args())
             subject = crop(subject)  # type: ignore[assignment]
         return subject

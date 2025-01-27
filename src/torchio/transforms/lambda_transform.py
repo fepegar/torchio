@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from typing import Optional
-from typing import Sequence
 
 import torch
 

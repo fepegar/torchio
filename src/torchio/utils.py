@@ -7,14 +7,11 @@ import os
 import shutil
 import sys
 import tempfile
+from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
-from typing import Dict
-from typing import Iterable
-from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -34,7 +31,7 @@ from .typing import TypePath
 def to_tuple(
     value: Any,
     length: int = 1,
-) -> Tuple[TypeNumber, ...]:
+) -> tuple[TypeNumber, ...]:
     """Convert variable to tuple of length n.
 
     Example:
@@ -64,7 +61,7 @@ def to_tuple(
 
 def get_stem(
     path: Union[TypePath, Sequence[TypePath]],
-) -> Union[str, List[str]]:
+) -> Union[str, list[str]]:
     """Get stem of path or paths.
 
     Example:
@@ -84,7 +81,7 @@ def get_stem(
 
 def create_dummy_dataset(
     num_images: int,
-    size_range: Tuple[int, int],
+    size_range: tuple[int, int],
     directory: Optional[TypePath] = None,
     suffix: str = '.nii.gz',
     force: bool = False,
@@ -103,7 +100,7 @@ def create_dummy_dataset(
         shutil.rmtree(images_dir)
         shutil.rmtree(labels_dir)
 
-    subjects: List[Subject] = []
+    subjects: list[Subject] = []
     if images_dir.is_dir():
         for i in trange(num_images):
             image_path = images_dir / f'image_{i}{suffix}'
@@ -220,7 +217,7 @@ def get_major_sitk_version() -> int:
     return major_version
 
 
-def history_collate(batch: Sequence, collate_transforms=True) -> Dict:
+def history_collate(batch: Sequence, collate_transforms=True) -> dict:
     attr = constants.HISTORY if collate_transforms else 'applied_transforms'
     # Adapted from
     # https://github.com/romainVala/torchQC/blob/master/segmentation/collate_functions.py
@@ -238,7 +235,7 @@ def history_collate(batch: Sequence, collate_transforms=True) -> Dict:
     return dictionary
 
 
-def get_subclasses(target_class: type) -> List[type]:
+def get_subclasses(target_class: type) -> list[type]:
     subclasses = target_class.__subclasses__()
     subclasses += sum((get_subclasses(cls) for cls in subclasses), [])
     return subclasses
@@ -248,7 +245,7 @@ def get_first_item(data_loader: DataLoader):
     return next(iter(data_loader))
 
 
-def get_batch_images_and_size(batch: Dict) -> Tuple[List[str], int]:
+def get_batch_images_and_size(batch: dict) -> tuple[list[str], int]:
     """Get number of images and images names in a batch.
 
     Args:
@@ -269,7 +266,7 @@ def get_batch_images_and_size(batch: Dict) -> Tuple[List[str], int]:
     return names, size
 
 
-def get_subjects_from_batch(batch: Dict) -> List:
+def get_subjects_from_batch(batch: dict) -> list:
     """Get list of subjects from collated batch.
 
     Args:
@@ -313,7 +310,7 @@ def get_subjects_from_batch(batch: Dict) -> List:
 
 
 def add_images_from_batch(
-    subjects: List,
+    subjects: list,
     tensor: torch.Tensor,
     class_=None,
     name='prediction',
