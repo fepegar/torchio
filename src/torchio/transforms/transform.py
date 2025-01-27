@@ -155,9 +155,9 @@ class Transform(ABC):
         if self.keep is not None:
             images_to_keep = {}
             for name, new_name in self.keep.items():
-                images_to_keep[new_name] = copy.copy(subject[name])
+                images_to_keep[new_name] = copy.deepcopy(subject[name])
         if self.copy:
-            subject = copy.copy(subject)
+            subject = copy.deepcopy(subject)
         with np.errstate(all='raise', under='ignore'):
             transformed = self.apply_transform(subject)
         if self.keep is not None:

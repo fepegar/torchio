@@ -1,8 +1,8 @@
-from ...data.subject import _RawSubjectCopySubject
+from ...data.subject import Subject
 from ...utils import get_torchio_cache_dir
 
 
-class SubjectMNI(_RawSubjectCopySubject):
+class SubjectMNI(Subject):
     """Atlases from the Montreal Neurological Institute (MNI).
 
     See `the website <https://nist.mni.mcgill.ca/?page_id=714>`_ for more
