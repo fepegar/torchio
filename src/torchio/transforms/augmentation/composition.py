@@ -44,7 +44,7 @@ class Compose(Transform):
     def __repr__(self) -> str:
         return f'{self.name}({self.transforms})'
 
-    def get_base_args(self) -> Dict:
+    def get_base_args(self) -> dict:
         init_args = super().get_base_args()
         if 'parse_input' in init_args:
             init_args.pop('parse_input')
@@ -109,7 +109,7 @@ class OneOf(RandomTransform):
         super().__init__(parse_input=False, **kwargs)
         self.transforms_dict = self._get_transforms_dict(transforms)
 
-    def get_base_args(self) -> Dict:
+    def get_base_args(self) -> dict:
         init_args = super().get_base_args()
         if 'parse_input' in init_args:
             init_args.pop('parse_input')
