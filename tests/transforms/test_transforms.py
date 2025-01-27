@@ -141,9 +141,9 @@ class TestTransforms(TorchioTestCase):
                 'CopyAffine',
             )
             if transform.name not in exclude:
-                assert (
-                    subject.shape[0] == transformed.shape[0]
-                ), f'Different number of channels after {transform.name}'
+                assert subject.shape[0] == transformed.shape[0], (
+                    f'Different number of channels after {transform.name}'
+                )
                 self.assert_tensor_not_equal(
                     subject.t1.data[1],
                     transformed.t1.data[1],
