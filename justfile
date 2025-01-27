@@ -27,3 +27,6 @@ bump part="patch":
 
 bump-dry part='patch':
     uv run bump-my-version bump {{part}} --dry-run --verbose --allow-dirty
+
+push:
+    git push && git push --tags
