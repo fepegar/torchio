@@ -5,7 +5,7 @@ TorchIO
 |PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook|
 |Docs-status| |Tests-status| |Ruff|
 |Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
-|Slack| |Twitter| |Twitter-commits| |YouTube|
+|Slack| |YouTube|
 
 
 TorchIO is an open-source Python library for efficient loading, preprocessing,
