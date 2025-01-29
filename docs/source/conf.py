@@ -108,13 +108,7 @@ html_logo = 'favicon_io/torchio_logo_2048x2048.png'
 # further. For a list of options available for each theme, see the
 # documentation.
 #
-url = 'https://www.journals.elsevier.com/computer-methods-and-programs-in-biomedicine/most-downloaded-articles'
-text = 'CMPB'
-html_href = f'<a href="{url}">{text}</a>'
-message = f'TorchIO becomes one of the most downloaded articles from {html_href}!'
-html_theme_options = {
-    'announcement': message,
-}
+html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
