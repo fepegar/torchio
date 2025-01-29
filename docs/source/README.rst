@@ -5,7 +5,7 @@ TorchIO
 |PyPI-downloads| |PyPI-version| |Conda-version| |Google-Colab-notebook|
 |Docs-status| |Tests-status| |Ruff|
 |Coverage-codecov| |Code-Quality| |Code-Maintainability| |pre-commit|
-|Slack| |YouTube|
+|YouTube|
 
 
 TorchIO is an open-source Python library for efficient loading, preprocessing,
@@ -101,21 +101,9 @@ If you found a bug or have a feature request, please open an issue:
    :target: https://scrutinizer-ci.com/g/fepegar/torchio/?branch=main
    :alt: Code quality
 
-.. |Slack| image:: https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&logo=slack
-   :target: https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg
-   :alt: Slack
-
 .. |YouTube| image:: https://img.shields.io/youtube/views/UEUVSw5-M9M?label=watch&style=social
    :target: https://www.youtube.com/watch?v=UEUVSw5-M9M
    :alt: YouTube
-
-.. |Twitter| image:: https://img.shields.io/twitter/url/https/twitter.com/TorchIOLib.svg?style=social&label=Follow%20%40TorchIOLib
-   :target: https://twitter.com/TorchIOLib
-   :alt: Twitter
-
-.. |Twitter-commits| image:: https://img.shields.io/twitter/url/https/twitter.com/TorchIO_commits.svg?style=social&label=Follow%20%40TorchIO_commits
-   :target: https://twitter.com/TorchIO_commits
-   :alt: Twitter commits
 
 .. |Code-Maintainability| image:: https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability
    :target: https://codeclimate.com/github/fepegar/torchio
