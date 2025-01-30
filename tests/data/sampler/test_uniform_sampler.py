@@ -16,7 +16,7 @@ class TestUniformSampler(TorchioTestCase):
         assert torch.all(probabilities.eq(fixtures))
 
     def test_incosistent_shape(self):
-        # https://github.com/fepegar/torchio/issues/234#issuecomment-675029767
+        # https://github.com/TorchIO-Project/torchio/issues/234#issuecomment-675029767
         subject = torchio.Subject(
             im1=torchio.ScalarImage(tensor=torch.rand(1, 4, 5, 6)),
             im2=torchio.ScalarImage(tensor=torch.rand(2, 4, 5, 6)),

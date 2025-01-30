@@ -65,10 +65,10 @@ torchio-transform = "torchio.cli.apply_transform:app"
 
 [project.urls]
 Homepage = "http://torchio.rtfd.io"
-Source = "https://github.com/fepegar/torchio"
-"Issue tracker" = "https://github.com/fepegar/torchio/issues"
+Source = "https://github.com/TorchIO-Project/torchio"
+"Issue tracker" = "https://github.com/TorchIO-Project/torchio/issues"
 Documentation = "http://torchio.rtfd.io"
-"Release notes" = "https://github.com/fepegar/torchio/releases"
+"Release notes" = "https://github.com/TorchIO-Project/torchio/releases"
 
 [dependency-groups]
 dev = [

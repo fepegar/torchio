@@ -15,7 +15,7 @@ class KeepLargestComponent(LabelTransform):
         maps with a background and a foreground class. If you are interested in
         extending this transform, please `open a new issue`_.
 
-    .. _open a new issue: https://github.com/fepegar/torchio/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=Improve%20KeepLargestComponent%20transform
+    .. _open a new issue: https://github.com/TorchIO-Project/torchio/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=Improve%20KeepLargestComponent%20transform
     """
 
     def apply_transform(self, subject: Subject) -> Subject:

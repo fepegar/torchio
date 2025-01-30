@@ -91,7 +91,7 @@ class Queue(Dataset):
     and the :class:`~torch.utils.data.DataLoader` used to pop batches from the
     queue.
 
-    .. image:: https://raw.githubusercontent.com/fepegar/torchio/main/docs/images/diagram_patches.svg
+    .. image:: https://raw.githubusercontent.com/TorchIO-Project/torchio/main/docs/images/diagram_patches.svg
         :alt: Training with patches
 
     This sketch can be used to experiment and understand how the queue works.

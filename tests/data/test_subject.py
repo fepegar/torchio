@@ -73,7 +73,7 @@ class TestSubject(TorchioTestCase):
         subject.plot(show=False)
 
     def test_same_space(self):
-        # https://github.com/fepegar/torchio/issues/381
+        # https://github.com/TorchIO-Project/torchio/issues/381
         affine1 = np.array(
             [
                 [

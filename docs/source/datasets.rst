@@ -15,7 +15,7 @@ GitHub repository:
 
 .. raw:: html
 
-   <a class="github-button" href="https://github.com/fepegar/torchio/discussions" data-icon="octicon-comment-discussion" aria-label="Discuss fepegar/torchio on GitHub">Discuss</a>
+   <a class="github-button" href="https://github.com/TorchIO-Project/torchio/discussions" data-icon="octicon-comment-discussion" aria-label="Discuss TorchIO-Project/torchio on GitHub">Discuss</a>
    <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 

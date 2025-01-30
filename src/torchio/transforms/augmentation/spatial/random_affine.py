@@ -348,7 +348,7 @@ class Affine(SpatialTransform):
         # the input space. Intuitively, the passed arguments should take us
         # from the input space to the output space, so we need to invert the
         # transform.
-        # More info at https://github.com/fepegar/torchio/discussions/693
+        # More info at https://github.com/TorchIO-Project/torchio/discussions/693
         transform = transform.GetInverse()
 
         if self.invert_transform:
