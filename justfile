@@ -30,3 +30,12 @@ bump-dry part='patch':
 
 push:
     git push && git push --tags
+
+types:
+    uv run tox -e types
+
+lint:
+    uv run ruff check
+
+format:
+    uv run ruff format --diff
