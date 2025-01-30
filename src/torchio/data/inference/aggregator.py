@@ -104,7 +104,7 @@ class GridAggregator:
         )
 
     @staticmethod
-    def _get_hann_window(patch_size):
+    def _get_hann_window(patch_size) -> torch.Tensor:
         hann_window_3d = torch.as_tensor([1])
         # create a n-dim hann window
         for spatial_dim, size in enumerate(patch_size):
@@ -211,6 +211,7 @@ class GridAggregator:
                     j_ini:j_fin,
                     k_ini:k_fin,
                 ] += patch
+                assert self._hann_window is not None
                 self._avgmask_tensor[
                     :,
                     i_ini:i_fin,
