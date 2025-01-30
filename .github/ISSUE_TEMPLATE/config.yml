@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: ❓ Discussions tab
-    url: https://github.com/TorchIO-Project/torchio/discussions/new
+    url: https://github.com/TorchIO-project/torchio/discussions/new
     about: Ask and answer TorchIO-related questions or start a general discussion

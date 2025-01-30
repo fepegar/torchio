@@ -87,7 +87,7 @@ class TestAggregator(TorchioTestCase):
             aggregator.get_output_tensor()
 
     def run_patch_crop_issue(self, *, padding_mode):
-        # https://github.com/TorchIO-Project/torchio/issues/813
+        # https://github.com/TorchIO-project/torchio/issues/813
         pao, pas, ims, bb1, bb2 = 4, 102, 320, 100, 120
 
         patch_overlap = pao, 0, 0

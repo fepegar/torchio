@@ -168,7 +168,7 @@ class Image(dict):
         if 'channels_last' in kwargs:
             message = (
                 'The "channels_last" keyword argument is deprecated after'
-                ' https://github.com/TorchIO-Project/torchio/pull/685 and will be'
+                ' https://github.com/TorchIO-project/torchio/pull/685 and will be'
                 ' removed in the future'
             )
             warnings.warn(message, DeprecationWarning, stacklevel=2)
@@ -242,7 +242,7 @@ class Image(dict):
                 ' will be instances of torchio.Subject with 5D images. Replace'
                 ' your PyTorch DataLoader with a torchio.SubjectsLoader so that'
                 ' the collated batch becomes a dictionary, as expected. See'
-                ' https://github.com/TorchIO-Project/torchio/issues/1179 for more'
+                ' https://github.com/TorchIO-project/torchio/issues/1179 for more'
                 ' context about this issue.'
             )
             warnings.warn(message, stacklevel=1)
@@ -480,7 +480,7 @@ class Image(dict):
         if path is None:
             return None
         elif isinstance(path, dict):
-            # https://github.com/TorchIO-Project/torchio/pull/838
+            # https://github.com/TorchIO-project/torchio/pull/838
             raise TypeError('The path argument cannot be a dictionary')
         elif self._is_paths_sequence(path):
             return [self._parse_single_path(p) for p in path]  # type: ignore[union-attr]

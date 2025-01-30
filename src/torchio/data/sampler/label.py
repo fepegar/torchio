@@ -117,7 +117,7 @@ class LabelSampler(WeightedSampler):
             raise RuntimeError(message)
         crop_fin_i, crop_fin_j, crop_fin_k = crop_fin = (patch_size - 1) // 2
         fin_i, fin_j, fin_k = spatial_shape - crop_fin
-        # See https://github.com/TorchIO-Project/torchio/issues/458
+        # See https://github.com/TorchIO-project/torchio/issues/458
         label_map = label_map[:, ini_i:fin_i, ini_j:fin_j, ini_k:fin_k]
 
         multichannel = label_map.shape[0] > 1
@@ -141,7 +141,7 @@ class LabelSampler(WeightedSampler):
         if multichannel:
             probability_map = probability_map.sum(dim=0, keepdim=True)
 
-        # See https://github.com/TorchIO-Project/torchio/issues/458
+        # See https://github.com/TorchIO-project/torchio/issues/458
         padding = ini_k, crop_fin_k, ini_j, crop_fin_j, ini_i, crop_fin_i
         probability_map = torch.nn.functional.pad(
             probability_map,

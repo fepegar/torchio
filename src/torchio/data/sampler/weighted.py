@@ -227,7 +227,7 @@ class WeightedSampler(RandomSampler):
                    [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])
         """
         # Get first value larger than random number ensuring the random number
-        # is not exactly 0 (see https://github.com/TorchIO-Project/torchio/issues/510)
+        # is not exactly 0 (see https://github.com/TorchIO-project/torchio/issues/510)
         random_number = max(MIN_FLOAT_32, torch.rand(1).item()) * cdf[-1]
 
         random_location_index = np.searchsorted(cdf, random_number)
@@ -242,7 +242,7 @@ class WeightedSampler(RandomSampler):
             message = (
                 'Error retrieving probability in weighted sampler.'
                 ' Please report this issue at'
-                ' https://github.com/TorchIO-Project/torchio/issues/new?labels=bug&template=bug_report.md'
+                ' https://github.com/TorchIO-project/torchio/issues/new?labels=bug&template=bug_report.md'
             )
             raise RuntimeError(message)
 

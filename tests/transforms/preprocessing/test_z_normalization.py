@@ -21,7 +21,7 @@ class TestZNormalization(TorchioTestCase):
             tio.ZNormalization()(image)
 
     def test_dtype(self):
-        # https://github.com/TorchIO-Project/torchio/issues/407
+        # https://github.com/TorchIO-project/torchio/issues/407
         tensor_int = (100 * torch.rand(1, 2, 3, 4)).byte()
         transform = tio.ZNormalization(masking_method=tio.ZNormalization.mean)
         transform(tensor_int)
