@@ -74,35 +74,38 @@ Documentation = "http://torchio.rtfd.io"
 dev = [
     { include-group = "doc" },
     { include-group = "maintain" },
+    { include-group = "quality" },
     { include-group = "test" },
-    "ipykernel",
-    "ruff>0.0.40",
-    "ipywidgets",
+    "ipykernel==6.29.5",
+    "ipywidgets==8.1.5",
+    "pre-commit-uv==4.1.4",
 ]
 doc = [
-    "einops",
-    "furo",
-    "matplotlib",
-    "sphinx",
-    "sphinx-autobuild",
-    "sphinx-copybutton",
-    "sphinx-gallery",
-    "sphinxext-opengraph",
+    "einops==0.8.0",
+    "furo==2024.8.6",
+    "matplotlib==3.9.4",
+    "sphinx==7.4.7",
+    "sphinx-autobuild==2024.10.3",
+    "sphinx-copybutton==0.5.2",
+    "sphinx-gallery==0.18.0",
+    "sphinxext-opengraph==0.9.1",
 ]
 maintain = [
-    "bump-my-version",
-    "pre-commit-uv",
+    "bump-my-version==0.30.1",
+]
+quality = [
+    "ruff==0.9.4",
+    "mypy==1.14.1",
 ]
 test = [
-    "coverage>=5",
-    "mypy>=0.800",
-    "parameterized>=0.7",
-    "pillow>=8",
-    "pytest>=5",
-    "pytest-cov",
-    "pytest-sugar>=0.10",
-    "tox-uv",
-    "types-deprecated",
+    "coverage==7.6.10",
+    "parameterized==0.9.0",
+    "pillow==11.0.0",
+    "pytest==8.3.4",
+    "pytest-cov==6.0.0",
+    "pytest-sugar==1.0.0",
+    "tox-uv==1.20.2",
+    "types-deprecated==1.2.15.20241117",
 ]
 
 [tool.bumpversion]
