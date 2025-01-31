@@ -32,10 +32,13 @@ push:
     git push && git push --tags
 
 types:
-    uv run --group test -- tox -e types
+    uv run --group quality -- tox -e types
 
 lint:
     uv run --group quality -- ruff check
 
 format:
     uv run --group quality -- ruff format --diff
+
+test:
+    uv run --group test -- tox -e pytest
