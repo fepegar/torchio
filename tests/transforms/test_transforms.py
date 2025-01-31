@@ -282,7 +282,7 @@ class TestTransform(TorchioTestCase):
             transform.inverse()
 
     def test_batch_history(self):
-        # https://github.com/fepegar/torchio/discussions/743
+        # https://github.com/TorchIO-project/torchio/discussions/743
         subject = self.sample_subject
         transform = tio.Compose(
             [
@@ -338,7 +338,7 @@ class TestTransform(TorchioTestCase):
 
     def test_label_keys(self):
         # Adapted from the issue in which the feature was requested:
-        # https://github.com/fepegar/torchio/issues/866#issue-1222255576
+        # https://github.com/TorchIO-project/torchio/issues/866#issue-1222255576
         size = 1, 10, 10, 10
         image = torch.rand(size)
         num_classes = 2  # excluding background
@@ -378,7 +378,7 @@ class TestTransform(TorchioTestCase):
             tio.RandomAffine()(tensor)
 
     def test_bad_keys_type(self):
-        # From https://github.com/fepegar/torchio/issues/923
+        # From https://github.com/TorchIO-project/torchio/issues/923
         with self.assertRaises(ValueError):
             tio.RandomAffine(include='t1')
 

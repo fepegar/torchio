@@ -27,7 +27,7 @@ If you would like to install Matplotlib to use the plotting features, use::
 
 
 If you are on Windows and have
-`trouble installing TorchIO <https://github.com/fepegar/torchio/issues/343>`_,
+`trouble installing TorchIO <https://github.com/TorchIO-project/torchio/issues/343>`_,
 try `installing PyTorch <https://pytorch.org/get-started/locally/>`_ with
 `conda <https://docs.conda.io/en/latest/miniconda.html>`_ before pip-installing
 TorchIO.
@@ -113,7 +113,7 @@ Tutorials
 |Google-Colab-notebook|
 
 The best way to quickly understand and try the library is the
-`Jupyter Notebooks <https://github.com/fepegar/torchio/blob/main/tutorials/README.md>`_
+`Jupyter Notebooks <https://github.com/TorchIO-project/torchio/blob/main/tutorials/README.md>`_
 hosted on Google Colab.
 
 They include multiple examples and visualization of most of the classes,
@@ -122,5 +122,5 @@ brain segmentation on :math:`T_1`-weighted MRI with full volumes and
 with subvolumes (aka patches or windows).
 
 .. |Google-Colab-notebook| image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
+   :target: https://github.com/TorchIO-project/torchio/blob/main/tutorials/README.md
    :alt: Google Colab notebook

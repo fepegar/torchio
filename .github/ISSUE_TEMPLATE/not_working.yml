@@ -70,7 +70,7 @@ body:
         Please run this command in your console and paste the output below
 
         ```shell
-        python <(curl -s https://raw.githubusercontent.com/fepegar/torchio/main/print_system.py)
+        python <(curl -s https://raw.githubusercontent.com/TorchIO-project/torchio/main/print_system.py)
         ```
       placeholder: Your system info
       render: shell

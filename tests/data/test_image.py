@@ -235,7 +235,7 @@ class TestImage(TorchioTestCase):
         assert 0 <= counts[1] <= max_n
 
     def test_affine_multipath(self):
-        # https://github.com/fepegar/torchio/issues/762
+        # https://github.com/TorchIO-project/torchio/issues/762
         path1 = self.get_image_path('multi1')
         path2 = self.get_image_path('multi2')
         paths = path1, path2
@@ -243,7 +243,7 @@ class TestImage(TorchioTestCase):
         self.assert_tensor_equal(image.affine, np.eye(4))
 
     def test_bad_numpy_type_reader(self):
-        # https://github.com/fepegar/torchio/issues/764
+        # https://github.com/TorchIO-project/torchio/issues/764
         def numpy_reader(path):
             return np.load(path), np.eye(4)
 
@@ -273,7 +273,7 @@ class TestImage(TorchioTestCase):
             image.unload()
 
     def test_copy_no_data(self):
-        # https://github.com/fepegar/torchio/issues/974
+        # https://github.com/TorchIO-project/torchio/issues/974
         path = self.get_image_path('im_copy')
         my_image = tio.LabelMap(path)
         assert not my_image._loaded

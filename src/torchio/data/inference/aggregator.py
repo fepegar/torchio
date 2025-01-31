@@ -24,7 +24,7 @@ class GridAggregator:
             function. See the `grid aggregator tests`_ for a raw visualization
             of the three modes.
 
-    .. _grid aggregator tests: https://github.com/fepegar/torchio/blob/main/tests/data/inference/test_aggregator.py
+    .. _grid aggregator tests: https://github.com/TorchIO-project/torchio/blob/main/tests/data/inference/test_aggregator.py
 
     .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial
         <https://niftynet.readthedocs.io/en/dev/window_sizes.html>`_ for more
@@ -233,7 +233,7 @@ class GridAggregator:
             assert isinstance(self._avgmask_tensor, torch.Tensor)  # for mypy
             # true_divide is used instead of / in case the PyTorch version is
             # old and one the operands is int:
-            # https://github.com/fepegar/torchio/issues/526
+            # https://github.com/TorchIO-project/torchio/issues/526
             output = torch.true_divide(
                 self._output_tensor,
                 self._avgmask_tensor,

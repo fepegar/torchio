@@ -29,7 +29,7 @@ class TestLabelSampler(TorchioTestCase):
         assert torch.all(probabilities.squeeze().eq(fixture))
 
     def test_inconsistent_shape(self):
-        # https://github.com/fepegar/torchio/issues/234#issuecomment-675029767
+        # https://github.com/TorchIO-project/torchio/issues/234#issuecomment-675029767
         subject = tio.Subject(
             im1=tio.ScalarImage(tensor=torch.rand(2, 4, 5, 6)),
             im2=tio.LabelMap(tensor=torch.rand(1, 4, 5, 6)),
@@ -70,7 +70,7 @@ class TestLabelSampler(TorchioTestCase):
             next(sampler(subject))
 
     def test_empty_map(self):
-        # https://github.com/fepegar/torchio/issues/392
+        # https://github.com/TorchIO-project/torchio/issues/392
         im = tio.ScalarImage(tensor=torch.rand(1, 6, 6, 6))
         label = torch.zeros(1, 6, 6, 6)
         label[..., 0] = 1  # voxels far from center

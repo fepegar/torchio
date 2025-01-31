@@ -172,7 +172,7 @@ class IXITiny(SubjectsDataset):
             :class:`~torchio.transforms.transform.Transform`.
         download: If set to ``True``, will download the data into :attr:`root`.
 
-    .. _notebook: https://github.com/fepegar/torchio/blob/main/tutorials/README.md
+    .. _notebook: https://github.com/TorchIO-project/torchio/blob/main/tutorials/README.md
     """
 
     url = 'https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1'

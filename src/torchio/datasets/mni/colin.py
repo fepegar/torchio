@@ -73,7 +73,7 @@ class Colin27(SubjectMNI):
                 filename=self.filename,
             )
 
-            # Fix label map (https://github.com/fepegar/torchio/issues/220)
+            # Fix label map (https://github.com/TorchIO-project/torchio/issues/220)
             if version == 2008:
                 path = self.download_root / 'colin27_cls_tal_hires.nii'
                 cls_image = LabelMap(path)

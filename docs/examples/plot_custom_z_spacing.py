@@ -6,7 +6,7 @@ In this example, we create a custom preprocessing transfom that changes the
 image spacing across one axis only.
 
 Inspired by
-`this discussion <https://github.com/fepegar/torchio/discussions/885>`_.
+`this discussion <https://github.com/TorchIO-project/torchio/discussions/885>`_.
 """
 
 import torch

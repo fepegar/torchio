@@ -169,7 +169,7 @@ class TestCropOrPad(TorchioTestCase):
             )
 
     def test_2d(self):
-        # https://github.com/fepegar/torchio/issues/434
+        # https://github.com/TorchIO-project/torchio/issues/434
         image = np.random.rand(1, 16, 16, 1)
         mask = np.zeros_like(image, dtype=bool)
         mask[0, 7, 0] = True
@@ -194,7 +194,7 @@ class TestCropOrPad(TorchioTestCase):
         crop_with_mask(self.sample_subject)
 
     def test_persistent_bounds_params(self):
-        # https://github.com/fepegar/torchio/issues/757
+        # https://github.com/TorchIO-project/torchio/issues/757
         shape = (1, 5, 5, 5)
         mask_a = np.zeros(shape)
         mask_a[0, 2, 2, 2] = 1

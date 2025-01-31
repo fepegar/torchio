@@ -16,7 +16,7 @@ Report bugs
 ~~~~~~~~~~~
 
 Report bugs
-`on GitHub <https://github.com/fepegar/torchio/issues/new?assignees=&labels=bug&template=bug_report.md&title=>`_.
+`on GitHub <https://github.com/TorchIO-project/torchio/issues/new?assignees=&labels=bug&template=bug_report.md&title=>`_.
 
 If you are reporting a bug, please include:
 
@@ -46,7 +46,7 @@ articles, and such.
 Submit feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/fepegar/torchio/issues.
+The best way to send feedback is to file an issue at https://github.com/TorchIO-project/torchio/issues.
 
 If you are proposing a feature:
 

@@ -111,7 +111,7 @@ class TestRescaleIntensity(TorchioTestCase):
             rescale(subject)
 
     def test_persistent_in_min_max(self):
-        # see https://github.com/fepegar/torchio/issues/1115
+        # see https://github.com/TorchIO-project/torchio/issues/1115
         img1 = torch.tensor([[[[0, 1]]]])
         img2 = torch.tensor([[[[0, 10]]]])
 

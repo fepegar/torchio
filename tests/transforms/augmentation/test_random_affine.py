@@ -152,7 +152,7 @@ class TestRandomAffine(TorchioTestCase):
         do_assert(tio.RandomAffine(translation=3 * [-10, 10]))
 
     def test_default_value_label_map(self):
-        # From https://github.com/fepegar/torchio/issues/626
+        # From https://github.com/TorchIO-project/torchio/issues/626
         a = torch.tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).reshape(1, 3, 3, 1)
         image = tio.LabelMap(tensor=a)
         aff = tio.RandomAffine(translation=(0, 1, 1), default_pad_value='otsu')

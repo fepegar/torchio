@@ -24,10 +24,10 @@ HISTORY = 'history'
 CHANNELS_DIMENSION = 1
 
 # Code repository
-REPO_URL = 'https://github.com/fepegar/torchio/'
+REPO_URL = 'https://github.com/TorchIO-project/torchio/'
 
 # Data repository
-DATA_REPO = 'https://github.com/fepegar/torchio-data/raw/main/data/'
+DATA_REPO = 'https://github.com/TorchIO-project/torchio-data/raw/main/data/'
 
 # Floating point error
 MIN_FLOAT_32 = torch.finfo(torch.float32).eps

@@ -1,26 +1,26 @@
-{% extends "!layout.html" %}
-  {% block footer %} {{ super() }}
+{% extends "!layout.html" %} {% block footer %} {{ super() }}
 
-  <style>
-    /* Sidebar header (and topbar for mobile) */
-    .wy-side-nav-search, .wy-nav-top {
-      background: #d45848;
-    }
-    /* Make full screen */
-    /* .wy-nav-content { max-width: none; } */
-    .wy-menu > .caption > span.caption-text {
-      color: #d45848;
-    }
-    /* .property {
+<style>
+  /* Sidebar header (and topbar for mobile) */
+  .wy-side-nav-search,
+  .wy-nav-top {
+    background: #d45848;
+  }
+  /* Make full screen */
+  /* .wy-nav-content { max-width: none; } */
+  .wy-menu > .caption > span.caption-text {
+    color: #d45848;
+  }
+  /* .property {
       color: #d45848;
     } */
-  </style>
-{% endblock %}
-
-
-{% block document %}
-{{super()}}
-    <a href="https://github.com/fepegar/torchio">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
-    </a>
+</style>
+{% endblock %} {% block document %} {{super()}}
+<a href="https://github.com/TorchIO-project/torchio">
+  <img
+    style="position: absolute; top: 0; right: 0; border: 0"
+    src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
+    alt="Fork me on GitHub"
+  />
+</a>
 {% endblock %}

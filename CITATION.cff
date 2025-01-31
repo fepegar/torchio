@@ -5,7 +5,7 @@ authors:
     given-names: Fernando
     orcid: https://orcid.org/0000-0001-9090-3024
 title: "TorchIO"
-repository-code: "https://github.com/fepegar/torchio"
+repository-code: "https://github.com/TorchIO-project/torchio"
 preferred-citation:
   type: article
   authors:
