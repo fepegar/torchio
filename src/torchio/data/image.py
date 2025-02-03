@@ -917,3 +917,73 @@ class LabelMap(Image):
         counter = Counter(values_list)
         counts = {label: counter[label] for label in sorted(counter)}
         return counts
+
+
+class LazyImage(Image):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def load(self):
+        if self._is_multipath():
+            message = f'No multiple paths for LazyImage'
+            RuntimeError(message)
+
+        tensor, affine = self.read_and_check(self.path)
+        self.set_data(tensor)
+        self.affine = affine
+        self._loaded = True
+
+    def _parse_tensor(
+        self,
+        tensor: Optional[TypeData],
+        none_ok: bool = True,
+    ) -> Optional[torch.Tensor]:
+        if tensor is None:
+            if none_ok:
+                return None
+            else:
+                raise RuntimeError('Input tensor cannot be None')
+
+        ndim = tensor.ndim
+        if ndim != 4:
+            raise ValueError(f'Input tensor must be 4D, but it is {ndim}D')
+
+        return tensor
+
+    @staticmethod
+    def _parse_tensor_shape(tensor: torch.Tensor) -> TypeData:
+        # here we do not want to maniulate the whole data as tensor, to avoid loading
+        # so we skip check here, so we can not repare bad shape ...
+        # _parse_tensor, is already checking if ndim==4
+        return tensor
+
+    def __repr__(self):
+        # alternative would be to modify the __repr__ function of parent class (image
+        # in order to avoid the call self.data.type() (which is only defined for tensor)
+        properties = []
+        properties.extend(
+            [
+                f'shape: {self.shape}',
+                f'spacing: {self.get_spacing_string()}',
+                f'orientation: {"".join(self.orientation)}+',
+            ]
+        )
+        if self._loaded:
+            # instead of adding dtype and memory, just print the data
+            properties.append(f'dtype: {self.data}')
+        else:
+            properties.append(f'path: "{self.path}"')
+
+        properties = '; '.join(properties)
+        string = f'{self.__class__.__name__}({properties})'
+        return string
+
+
+class LazyScalarImage(LazyImage, ScalarImage):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class LazyLabelMap(LazyImage, LabelMap):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
