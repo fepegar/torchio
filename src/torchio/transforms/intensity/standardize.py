@@ -50,31 +50,34 @@ class Standardize(IntensityTransform):
         self.masking_method = masking_method
 
     def make_params(self, batch: SubjectsBatch) -> dict[str, Any]:
-        """Compute per-image mean and std from the first sample.
+        """Compute mean and std for each image of each sample in the batch.
 
         Returns:
-            Dict mapping image names to `(mean, std)` pairs.
+            Dict mapping image names to one `(mean, std)` pair per sample.
         """
         images = self._get_images(batch)
-        stats: dict[str, tuple[float, float]] = {}
+        stats: dict[str, list[tuple[float, float]]] = {}
         for name, img_batch in images.items():
-            mask = _get_mask(self.masking_method, img_batch, batch)
-            tensor = img_batch.data[0]
-            values = (
-                tensor[mask.expand_as(tensor)]
-                if mask is not None
-                else tensor.reshape(-1)
-            )
-            if values.numel() == 0:
-                warnings.warn(
-                    f'Mask is empty for "{name}". Using all voxels.',
-                    RuntimeWarning,
-                    stacklevel=2,
+            per_sample: list[tuple[float, float]] = []
+            for index in range(len(img_batch.data)):
+                mask = _get_mask(self.masking_method, img_batch, batch, index)
+                tensor = img_batch.data[index]
+                values = (
+                    tensor[mask.expand_as(tensor)]
+                    if mask is not None
+                    else tensor.reshape(-1)
                 )
-                values = tensor.reshape(-1)
-            mean = float(values.float().mean().item())
-            std = float(values.float().std().item())
-            stats[name] = (mean, std)
+                if values.numel() == 0:
+                    warnings.warn(
+                        f'Mask is empty for "{name}". Using all voxels.',
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+                    values = tensor.reshape(-1)
+                mean = float(values.float().mean().item())
+                std = float(values.float().std().item())
+                per_sample.append((mean, std))
+            stats[name] = per_sample
         return {"stats": stats}
 
     def apply_transform(
@@ -87,14 +90,16 @@ class Standardize(IntensityTransform):
         for name, img_batch in self._get_images(batch).items():
             if name not in stats:
                 continue
-            mean, std = stats[name]
-            if std == 0:
-                msg = (
-                    f'Standard deviation is zero for masked values in "{name}".'
-                    " Cannot standardize."
-                )
-                raise RuntimeError(msg)
-            img_batch.data = (img_batch.data.float() - mean) / std
+            data = img_batch.data.float()
+            for index, (mean, std) in enumerate(stats[name]):
+                if std == 0:
+                    msg = (
+                        f"Standard deviation is zero for masked values in"
+                        f' "{name}" (sample {index}). Cannot standardize.'
+                    )
+                    raise RuntimeError(msg)
+                data[index] = (data[index] - mean) / std
+            img_batch.data = data
         return batch
 
     @property
@@ -113,7 +118,7 @@ class _StandardizeInverse(IntensityTransform):
     def __init__(
         self,
         *,
-        stats: dict[str, tuple[float, float]],
+        stats: dict[str, list[tuple[float, float]]],
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -132,10 +137,12 @@ class _StandardizeInverse(IntensityTransform):
         for name, img_batch in self._get_images(batch).items():
             if name not in self._stats:
                 continue
-            mean, std = self._stats[name]
-            if std == 0:
-                continue
-            img_batch.data = img_batch.data.float() * std + mean
+            data = img_batch.data.float()
+            for index, (mean, std) in enumerate(self._stats[name]):
+                if std == 0:
+                    continue
+                data[index] = data[index] * std + mean
+            img_batch.data = data
         return batch
 
 
@@ -143,6 +150,7 @@ def _get_mask(
     masking_method: str | Callable[[Tensor], Tensor] | None,
     img_batch: ImagesBatch,
     batch: SubjectsBatch,
+    index: int = 0,
 ) -> Tensor | None:
     """Resolve a masking method to a boolean tensor or `None`.
 
@@ -150,6 +158,7 @@ def _get_mask(
         masking_method: `None`, a string key, or a callable.
         img_batch: The image batch being processed.
         batch: The full subject batch (for string-key lookup).
+        index: Index of the sample in the batch to build the mask for.
 
     Returns:
         Boolean mask tensor, or `None` for no masking.
@@ -157,7 +166,7 @@ def _get_mask(
     if masking_method is None:
         return None
     if callable(masking_method) and not isinstance(masking_method, str):
-        return masking_method(img_batch.data[0]).bool()
+        return masking_method(img_batch.data[index]).bool()
     if isinstance(masking_method, str):
         if masking_method not in batch.images:
             msg = (
@@ -169,7 +178,7 @@ def _get_mask(
         if not issubclass(mask_batch._image_class, LabelMap):
             msg = f'Masking method "{masking_method}" must refer to a LabelMap.'
             raise TypeError(msg)
-        return mask_batch.data[0].bool()
+        return mask_batch.data[index].bool()
     msg = f"masking_method must be None, str, or callable, got {type(masking_method)}"
     raise TypeError(msg)
 

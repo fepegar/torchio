@@ -329,3 +329,41 @@ class TestNormalizePerInstance:
         result = transform(batch)
         restored = result.apply_inverse_transform()
         torch.testing.assert_close(restored.t1.data, original, atol=1e-3, rtol=0)
+
+
+class TestBatchInputRange:
+    def test_input_range_is_computed_per_sample(self) -> None:
+        narrow = tio.Subject(
+            t1=tio.ScalarImage(torch.linspace(0, 1, 64).reshape(1, 4, 4, 4))
+        )
+        wide = tio.Subject(
+            t1=tio.ScalarImage(torch.linspace(0, 1000, 64).reshape(1, 4, 4, 4))
+        )
+        batch = tio.SubjectsBatch.from_subjects([narrow, wide])
+
+        data = tio.Normalize(out_min=0.0, out_max=1.0)(batch).images["t1"].data
+
+        # Clamping the wide sample to the narrow sample's range would collapse
+        # its 64 distinct values down to 2.
+        for index in range(len(data)):
+            assert data[index].unique().numel() == 64
+            assert data[index].min().item() == pytest.approx(0.0, abs=1e-5)
+            assert data[index].max().item() == pytest.approx(1.0, abs=1e-5)
+
+    def test_batch_matches_subject_by_subject(self) -> None:
+        subjects = [
+            tio.Subject(
+                t1=tio.ScalarImage(torch.linspace(0, stop, 64).reshape(1, 4, 4, 4))
+            )
+            for stop in (1.0, 1000.0, 7.5)
+        ]
+        transform = tio.Normalize(out_min=0.0, out_max=1.0)
+        batched = transform(tio.SubjectsBatch.from_subjects(subjects))
+
+        for index, subject in enumerate(subjects):
+            torch.testing.assert_close(
+                batched.images["t1"].data[index],
+                transform(subject).t1.data,
+                atol=1e-5,
+                rtol=0,
+            )
