@@ -15,7 +15,7 @@ repos:
       - id: trailing-whitespace        # Trims trailing whitespace
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.16.10
     hooks:
       - id: ruff
       - id: ruff-format
