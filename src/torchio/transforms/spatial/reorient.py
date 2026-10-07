@@ -130,30 +130,45 @@ class Reorient(SpatialTransform):
         self.orientation = _validate_orientation(orientation)
 
     def make_params(self, batch: SubjectsBatch) -> dict[str, Any]:
-        first_images = next(iter(batch.images.values()))
-        affine_np = first_images.affines[0].numpy()
-        current_codes = "".join(
-            nib.orientations.aff2axcodes(affine_np),
-        )
-        ornt = _compute_reorientation(affine_np, self.orientation)
+        # Images in a subject may have different orientations, so the
+        # reorientation is computed for each image separately.
+        ornts: dict[str, list] = {}
+        original_orientations: dict[str, str] = {}
+        for name, img_batch in self._get_images(batch).items():
+            target = self._get_target_orientation(name)
+            if target is None:
+                continue
+            affine_np = img_batch.affines[0].numpy()
+            original_orientations[name] = "".join(
+                nib.orientations.aff2axcodes(affine_np),
+            )
+            ornts[name] = _compute_reorientation(affine_np, target).tolist()
         return {
-            "ornt": ornt.tolist(),
-            "original_orientation": current_codes,
+            "ornt": ornts,
+            "original_orientation": original_orientations,
         }
+
+    def _get_target_orientation(self, name: str) -> str | None:
+        """Return the orientation code that the image should end up in."""
+        return self.orientation
 
     def apply_transform(
         self,
         batch: SubjectsBatch,
         params: dict[str, Any],
     ) -> SubjectsBatch:
-        ornt = np.asarray(params["ornt"])
+        for name, img_batch in self._get_images(batch).items():
+            if name not in params["ornt"]:
+                continue
+            ornt = np.asarray(params["ornt"][name])
 
-        # No-op when already in target orientation
-        is_identity = np.array_equal(ornt[:, 0], [0, 1, 2]) and np.all(ornt[:, 1] == 1)
-        if is_identity:
-            return batch
+            # No-op when already in target orientation
+            is_identity = np.array_equal(ornt[:, 0], [0, 1, 2]) and np.all(
+                ornt[:, 1] == 1
+            )
+            if is_identity:
+                continue
 
-        for _name, img_batch in self._get_images(batch).items():
             original_shape = img_batch.data.shape[-3:]
             img_batch.data = _apply_reorientation(img_batch.data, ornt)
 
@@ -171,9 +186,29 @@ class Reorient(SpatialTransform):
     def invertible(self) -> bool:
         return True
 
-    def inverse(self, params: dict[str, Any]) -> Reorient:
-        """Inverse reorients back to the original orientation."""
-        return Reorient(
-            orientation=params["original_orientation"],
+    def inverse(self, params: dict[str, Any]) -> _ReorientInverse:
+        """Inverse reorients each image back to its original orientation."""
+        return _ReorientInverse(
+            orientations=params["original_orientation"],
             copy=False,
         )
+
+
+class _ReorientInverse(Reorient):
+    """Inverse of [`Reorient`][torchio.Reorient] for history replay.
+
+    Reorients each image back to the orientation it had before the
+    forward transform was applied.
+    """
+
+    def __init__(
+        self,
+        *,
+        orientations: dict[str, str],
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self._orientations = orientations
+
+    def _get_target_orientation(self, name: str) -> str | None:
+        return self._orientations.get(name)
