@@ -58,7 +58,7 @@ class Lambda(Transform):
         params: dict[str, Any],
     ) -> SubjectsBatch:
         """Apply the callable to each matching image."""
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not self._should_apply(img_batch._image_class):
                 continue
             for i in range(img_batch.batch_size):

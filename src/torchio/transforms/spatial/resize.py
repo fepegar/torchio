@@ -63,7 +63,7 @@ class Resize(SpatialTransform):
     ) -> SubjectsBatch:
         """Resize each image to the target shape."""
         target = list(params["target_shape"])
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             is_label = issubclass(img_batch._image_class, LabelMap)
             mode = self.label_interpolation if is_label else self.image_interpolation
             torch_mode = "nearest" if mode == "nearest" else "trilinear"
