@@ -352,7 +352,8 @@ def _mask_borders(
             slices_lo: list[slice] = [slice(None)] * 3
             slices_lo[d] = slice(0, half)
             prob[tuple(slices_lo)] = 0
-        tail = spatial_shape[d] - half
+        # An even-sized patch extends one voxel less beyond its center.
+        tail = spatial_shape[d] - (patch_size[d] - 1) // 2
         if tail < spatial_shape[d]:
             slices_hi: list[slice] = [slice(None)] * 3
             slices_hi[d] = slice(tail, None)
