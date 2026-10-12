@@ -5,8 +5,10 @@ from __future__ import annotations
 import copy
 
 import numpy as np
+import numpy.typing as npt
 import pytest
 import torch
+from nibabel.affines import apply_affine
 
 from torchio.data.points import Points
 
@@ -174,6 +176,48 @@ class TestPointsToAxes:
         converted = pts.to_axes("RAS")
         assert converted.axes == "RAS"
 
+    @pytest.mark.parametrize("voxel_axes", ["IJK", "KJI"])
+    @pytest.mark.parametrize(
+        ("anatomical_axes", "order", "signs"),
+        [
+            ("RAS", (0, 1, 2), (1, 1, 1)),
+            ("LPI", (0, 1, 2), (-1, -1, -1)),
+            ("ASR", (1, 2, 0), (1, 1, 1)),
+        ],
+    )
+    @pytest.mark.parametrize("inverse", [False, True])
+    def test_cross_type_uses_ras_world(
+        self,
+        annotation_affine: npt.NDArray[np.float64],
+        voxel_axes: str,
+        anatomical_axes: str,
+        order: tuple[int, int, int],
+        signs: tuple[int, int, int],
+        inverse: bool,
+    ) -> None:
+        ijk = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+        world = apply_affine(annotation_affine, ijk.numpy())
+        anatomical = torch.from_numpy(world[:, order] * signs).float()
+        voxel = ijk[:, ["IJK".index(axis) for axis in voxel_axes]]
+        if inverse:
+            data, expected = anatomical, voxel
+            source, target = anatomical_axes, voxel_axes
+        else:
+            data, expected = voxel, anatomical
+            source, target = voxel_axes, anatomical_axes
+        original = data.clone()
+        points = Points(
+            data, axes=source, affine=annotation_affine, metadata={"name": "landmarks"}
+        )
+
+        converted = points.to_axes(target)
+
+        torch.testing.assert_close(converted.data, expected)
+        assert converted.axes == target
+        np.testing.assert_array_equal(converted.affine.numpy(), annotation_affine)
+        assert converted.metadata == points.metadata
+        torch.testing.assert_close(points.data, original)
+
 
 class TestPointsTransform:
     def test_to_world(self):
@@ -191,6 +235,36 @@ class TestPointsTransform:
         world = pts.to_world()
         expected = torch.tensor([[10.0, 20.0, 30.0]])
         torch.testing.assert_close(world, expected)
+
+    @pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
+    @pytest.mark.parametrize(
+        ("axes", "order", "signs"),
+        [
+            ("IJK", (0, 1, 2), (1, 1, 1)),
+            ("KJI", (2, 1, 0), (1, 1, 1)),
+            ("RAS", (0, 1, 2), (1, 1, 1)),
+            ("LPI", (0, 1, 2), (-1, -1, -1)),
+            ("ASR", (1, 2, 0), (1, 1, 1)),
+        ],
+    )
+    def test_to_world_respects_axes(
+        self,
+        annotation_affine: npt.NDArray[np.float64],
+        dtype: torch.dtype,
+        axes: str,
+        order: tuple[int, int, int],
+        signs: tuple[int, int, int],
+    ) -> None:
+        ijk = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+        world = apply_affine(annotation_affine, ijk)
+        source = ijk if axes in ("IJK", "KJI") else world
+        data = torch.as_tensor(source[:, order] * signs, dtype=dtype)
+        points = Points(data, axes=axes, affine=annotation_affine)
+
+        actual = points.to_world()
+
+        torch.testing.assert_close(actual, torch.from_numpy(world).float())
+        torch.testing.assert_close(points.data, data)
 
 
 class TestPointsRepr:

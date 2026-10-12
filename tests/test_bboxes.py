@@ -5,8 +5,10 @@ from __future__ import annotations
 import copy
 
 import numpy as np
+import numpy.typing as npt
 import pytest
 import torch
+from nibabel.affines import apply_affine
 
 from torchio.data.bboxes import BoundingBoxes
 from torchio.data.bboxes import BoundingBoxFormat
@@ -417,6 +419,71 @@ class TestVoxelAnatomicalConversion:
         # Should work (uses default identity affine)
         converted = bboxes.to_format(tgt)
         assert converted.format == tgt
+
+    @pytest.mark.parametrize("voxel_axes", ["IJK", "KJI"])
+    @pytest.mark.parametrize(
+        ("anatomical_axes", "order", "signs"),
+        [
+            ("RAS", (0, 1, 2), (1, 1, 1)),
+            ("LPI", (0, 1, 2), (-1, -1, -1)),
+            ("ASR", (1, 2, 0), (1, 1, 1)),
+        ],
+    )
+    @pytest.mark.parametrize("representation", list(Representation))
+    @pytest.mark.parametrize("inverse", [False, True])
+    def test_cross_type_uses_ras_world(
+        self,
+        annotation_affine: npt.NDArray[np.float64],
+        voxel_axes: str,
+        anatomical_axes: str,
+        order: tuple[int, int, int],
+        signs: tuple[int, int, int],
+        representation: Representation,
+        inverse: bool,
+    ) -> None:
+        ijk = np.array([[1, 2, 3, 4, 6, 8], [-3, -2, -1, 0, 1, 2]], dtype=float)
+        world = apply_affine(annotation_affine, ijk.reshape(-1, 2, 3))
+        anatomical_corners = world[:, :, order] * signs
+        anatomical = np.concatenate(
+            [anatomical_corners.min(axis=1), anatomical_corners.max(axis=1)], axis=1
+        )
+        indices = ["IJK".index(axis) for axis in voxel_axes]
+        voxel = ijk[:, indices + [index + 3 for index in indices]]
+        if representation == Representation.CENTER_SIZE:
+            voxel = np.concatenate(
+                [(voxel[:, :3] + voxel[:, 3:]) / 2, voxel[:, 3:] - voxel[:, :3]], axis=1
+            )
+            anatomical = np.concatenate(
+                [
+                    (anatomical[:, :3] + anatomical[:, 3:]) / 2,
+                    anatomical[:, 3:] - anatomical[:, :3],
+                ],
+                axis=1,
+            )
+        if inverse:
+            data, expected = anatomical, voxel
+            source, target = anatomical_axes, voxel_axes
+        else:
+            data, expected = voxel, anatomical
+            source, target = voxel_axes, anatomical_axes
+        labels = torch.tensor([1, 2])
+        boxes = BoundingBoxes(
+            data,
+            format=BoundingBoxFormat(source, representation),
+            affine=annotation_affine,
+            labels=labels,
+            metadata={"name": "regions"},
+        )
+        target_format = BoundingBoxFormat(target, representation)
+
+        converted = boxes.to_format(target_format)
+
+        torch.testing.assert_close(converted.data, torch.from_numpy(expected).float())
+        assert converted.format == target_format
+        np.testing.assert_array_equal(converted.affine.numpy(), annotation_affine)
+        torch.testing.assert_close(converted.labels, labels)
+        assert converted.metadata == boxes.metadata
+        torch.testing.assert_close(boxes.data, torch.from_numpy(data).float())
 
 
 class TestNewLike:

@@ -74,6 +74,36 @@ landmarks = tio.Points(
 ras = landmarks.to_axes("RAS")  # now in mm
 ```
 
+World coordinates use **RAS+**, independently of the image's voxel
+orientation. The affine already accounts for the direction of each
+voxel axis; its orientation codes do not change the world coordinate
+system. For example, an affine whose first voxel axis points left
+still produces RAS+ coordinates:
+
+```python
+import torch
+import torchio as tio
+
+affine = torch.tensor([
+    [-2.0, 0.0, 0.0, 10.0],
+    [0.0, 3.0, 0.0, 20.0],
+    [0.0, 0.0, 4.0, 30.0],
+    [0.0, 0.0, 0.0, 1.0],
+])
+points = tio.Points([[1.0, 2.0, 3.0]], affine=affine)
+ras_points = points.to_axes("RAS")
+expected = torch.tensor([[8.0, 26.0, 42.0]])
+torch.testing.assert_close(ras_points.data, expected)
+torch.testing.assert_close(points.to_world(), expected)
+torch.testing.assert_close(ras_points.to_world(), expected)
+```
+
+`to_world()` respects the points' stored axes. It reorders voxel
+coordinates before applying the affine and does not apply the affine
+again to points already in anatomical coordinates. The same RAS+
+convention applies to voxel/anatomical `BoundingBoxes.to_format()`
+conversions.
+
 Supported axis conventions:
 
 | Type | Examples |

@@ -119,23 +119,25 @@ class Points:
     # --- Methods ---
 
     def to_world(self) -> Tensor:
-        """Transform points from voxel to world coordinates.
+        """Return points in RAS+ world (mm) coordinates.
 
-        Equivalent to `self.to_axes(orientation)` where *orientation*
-        is the anatomical orientation of the affine, but returns a raw
-        tensor instead of a new `Points` object.
+        Equivalent to `self.to_axes("RAS").data`, cast to `float32`.
+        The stored axis convention is respected, so points already in
+        anatomical coordinates are not transformed by the affine again.
 
         Returns:
-            $(N, 3)$ tensor in world (mm) coordinates.
+            $(N, 3)$ float32 tensor in RAS+ world coordinates.
         """
-        return self._affine.apply(self._data).to(torch.float32)
+        return self.to_axes("RAS").data.to(torch.float32)
 
     def to_axes(self, target: str) -> Self:
         """Convert points to a different axis convention.
 
         Handles permutations within the same type (voxel ↔ voxel,
         anatomical ↔ anatomical) and cross-type conversions
-        (voxel ↔ anatomical) using the stored affine.
+        (voxel ↔ anatomical) using the stored affine. The affine maps
+        IJK voxel indices to RAS+ world coordinates, regardless of the
+        image's voxel orientation.
 
         Args:
             target: Target axis string.
@@ -222,18 +224,15 @@ class Points:
                 data = data[:, list(perm)]
             # Apply affine → world.
             world = self._affine.apply(data).to(torch.float32)
-            # World system is the affine's orientation.
-            world_axes = "".join(self._affine.orientation)
-            if world_axes != tgt_axes:
-                perm, flips = get_axis_mapping(world_axes, tgt_axes)
+            if tgt_axes != "RAS":
+                perm, flips = get_axis_mapping("RAS", tgt_axes)
                 world = self._permute_and_flip(world, perm, flips)
             return world
         else:
             # Anatomical → voxel.
-            # Normalise to the affine's world system.
-            world_axes = "".join(self._affine.orientation)
-            if self._axes != world_axes:
-                perm, flips = get_axis_mapping(self._axes, world_axes)
+            # Normalise to RAS before applying the inverse affine.
+            if self._axes != "RAS":
+                perm, flips = get_axis_mapping(self._axes, "RAS")
                 data = self._permute_and_flip(data, perm, flips)
             # Inverse affine → IJK.
             inv = self._affine.inverse()
