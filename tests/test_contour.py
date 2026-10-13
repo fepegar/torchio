@@ -44,3 +44,10 @@ class TestContour:
         original = subject.t1.data.clone()
         result = tio.Contour()(subject)
         torch.testing.assert_close(result.t1.data, original)
+
+    def test_respects_exclude(self) -> None:
+        seg = torch.ones(1, 10, 10, 10, dtype=torch.float32)
+        subject = tio.Subject(a=tio.LabelMap(seg.clone()), b=tio.LabelMap(seg.clone()))
+        original_b = subject.b.data.clone()
+        result = tio.Contour(exclude=["b"])(subject)
+        torch.testing.assert_close(result.b.data, original_b)

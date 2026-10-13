@@ -31,6 +31,16 @@ class TestAnisotropy:
         result = tio.Anisotropy(downsampling=2.0)(subject)
         assert result.t1.data.shape == subject.t1.data.shape
 
+    def test_respects_exclude(self) -> None:
+        torch.manual_seed(0)
+        data = torch.rand(1, 10, 10, 10) * 100
+        subject = tio.Subject(
+            a=tio.ScalarImage(data.clone()), b=tio.ScalarImage(data.clone())
+        )
+        original_b = subject.b.data.clone()
+        result = tio.Anisotropy(downsampling=3.0, exclude=["b"])(subject)
+        torch.testing.assert_close(result.b.data, original_b)
+
     def test_specific_axis(self) -> None:
         subject = _make_subject(with_label=False)
         original = subject.t1.data.clone()

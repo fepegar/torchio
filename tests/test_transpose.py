@@ -48,3 +48,12 @@ class TestTranspose:
         subject = tio.Subject(t1=tio.ScalarImage(data))
         result = tio.Transpose()(subject)
         assert result.t1.data.shape == (1, 10, 10, 10)
+
+    def test_respects_exclude(self) -> None:
+        data = torch.rand(1, 8, 10, 12)
+        subject = tio.Subject(
+            a=tio.ScalarImage(data.clone()), b=tio.ScalarImage(data.clone())
+        )
+        result = tio.Transpose(exclude=["b"])(subject)
+        assert result.a.data.shape == (1, 12, 10, 8)
+        assert result.b.data.shape == (1, 8, 10, 12)

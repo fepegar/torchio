@@ -172,7 +172,7 @@ class LabelsToImage(Transform):
                 raise KeyError(msg)
             return batch.images[self.label_key]
         # Auto-detect first LabelMap.
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if issubclass(img_batch._image_class, LabelMap):
                 return img_batch
         msg = "No LabelMap found in the subject"

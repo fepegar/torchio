@@ -41,3 +41,12 @@ class TestCopyAffine:
         original = subject.t1.affine._matrix.clone()
         tio.CopyAffine(target="t1")(subject)
         torch.testing.assert_close(subject.t1.affine._matrix, original)
+
+    def test_respects_exclude(self) -> None:
+        t1 = tio.ScalarImage(torch.rand(1, 5, 5, 5))
+        t2 = tio.ScalarImage(torch.rand(1, 5, 5, 5))
+        t2.affine._matrix[0, 3] = 99.0
+        original_t2_affine = t2.affine._matrix.clone()
+        subject = tio.Subject(t1=t1, t2=t2)
+        result = tio.CopyAffine(target="t1", exclude=["t2"])(subject)
+        torch.testing.assert_close(result.t2.affine._matrix, original_t2_affine)

@@ -66,7 +66,7 @@ class KeepLargestComponent(Transform):
         params: dict[str, Any],
     ) -> SubjectsBatch:
         """Keep only the largest connected component per label."""
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             b, c = img_batch.data.shape[:2]

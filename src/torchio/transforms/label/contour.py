@@ -42,7 +42,7 @@ class Contour(Transform):
         params: dict[str, Any],
     ) -> SubjectsBatch:
         """Replace each label map with its boundary voxels."""
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             img_batch.data = _extract_contour(img_batch.data)

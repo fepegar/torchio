@@ -56,6 +56,11 @@ class TestLabelsToImage:
         with pytest.raises(KeyError, match="nope"):
             tio.LabelsToImage(label_key="nope")(subject)
 
+    def test_respects_exclude_for_autodetect(self) -> None:
+        subject = _make_subject()
+        with pytest.raises(KeyError, match="No LabelMap"):
+            tio.LabelsToImage(exclude=["seg"])(subject)
+
 
 class TestLabelsToImagePerInstance:
     def _batch(self, batch_size: int = 5) -> tio.SubjectsBatch:
