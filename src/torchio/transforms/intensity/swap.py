@@ -12,7 +12,8 @@ from torch import Tensor
 from ...data.batch import SubjectsBatch
 from ...data.image import LabelMap
 from ..parameter_range import to_nonneg_range
-from ..transform import IntensityTransform, Transform
+from ..transform import IntensityTransform
+from ..transform import Transform
 
 Origin = tuple[int, int, int]
 SwapLocation = tuple[Origin, Origin]
