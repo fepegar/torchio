@@ -329,3 +329,32 @@ class TestNormalizePerInstance:
         result = transform(batch)
         restored = result.apply_inverse_transform()
         torch.testing.assert_close(restored.t1.data, original, atol=1e-3, rtol=0)
+
+
+class TestPartialInputBounds:
+    """An explicit ``in_min`` or ``in_max`` must be honored even when the other
+    bound is left to be computed from the data (regression test for #1509)."""
+
+    @staticmethod
+    def _image() -> tio.Subject:
+        data = torch.tensor([0.0, 50.0, 100.0]).reshape(1, 1, 1, 3)
+        return tio.Subject(t1=tio.ScalarImage(data))
+
+    def test_only_in_min_is_honored(self) -> None:
+        result = tio.Normalize(out_min=0.0, out_max=1.0, in_min=50.0)(self._image())
+        out = result.t1.data.flatten().tolist()
+        assert out == pytest.approx([0.0, 0.0, 1.0])
+
+    def test_only_in_max_is_honored(self) -> None:
+        result = tio.Normalize(out_min=0.0, out_max=1.0, in_max=50.0)(self._image())
+        out = result.t1.data.flatten().tolist()
+        assert out == pytest.approx([0.0, 1.0, 1.0])
+
+    def test_explicit_bound_ignores_its_percentile(self) -> None:
+        # percentile_low is out of range, but must be ignored (not even validated)
+        # because in_min is given explicitly; only in_max uses a percentile.
+        result = tio.Normalize(
+            out_min=0.0, out_max=1.0, in_min=50.0, percentile_low=101.0
+        )(self._image())
+        out = result.t1.data.flatten().tolist()
+        assert out == pytest.approx([0.0, 0.0, 1.0])
