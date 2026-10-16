@@ -48,7 +48,7 @@ class RemapLabels(Transform):
     ) -> SubjectsBatch:
         """Remap labels in each label map."""
         remapping = params["remapping"]
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             data = img_batch.data.clone()

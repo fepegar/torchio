@@ -412,6 +412,8 @@ Thanks goes to all these people ([emoji key](https://allcontributors.org/docs/en
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/gaoflow"><img src="https://avatars.githubusercontent.com/u/3355843?v=4?s=100" width="100px;" alt="Vincent Gao"/><br /><sub><b>Vincent Gao</b></sub></a><br /><a href="https://github.com/TorchIO-project/torchio/issues?q=author%3Agaoflow" title="Bug reports">🐛</a> <a href="https://github.com/TorchIO-project/torchio/commits?author=gaoflow" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Jessy-Ding"><img src="https://avatars.githubusercontent.com/u/89423283?v=4?s=100" width="100px;" alt="Mengyuan Ding"/><br /><sub><b>Mengyuan Ding</b></sub></a><br /><a href="https://github.com/TorchIO-project/torchio/issues?q=author%3AJessy-Ding" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sal-sal-sal"><img src="https://avatars.githubusercontent.com/u/172976617?v=4?s=100" width="100px;" alt="Saladin"/><br /><sub><b>Saladin</b></sub></a><br /><a href="https://github.com/TorchIO-project/torchio/issues?q=author%3ASal-sal-sal" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Shy7777"><img src="https://avatars.githubusercontent.com/u/58774225?v=4?s=100" width="100px;" alt="Sunhy"/><br /><sub><b>Sunhy</b></sub></a><br /><a href="https://github.com/TorchIO-project/torchio/issues?q=author%3AShy7777" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

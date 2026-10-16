@@ -197,6 +197,7 @@ docs-deploy = [
     "mike",
 ]
 quality = ["ruff"]
+prek = ["prek"]
 types = [
     "ipykernel",
     "matplotlib",

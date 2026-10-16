@@ -57,7 +57,7 @@ class OneHot(Transform):
     ) -> SubjectsBatch:
         """One-hot encode each label map in the batch."""
         num_classes = params["num_classes"]
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             # (B, 1, I, J, K) -> (B, num_classes, I, J, K)
@@ -89,7 +89,7 @@ class _OneHotInverse(Transform):
         batch: SubjectsBatch,
         params: dict[str, Any],
     ) -> SubjectsBatch:
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             if img_batch.data.shape[1] > 1:

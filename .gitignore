@@ -110,8 +110,6 @@ ENV/
 .pylintrc
 auto_examples
 
-# uv
-uv.lock
 docs/images/plots/
 docs/images/gallery/
 docs/examples/*.md
