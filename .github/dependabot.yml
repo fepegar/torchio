@@ -15,7 +15,7 @@ updates:
     patterns:
       - "*"
     multi-ecosystem-group: "dependencies"
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     directory: "/"
     patterns:
       - "*"
