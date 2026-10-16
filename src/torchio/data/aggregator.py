@@ -118,7 +118,8 @@ class PatchAggregator:
 
         if self.overlap_mode in ("average", "hann"):
             counts = self._counts[resolve_key]
-            counts = counts.clamp(min=1)
+            # Hann weights can sum to less than one at covered voxels.
+            counts = counts.masked_fill(counts == 0, 1)
             output = output / counts
 
         return output
