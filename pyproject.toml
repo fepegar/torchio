@@ -47,7 +47,7 @@ dependencies = [
     "simpleitk",
     "torch",
     "torch-interpol>=0.3.0",
-    "typing_extensions>=4.15.0",
+    "typing_extensions>=4.16.0",
     "tyro>=1.0.15",
 ]
 
@@ -78,7 +78,7 @@ zarr = ["nifti-zarr", "zarr<3.2"]
 
 
 [build-system]
-requires = ["uv_build>=0.11.26,<0.12.0"]
+requires = ["uv_build>=0.12.0,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
