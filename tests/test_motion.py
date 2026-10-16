@@ -6,6 +6,7 @@ import pytest
 import torch
 
 import torchio as tio
+from torchio.transforms.intensity.motion import _apply_motion_per_instance
 
 
 def _make_subject(with_label: bool = True) -> tio.Subject:
@@ -100,6 +101,17 @@ class TestMotionDegenerateSegments:
         subject = tio.Subject(t1=tio.ScalarImage(torch.rand(1, 2, 8, 8)))
         with pytest.raises(ValueError, match="motion segments"):
             tio.Motion(degrees=5, translation=5, num_transforms=4, axes=(0,))(subject)
+
+    def test_inactive_element_axis_is_not_validated(self) -> None:
+        # A gated-out element must not make the batch raise: its placeholder
+        # axis (0, too small here) has to be ignored when only active
+        # elements split along large-enough axes.
+        transform = tio.Motion(degrees=5, translation=5, num_transforms=2)
+        data = torch.rand(2, 1, 2, 8, 8)
+        motion_transforms = [[], transform._sample_transforms()]
+        result = _apply_motion_per_instance(data, motion_transforms, [0, 1])
+        assert torch.equal(result[0], data[0])
+        assert not torch.equal(result[1], data[1])
 
 
 class TestMotionAxes:
