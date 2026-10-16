@@ -208,6 +208,8 @@ def _apply_motion_per_instance(
         for segment_index in range(_num_motion_transforms(motion_transforms))
     ]
     axes = torch.as_tensor(axis, dtype=torch.long, device=data.device)
+    # Inactive rows must not introduce additional segment-size constraints.
+    axes = torch.where(active, axes, axes[active][0])
     transformed = _apply_motion_segments(data, segment_parameters, axes)
     active = rearrange(active, "b -> b 1 1 1 1")
     return torch.where(active, transformed, data)
