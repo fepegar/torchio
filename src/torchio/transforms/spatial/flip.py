@@ -187,13 +187,19 @@ class Flip(SpatialTransform):
         axes = params["axes"]
         if self._is_per_instance_params(params):
             for _name, img_batch in self._get_images(batch).items():
+                shape = img_batch.data.shape[-3:]
                 img_batch.data = _flip_per_element(img_batch.data, axes)
+                for index, affine in enumerate(img_batch.affines):
+                    _flip_affine(affine, axes[index], shape)
             return batch
         if not axes:
             return batch
         dims = [a - 3 for a in axes]
         for _name, img_batch in self._get_images(batch).items():
+            shape = img_batch.data.shape[-3:]
             img_batch.data = torch.flip(img_batch.data, dims)
+            for affine in img_batch.affines:
+                _flip_affine(affine, axes, shape)
         return batch
 
     @property
@@ -205,6 +211,32 @@ class Flip(SpatialTransform):
         if self._is_per_instance_params(params):
             return _FlipInverse(axes_per_element=params["axes"], copy=False)
         return Flip(axes=params["axes"], copy=False)
+
+
+def _flip_affine(
+    affine: Any,
+    axes: Sequence[int],
+    shape: Sequence[int],
+) -> None:
+    """Update an `AffineMatrix` in place to match a data flip.
+
+    Reversing the voxel order along an axis negates that axis's
+    direction column and shifts the origin to the voxel that is now
+    first along that axis, so world positions keep matching the data
+    (mirroring how `Crop` and `Pad` update the affine's origin).
+
+    Args:
+        affine: The `AffineMatrix` to update in place.
+        axes: Spatial axes (in `{0, 1, 2}`) that were flipped.
+        shape: The image's `(I, J, K)` spatial shape.
+    """
+    if not axes:
+        return
+    matrix = affine._matrix
+    rotation = matrix[:3, :3].clone()
+    for axis in axes:
+        matrix[:3, 3] += rotation[:, axis] * (shape[axis] - 1)
+        matrix[:3, axis] = -matrix[:3, axis]
 
 
 def _flip_per_element(
@@ -259,5 +291,8 @@ class _FlipInverse(SpatialTransform):
         params: dict[str, Any],
     ) -> SubjectsBatch:
         for _name, img_batch in self._get_images(batch).items():
+            shape = img_batch.data.shape[-3:]
             img_batch.data = _flip_per_element(img_batch.data, self._axes_per_element)
+            for index, affine in enumerate(img_batch.affines):
+                _flip_affine(affine, self._axes_per_element[index], shape)
         return batch

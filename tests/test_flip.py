@@ -19,6 +19,49 @@ class TestFlip:
         expected = torch.flip(tensor, [1])
         torch.testing.assert_close(result.t1.data, expected)
 
+    def test_flip_updates_affine(self) -> None:
+        """The affine must track the reversed voxel order, like Crop/Pad/Reorient."""
+        affine = tio.AffineMatrix.from_spacing(
+            (2.0, 2.0, 2.0), origin=(10.0, 20.0, 30.0)
+        )
+        tensor = torch.arange(64).reshape(1, 4, 4, 4).float()
+        image = tio.ScalarImage(tensor, affine=affine)
+        subject = tio.Subject(t1=image)
+
+        before_last_voxel = subject.t1.affine.apply(torch.tensor([[3.0, 0.0, 0.0]]))
+        result = tio.Flip(axes=0)(subject)
+
+        # The data that was at the last voxel along axis 0 is now at voxel 0,
+        # and the affine should say so: the world position is unchanged.
+        after_first_voxel = result.t1.affine.apply(torch.tensor([[0.0, 0.0, 0.0]]))
+        torch.testing.assert_close(before_last_voxel, after_first_voxel)
+        assert result.t1.affine.orientation[0] != subject.t1.affine.orientation[0]
+
+    def test_flip_affine_matches_equivalent_reorient(self) -> None:
+        """Flipping the R/L axis is geometrically the same as reorienting to LAS."""
+        affine = tio.AffineMatrix.from_spacing(
+            (2.0, 2.0, 2.0), origin=(10.0, 20.0, 30.0)
+        )
+        tensor = torch.arange(64).reshape(1, 4, 4, 4).float()
+        subject = tio.Subject(t1=tio.ScalarImage(tensor, affine=affine))
+
+        flipped = tio.Flip(axes=0)(subject)
+        reoriented = tio.Reorient(orientation="LAS")(subject)
+
+        torch.testing.assert_close(flipped.t1.data, reoriented.t1.data)
+        assert flipped.t1.affine == reoriented.t1.affine
+
+    def test_flip_twice_restores_affine(self) -> None:
+        affine = tio.AffineMatrix.from_spacing(
+            (2.0, 2.0, 2.0), origin=(10.0, 20.0, 30.0)
+        )
+        tensor = torch.rand(1, 4, 5, 6)
+        subject = tio.Subject(t1=tio.ScalarImage(tensor.clone(), affine=affine))
+
+        flip = tio.Flip(axes=(0, 1, 2))
+        result = flip(flip(subject))
+        assert result.t1.affine == subject.t1.affine
+
     def test_flip_single_int_axis(self) -> None:
         """axes=0 should work the same as axes=(0,)."""
         tensor = torch.arange(8).reshape(1, 2, 2, 2).float()
@@ -268,6 +311,32 @@ class TestFlipPerInstance:
         assert len(params["axes"]) == batch.batch_size
         distinct = {tuple(a) for a in params["axes"]}
         assert len(distinct) > 1
+
+    def test_per_instance_affines_match_each_elements_own_axes(self) -> None:
+        """Each batch element's affine must reflect only its own flipped axes."""
+        torch.manual_seed(0)
+        affine = tio.AffineMatrix.from_spacing((1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0))
+        subjects = [
+            tio.Subject(
+                t1=tio.ScalarImage(torch.rand(1, 8, 8, 8), affine=affine.clone()),
+            )
+            for _ in range(6)
+        ]
+        batch = tio.SubjectsBatch.from_subjects(subjects)
+        result = tio.Flip(axes=(0, 1, 2), flip_probability=0.5)(batch)
+
+        axes_per_element = result.applied_transforms[-1].params["axes"]
+        for index, axes in enumerate(axes_per_element):
+            # Expected origin: shifted by (size - 1) along each of this
+            # element's own flipped axes, independent of the rotation code.
+            expected_origin = [0.0, 0.0, 0.0]
+            for axis in axes:
+                expected_origin[axis] = 7.0  # (size - 1) for an 8-voxel axis
+            actual_origin = result.images["t1"].affines[index].origin
+            torch.testing.assert_close(
+                torch.tensor(actual_origin),
+                torch.tensor(expected_origin),
+            )
 
     def test_per_instance_false_is_shared(self) -> None:
         torch.manual_seed(0)
