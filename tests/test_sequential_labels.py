@@ -51,3 +51,14 @@ class TestSequentialLabels:
         original = subject.t1.data.clone()
         result = tio.SequentialLabels()(subject)
         torch.testing.assert_close(result.t1.data, original)
+
+    def test_respects_exclude(self) -> None:
+        a = torch.zeros(1, 5, 5, 5, dtype=torch.float32)
+        a[0, 0:2, :, :] = 5
+        a[0, 3:5, :, :] = 10
+        b = torch.zeros(1, 5, 5, 5, dtype=torch.float32)
+        b[0, 0:2, :, :] = 5  # shares a value with a's remapping domain
+        subject = tio.Subject(a=tio.LabelMap(a), b=tio.LabelMap(b))
+        original_b = subject.b.data.clone()
+        result = tio.SequentialLabels(include=["a"])(subject)
+        torch.testing.assert_close(result.b.data, original_b)

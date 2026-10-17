@@ -45,3 +45,9 @@ class TestResize:
         subject = _make_subject()
         result = tio.Resize(5)(subject)
         assert result.seg.data.shape[1:] == (5, 5, 5)
+
+    def test_respects_exclude(self) -> None:
+        subject = _make_subject()
+        result = tio.Resize(5, exclude=["seg"])(subject)
+        assert result.t1.data.shape[1:] == (5, 5, 5)
+        assert result.seg.data.shape[1:] == (10, 10, 10)

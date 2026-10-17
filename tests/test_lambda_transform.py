@@ -49,3 +49,10 @@ class TestLambda:
         result = tio.Lambda(lambda x: x * 0, types_to_apply="unknown")(subject)
         assert result.t1.data.sum() == 0
         assert result.seg.data.sum() == 0
+
+    def test_respects_exclude(self) -> None:
+        subject = _make_subject()
+        original_t1 = subject.t1.data.clone()
+        result = tio.Lambda(lambda x: x * 0, exclude=["t1"])(subject)
+        torch.testing.assert_close(result.t1.data, original_t1)
+        assert result.seg.data.sum() == 0

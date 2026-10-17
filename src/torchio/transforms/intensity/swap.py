@@ -13,6 +13,7 @@ from ...data.batch import SubjectsBatch
 from ...data.image import LabelMap
 from ..parameter_range import to_nonneg_range
 from ..transform import IntensityTransform
+from ..transform import Transform
 
 Origin = tuple[int, int, int]
 SwapLocation = tuple[Origin, Origin]
@@ -61,8 +62,10 @@ class Swap(IntensityTransform):
 
     def make_params(self, batch: SubjectsBatch) -> dict[str, Any]:
         """Sample swap locations (per element when batched)."""
-        # Warn if label maps are present.
-        for _name, img_batch in batch.images.items():
+        # Warn if label maps are present. Use the base Transform._get_images
+        # (include/exclude only) rather than IntensityTransform's override,
+        # which filters to ScalarImage and would never see a LabelMap.
+        for _name, img_batch in Transform._get_images(self, batch).items():
             if issubclass(img_batch._image_class, LabelMap):
                 warnings.warn(
                     "Swap is applied to a subject containing LabelMap "

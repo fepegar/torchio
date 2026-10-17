@@ -63,6 +63,15 @@ class TestKeepLargestComponent:
         result = tio.KeepLargestComponent()(subject)
         torch.testing.assert_close(result.t1.data, original)
 
+    def test_respects_exclude(self) -> None:
+        seg = torch.zeros(1, 20, 20, 20, dtype=torch.float32)
+        seg[0, 1:3, 1:3, 1:3] = 1
+        seg[0, 10:18, 10:18, 10:18] = 1
+        subject = tio.Subject(a=tio.LabelMap(seg.clone()), b=tio.LabelMap(seg.clone()))
+        original_b = subject.b.data.clone()
+        result = tio.KeepLargestComponent(exclude=["b"])(subject)
+        torch.testing.assert_close(result.b.data, original_b)
+
     def test_face_connectivity(self) -> None:
         seg = torch.zeros(1, 10, 10, 10, dtype=torch.float32)
         seg[0, 0:3, 0:3, 0:3] = 1

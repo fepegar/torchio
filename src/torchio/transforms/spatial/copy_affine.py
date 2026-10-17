@@ -49,7 +49,7 @@ class CopyAffine(SpatialTransform):
             )
             raise KeyError(msg)
         ref_affines = batch.images[self.target].affines
-        for name, img_batch in batch.images.items():
+        for name, img_batch in self._get_images(batch).items():
             if name == self.target:
                 continue
             for i, affine in enumerate(img_batch.affines):

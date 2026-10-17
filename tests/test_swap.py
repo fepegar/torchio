@@ -40,6 +40,13 @@ class TestSwap:
             tio.Swap(patch_size=3, num_iterations=1)(subject)
             assert any("LabelMap" in str(warning.message) for warning in w)
 
+    def test_no_warning_when_label_excluded(self) -> None:
+        subject = _make_subject()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            tio.Swap(patch_size=3, num_iterations=1, exclude=["seg"])(subject)
+            assert not any("LabelMap" in str(warning.message) for warning in w)
+
     def test_patch_too_large_raises(self) -> None:
         subject = _make_subject(with_label=False)
         with pytest.raises(ValueError, match="cannot be larger"):

@@ -37,7 +37,7 @@ class SequentialLabels(Transform):
     def make_params(self, batch: SubjectsBatch) -> dict[str, Any]:
         """Compute the remapping from the first sample's labels."""
         remappings: dict[str, dict[int, int]] = {}
-        for name, img_batch in batch.images.items():
+        for name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
             unique = sorted(int(v) for v in img_batch.data[0].unique().tolist())
@@ -51,7 +51,7 @@ class SequentialLabels(Transform):
     ) -> SubjectsBatch:
         """Apply sequential renumbering."""
         remappings = params["remappings"]
-        for name, img_batch in batch.images.items():
+        for name, img_batch in self._get_images(batch).items():
             if name not in remappings:
                 continue
             remapping = remappings[name]
@@ -94,7 +94,7 @@ class _SequentialLabelsInverse(Transform):
         batch: SubjectsBatch,
         params: dict[str, Any],
     ) -> SubjectsBatch:
-        for name, img_batch in batch.images.items():
+        for name, img_batch in self._get_images(batch).items():
             if name not in self._remappings:
                 continue
             inverse = {v: k for k, v in self._remappings[name].items()}
