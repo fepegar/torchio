@@ -53,6 +53,10 @@ class Motion(IntensityTransform):
             coordinates (a voxel-space approximation), not in millimeters.
         num_transforms: Number of inter-segment motion events.
             More transforms produce more distortion.
+        axes: Spatial axes along which k-space may be split into
+            segments.  One is chosen at random per application.  Pass
+            a single-element tuple such as ``axes=(0,)`` to always
+            split along the same axis.
         **kwargs: See [`Transform`][torchio.Transform].
 
     Warning:
@@ -71,6 +75,7 @@ class Motion(IntensityTransform):
         degrees: float | tuple[float, float] = 10.0,
         translation: float | tuple[float, float] = 10.0,
         num_transforms: int = 2,
+        axes: tuple[int, ...] = (0, 1, 2),
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -80,23 +85,34 @@ class Motion(IntensityTransform):
             msg = f"num_transforms must be a positive int, got {num_transforms}"
             raise ValueError(msg)
         self.num_transforms = num_transforms
+        if not axes or any(axis not in (0, 1, 2) for axis in axes):
+            msg = f"axes must be a non-empty tuple of values in (0, 1, 2), got {axes}"
+            raise ValueError(msg)
+        self.axes = axes
 
     def make_params(self, batch: SubjectsBatch) -> dict[str, Any]:
         """Sample motion parameters (per element when batched)."""
         n = self._resolve_n(batch)
         if n is None:
             transforms = self._sample_transforms()
-            return {"transforms": transforms}
+            return {"transforms": transforms, "axis": self._sample_axis()}
         keep = self._keep_mask(batch, n)
         transforms_list: list[Any] = []
+        axis_list: list[int] = []
         for index in range(n):
             if keep is not None and not keep[index]:
                 transforms_list.append([])
+                axis_list.append(self.axes[0])
                 continue
             transforms_list.append(self._sample_transforms())
-        params = {"transforms": transforms_list}
-        self._tag_batched(params, batch, n, keep, ["transforms"])
+            axis_list.append(self._sample_axis())
+        params = {"transforms": transforms_list, "axis": axis_list}
+        self._tag_batched(params, batch, n, keep, ["transforms", "axis"])
         return params
+
+    def _sample_axis(self) -> int:
+        """Sample one k-space segmentation axis."""
+        return self.axes[int(torch.randint(len(self.axes), (1,)).item())]
 
     def _sample_transforms(self) -> MotionTransforms:
         """Sample one list of rigid sub-transforms."""
@@ -128,11 +144,13 @@ class Motion(IntensityTransform):
                 img_batch.data = _apply_motion_per_instance(
                     img_batch.data,
                     params["transforms"],
+                    params["axis"],
                 )
             else:
                 img_batch.data = _apply_motion(
                     img_batch.data,
                     params["transforms"],
+                    params["axis"],
                 )
         return batch
 
@@ -140,6 +158,7 @@ class Motion(IntensityTransform):
 def _apply_motion(
     data: Tensor,
     motion_transforms: MotionTransforms,
+    axis: int,
 ) -> Tensor:
     """Apply motion corruption to a 5D tensor.
 
@@ -147,6 +166,7 @@ def _apply_motion(
         data: `(B, C, I, J, K)` image tensor.
         motion_transforms: List of dicts with `degrees` and
             `translation` 3-tuples.
+        axis: Shared spatial axis along which k-space is segmented.
 
     Returns:
         Motion-corrupted `(B, C, I, J, K)` tensor.
@@ -158,12 +178,14 @@ def _apply_motion(
         _shared_motion_parameters(transform, batch_size, data.device)
         for transform in motion_transforms
     ]
-    return _apply_motion_segments(data, segment_parameters)
+    axes = torch.full((batch_size,), axis, dtype=torch.long, device=data.device)
+    return _apply_motion_segments(data, segment_parameters, axes)
 
 
 def _apply_motion_per_instance(
     data: Tensor,
     motion_transforms: PerElementMotionTransforms,
+    axis: list[int],
 ) -> Tensor:
     """Apply motion corruption with per-element rigid parameters.
 
@@ -171,6 +193,7 @@ def _apply_motion_per_instance(
         data: `(B, C, I, J, K)` image tensor.
         motion_transforms: One transform list per batch element. Empty
             lists mark gated-out elements.
+        axis: Per-element spatial axis along which k-space is segmented.
 
     Returns:
         Motion-corrupted `(B, C, I, J, K)` tensor, with inactive rows
@@ -184,7 +207,10 @@ def _apply_motion_per_instance(
         _per_instance_motion_parameters(motion_transforms, segment_index, data.device)
         for segment_index in range(_num_motion_transforms(motion_transforms))
     ]
-    transformed = _apply_motion_segments(data, segment_parameters)
+    axes = torch.as_tensor(axis, dtype=torch.long, device=data.device)
+    # Inactive rows must not introduce additional segment-size constraints.
+    axes = torch.where(active, axes, axes[active][0])
+    transformed = _apply_motion_segments(data, segment_parameters, axes)
     active = rearrange(active, "b -> b 1 1 1 1")
     return torch.where(active, transformed, data)
 
@@ -350,12 +376,15 @@ def _repeat_parameter(
 def _apply_motion_segments(
     data: Tensor,
     segment_parameters: list[MotionParameters],
+    axes: Tensor,
 ) -> Tensor:
     """Apply k-space segment replacements for a whole batch.
 
     Args:
         data: `(B, C, I, J, K)` image tensor.
         segment_parameters: Per-segment batched degrees and translations.
+        axes: `(B,)` spatial axis per batch element along which k-space
+            is split into segments.
 
     Returns:
         Motion-corrupted `(B, C, I, J, K)` tensor.
@@ -363,14 +392,7 @@ def _apply_motion_segments(
     result = data.float()
     num_segments = len(segment_parameters) + 1
     spatial_shape = result.shape[-3:]
-    segment_size = spatial_shape[0] // num_segments
-    if segment_size == 0:
-        msg = (
-            f"Cannot split {spatial_shape[0]} k-space slices into"
-            f" {num_segments} motion segments; reduce num_transforms or use a"
-            " larger image along the first spatial axis."
-        )
-        raise ValueError(msg)
+    _check_segment_sizes(spatial_shape, axes, num_segments)
     spectrum = torch.fft.fftn(result, dim=(-3, -2, -1))
     for segment_index, (degrees, translation) in enumerate(
         segment_parameters,
@@ -378,39 +400,86 @@ def _apply_motion_segments(
     ):
         moved = _apply_rigid_transform(result, degrees, translation)
         moved_spectrum = torch.fft.fftn(moved, dim=(-3, -2, -1))
-        start, end = _segment_bounds(
+        mask = _segment_mask(
             segment_index,
             num_segments,
-            segment_size,
-            spatial_shape[0],
+            spatial_shape,
+            axes,
+            data.device,
         )
-        spectrum[:, :, start:end] = moved_spectrum[:, :, start:end]
+        spectrum = torch.where(mask, moved_spectrum, spectrum)
 
     reconstructed = torch.fft.ifftn(spectrum, dim=(-3, -2, -1)).real
     return reconstructed.to(data.dtype)
 
 
-def _segment_bounds(
+def _check_segment_sizes(
+    spatial_shape: torch.Size,
+    axes: Tensor,
+    num_segments: int,
+) -> None:
+    """Validate that every used axis can hold the requested segments.
+
+    Args:
+        spatial_shape: `(I, J, K)` spatial sizes.
+        axes: `(B,)` spatial axis per batch element.
+        num_segments: Total number of k-space segments.
+
+    Raises:
+        ValueError: If any used axis is too small to be split into
+            `num_segments` non-empty segments.
+    """
+    for axis in range(3):
+        if not bool((axes == axis).any()):
+            continue
+        if spatial_shape[axis] < num_segments:
+            msg = (
+                f"Cannot split {spatial_shape[axis]} k-space slices along"
+                f" spatial axis {axis} into {num_segments} motion segments;"
+                " reduce num_transforms or use a larger image along that axis."
+            )
+            raise ValueError(msg)
+
+
+def _segment_mask(
     segment_index: int,
     num_segments: int,
-    segment_size: int,
-    first_spatial_size: int,
-) -> tuple[int, int]:
-    """Return start and end indices for a k-space segment.
+    spatial_shape: torch.Size,
+    axes: Tensor,
+    device: torch.device,
+) -> Tensor:
+    """Build a `(B, 1, I, J, K)` mask for one k-space segment.
+
+    For each batch element the segment spans `[start, end)` along that
+    element's chosen axis and the full extent of the other axes.
 
     Args:
         segment_index: One-based segment index.
         num_segments: Total number of k-space segments.
-        segment_size: Size of every non-final segment.
-        first_spatial_size: Size of the first spatial axis.
+        spatial_shape: `(I, J, K)` spatial sizes.
+        axes: `(B,)` spatial axis per batch element.
+        device: Device where the mask will be allocated.
 
     Returns:
-        Start and end indices along the first spatial axis.
+        Boolean `(B, 1, I, J, K)` mask.
     """
-    start = segment_index * segment_size
-    if segment_index == num_segments - 1:
-        return start, first_spatial_size
-    return start, (segment_index + 1) * segment_size
+    batch_size = axes.shape[0]
+    mask = torch.zeros((batch_size, 1, *spatial_shape), dtype=torch.bool, device=device)
+    for axis in range(3):
+        selected = axes == axis
+        if not bool(selected.any()):
+            continue
+        size = spatial_shape[axis]
+        segment_size = size // num_segments
+        start = segment_index * segment_size
+        end = size if segment_index == num_segments - 1 else start + segment_size
+        line = torch.zeros(size, dtype=torch.bool, device=device)
+        line[start:end] = True
+        line_shape = [1, 1, 1, 1, 1]
+        line_shape[axis + 2] = size
+        line = line.view(line_shape)
+        mask |= selected.view(batch_size, 1, 1, 1, 1) & line
+    return mask
 
 
 def _apply_rigid_transform(
