@@ -1525,7 +1525,17 @@ def _build_sampling_grid(
     When elastic control points are provided, the dense displacement
     field (in mm) is converted to voxel offsets and added to the mapped
     coordinates.  The `affine_first` flag controls whether the affine
-    mapping or the elastic displacement is applied first.
+    mapping or the elastic displacement is applied first to the image.
+
+    Because the grid pulls values from the input, the operation applied
+    first to the image is the one applied last to the coordinates.  The
+    elastic field spans the output grid, and both operations act in the
+    output space.  With output voxel *x*, affine *A* and displacement *d*,
+    `affine_first=True` samples the input at `A⁻¹(x + d(x))` and
+    `affine_first=False` samples it at `y + d(y)` with `y = A⁻¹(x)`,
+    matching sequential application of [`Affine`][torchio.Affine] and
+    [`ElasticDeformation`][torchio.ElasticDeformation] in each order after
+    resampling to the output grid.
 
     Returns:
         Grid tensor with shape `(I_out, J_out, K_out, 3)` in input
@@ -1551,30 +1561,58 @@ def _build_sampling_grid(
         output_shape,
         output_spacing,
     )
-    displacement = _upsample_displacement_field(
-        control_points.to(device=device, dtype=torch.float32),
-        output_shape,
-    )
-    # Convert mm displacements to voxel offsets using the spacing.
+    control_points = control_points.to(device=device, dtype=torch.float32)
+    # The elastic field spans the output grid in both orders.
     output_spacing_t = torch.as_tensor(
         output_affine.spacing,
         dtype=torch.float32,
         device=device,
     )
-    input_spacing_t = torch.as_tensor(
-        input_affine.spacing,
-        dtype=torch.float32,
-        device=device,
-    )
 
     if affine_first:
-        # Affine first: map to input space, then add elastic offset.
-        input_voxels = _apply_voxel_mapping(output_coords, mapping)
-        input_voxels = input_voxels + displacement / input_spacing_t
-    else:
-        # Elastic first: deform in output space, then map to input.
+        # Affine first, then elastic: deform the output coordinates and
+        # then map them to the input.
+        displacement = _upsample_displacement_field(control_points, output_shape)
         deformed_output = output_coords + displacement / output_spacing_t
         input_voxels = _apply_voxel_mapping(deformed_output, mapping)
+    else:
+        # Elastic first, then affine: apply the inverse affine within the
+        # output grid, add the displacement at that location, and only
+        # then map to the input.  The control points are interpolated
+        # directly at the moved coordinates, which agrees with
+        # `_upsample_displacement_field` on the grid nodes.
+        affine_in_output = _output_to_input_voxel_matrix(
+            input_affine=output_affine,
+            output_affine=output_affine,
+            affine_matrix=affine_matrix,
+            device=device,
+        )
+        output_to_input = _output_to_input_voxel_matrix(
+            input_affine=input_affine,
+            output_affine=output_affine,
+            affine_matrix=None,
+            device=device,
+        )
+        moved_output = _apply_voxel_mapping(output_coords, affine_in_output)
+        control_shape = control_points.shape[:3]
+        to_control = torch.tensor(
+            [
+                (n - 1) / max(s - 1, 1)
+                for n, s in zip(control_shape, output_shape, strict=True)
+            ],
+            dtype=torch.float32,
+            device=device,
+        )
+        displacement = _sample_batch_grid_sample(
+            rearrange(control_points, "i j k d -> 1 d i j k"),
+            moved_output * to_control,
+            input_shape=(control_shape[0], control_shape[1], control_shape[2]),
+            mode="bilinear",
+            fill_value=0.0,
+        )
+        displacement = rearrange(displacement, "1 d i j k -> i j k d")
+        deformed_output = moved_output + displacement / output_spacing_t
+        input_voxels = _apply_voxel_mapping(deformed_output, output_to_input)
 
     return input_voxels
 
