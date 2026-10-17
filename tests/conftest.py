@@ -6,11 +6,26 @@ import copy
 from collections.abc import Callable
 from typing import Any
 
+import numpy as np
+import numpy.typing as npt
 import pytest
 import torch
 
 from torchio.data.batch import SubjectsBatch
 from torchio.data.batch import _slice_params
+
+
+@pytest.fixture(params=["RAS", "LAS", "ASL"])
+def annotation_affine(request: pytest.FixtureRequest) -> npt.NDArray[np.float64]:
+    linear = {
+        "RAS": [[2, 0, 0], [0, 3, 0], [0, 0, 4]],
+        "LAS": [[-2, 0, 0], [0, 3, 0], [0, 0, 4]],
+        "ASL": [[0, 0, -4], [2, 0, 0], [0, 3, 0]],
+    }
+    affine = np.eye(4)
+    affine[:3, :3] = linear[request.param]
+    affine[:3, 3] = [10, 20, 30]
+    return affine
 
 
 @pytest.fixture

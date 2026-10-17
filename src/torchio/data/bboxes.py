@@ -327,7 +327,9 @@ class BoundingBoxes:
 
         Handles representation changes (corners ↔ center-size), axis
         permutations within the same type, and voxel ↔ anatomical
-        conversions (using the stored affine).
+        conversions (using the stored affine). The affine maps IJK
+        voxel indices to RAS+ world coordinates, regardless of the
+        image's voxel orientation.
 
         Args:
             format: Target format.
@@ -432,17 +434,14 @@ class BoundingBoxes:
                 data = _permute_corners(data, perm, (False, False, False))
             # Apply affine to get RAS.
             data = _ijk_corners_to_world(data, self._affine)
-            # The affine's orientation tells us what "world" actually is.
-            world_axes = "".join(self._affine.orientation)
-            if world_axes != tgt_axes:
-                perm, flips = get_axis_mapping(world_axes, tgt_axes)
+            if tgt_axes != "RAS":
+                perm, flips = get_axis_mapping("RAS", tgt_axes)
                 data = _permute_corners(data, perm, flips)
         else:
             # Anatomical → voxel.
-            # First normalise to the affine's world system.
-            world_axes = "".join(self._affine.orientation)
-            if src_axes != world_axes:
-                perm, flips = get_axis_mapping(src_axes, world_axes)
+            # Normalise to RAS before applying the inverse affine.
+            if src_axes != "RAS":
+                perm, flips = get_axis_mapping(src_axes, "RAS")
                 data = _permute_corners(data, perm, flips)
             # World → IJK via inverse affine.
             data = _world_corners_to_ijk(data, self._affine)
