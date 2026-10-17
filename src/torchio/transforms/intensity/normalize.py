@@ -128,16 +128,18 @@ class Normalize(IntensityTransform):
             params["in_max"] = self.in_max.sample_1d()
         else:
             # Otherwise, compute per-image input range from percentiles.
-            in_ranges: dict[str, tuple[float, float]] = {}
+            in_ranges: dict[str, list[tuple[float, float]]] = {}
             for name, img_batch in self._get_images(batch).items():
-                mask = self._get_mask(img_batch, batch)
-                in_ranges[name] = _percentile_range(
-                    img_batch.data[0],
-                    mask,
-                    pct_low,
-                    pct_high,
-                    name,
-                )
+                in_ranges[name] = [
+                    _percentile_range(
+                        img_batch.data[index],
+                        self._get_mask(img_batch, batch, index),
+                        pct_low,
+                        pct_high,
+                        name,
+                    )
+                    for index in range(len(img_batch.data))
+                ]
             params["in_ranges"] = in_ranges
 
         if n is not None:
@@ -155,33 +157,39 @@ class Normalize(IntensityTransform):
     ) -> SubjectsBatch:
         """Clip and linearly rescale each selected image."""
         for name, img_batch in self._get_images(batch).items():
+            data = img_batch.data.float()
             if "in_min" in params:
-                in_min = params["in_min"]
-                in_max = params["in_max"]
+                ranges = [(params["in_min"], params["in_max"])] * len(data)
             else:
                 in_ranges = params.get("in_ranges", {})
                 if name not in in_ranges:
                     continue
-                in_min, in_max = in_ranges[name]
+                ranges = in_ranges[name]
 
+            in_min, in_max = _broadcast_ranges(ranges, data)
             in_range = in_max - in_min
-            if in_range == 0:
+            degenerate = in_range == 0
+            if bool(degenerate.any()):
+                flat = degenerate.flatten().nonzero().flatten().tolist()
                 warnings.warn(
-                    f'Cannot rescale "{name}": input range is zero.',
+                    f'Cannot rescale "{name}": input range is zero'
+                    f" for sample(s) {flat}.",
                     RuntimeWarning,
                     stacklevel=2,
                 )
-                continue
+                if bool(degenerate.all()):
+                    continue
 
-            data = img_batch.data.float()
             out_min, out_range = _out_min_and_range(
                 params["out_min"],
                 params["out_max"],
                 data,
             )
-            data = data.clamp(in_min, in_max)
-            data = (data - in_min) / in_range * out_range + out_min
-            img_batch.data = data
+            safe_range = torch.where(degenerate, torch.ones_like(in_range), in_range)
+            rescaled = data.clamp(in_min, in_max)
+            rescaled = (rescaled - in_min) / safe_range * out_range + out_min
+            # Samples with a zero-width input range are left untouched
+            img_batch.data = torch.where(degenerate, data, rescaled)
 
         return batch
 
@@ -205,12 +213,13 @@ class Normalize(IntensityTransform):
         self,
         img_batch: ImagesBatch,
         batch: SubjectsBatch,
+        index: int = 0,
     ) -> Tensor | None:
         """Resolve masking_method to a boolean tensor or None."""
         if self.masking_method is None:
             return None
         if callable(self.masking_method) and not isinstance(self.masking_method, str):
-            return self.masking_method(img_batch.data[0]).bool()
+            return self.masking_method(img_batch.data[index]).bool()
         # String key: look up a LabelMap in the batch.
         if isinstance(self.masking_method, str):
             key = self.masking_method
@@ -224,7 +233,7 @@ class Normalize(IntensityTransform):
             if not issubclass(mask_batch._image_class, LabelMap):
                 msg = f'Masking method "{key}" must refer to a LabelMap.'
                 raise TypeError(msg)
-            return mask_batch.data[0].bool()
+            return mask_batch.data[index].bool()
         msg = (
             "masking_method must be None, str, or callable, got"
             f" {type(self.masking_method)}"
@@ -242,7 +251,7 @@ class _RescaleInverse(IntensityTransform):
         out_max: float | list[float],
         in_min: float | None,
         in_max: float | None,
-        in_ranges: dict[str, tuple[float, float]] | None,
+        in_ranges: dict[str, list[tuple[float, float]]] | None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -263,19 +272,21 @@ class _RescaleInverse(IntensityTransform):
     ) -> SubjectsBatch:
         """Reverse the linear rescaling."""
         for name, img_batch in self._get_images(batch).items():
+            data = img_batch.data.float()
             if self._in_min is not None and self._in_max is not None:
-                in_min = self._in_min
-                in_max = self._in_max
+                ranges = [(self._in_min, self._in_max)] * len(data)
             elif self._in_ranges is not None and name in self._in_ranges:
-                in_min, in_max = self._in_ranges[name]
+                ranges = self._in_ranges[name]
             else:
                 continue
 
+            in_min, in_max = _broadcast_ranges(ranges, data)
             in_range = in_max - in_min
-            if in_range == 0:
+            degenerate = in_range == 0
+            if bool(degenerate.all()):
                 continue
+            in_range = torch.where(degenerate, torch.ones_like(in_range), in_range)
 
-            data = img_batch.data.float()
             out_min, out_range = _out_min_and_range(
                 self._out_min,
                 self._out_max,
@@ -284,7 +295,8 @@ class _RescaleInverse(IntensityTransform):
             if isinstance(out_range, float):
                 if out_range == 0:
                     continue
-                data = (data - out_min) / out_range * in_range + in_min
+                reversed_data = (data - out_min) / out_range * in_range + in_min
+                data = torch.where(degenerate, data, reversed_data)
             else:
                 # Per-element: leave zero-range elements (out_min == out_max)
                 # unchanged instead of dividing by zero.
@@ -295,10 +307,30 @@ class _RescaleInverse(IntensityTransform):
                     zero, torch.ones_like(out_range_t), out_range_t
                 )
                 reversed_data = (data - out_min_t) / safe_range * in_range + in_min
-                data = torch.where(zero, data, reversed_data)
+                data = torch.where(zero | degenerate, data, reversed_data)
             img_batch.data = data
 
         return batch
+
+
+def _broadcast_ranges(
+    ranges: list[tuple[float, float]],
+    data: Tensor,
+) -> tuple[Tensor, Tensor]:
+    """Turn one (min, max) pair per sample into tensors that broadcast over `data`.
+
+    Args:
+        ranges: One `(min, max)` pair per sample in the batch.
+        data: The batched tensor the ranges will be applied to.
+
+    Returns:
+        A `(min, max)` pair of tensors shaped `(B, 1, ..., 1)`.
+    """
+    shape = (len(ranges),) + (1,) * (data.ndim - 1)
+    kwargs = {"dtype": data.dtype, "device": data.device}
+    mins = torch.tensor([low for low, _ in ranges], **kwargs).reshape(shape)
+    maxs = torch.tensor([high for _, high in ranges], **kwargs).reshape(shape)
+    return mins, maxs
 
 
 def _out_min_and_range(

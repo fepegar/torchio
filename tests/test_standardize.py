@@ -94,3 +94,36 @@ class TestExports:
 
     def test_znormalization_alias(self) -> None:
         assert tio.ZNormalization is tio.Standardize
+
+
+class TestBatch:
+    def test_stats_are_computed_per_sample(self) -> None:
+        torch.manual_seed(0)
+        quiet = tio.Subject(t1=tio.ScalarImage(torch.randn(1, 4, 4, 4) + 10))
+        loud = tio.Subject(t1=tio.ScalarImage(torch.randn(1, 4, 4, 4) * 50 + 1000))
+        batch = tio.SubjectsBatch.from_subjects([quiet, loud])
+
+        data = tio.Standardize()(batch).images["t1"].data
+
+        # Every sample must be standardized with its own mean and std, not
+        # with the statistics of the first sample in the batch.
+        for index in range(len(data)):
+            assert abs(data[index].mean().item()) < 0.01
+            assert abs(data[index].std().item() - 1.0) < 0.01
+
+    def test_batch_matches_subject_by_subject(self) -> None:
+        torch.manual_seed(0)
+        subjects = [
+            tio.Subject(t1=tio.ScalarImage(torch.randn(1, 4, 4, 4) * scale + shift))
+            for scale, shift in ((1.0, 10.0), (50.0, 1000.0), (0.5, -5.0))
+        ]
+        batched = tio.Standardize()(tio.SubjectsBatch.from_subjects(subjects))
+
+        for index, subject in enumerate(subjects):
+            alone = tio.Standardize()(subject)
+            torch.testing.assert_close(
+                batched.images["t1"].data[index],
+                alone.t1.data,
+                atol=1e-5,
+                rtol=0,
+            )
