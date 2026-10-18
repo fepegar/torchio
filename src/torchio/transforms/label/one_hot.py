@@ -23,6 +23,8 @@ class OneHot(Transform):
 
     The inverse takes the argmax across channels, restoring the
     original single-channel label map.
+    When there is only one class (background), the encoded channel
+    contains ones; the inverse restores zeros.
 
     Args:
         num_classes: Total number of classes. `-1` (default) infers
@@ -92,6 +94,5 @@ class _OneHotInverse(Transform):
         for _name, img_batch in self._get_images(batch).items():
             if not issubclass(img_batch._image_class, LabelMap):
                 continue
-            if img_batch.data.shape[1] > 1:
-                img_batch.data = img_batch.data.argmax(dim=1, keepdim=True).float()
+            img_batch.data = img_batch.data.argmax(dim=1, keepdim=True).float()
         return batch
