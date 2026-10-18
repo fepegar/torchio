@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 import torch
 
 import torchio as tio
@@ -35,6 +36,21 @@ class TestOneHot:
         original = subject.seg.data.clone()
         transformed = tio.OneHot()(subject)
         restored = transformed.apply_inverse_transform()
+        torch.testing.assert_close(restored.seg.data, original)
+
+    @pytest.mark.parametrize("num_classes", [-1, 1])
+    @pytest.mark.parametrize("as_batch", [False, True], ids=["subject", "batch"])
+    def test_inverse_background(self, num_classes: int, as_batch: bool) -> None:
+        subject = tio.Subject(seg=tio.LabelMap(torch.zeros(1, 3, 4, 5)))
+        data = (
+            tio.SubjectsBatch.from_subjects([subject, subject]) if as_batch else subject
+        )
+        original = data.seg.data.clone()
+
+        transformed = tio.OneHot(num_classes=num_classes)(data)
+        torch.testing.assert_close(transformed.seg.data, torch.ones_like(original))
+        restored = transformed.apply_inverse_transform()
+
         torch.testing.assert_close(restored.seg.data, original)
 
     def test_leaves_scalar_images_unchanged(self) -> None:
