@@ -66,17 +66,23 @@ class Resize(SpatialTransform):
         for _name, img_batch in batch.images.items():
             is_label = issubclass(img_batch._image_class, LabelMap)
             mode = self.label_interpolation if is_label else self.image_interpolation
-            torch_mode = "nearest" if mode == "nearest" else "trilinear"
+            torch_mode = "nearest-exact" if mode == "nearest" else "trilinear"
             old_shape = img_batch.data.shape[2:]
+            # Sample at voxel centers (align_corners=False) so that the field
+            # of view, i.e., the outer edges of the grid, is preserved.
             img_batch.data = functional.interpolate(
                 img_batch.data.float(),
                 size=target,
                 mode=torch_mode,
-                align_corners=None if torch_mode == "nearest" else True,
+                align_corners=None if torch_mode == "nearest-exact" else False,
             ).to(img_batch.data.dtype)
-            # Update affines: spacing changes to fit new shape in same FOV.
+            # Update affines: spacing changes to fit new shape in same FOV,
+            # and the first voxel center moves by half the change in spacing.
             for affine in img_batch.affines:
-                for axis in range(3):
-                    factor = old_shape[axis] / target[axis]
-                    affine._matrix[:3, axis] *= factor
+                factors = affine.data.new_tensor(
+                    [old_shape[axis] / target[axis] for axis in range(3)],
+                )
+                origin_shift = affine.data[:3, :3] @ ((factors - 1) / 2)
+                affine._matrix[:3, 3] += origin_shift
+                affine._matrix[:3, :3] *= factors
         return batch
