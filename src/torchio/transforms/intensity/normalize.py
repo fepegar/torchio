@@ -122,22 +122,30 @@ class Normalize(IntensityTransform):
             "out_min": self._serialize_param(out_min),
             "out_max": self._serialize_param(out_max),
         }
-        # If explicit in_min/in_max are given, sample them directly.
-        if self.in_min is not None and self.in_max is not None:
-            params["in_min"] = self.in_min.sample_1d()
-            params["in_max"] = self.in_max.sample_1d()
+        # Resolve each bound independently: use the explicit value when it is
+        # given, and compute only the missing one from the image percentiles.
+        explicit_in_min = self.in_min.sample_1d() if self.in_min is not None else None
+        explicit_in_max = self.in_max.sample_1d() if self.in_max is not None else None
+        if explicit_in_min is not None and explicit_in_max is not None:
+            params["in_min"] = explicit_in_min
+            params["in_max"] = explicit_in_max
         else:
             # Otherwise, compute per-image input range from percentiles.
             in_ranges: dict[str, tuple[float, float]] = {}
             for name, img_batch in self._get_images(batch).items():
                 mask = self._get_mask(img_batch, batch)
-                in_ranges[name] = _percentile_range(
+                in_min, in_max = _percentile_range(
                     img_batch.data[0],
                     mask,
                     pct_low,
                     pct_high,
                     name,
                 )
+                if explicit_in_min is not None:
+                    in_min = explicit_in_min
+                if explicit_in_max is not None:
+                    in_max = explicit_in_max
+                in_ranges[name] = (in_min, in_max)
             params["in_ranges"] = in_ranges
 
         if n is not None:
