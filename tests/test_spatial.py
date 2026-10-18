@@ -88,6 +88,111 @@ class TestSpatial:
 
         assert not torch.allclose(first.t1.data, second.t1.data)
 
+    @pytest.mark.parametrize("affine_first", [True, False])
+    def test_affine_first_matches_sequential_transforms(
+        self,
+        affine_first: bool,
+    ) -> None:
+        # A single resampling must agree with applying Affine and
+        # ElasticDeformation one after the other in the requested order,
+        # up to the error of interpolating twice.
+        shape = (24, 24, 24)
+        coords = torch.stack(
+            torch.meshgrid(*[torch.arange(s) for s in shape], indexing="ij"),
+        )
+        center = torch.tensor([10.0, 13.0, 12.0]).reshape(3, 1, 1, 1)
+        data = torch.exp(-((coords - center) ** 2).sum(0) / (2 * 4.0**2))
+        subject = tio.Subject(t1=tio.ScalarImage(data[None]))
+
+        generator = torch.Generator().manual_seed(0)
+        control_points = 6 * torch.rand(7, 7, 7, 3, generator=generator) - 3
+        inner = torch.zeros(7, 7, 7, 1)
+        inner[2:-2, 2:-2, 2:-2] = 1
+        control_points = control_points * inner
+        affine_kwargs = {
+            "scales": (1.1, 0.9, 1.0),
+            "degrees": (0.0, 0.0, 30.0),
+            "translation": (2.0, -1.0, 1.0),
+            "default_pad_value": 0.0,
+        }
+
+        affine = tio.Affine(**affine_kwargs)
+        elastic = tio.ElasticDeformation(control_points=control_points)
+        affine_then_elastic = tio.Compose([affine, elastic])(subject).t1.data
+        elastic_then_affine = tio.Compose([elastic, affine])(subject).t1.data
+        combined = tio.Spatial(
+            control_points=control_points,
+            affine_first=affine_first,
+            **affine_kwargs,
+        )(subject).t1.data
+
+        if affine_first:
+            expected, other = affine_then_elastic, elastic_then_affine
+        else:
+            expected, other = elastic_then_affine, affine_then_elastic
+        error_expected = (combined - expected).abs().mean()
+        error_other = (combined - other).abs().mean()
+        assert error_expected < 0.1 * error_other
+
+    @pytest.mark.parametrize("affine_first", [True, False])
+    def test_affine_first_with_target_matches_sequential_transforms(
+        self,
+        affine_first: bool,
+    ) -> None:
+        # With a target grid, the single resampling must agree with
+        # resampling to the target first and then applying Affine and
+        # ElasticDeformation in the requested order.  The target covers a
+        # shifted field of view, so the elastic field must span the output
+        # grid in both orders.
+        shape = (24, 24, 24)
+        coords = torch.stack(
+            torch.meshgrid(*[torch.arange(s) for s in shape], indexing="ij"),
+        ).float()
+        data = torch.zeros(shape)
+        for center in ([11.0, 13.0, 12.0], [15.0, 10.0, 14.0]):
+            center_t = torch.tensor(center).reshape(3, 1, 1, 1)
+            data += torch.exp(-((coords - center_t) ** 2).sum(0) / (2 * 2.0**2))
+        subject = tio.Subject(t1=tio.ScalarImage(data[None]))
+
+        generator = torch.Generator().manual_seed(0)
+        control_points = 3 * torch.rand(7, 7, 7, 3, generator=generator) - 1.5
+        inner = torch.zeros(7, 7, 7, 1)
+        inner[2:-2, 2:-2, 2:-2] = 1
+        control_points = control_points * inner
+        target_affine = np.diag([0.6, 0.6, 0.6, 1.0])
+        target_affine[:3, 3] = (5.0, 3.0, 4.5)
+        target = ((30, 26, 28), target_affine)
+        # Rotating about the origin keeps the affine the same world-space
+        # mapping on the input and on the target grid.
+        affine_kwargs = {
+            "scales": (1.1, 0.9, 1.0),
+            "degrees": (0.0, 0.0, 10.0),
+            "translation": (2.0, -1.0, 1.0),
+            "center": "origin",
+            "default_pad_value": 0.0,
+        }
+
+        resample = tio.Resample(target=target)
+        affine = tio.Affine(**affine_kwargs)
+        elastic = tio.ElasticDeformation(control_points=control_points)
+        affine_then_elastic = tio.Compose([resample, affine, elastic])(subject)
+        elastic_then_affine = tio.Compose([resample, elastic, affine])(subject)
+        combined = tio.Spatial(
+            target=target,
+            control_points=control_points,
+            affine_first=affine_first,
+            **affine_kwargs,
+        )(subject)
+
+        if affine_first:
+            expected, other = affine_then_elastic, elastic_then_affine
+        else:
+            expected, other = elastic_then_affine, affine_then_elastic
+        assert combined.t1.spatial_shape == (30, 26, 28)
+        error_expected = (combined.t1.data - expected.t1.data).abs().mean()
+        error_other = (combined.t1.data - other.t1.data).abs().mean()
+        assert error_expected < 0.25 * error_other
+
     def test_2d_suppresses_out_of_plane(self) -> None:
         data = torch.rand(1, 8, 8, 1)
         subject = tio.Subject(t1=tio.ScalarImage(data))
