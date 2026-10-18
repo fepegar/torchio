@@ -130,6 +130,39 @@ class TestAllImages:
         assert result.t1.affine.orientation == ("L", "A", "S")
         assert result.seg.affine.orientation == ("L", "A", "S")
 
+    def test_images_with_different_orientations(self) -> None:
+        subject = tio.Subject(
+            t1=_make_subject(orientation="RAS").t1,
+            t2=_make_subject(orientation="LPS").t1,
+            seg=_make_subject(orientation="PIL").t1,
+        )
+        result = tio.Reorient(orientation="SPL")(subject)
+        for name in ("t1", "t2", "seg"):
+            assert result[name].affine.orientation == ("S", "P", "L")
+            TestWorldCoordinates()._assert_bbox_preserved(subject[name], result[name])
+
+    def test_inverse_with_different_orientations(self) -> None:
+        subject = tio.Subject(
+            t1=_make_subject(orientation="RAS").t1,
+            t2=_make_subject(orientation="PIL").t1,
+        )
+        transformed = tio.Reorient(orientation="LPS")(subject)
+        restored = transformed.apply_inverse_transform()
+        for name in ("t1", "t2"):
+            assert restored[name].affine == subject[name].affine
+            torch.testing.assert_close(restored[name].data, subject[name].data)
+
+    def test_inverse_skips_images_added_later(self) -> None:
+        subject = _make_subject(orientation="RAS")
+        transformed = tio.Reorient(orientation="LPS")(subject)
+        added = _make_subject(orientation="PIL").t1
+        extended = tio.Subject(t1=transformed.t1, t2=added)
+        extended.applied_transforms = transformed.applied_transforms
+        restored = extended.apply_inverse_transform()
+        assert restored.t1.affine == subject.t1.affine
+        assert restored.t2.affine == added.affine
+        torch.testing.assert_close(restored.t2.data, added.data)
+
 
 # ---------------------------------------------------------------------------
 # Invertibility
