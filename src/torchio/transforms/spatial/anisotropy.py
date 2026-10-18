@@ -105,7 +105,7 @@ class Anisotropy(Transform):
     ) -> SubjectsBatch:
         """Downsample then upsample along the chosen axis."""
         per_instance = self._is_per_instance_params(params)
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             is_label = issubclass(img_batch._image_class, LabelMap)
             mode = "nearest" if is_label else self.image_interpolation
             if per_instance:

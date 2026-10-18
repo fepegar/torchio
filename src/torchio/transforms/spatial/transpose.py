@@ -39,7 +39,7 @@ class Transpose(SpatialTransform):
         params: dict[str, Any],
     ) -> SubjectsBatch:
         """Swap first and last spatial axes for all images."""
-        for _name, img_batch in batch.images.items():
+        for _name, img_batch in self._get_images(batch).items():
             # Swap axes 2 (I) and 4 (K) in the (B, C, I, J, K) tensor.
             img_batch.data = img_batch.data.permute(0, 1, 4, 3, 2).contiguous()
             # Update affines: swap columns 0 and 2 (I↔K).
