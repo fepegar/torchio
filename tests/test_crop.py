@@ -114,3 +114,18 @@ class TestCrop:
         assert cropped.shape == (1, 100, 100, 100)
         restored = tio.apply_inverse_transform(cropped)
         assert restored.shape == (1, 200, 200, 200)
+
+    def test_crop_entire_axis_from_the_end(self) -> None:
+        """Cropping an amount equal to an axis's full size must empty that
+        axis, not silently leave it uncropped (`si - i1` is 0 in this case,
+        which a former `... or None` substitution mishandled)."""
+        image = tio.ScalarImage(torch.rand(1, 20, 20, 20))
+        subject = tio.Subject(t1=image)
+        result = tio.Crop(cropping=(0, 20, 0, 0, 0, 0))(subject)
+        assert result.t1.shape == (1, 0, 20, 20)
+
+    def test_crop_entire_axis_from_the_end_all_axes(self) -> None:
+        image = tio.ScalarImage(torch.rand(1, 20, 20, 20))
+        subject = tio.Subject(t1=image)
+        result = tio.Crop(cropping=(0, 20, 0, 20, 0, 20))(subject)
+        assert result.t1.shape == (1, 0, 0, 0)

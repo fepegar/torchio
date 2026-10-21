@@ -87,11 +87,15 @@ class Crop(SpatialTransform):
             si = data.shape[-3]
             sj = data.shape[-2]
             sk = data.shape[-1]
+            # `si - i1` is already `si` (equivalent to an open-ended stop) when
+            # `i1 == 0`; `... or None` additionally replaced a stop of exactly
+            # 0 (cropping the whole axis, i.e. i1 == si) with None, silently
+            # leaving that axis completely uncropped instead of empty.
             img_batch.data = data[
                 ...,
-                i0 : si - i1 or None,
-                j0 : sj - j1 or None,
-                k0 : sk - k1 or None,
+                i0 : si - i1,
+                j0 : sj - j1,
+                k0 : sk - k1,
             ]
             # Update each affine's origin
             for affine in img_batch.affines:
