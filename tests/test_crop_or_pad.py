@@ -526,6 +526,19 @@ class TestLazyBackends:
         result = tio.CropOrPad(target_shape=10)(subject)
         assert result.t1.affine is not None
 
+    def test_crop_image_lazy_entire_axis_from_the_end(self, tmp_path) -> None:
+        """`_crop_image_lazy` must empty an axis cropped by its full size, not
+        silently leave it uncropped (`si - i1` is 0 in this case, which a
+        former `... or None` substitution mishandled; same bug as Crop's
+        eager path, fixed alongside it)."""
+        from torchio.transforms.spatial.crop_or_pad import _crop_image_lazy
+
+        path = tmp_path / "test.nii.gz"
+        self._make_nii(path)
+        image = tio.ScalarImage(path)
+        cropped = _crop_image_lazy(image, (0, 20, 0, 0, 0, 0))
+        assert cropped.shape == (1, 0, 20, 20)
+
     def test_pad_lazy_backend_shape(self, tmp_path) -> None:
         path = tmp_path / "test.nii.gz"
         self._make_nii(path, shape=(8, 8, 8))

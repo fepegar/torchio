@@ -267,9 +267,13 @@ def _crop_image_lazy(image: Image, cropping: TypeSixInts) -> Image:
     i0, i1, j0, j1, k0, k1 = cropping
     c, si, sj, sk = image.shape
 
-    i_slice = slice(i0, si - i1 or None)
-    j_slice = slice(j0, sj - j1 or None)
-    k_slice = slice(k0, sk - k1 or None)
+    # `si - i1` is already `si` (equivalent to an open-ended stop) when
+    # `i1 == 0`; `... or None` additionally replaced a stop of exactly 0
+    # (cropping the whole axis, i.e. i1 == si) with None, silently leaving
+    # that axis completely uncropped instead of empty.
+    i_slice = slice(i0, si - i1)
+    j_slice = slice(j0, sj - j1)
+    k_slice = slice(k0, sk - k1)
 
     # Compute new affine
     affine_matrix = image.affine.data.clone()
