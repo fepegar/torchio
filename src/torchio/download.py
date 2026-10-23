@@ -9,10 +9,8 @@ import shutil
 import tarfile
 import zipfile
 from pathlib import Path
-from urllib import error
 from urllib import request
 
-from loguru import logger
 from platformdirs import user_cache_dir
 from rich.progress import BarColumn
 from rich.progress import DownloadColumn
@@ -63,6 +61,8 @@ def download_url(
 
     Returns:
         Path to the downloaded file.
+
+    Download errors propagate without retrying HTTPS URLs over HTTP.
     """
     root = os.path.expanduser(root)
     if not filename:
@@ -95,15 +95,7 @@ def download_url(
 
                 request.urlretrieve(download_url, fpath, reporthook=_reporthook)
 
-        try:
-            _try_download(url)
-        except (error.URLError, OSError):
-            if url.startswith("https"):
-                http_url = url.replace("https:", "http:")
-                logger.info("Retrying with http: {}", http_url)
-                _try_download(http_url)
-            else:
-                raise
+        _try_download(url)
         if not check_integrity(fpath, md5):
             msg = f"File not found or corrupted: {fpath}"
             raise RuntimeError(msg)
