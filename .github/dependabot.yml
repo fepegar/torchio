@@ -7,7 +7,7 @@ version: 2
 multi-ecosystem-groups:
   dependencies:
     schedule:
-      interval: "monthly"
+      interval: "quarterly"
 
 updates:
   - package-ecosystem: "github-actions"
@@ -15,8 +15,18 @@ updates:
     patterns:
       - "*"
     multi-ecosystem-group: "dependencies"
-  - package-ecosystem: "pip"
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "uv"
     directory: "/"
     patterns:
       - "*"
     multi-ecosystem-group: "dependencies"
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"

@@ -27,6 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       OS: ${{ matrix.os }}
+      UV_PYTHON: ${{ matrix.python }}
 
     steps:
       - name: Checkout repository
@@ -37,28 +38,20 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Install tox
-        run: uv tool install --python ${{ matrix.python }} --with tox-uv tox
-
-      - name: Add local bin to path on Windows
-        if: runner.os == 'Windows'
-        run: echo "C:/Users/runneradmin/.local/bin" >> $GITHUB_PATH
-        shell: bash
-
       - name: Install ffmpeg for video tests
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Setup test suite
-        run: tox run -v --notest --skip-missing-interpreters false -e test
+        run: uv run --locked --only-group dev tox run -v --notest --skip-missing-interpreters false -e test
 
       # Run all tests on schedule, but only non-slow tests on push
       - name: Run pytest
         run: |
           if [ "${{ github.event_name }}" == "schedule" ]; then
-            tox -e test
+            uv run --locked --only-group dev tox -e test
           else
-            tox -e test -- -m "not slow"
+            uv run --locked --only-group dev tox -e test -- -m "not slow"
           fi
         shell: bash # this wouldn't work on Powershell
 
@@ -82,10 +75,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Test transforms CLI tool
-        run: uv run -- torchio transform --help
+        run: uv run --locked -- torchio transform --help
 
       - name: Test info CLI tool
-        run: uv run -- torchio info --help
+        run: uv run --locked -- torchio info --help
 
   docs:
     name: Documentation snippet tests
@@ -101,8 +94,5 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Install tox
-        run: uv tool install --with tox-uv tox
-
       - name: Run doc snippet tests
-        run: tox -e docs-test
+        run: uv run --locked --only-group dev tox -e docs-test
